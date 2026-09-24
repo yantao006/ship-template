@@ -1,0 +1,14 @@
+{
+  "name": "example-video",
+  "main": "worker.ts",
+  "compatibility_date": "2025-09-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
+  "d1_databases": [{ "binding": "DB", "database_name": "example-video-db", "database_id": "REPLACE_WITH_SITE_D1_ID", "migrations_dir": "migrations" }],
+  "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "example-video-media" }],
+  "queues": { "producers": [{ "binding": "JOBS", "queue": "example-video-jobs" }], "consumers": [{ "queue": "example-video-jobs" }] },
+  "send_email": [{ "name": "EMAIL" }],
+  "triggers": { "crons": ["0 0 * * *"] },
+  "secrets": { "required": ["BETTER_AUTH_SECRET", "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "TURNSTILE_SECRET"] },
+  "vars": { "SITE_URL": "https://awesomejev.link" }
+}

@@ -1,0 +1,11 @@
+.next/
+.open-next/
+node_modules/
+.wrangler/
+.env*
+!.env.example
+*.tsbuildinfo
+next-env.d.ts
+
+.dev.vars
+.dev.vars.*

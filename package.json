@@ -1,0 +1,35 @@
+{
+  "name": "ship-template",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "cf:build": "opennextjs-cloudflare build",
+    "cf:preview": "opennextjs-cloudflare preview",
+    "site-check": "tsx scripts/site-check.ts",
+    "test": "node --import tsx --test test/*.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@better-auth/drizzle-adapter": "1.7.5",
+    "@opennextjs/cloudflare": "1.20.6",
+    "better-auth": "1.7.5",
+    "drizzle-orm": "0.45.3",
+    "next": "15.5.26",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260924.1",
+    "@types/node": "^22.15.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "miniflare": "4.20260730.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.8.0",
+    "wrangler": "^4.30.0"
+  },
+  "packageManager": "pnpm@10.16.1"
+}
