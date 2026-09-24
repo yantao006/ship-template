@@ -1,0 +1,22 @@
+import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { AuthControl } from '@/components/auth-control';
+import { DesktopHandoff } from '@/components/desktop-handoff';
+import { createAuth } from '@/lib/auth';
+import { allowedDesktopTarget } from '@/lib/desktop-auth';
+import { auth, messages } from '@/lib/config';
+import { workerEnv } from '@/lib/env';
+
+export default async function AuthCallback({ searchParams }: { searchParams: Promise<{ redirect?: string; locale?: string }> }) {
+  const params = await searchParams;
+  const target = allowedDesktopTarget(params.redirect ?? null);
+  if (!target) redirect('/');
+  const locale: keyof typeof messages = params.locale === 'zh' ? 'zh' : 'en';
+  const requestHeaders = await headers();
+  const session = await createAuth(workerEnv(), requestHeaders.get('host')?.split(':')[0]).api.getSession({ headers: requestHeaders });
+  const returnURL = `/auth-callback?redirect=${encodeURIComponent(target)}&locale=${locale}`;
+  return <main className="handoff-page">
+    <h1>{session ? messages[locale].nav.desktopWaiting : messages[locale].nav.desktopSignIn}</h1>
+    {session ? <DesktopHandoff target={target} copy={messages[locale].nav} /> : <AuthControl copy={messages[locale].nav} methods={{ email: auth.email, google: auth.google, github: auth.github }} callbackURL={returnURL} inviteRequired={auth.invite.required} />}
+  </main>;
+}

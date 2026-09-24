@@ -2,8 +2,9 @@
 
 Next.js App Router + OpenNext on Cloudflare Workers, with a D1-backed better-auth account, a native-batch credit ledger, and two mail adapters.
 The reference site is live at [awesomejev.link](https://awesomejev.link/).
-Its navigation and hero copy live in `site/messages.ts`; its brand and resource names live in `site/site.config.ts`.
-Google login works on the live site with a dedicated Google Cloud project and the exact callback `https://awesomejev.link/api/auth/callback/google`.
+Its navigation and hero copy live in `site/messages/en.ts` and `site/messages/zh.ts`; its brand and resource names live in `site/site.config.ts`.
+`site/auth.config.ts` selects email/password, Google, and GitHub sign-in independently; the live configuration enables email and Google but leaves GitHub off.
+Google login uses the existing dedicated Google Cloud project and exact callback `https://awesomejev.link/api/auth/callback/google`.
 The Google consent app is in Testing mode; only the configured Google test users can finish sign-in until its branding and audience are published.
 
 Video generation, checkout, subscription billing, model pages, and legal pages are not implemented.
@@ -26,13 +27,17 @@ pnpm exec wrangler deploy --dry-run --outdir /tmp/ship-template-dryrun
 
 `pnpm test` uses local Miniflare D1 to reproduce naive read-then-write overspending, verify atomic native D1 batches under concurrency, cover refund/grant idempotency, exercise better-auth signup, and test both mail adapters with fake sending.
 The second-site fixture changes only `site/`, `wrangler.jsonc` resource names and environment requirements; business modules are unchanged.
-`pnpm site-check --strict` additionally needs `SITE_URL`, `BETTER_AUTH_SECRET`, `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in the invoking environment; it reports missing names without printing values.
+`pnpm site-check --strict` needs `SITE_URL`, `BETTER_AUTH_SECRET`, and credentials for enabled OAuth providers in the invoking environment; it reports missing names without printing values.
 Secrets already installed on the deployed Worker are not exported into the local shell.
 
 For local-only D1 smoke checks, first run `pnpm exec wrangler d1 migrations apply awesomejev-db --local`.
 The local-only auth test path uses an explicit `LOCAL_AUTH_TEST=1` and a loopback `SITE_URL`, as exercised by `test/auth-integration.test.ts`; it cannot be used on a non-loopback request.
+Email/password signup and login use the same site's D1-backed better-auth session and account tables.
+Email verification, password reset, and account recovery are not configured; do not use a valuable password for this preview site.
 Do not use localhost as acceptance evidence for the public Google flow.
 The live verification is to open [awesomejev.link](https://awesomejev.link/), click **Continue with Google** in the top navigation, choose a permitted test account, consent, and confirm that the navigation shows your name and the hero shows 30 available credits.
+In a signed-out session, **Use email** opens a form with both sign-in and account creation; registration and return login should show the same account and 30 credits.
+The language switch in the navigation swaps between `/en` and `/zh`, including auth copy.
 An unauthenticated request to `/api/credits/balance` returns 401.
 A successful first Google sign-in creates one user and one idempotent signup credit lot in this site's D1.
 
@@ -41,6 +46,13 @@ A successful first Google sign-in creates one user and one idempotent signup cre
 Each site needs its own D1, Worker, Google Cloud project and OAuth web client, and account namespace.
 `wrangler.jsonc` names this site's bindings and the sole custom hostname `awesomejev.link`.
 `SITE_URL` is a Worker environment variable and `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` and `BETTER_AUTH_SECRET` are Worker secrets; better-auth reads them on every request, not from the build.
+To enable GitHub, create a real OAuth app with callback `https://awesomejev.link/api/auth/callback/github`, install `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET` as Worker secrets, add those two names to `wrangler.jsonc` `secrets.required`, and then set `github.enabled` true in `site/auth.config.ts`.
+Never invent or commit OAuth credentials.
+Google One Tap is supported by `google.oneTapEnabled`, but remains off; it requires a Google client whose authorized origins include this site and uses the existing Worker client ID.
+Desktop handoff is off while `desktop.schemes` is empty; when enabled, only allow-listed app schemes receive a session token through `/auth-callback?redirect=app://...`.
+Invitation gating is off while `invite.required` is false; enabling it requires migration `0002_invite_codes.sql` and an `invite.adminEmails` allow-list for `/admin/invites`.
+When required, new accounts cannot use their credits until a valid invite is redeemed, and toggling it on also gates existing accounts without a redemption.
+Apply D1 migrations before deploying a build that enables invitations.
 Credentials are never committed to `site/` or D1.
 `site-check` compares the Worker, D1, R2, Queue and email bindings with site configuration and secret declarations.
 Cloudflare Email is the default adapter; Resend is selectable through `site.email.provider` and needs `RESEND_API_KEY`.

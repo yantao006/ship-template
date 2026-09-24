@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { resolve } from 'node:path';
 import { readFileSync } from 'node:fs';
 import { check } from '../scripts/site-check';
-import { site, googleCallback } from '../src/lib/config';
+import { site, googleCallback, githubCallback } from '../src/lib/config';
 import { FakeEmail, createEmailProvider } from '../src/lib/email';
 import { notifyGenerationComplete, notifyCreditsExpiring, notifyRenewalFailed } from '../src/lib/notifications';
 import { verifyTurnstile } from '../src/lib/turnstile';
@@ -14,6 +14,8 @@ test('second site only changes site, wrangler resource names and env, not busine
   assert.deepEqual(first.errors,[]);
   assert.deepEqual(second.errors,[]);
   assert.equal(googleCallback(site), 'https://awesomejev.link/api/auth/callback/google');
+  assert.equal(githubCallback(site), 'https://awesomejev.link/api/auth/callback/github');
+  assert.equal(first.githubCallback, githubCallback(site));
   assert.equal(second.callback,'https://other.example/api/auth/callback/google');
   assert.notEqual(first.config.deploy.d1,second.config.deploy.d1);
   assert.notEqual(first.config.email.provider,second.config.email.provider);

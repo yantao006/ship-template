@@ -18,17 +18,20 @@ export async function check(root: string, env: Record<string, string | undefined
   if (wrangler.main !== 'worker.ts') errors.push('Custom Worker entry missing');
   if (!/^https:\/\/[^/]+$/.test(config.url) || new URL(config.url).hostname !== config.apex) errors.push('Canonical site URL mismatch');
   if (wrangler.vars?.SITE_URL !== config.url) errors.push('Worker SITE_URL mismatch');
-  if (auth.backend !== 'better-auth' || auth.basePath !== '/api/auth') errors.push('Auth config mismatch');
+  if (auth.backend !== 'better-auth' || auth.basePath !== '/api/auth' || !['email', 'google', 'github'].every(key => typeof auth[key as 'email' | 'google' | 'github']?.enabled === 'boolean')) errors.push('Auth config mismatch');
+  if (auth.google.oneTapEnabled && !auth.google.enabled) errors.push('Google One Tap requires Google auth');
+  if (auth.invite?.required && (!Array.isArray(auth.invite.adminEmails) || !auth.invite.adminEmails.length)) errors.push('Invite admin email missing');
+  if (auth.desktop?.schemes?.some((scheme: string) => !/^[a-z][a-z0-9+.-]*$/i.test(scheme) || ['http', 'https', 'file', 'javascript', 'data', 'blob', 'vbscript'].includes(scheme.toLowerCase()))) errors.push('Invalid desktop scheme');
   if (config.email.provider === 'cloudflare' && !wrangler.send_email?.some((item: {name: string}) => item.name === 'EMAIL')) errors.push('EMAIL binding missing');
   if (config.email.provider !== 'cloudflare' && config.email.provider !== 'resend') errors.push('Invalid email provider');
-  const requiredSecrets = ['BETTER_AUTH_SECRET', 'GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', ...(auth.turnstile.onSignIn ? ['TURNSTILE_SECRET'] : []), ...(config.email.provider === 'resend' ? ['RESEND_API_KEY'] : [])];
+  const requiredSecrets = ['BETTER_AUTH_SECRET', ...(auth.google.enabled ? ['GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET'] : []), ...(auth.github.enabled ? ['GITHUB_CLIENT_ID', 'GITHUB_CLIENT_SECRET'] : []), ...(auth.turnstile.onSignIn ? ['TURNSTILE_SECRET'] : []), ...(config.email.provider === 'resend' ? ['RESEND_API_KEY'] : [])];
   if (JSON.stringify([...wrangler.secrets?.required ?? []].sort()) !== JSON.stringify(requiredSecrets.sort())) errors.push('Required secrets declaration mismatch');
   if (strict) {
     for (const name of requiredSecrets) requireValue(name);
     if (env.SITE_URL !== config.url) errors.push('SITE_URL mismatch');
     if (d1?.database_id === 'REPLACE_WITH_SITE_D1_ID') errors.push('D1 id placeholder');
   }
-  return { config, callback: `${config.url}${auth.basePath}/callback/google`, errors };
+  return { config, callback: `${config.url}${auth.basePath}/callback/google`, githubCallback: `${config.url}${auth.basePath}/callback/github`, errors };
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === resolve(new URL(import.meta.url).pathname)) {
