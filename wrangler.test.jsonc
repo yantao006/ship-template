@@ -1,0 +1,9 @@
+{
+  "name": "awesomejev-test",
+  "main": "worker.ts",
+  "compatibility_date": "2025-09-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
+  "routes": [{ "pattern": "awesomejev.link", "custom_domain": true }],
+  "vars": { "SITE_URL": "https://awesomejev.link", "SITE_MODE": "test-static" }
+}

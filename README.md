@@ -53,4 +53,12 @@ Annual subscription credits have a monthly idempotent grant primitive, but no bi
 Failed or timed-out reserved/submitted tasks refund only once; user cancellations after submission do not refund.
 
 The default wrangler D1 id is deliberately a placeholder.
-Do not deploy it, create remote resources, or bind a production hostname as part of the local commands above.
+Do not deploy `wrangler.jsonc` or create remote storage resources as part of the local commands above.
+
+## Authorized test hostname
+
+`wrangler.test.jsonc` is a deliberately reduced, static-only Worker deployment for `https://awesomejev.link/`.
+It uses the same OpenNext build but binds no D1, R2, Queue, email service, or auth secrets.
+The page is labeled TEST ONLY, marked noindex, and the login and balance APIs return 503 instead of pretending to work.
+After `pnpm cf:build`, `pnpm exec wrangler deploy -c wrangler.test.jsonc` deploys only this test Worker to the already-owned Cloudflare zone; do not use the full config for this hostname until real per-site resources and credentials are provided.
+This remote smoke test does not replace the Miniflare ledger, local better-auth, and fake email tests.

@@ -6,6 +6,7 @@ This file is the project's committed home for project-intrinsic agent knowledge:
 - `migrations/` is the authoritative D1 schema; ledger writes use native D1 `prepare().bind()` and `batch()` in `src/lib/ledger.ts`.
 - Run `pnpm test`, `pnpm typecheck`, `pnpm cf:build`, and `pnpm site-check` before handing off changes.
 - `.open-next/worker.js` is generated; `worker.ts` wraps it for HTTP, Cron, and Queue events.
+- `wrangler.test.jsonc` is a separate no-storage/no-auth test deployment for the existing `awesomejev.link` zone; never mistake it for the full per-site binding config.
 
 ## Maintaining this file
 

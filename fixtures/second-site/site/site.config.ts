@@ -1,5 +1,6 @@
 export default {
   brand: 'Second Video',
+  previewOnly: true,
   apex: 'other.example',
   url: 'https://other.example',
   locales: ['en', 'zh'] as const,

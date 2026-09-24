@@ -1,5 +1,6 @@
 export default {
-  brand: 'Example Video',
+  brand: 'Awesomejev Test Video',
+  previewOnly: true,
   apex: 'awesomejev.link',
   url: 'https://awesomejev.link',
   locales: ['en', 'zh'] as const,

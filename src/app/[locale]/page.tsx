@@ -3,5 +3,5 @@ export function generateStaticParams() { return site.locales.map(locale => ({ lo
 export default async function LocalizedHome({ params }: { params: Promise<{locale: string}> }) {
   const {locale} = await params;
   const translation = messages[localeFor(locale)];
-  return <section style={{padding: '4rem'}}><h1>{site.brand}</h1><p>{translation.title}</p><span>{translation.signIn}</span></section>;
+  return <section style={{padding: '4rem'}}><h1>{site.brand}</h1>{site.previewOnly && <p role="status">TEST ONLY - Login, payments, and video generation are unavailable here.</p>}<p>{translation.title}</p><span>{translation.signIn}</span></section>;
 }

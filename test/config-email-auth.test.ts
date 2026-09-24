@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { resolve } from 'node:path';
+import { readFileSync } from 'node:fs';
 import { check } from '../scripts/site-check';
 import { site, googleCallback } from '../src/lib/config';
 import { FakeEmail, createEmailProvider } from '../src/lib/email';
@@ -19,6 +20,14 @@ test('second site only changes site, wrangler resource names and env, not busine
   assert.ok((await check(resolve('.'),{},true)).errors.includes('GOOGLE_CLIENT_SECRET missing'));
   const strictEnv = {BETTER_AUTH_SECRET:'test',GOOGLE_CLIENT_ID:'test',GOOGLE_CLIENT_SECRET:'test',TURNSTILE_SECRET:'test',RESEND_API_KEY:'test'};
   assert.deepEqual((await check(resolve('fixtures/second-site'),strictEnv,true)).errors,[]);
+});
+
+test('remote test Worker is restricted to the owned hostname and has no live credentials or storage', () => {
+  const config = JSON.parse(readFileSync('wrangler.test.jsonc','utf8'));
+  assert.equal(config.name,'awesomejev-test');
+  assert.deepEqual(config.routes,[{pattern:'awesomejev.link',custom_domain:true}]);
+  assert.equal(config.vars.SITE_MODE,'test-static');
+  for (const binding of ['d1_databases','r2_buckets','queues','send_email','secrets']) assert.equal(config[binding],undefined);
 });
 
 test('three notification functions dispatch to fake provider without real email', async () => {
