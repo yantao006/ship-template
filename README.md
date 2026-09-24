@@ -2,14 +2,14 @@
 
 Next.js App Router + OpenNext on Cloudflare Workers, with a D1-backed better-auth account, a native-batch credit ledger, and two mail adapters.
 The reference site is live at [awesomejev.link](https://awesomejev.link/).
-Its navigation and hero copy live in `site/messages/en.ts` and `site/messages/zh.ts`; its brand and resource names live in `site/site.config.ts`.
+Navigation, hero, workspace and credits copy live in `site/messages/en.ts` and `site/messages/zh.ts`; brand and resource names live in `site/site.config.ts`, while colors live in `site/theme.config.ts`.
 `site/auth.config.ts` selects email/password, Google, and GitHub sign-in independently; the live configuration enables email and Google but leaves GitHub off.
 Google login uses the existing dedicated Google Cloud project and exact callback `https://awesomejev.link/api/auth/callback/google`.
 The Google consent app is in Testing mode; only the configured Google test users can finish sign-in until its branding and audience are published.
 
 Video generation, checkout, subscription billing, model pages, and legal pages are not implemented.
 Mock video/payment services cannot generate media or charge anyone.
-The landing page contains only navigation and a hero.
+The landing page has a marketing navigation and hero. The preview workspace at `/{locale}/dashboard` and the credit-grant table at `/{locale}/credits` show only the signed-in account's existing D1 data, without enabling video or checkout.
 
 ## Re-run verification
 
@@ -35,9 +35,9 @@ The local-only auth test path uses an explicit `LOCAL_AUTH_TEST=1` and a loopbac
 Email/password signup and login use the same site's D1-backed better-auth session and account tables.
 Email verification, password reset, and account recovery are not configured; do not use a valuable password for this preview site.
 Do not use localhost as acceptance evidence for the public Google flow.
-The live verification is to open [awesomejev.link](https://awesomejev.link/), click **Continue with Google** in the top navigation, choose a permitted test account, consent, and confirm that the navigation shows your name and the hero shows 30 available credits.
-In a signed-out session, **Use email** opens a form with both sign-in and account creation; registration and return login should show the same account and 30 credits.
-The language switch in the navigation swaps between `/en` and `/zh`, including auth copy.
+The live verification is to open [awesomejev.link](https://awesomejev.link/), click **Sign In** in the top navigation, then choose **Continue with Google** inside the single card, select a permitted test account, consent, and confirm the navigation shows your name and the workspace shows 30 credits.
+The same card contains email/password sign-in and account creation; GitHub is absent while disabled in `site/auth.config.ts`.
+The single **Language** selector is in the marketing navigation on home, or at the top right of the workspace content above the Credits table. It switches between `/en` and `/zh` while preserving the current page.
 An unauthenticated request to `/api/credits/balance` returns 401.
 A successful first Google sign-in creates one user and one idempotent signup credit lot in this site's D1.
 

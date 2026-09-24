@@ -6,23 +6,23 @@ import { createAuthClient } from 'better-auth/react';
 import type { AuthSettings } from '@/lib/auth';
 
 const authClient = createAuthClient({ basePath: '/api/auth' });
-type Copy = { login: string; google: string; github: string; email: string; logout: string; signIn: string; signUp: string; name: string; password: string; noMethods: string; invite: string; wait: string; close: string; emailLabel: string; authFailed: string; socialFailed: string; signOutFailed: string; inviteInvalid: string; createdButInviteFailed: string };
+type Copy = { login: string; google: string; github: string; email: string; orEmail: string; logout: string; signIn: string; signUp: string; name: string; password: string; noMethods: string; invite: string; wait: string; close: string; emailLabel: string; authFailed: string; socialFailed: string; signOutFailed: string; inviteInvalid: string; createdButInviteFailed: string };
 
 export function AuthControl({ copy, methods, userName, callbackURL, inviteRequired = false }: { copy: Copy; methods: Pick<AuthSettings, 'email' | 'google' | 'github'>; userName?: string; callbackURL: string; inviteRequired?: boolean }) {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState('');
-  const [emailOpen, setEmailOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const [register, setRegister] = useState(false);
   const dialogRef = useRef<HTMLElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const router = useRouter();
 
   useEffect(() => {
-    if (!emailOpen) return;
+    if (!open) return;
     const previous = document.activeElement as HTMLElement | null;
-    dialogRef.current?.querySelector<HTMLInputElement>('input')?.focus();
+    dialogRef.current?.querySelector<HTMLElement>('input, button')?.focus();
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape') { setEmailOpen(false); return; }
+      if (event.key === 'Escape') { setOpen(false); return; }
       if (event.key !== 'Tab') return;
       const items = [...(dialogRef.current?.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled)') ?? [])];
       if (!items.length) return;
@@ -31,9 +31,9 @@ export function AuthControl({ copy, methods, userName, callbackURL, inviteRequir
     }
     document.addEventListener('keydown', onKeyDown);
     return () => { document.removeEventListener('keydown', onKeyDown); (triggerRef.current ?? previous)?.focus(); };
-  }, [emailOpen]);
+  }, [open]);
 
-  useEffect(() => { if (emailOpen) dialogRef.current?.querySelector<HTMLInputElement>('input')?.focus(); }, [register, emailOpen]);
+  useEffect(() => { if (open && methods.email.enabled) dialogRef.current?.querySelector<HTMLInputElement>('input')?.focus(); }, [register, open, methods.email.enabled]);
 
   async function social(provider: 'google' | 'github') {
     if (!methods[provider].enabled || pending) return;
@@ -69,7 +69,7 @@ export function AuthControl({ copy, methods, userName, callbackURL, inviteRequir
           const redeemed = await fetch('/api/invites/redeem', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code }) });
           if (!redeemed.ok) { setError(copy.createdButInviteFailed); return; }
         }
-        setEmailOpen(false);
+        setOpen(false);
         if (callbackURL.startsWith('/auth-callback?')) window.location.assign(callbackURL); else router.refresh();
       }
     } catch { setError(copy.authFailed); }
@@ -89,25 +89,29 @@ export function AuthControl({ copy, methods, userName, callbackURL, inviteRequir
       <span className="account-name" title={userName}>{userName}</span>
       <button className="auth-button" type="button" disabled={pending} onClick={signOut}>{copy.logout}</button>
     </> : <>
-      {methods.google.enabled && <button className="auth-button" type="button" disabled={pending} onClick={() => social('google')}>{copy.google}</button>}
-      {methods.github.enabled && <button className="auth-button" type="button" disabled={pending} onClick={() => social('github')}>{copy.github}</button>}
-      {methods.email.enabled && <button ref={triggerRef} className="auth-button auth-button-secondary" type="button" disabled={pending} onClick={() => { setError(''); setRegister(false); setEmailOpen(true); }}>{copy.email}</button>}
-      {!methods.google.enabled && !methods.github.enabled && !methods.email.enabled && <span className="account-name">{copy.noMethods}</span>}
+      {(methods.google.enabled || methods.github.enabled || methods.email.enabled) ? <button ref={triggerRef} className="auth-button" type="button" disabled={pending} onClick={() => { setError(''); setRegister(false); setOpen(true); }}>{copy.login}</button> : <span className="account-name">{copy.noMethods}</span>}
     </>}
-    {error && !emailOpen && <p className="auth-error" role="alert">{error}</p>}
-    {emailOpen && methods.email.enabled && <div className="auth-overlay" onMouseDown={event => { if (event.target === event.currentTarget) setEmailOpen(false); }}>
+    {error && !open && <p className="auth-error" role="alert">{error}</p>}
+    {open && <div className="auth-overlay" onMouseDown={event => { if (event.target === event.currentTarget) setOpen(false); }}>
       <section ref={dialogRef} className="auth-panel" role="dialog" aria-modal="true" aria-labelledby="auth-title">
-        <button className="auth-close" type="button" aria-label={copy.close} onClick={() => setEmailOpen(false)}>×</button>
+        <button className="auth-close" type="button" aria-label={copy.close} onClick={() => setOpen(false)}>×</button>
         <h2 id="auth-title">{register ? copy.signUp : copy.signIn}</h2>
-        <form onSubmit={submitEmail}>
-          {register && <label>{copy.name}<input name="name" autoComplete="name" required minLength={1} /></label>}
-          <label>{copy.emailLabel}<input name="email" type="email" autoComplete="email" required /></label>
-          <label>{copy.password}<input name="password" type="password" autoComplete={register ? 'new-password' : 'current-password'} required minLength={8} /></label>
-          {register && inviteRequired && <label>{copy.invite}<input name="inviteCode" autoComplete="off" required maxLength={32} /></label>}
-          {error && <p className="form-error" role="alert">{error}</p>}
-          <button className="auth-button" type="submit" disabled={pending}>{pending ? copy.wait : register ? copy.signUp : copy.signIn}</button>
-        </form>
-        <button className="auth-switch" type="button" onClick={() => { setRegister(!register); setError(''); }}>{register ? copy.signIn : copy.signUp}</button>
+        {(methods.google.enabled || methods.github.enabled) && <div className="social-methods">
+          {methods.google.enabled && <button className="social-button" type="button" disabled={pending} onClick={() => social('google')}>{copy.google}</button>}
+          {methods.github.enabled && <button className="social-button" type="button" disabled={pending} onClick={() => social('github')}>{copy.github}</button>}
+        </div>}
+        {methods.email.enabled && <>
+          {(methods.google.enabled || methods.github.enabled) && <p className="method-divider"><span>{copy.orEmail}</span></p>}
+          <form onSubmit={submitEmail}>
+            {register && <label>{copy.name}<input name="name" autoComplete="name" required minLength={1} /></label>}
+            <label>{copy.emailLabel}<input name="email" type="email" autoComplete="email" required /></label>
+            <label>{copy.password}<input name="password" type="password" autoComplete={register ? 'new-password' : 'current-password'} required minLength={8} /></label>
+            {register && inviteRequired && <label>{copy.invite}<input name="inviteCode" autoComplete="off" required maxLength={32} /></label>}
+            <button className="auth-button" type="submit" disabled={pending}>{pending ? copy.wait : register ? copy.signUp : copy.signIn}</button>
+          </form>
+          <button className="auth-switch" type="button" onClick={() => { setRegister(!register); setError(''); }}>{register ? copy.signIn : copy.signUp}</button>
+        </>}
+        {error && <p className="form-error" role="alert">{error}</p>}
       </section>
     </div>}
   </div>;

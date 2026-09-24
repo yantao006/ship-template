@@ -1,9 +1,9 @@
 export default {
-  background: '#0b1318',
-  surface: '#132127',
-  foreground: '#f6f9f4',
-  muted: '#aec6c0',
-  accent: '#b9f28e',
-  border: '#365148',
+  background: '#fafafa',
+  surface: '#ffffff',
+  foreground: '#18181b',
+  muted: '#5b606b',
+  accent: '#334155',
+  border: '#e4e4e7',
   font: 'Arial, Helvetica, sans-serif',
 };
