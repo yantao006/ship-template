@@ -2,11 +2,11 @@
 
 This file is the project's committed home for project-intrinsic agent knowledge: build, test, release, architecture, and sharp-edge notes that should travel with the code.
 
-- `README.md` documents the local-only verification contract and replay commands.
+- `README.md` documents local checks and the live Google-login verification path.
 - `migrations/` is the authoritative D1 schema; ledger writes use native D1 `prepare().bind()` and `batch()` in `src/lib/ledger.ts`.
 - Run `pnpm test`, `pnpm typecheck`, `pnpm cf:build`, and `pnpm site-check` before handing off changes.
 - `.open-next/worker.js` is generated; `worker.ts` wraps it for HTTP, Cron, and Queue events.
-- `wrangler.test.jsonc` is a separate no-storage/no-auth test deployment for the existing `awesomejev.link` zone; never mistake it for the full per-site binding config.
+- `wrangler.jsonc` is the full D1-backed deployment for the sole reference hostname `awesomejev.link`; secrets live only on that Worker.
 
 ## Maintaining this file
 

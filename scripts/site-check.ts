@@ -17,13 +17,15 @@ export async function check(root: string, env: Record<string, string | undefined
   if (queue?.queue !== config.deploy.queue || !wrangler.queues?.consumers?.some((item: {queue: string}) => item.queue === config.deploy.queue)) errors.push('Queue mismatch');
   if (wrangler.main !== 'worker.ts') errors.push('Custom Worker entry missing');
   if (!/^https:\/\/[^/]+$/.test(config.url) || new URL(config.url).hostname !== config.apex) errors.push('Canonical site URL mismatch');
+  if (wrangler.vars?.SITE_URL !== config.url) errors.push('Worker SITE_URL mismatch');
   if (auth.backend !== 'better-auth' || auth.basePath !== '/api/auth') errors.push('Auth config mismatch');
   if (config.email.provider === 'cloudflare' && !wrangler.send_email?.some((item: {name: string}) => item.name === 'EMAIL')) errors.push('EMAIL binding missing');
   if (config.email.provider !== 'cloudflare' && config.email.provider !== 'resend') errors.push('Invalid email provider');
-  const requiredSecrets = ['BETTER_AUTH_SECRET', 'GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'TURNSTILE_SECRET', ...(config.email.provider === 'resend' ? ['RESEND_API_KEY'] : [])];
+  const requiredSecrets = ['BETTER_AUTH_SECRET', 'GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', ...(auth.turnstile.onSignIn ? ['TURNSTILE_SECRET'] : []), ...(config.email.provider === 'resend' ? ['RESEND_API_KEY'] : [])];
   if (JSON.stringify([...wrangler.secrets?.required ?? []].sort()) !== JSON.stringify(requiredSecrets.sort())) errors.push('Required secrets declaration mismatch');
   if (strict) {
     for (const name of requiredSecrets) requireValue(name);
+    if (env.SITE_URL !== config.url) errors.push('SITE_URL mismatch');
     if (d1?.database_id === 'REPLACE_WITH_SITE_D1_ID') errors.push('D1 id placeholder');
   }
   return { config, callback: `${config.url}${auth.basePath}/callback/google`, errors };

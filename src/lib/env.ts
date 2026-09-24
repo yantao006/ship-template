@@ -13,7 +13,6 @@ export interface Env {
   RESEND_API_KEY?: string;
   SITE_URL?: string;
   LOCAL_AUTH_TEST?: string;
-  SITE_MODE?: string;
 }
 
 export function workerEnv(): Env { return getCloudflareContext().env as unknown as Env; }

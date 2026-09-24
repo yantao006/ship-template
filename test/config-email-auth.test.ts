@@ -18,16 +18,17 @@ test('second site only changes site, wrangler resource names and env, not busine
   assert.notEqual(first.config.deploy.d1,second.config.deploy.d1);
   assert.notEqual(first.config.email.provider,second.config.email.provider);
   assert.ok((await check(resolve('.'),{},true)).errors.includes('GOOGLE_CLIENT_SECRET missing'));
-  const strictEnv = {BETTER_AUTH_SECRET:'test',GOOGLE_CLIENT_ID:'test',GOOGLE_CLIENT_SECRET:'test',TURNSTILE_SECRET:'test',RESEND_API_KEY:'test'};
+  const strictEnv = {BETTER_AUTH_SECRET:'test',GOOGLE_CLIENT_ID:'test',GOOGLE_CLIENT_SECRET:'test',TURNSTILE_SECRET:'test',RESEND_API_KEY:'test',SITE_URL:'https://other.example'};
   assert.deepEqual((await check(resolve('fixtures/second-site'),strictEnv,true)).errors,[]);
 });
 
-test('remote test Worker is restricted to the owned hostname and has no live credentials or storage', () => {
-  const config = JSON.parse(readFileSync('wrangler.test.jsonc','utf8'));
+test('live Worker binds only the owned hostname, with per-site D1 and required auth secrets', () => {
+  const config = JSON.parse(readFileSync('wrangler.jsonc','utf8'));
   assert.equal(config.name,'awesomejev-test');
   assert.deepEqual(config.routes,[{pattern:'awesomejev.link',custom_domain:true}]);
-  assert.equal(config.vars.SITE_MODE,'test-static');
-  for (const binding of ['d1_databases','r2_buckets','queues','send_email','secrets']) assert.equal(config[binding],undefined);
+  assert.equal(config.vars.SITE_URL,'https://awesomejev.link');
+  assert.equal(config.d1_databases[0].database_name,'awesomejev-db');
+  assert.deepEqual(config.secrets.required,['BETTER_AUTH_SECRET','GOOGLE_CLIENT_ID','GOOGLE_CLIENT_SECRET']);
 });
 
 test('three notification functions dispatch to fake provider without real email', async () => {

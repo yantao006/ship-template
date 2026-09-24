@@ -1,13 +1,18 @@
 # ship-template
 
-A local-first verification slice of a Next.js + OpenNext Cloudflare Worker video-site template.
-This slice implements the scaffold, D1 ledger, better-auth with per-site D1 and Google configuration, Turnstile, two mail adapters, and a second-site configuration check.
-Video generation, real payments, public production deployment, model pages, legal pages, and runtime feature flags are not implemented.
-The mock video/payment services cannot charge users or generate real media.
+Next.js App Router + OpenNext on Cloudflare Workers, with a D1-backed better-auth account, a native-batch credit ledger, and two mail adapters.
+The reference site is live at [awesomejev.link](https://awesomejev.link/).
+Its navigation and hero copy live in `site/messages.ts`; its brand and resource names live in `site/site.config.ts`.
+Google login works on the live site with a dedicated Google Cloud project and the exact callback `https://awesomejev.link/api/auth/callback/google`.
+The Google consent app is in Testing mode; only the configured Google test users can finish sign-in until its branding and audience are published.
 
-## Run the local verification
+Video generation, checkout, subscription billing, model pages, and legal pages are not implemented.
+Mock video/payment services cannot generate media or charge anyone.
+The landing page contains only navigation and a hero.
 
-Node 22 and pnpm 10 are expected.
+## Re-run verification
+
+Use Node 22 and pnpm 10.
 
 ```bash
 pnpm install
@@ -19,46 +24,28 @@ pnpm cf:build
 pnpm exec wrangler deploy --dry-run --outdir /tmp/ship-template-dryrun
 ```
 
-`pnpm test` runs real Miniflare D1 migrations and parallel ledger mutations, demonstrates read-then-write overspending, verifies batch rollback and refund idempotency, and signs up a local better-auth account.
-The second-site fixture contains only a changed `site/`, `wrangler.jsonc`, and an alternate provider configuration.
-No business source files change between sites.
-`pnpm site-check --strict` checks production secret names and rejects the placeholder D1 id, so it intentionally fails without real per-site resources and environment variables.
+`pnpm test` uses local Miniflare D1 to reproduce naive read-then-write overspending, verify atomic native D1 batches under concurrency, cover refund/grant idempotency, exercise better-auth signup, and test both mail adapters with fake sending.
+The second-site fixture changes only `site/`, `wrangler.jsonc` resource names and environment requirements; business modules are unchanged.
+`pnpm site-check --strict` additionally needs `SITE_URL`, `BETTER_AUTH_SECRET`, `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in the invoking environment; it reports missing names without printing values.
+Secrets already installed on the deployed Worker are not exported into the local shell.
 
-For an HTTP smoke test using only local D1 state:
+For local-only D1 smoke checks, first run `pnpm exec wrangler d1 migrations apply awesomejev-db --local`.
+The local-only auth test path uses an explicit `LOCAL_AUTH_TEST=1` and a loopback `SITE_URL`, as exercised by `test/auth-integration.test.ts`; it cannot be used on a non-loopback request.
+Do not use localhost as acceptance evidence for the public Google flow.
+The live verification is to open [awesomejev.link](https://awesomejev.link/), click **Continue with Google** in the top navigation, choose a permitted test account, consent, and confirm that the navigation shows your name and the hero shows 30 available credits.
+An unauthenticated request to `/api/credits/balance` returns 401.
+A successful first Google sign-in creates one user and one idempotent signup credit lot in this site's D1.
 
-```bash
-pnpm exec wrangler d1 migrations apply example-video-db --local
-printf '%s\\n' 'BETTER_AUTH_SECRET=only-local-test-secret-long-enough-000000' > .dev.vars
-pnpm cf:build
-pnpm exec wrangler dev --local --port 8787 --var SITE_URL:http://localhost:8787 --var LOCAL_AUTH_TEST:1
-```
+## Site and secret boundaries
 
-In another terminal, request `/`, `/api/auth/ok`, then sign up via `POST /api/auth/sign-up/email` with JSON `name`, `email`, and `password` and an `Origin: http://localhost:8787` header.
-`POST /api/auth/sign-in/email` requires `x-turnstile-token: local-test-token` on the loopback host only.
-The local email/password method and local Turnstile token are disabled unless `LOCAL_AUTH_TEST=1` and `SITE_URL` is loopback; requests to a non-loopback host cannot use them.
-After signing in, `GET /api/credits/balance` with the session cookie repairs missing signup grants idempotently and returns the balance.
-Wrangler warns that the undeclared Google and Turnstile secrets are absent, which is expected in local-only mode.
-Wrangler filters `.dev.vars` against `secrets.required`, so the loopback-only test flag and URL are passed with `--var` instead.
-Delete `.dev.vars` after the smoke test; it is ignored by Git.
-No real Google, Turnstile, or email keys are needed for local verification.
-
-## Site boundaries
-
-Each site needs its own D1 database, Worker, Google Cloud project and OAuth web client, and account namespace.
-The Google consent screen and client must be configured for that site's brand and canonical `https://<apex>/api/auth/callback/google` redirect.
-Credentials stay in environment secrets and never in `site/` or D1.
-`site-check` compares the D1, R2, Queue, Worker name, email binding and secret declaration with `site/site.config.ts`.
-Cloudflare Email is the default; changing `site.email.provider` to `resend` requires `RESEND_API_KEY` and the matching required-secret declaration.
-Annual subscription credits have a monthly idempotent grant primitive, but no billing scheduler or real payment integration is included in this slice.
-Failed or timed-out reserved/submitted tasks refund only once; user cancellations after submission do not refund.
-
-The default wrangler D1 id is deliberately a placeholder.
-Do not deploy `wrangler.jsonc` or create remote storage resources as part of the local commands above.
-
-## Authorized test hostname
-
-`wrangler.test.jsonc` is a deliberately reduced, static-only Worker deployment for `https://awesomejev.link/`.
-It uses the same OpenNext build but binds no D1, R2, Queue, email service, or auth secrets.
-The page is labeled TEST ONLY, marked noindex, and the login and balance APIs return 503 instead of pretending to work.
-After `pnpm cf:build`, `pnpm exec wrangler deploy -c wrangler.test.jsonc` deploys only this test Worker to the already-owned Cloudflare zone; do not use the full config for this hostname until real per-site resources and credentials are provided.
-This remote smoke test does not replace the Miniflare ledger, local better-auth, and fake email tests.
+Each site needs its own D1, Worker, Google Cloud project and OAuth web client, and account namespace.
+`wrangler.jsonc` names this site's bindings and the sole custom hostname `awesomejev.link`.
+`SITE_URL` is a Worker environment variable and `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` and `BETTER_AUTH_SECRET` are Worker secrets; better-auth reads them on every request, not from the build.
+Credentials are never committed to `site/` or D1.
+`site-check` compares the Worker, D1, R2, Queue and email bindings with site configuration and secret declarations.
+Cloudflare Email is the default adapter; Resend is selectable through `site.email.provider` and needs `RESEND_API_KEY`.
+Notification functions use fake email in tests; they are not connected to real video or payment events.
+Turnstile verification remains implemented and locally tested, but this reference site's `site/auth.config.ts` disables the sign-in gate until a real client widget and secret are configured.
+Do not flip it on without both pieces, or Google login will be blocked.
+Annual credits have an idempotent monthly grant primitive, but no billing scheduler is connected.
+Failures/timeouts refund reserved credits once; submitted user cancellations do not refund.

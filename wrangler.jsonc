@@ -1,14 +1,15 @@
 {
-  "name": "example-video",
+  "name": "awesomejev-test",
   "main": "worker.ts",
   "compatibility_date": "2025-09-01",
   "compatibility_flags": ["nodejs_compat"],
   "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
-  "d1_databases": [{ "binding": "DB", "database_name": "example-video-db", "database_id": "REPLACE_WITH_SITE_D1_ID", "migrations_dir": "migrations" }],
-  "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "example-video-media" }],
-  "queues": { "producers": [{ "binding": "JOBS", "queue": "example-video-jobs" }], "consumers": [{ "queue": "example-video-jobs" }] },
+  "d1_databases": [{ "binding": "DB", "database_name": "awesomejev-db", "database_id": "333c6f7d-3057-4295-8c22-f905ec800120", "migrations_dir": "migrations" }],
+  "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "awesomejev-media" }],
+  "queues": { "producers": [{ "binding": "JOBS", "queue": "awesomejev-jobs" }], "consumers": [{ "queue": "awesomejev-jobs" }] },
   "send_email": [{ "name": "EMAIL" }],
+  "routes": [{ "pattern": "awesomejev.link", "custom_domain": true }],
   "triggers": { "crons": ["0 0 * * *"] },
-  "secrets": { "required": ["BETTER_AUTH_SECRET", "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "TURNSTILE_SECRET"] },
+  "secrets": { "required": ["BETTER_AUTH_SECRET", "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET"] },
   "vars": { "SITE_URL": "https://awesomejev.link" }
 }
