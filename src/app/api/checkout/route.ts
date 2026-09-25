@@ -24,6 +24,7 @@ export async function POST(request: Request) {
       userId: session.user.id,
       userEmail: session.user.email,
       planId: plan.id,
+      billing: plan.billing,
       description: plan.description,
       amount: plan.amount,
       currency: plan.currency,

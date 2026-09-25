@@ -135,7 +135,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │       ├── desktop-auth.ts           # Scheme validation and token-bearing app URL
 │       ├── email.ts                  # Cloudflare/Resend adapter and fake test provider
 │       ├── notifications.ts          # Typed event notification messages
-│       ├── waffo.ts                   # Waffo order, signature, and callback format
+│       ├── waffo.ts                   # Waffo Pancake checkout and callback format
 │       ├── payments.ts                # Plan checkout and idempotent payment grants
 │       └── mock-services.ts           # Local-only video placeholder
 └── test/                              # Miniflare D1, auth, mail, config, and ledger tests
@@ -191,7 +191,7 @@ The existing homepage, dashboard, and credit history are a preview; `src/lib/moc
 For video, page parameters flow from a generation-tool component to an authenticated API that checks identity, input, options, and credit cost before `src/lib/ledger.ts` reserves the task and credits.
 An upstream adapter submits the work, the queue processing in `worker.ts` observes progress and updates task status, and a status endpoint lets the client follow that progress.
 On success, the service stores the result in the site's `MEDIA` binding and returns an authorized preview or download; on failure, it reconciles task state and the ledger idempotently according to the site's credit policy.
-Site plans in `site/site.config.ts` flow from the pricing page through `POST /api/checkout` to `src/lib/waffo.ts`. That route accepts a signed-in user, then the adapter creates the Waffo order. `POST /api/webhooks/payment` verifies `X-SIGNATURE` before `src/lib/payments.ts` writes a one-time grant or the current subscription month in `src/lib/ledger.ts`. A one-time purchase grants once. Replaying the same payment or the same month does not grant again. Coupons are the only promotion. The product id, merchant id, API key, request signing key, and callback public key are Worker secrets.
+Site plans in `site/site.config.ts` flow from the pricing page through `POST /api/checkout` to `src/lib/waffo.ts`. That route accepts a signed-in user, then the adapter opens a Waffo Pancake checkout for the existing product id with `@waffo/pancake-ts`. `POST /api/webhooks/payment` verifies `X-Waffo-Signature` with that SDK before `src/lib/payments.ts` writes a one-time grant or the current subscription month in `src/lib/ledger.ts`. A one-time purchase grants once. Replaying the same payment or the same month does not grant again. Coupons are the only promotion. The product id, merchant id, request signing key, and callback public key are Worker secrets.
 Vendor-specific request and callback formats stay in adapters, while the page, task, and ledger contracts describe this application's behavior.
 
 ## How to add new logic
@@ -278,9 +278,9 @@ Schema changes gain a new reviewed migration and matching service/query types an
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Google login and optional One Tap credentials. |
 | `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` | GitHub login credentials when selected. |
 | `TURNSTILE_SECRET` | Server-side verification when the sign-in gate is selected. |
-| `WAFFO_API_KEY`, `WAFFO_MERCHANT_ID`, `WAFFO_PRIVATE_KEY` | Waffo request authentication. The private key signs the order body. |
-| `WAFFO_PRODUCT_ID` | Existing goods id sent as `goodsInfo.goodsId`. |
-| `WAFFO_CALLBACK_PUBLIC_KEY` | PEM public key that verifies `X-SIGNATURE` over the raw callback body. |
+| `WAFFO_MERCHANT_ID`, `WAFFO_PRIVATE_KEY` | Waffo Pancake request authentication. The private key signs checkout calls. |
+| `WAFFO_PRODUCT_ID` | Existing Pancake product id sent to authenticated checkout. |
+| `WAFFO_CALLBACK_PUBLIC_KEY` | PEM public key the Pancake SDK uses to verify `X-Waffo-Signature`. |
 | `RESEND_API_KEY` | Resend mail delivery when selected. |
 | `LOCAL_AUTH_TEST` | Explicit loopback-only local authentication test mode. |
 

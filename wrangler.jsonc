@@ -10,6 +10,6 @@
   "send_email": [{ "name": "EMAIL" }],
   "routes": [{ "pattern": "awesomejev.link", "custom_domain": true }],
   "triggers": { "crons": ["0 0 * * *"] },
-  "secrets": { "required": ["BETTER_AUTH_SECRET", "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "WAFFO_API_KEY", "WAFFO_MERCHANT_ID", "WAFFO_PRIVATE_KEY", "WAFFO_PRODUCT_ID", "WAFFO_CALLBACK_PUBLIC_KEY"] },
+  "secrets": { "required": ["BETTER_AUTH_SECRET", "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "WAFFO_MERCHANT_ID", "WAFFO_PRIVATE_KEY", "WAFFO_PRODUCT_ID", "WAFFO_CALLBACK_PUBLIC_KEY"] },
   "vars": { "SITE_URL": "https://awesomejev.link" }
 }
