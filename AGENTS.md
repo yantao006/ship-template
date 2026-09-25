@@ -95,7 +95,8 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │   ├── [locale]/                 # Locale-aware marketing and workspace routes
 │   │   │   ├── page.tsx              # Localized homepage composition
 │   │   │   ├── dashboard/page.tsx    # Account summary route
-│   │   │   └── credits/page.tsx      # Credit balance and grant history route
+│   │   │   ├── credits/page.tsx      # Credit balance and grant history route
+│   │   │   └── reset-password/page.tsx # Password reset form for an emailed token
 │   │   ├── admin/invites/page.tsx    # Session- and allow-list-gated invite administration
 │   │   ├── auth-callback/page.tsx    # Signed-in desktop return page
 │   │   └── api/                      # HTTP boundary for auth and account operations
@@ -109,6 +110,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │   ├── home-content.tsx          # Server-rendered homepage and welcome balance
 │   │   ├── marketing-nav.tsx         # Navigation assembled from locale and auth choices
 │   │   ├── auth-control.tsx          # Client sign-in card and email/social interactions
+│   │   ├── reset-password.tsx        # Client form that submits a new password for a reset token
 │   │   ├── google-one-tap.tsx        # Optional browser-side One Tap client
 │   │   ├── language-control.tsx      # Locale switch preserving the current route
 │   │   ├── workspace-shell.tsx       # Shared dashboard navigation and heading
@@ -132,6 +134,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 └── test/                              # Miniflare D1, auth, mail, config, and ledger tests
     ├── auth-integration.test.ts      # Local better-auth signup and idempotent credits
     ├── auth-options.test.ts          # Provider switches, invites, desktop handoff
+    ├── password-reset.test.ts        # Reset switch, mailed link, and reset page
     ├── config-email-auth.test.ts     # Second-site wiring, mail adapters, Turnstile
     ├── credit-history.test.ts       # Signed-in and bounded account credit reads
     └── ledger.test.ts               # Concurrent spend, refunds, and monthly grants
@@ -166,7 +169,7 @@ On each request, production login accepts the Worker `SITE_URL` only when it equ
 `src/app/api/auth/[...all]/route.ts` wraps signup with invite validation and optional sign-in Turnstile verification before delegating to better-auth.
 `ensureSignupCredits` checks invitation eligibility and grants a signup lot with the user ID as its stable source ID; when email verification is enabled, it waits until the emailed link marks the account verified.
 `src/app/api/invites/redeem/route.ts` validates the session and request origin, redeems the code through an atomic D1 batch, and grants the eligible user credits.
-`src/components/auth-control.tsx` presents only configured methods; `src/components/verify-email.tsx` provides the verification waiting and resend page; desktop handoff uses `src/lib/desktop-auth.ts` to validate a configured app scheme before `/api/auth/desktop-handoff` issues a session-bearing return URL.
+`src/components/auth-control.tsx` presents only configured methods and, when `email.passwordReset` is on, one forgot-password path whose link is sent by `sendResetPassword` through `EmailProvider`; `src/components/verify-email.tsx` provides the verification waiting and resend page; `src/components/reset-password.tsx` accepts the new password; desktop handoff uses `src/lib/desktop-auth.ts` to validate a configured app scheme before `/api/auth/desktop-handoff` issues a session-bearing return URL.
 
 ### Credits, tasks, and provider seams
 
@@ -231,7 +234,7 @@ Schema changes gain a new reviewed migration and matching service/query types an
 | `email.provider`, `email.from` | Selects the email adapter and sender address. |
 | `signupCredits` | Amount granted once to an eligible new account. |
 | `site/auth.config.ts`: `backend`, `basePath` | Current better-auth selection and `/api/auth` routing contract. |
-| `email.enabled`, `email.requireVerification`, `google.enabled`, `github.enabled` | Independently enable sign-in options; email verification delays the session and signup credits until the emailed link is opened, while OAuth options require matching Worker secrets. |
+| `email.enabled`, `email.requireVerification`, `email.passwordReset`, `google.enabled`, `github.enabled` | Independently enable sign-in options; email verification delays the session and signup credits until the emailed link is opened, password reset shows one forgot-password path and sends through `EmailProvider` only when that switch is on, and OAuth options require matching Worker secrets. |
 | `google.oneTapEnabled` | Adds the One Tap plugin and client prompt when Google login is enabled. |
 | `invite.required`, `invite.adminEmails` | Gate account credit access and authorize invitation administration; enabling the gate uses migration `0002_invite_codes.sql`. |
 | `desktop.schemes` | Allow-listed app URL schemes for signed-in desktop handoff. |

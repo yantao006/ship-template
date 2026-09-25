@@ -7,13 +7,23 @@ import { grant } from './ledger';
 import { hasInvite } from './invites';
 import { createEmailProvider, type EmailProvider } from './email';
 import type { Env } from './env';
-import { site, auth } from './config';
+import { site, auth, messages, localeFor } from './config';
 
 export interface AuthSettings {
   basePath: string;
-  email: { enabled: boolean; requireVerification?: boolean };
+  email: { enabled: boolean; requireVerification?: boolean; passwordReset?: boolean };
   google: { enabled: boolean; oneTapEnabled?: boolean };
   github: { enabled: boolean };
+}
+
+function resetMailCopy(url: string) {
+  try {
+    const callback = new URL(url).searchParams.get('callbackURL') ?? '';
+    const path = callback.startsWith('http') ? new URL(callback).pathname : callback;
+    return messages[localeFor(path.split('/').filter(Boolean)[0] ?? '')].nav;
+  } catch {
+    return messages[localeFor('')].nav;
+  }
 }
 
 export function createAuth(env: Env, requestHostname?: string, settings: AuthSettings = auth, emailProvider?: EmailProvider) {
@@ -24,7 +34,7 @@ export function createAuth(env: Env, requestHostname?: string, settings: AuthSet
   const baseURL = env.SITE_URL;
   if (!baseURL || (!local && baseURL !== site.url)) throw new Error('SITE_URL must match this site');
   const db = drizzle(env.DB, { schema: authSchema });
-  const verificationMailer = settings.email.enabled && settings.email.requireVerification ? (emailProvider ?? createEmailProvider(site, env)) : undefined;
+  const mailer = settings.email.enabled && (settings.email.requireVerification || settings.email.passwordReset) ? (emailProvider ?? createEmailProvider(site, env)) : undefined;
   return betterAuth({
     database: drizzleAdapter(db, { provider: 'sqlite', schema: authSchema }),
     secret: env.BETTER_AUTH_SECRET,
@@ -39,6 +49,19 @@ export function createAuth(env: Env, requestHostname?: string, settings: AuthSet
       enabled: settings.email.enabled,
       requireEmailVerification: !!settings.email.requireVerification,
       autoSignIn: !settings.email.requireVerification,
+      ...(settings.email.enabled && settings.email.passwordReset ? {
+        resetPasswordTokenExpiresIn: 60 * 60,
+        sendResetPassword: async ({ user, url }: { user: { email: string }; url: string }) => {
+          const copy = resetMailCopy(url);
+          await mailer!.sendEmail({
+            from: site.email.from,
+            to: user.email,
+            subject: copy.resetMailSubject,
+            text: `${copy.resetMailLead}\n\n${url}\n\n${copy.resetMailExpiry}`,
+            html: `<p>${copy.resetMailLead}</p><p><a href="${url.replaceAll('&', '&amp;').replaceAll('"', '&quot;')}">${copy.resetMailAction}</a></p><p>${copy.resetMailExpiry}</p>`,
+          });
+        },
+      } : {}),
     },
     ...(settings.email.enabled && settings.email.requireVerification ? {
       emailVerification: {
@@ -48,7 +71,7 @@ export function createAuth(env: Env, requestHostname?: string, settings: AuthSet
         expiresIn: 60 * 60 * 24,
         sendVerificationEmail: async ({ user, url }: { user: { email: string }; url: string }) => {
           const copy = `Verify your email for ${site.brand}`;
-          await verificationMailer!.sendEmail({
+          await mailer!.sendEmail({
             from: site.email.from,
             to: user.email,
             subject: copy,
