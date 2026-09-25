@@ -164,9 +164,9 @@ A new capability can be a new `src/lib/` service called by an API endpoint, a se
 `src/lib/auth.ts` constructs better-auth using request-time `SITE_URL`, the Worker D1, and the enabled email/Google/GitHub methods from `site/auth.config.ts`.
 On each request, production login accepts the Worker `SITE_URL` only when it equals `site.url` from `site/site.config.ts`; a mismatch refuses login rather than creating a session on another origin.
 `src/app/api/auth/[...all]/route.ts` wraps signup with invite validation and optional sign-in Turnstile verification before delegating to better-auth.
-On account creation, `ensureSignupCredits` checks invitation eligibility and grants a signup lot with the user ID as its stable source ID.
+`ensureSignupCredits` checks invitation eligibility and grants a signup lot with the user ID as its stable source ID; when email verification is enabled, it waits until the emailed link marks the account verified.
 `src/app/api/invites/redeem/route.ts` validates the session and request origin, redeems the code through an atomic D1 batch, and grants the eligible user credits.
-`src/components/auth-control.tsx` presents only configured methods; desktop handoff uses `src/lib/desktop-auth.ts` to validate a configured app scheme before `/api/auth/desktop-handoff` issues a session-bearing return URL.
+`src/components/auth-control.tsx` presents only configured methods; `src/components/verify-email.tsx` provides the verification waiting and resend page; desktop handoff uses `src/lib/desktop-auth.ts` to validate a configured app scheme before `/api/auth/desktop-handoff` issues a session-bearing return URL.
 
 ### Credits, tasks, and provider seams
 
@@ -231,7 +231,7 @@ Schema changes gain a new reviewed migration and matching service/query types an
 | `email.provider`, `email.from` | Selects the email adapter and sender address. |
 | `signupCredits` | Amount granted once to an eligible new account. |
 | `site/auth.config.ts`: `backend`, `basePath` | Current better-auth selection and `/api/auth` routing contract. |
-| `email.enabled`, `google.enabled`, `github.enabled` | Independently enable sign-in options on UI and server; OAuth options require matching Worker secrets. |
+| `email.enabled`, `email.requireVerification`, `google.enabled`, `github.enabled` | Independently enable sign-in options; email verification delays the session and signup credits until the emailed link is opened, while OAuth options require matching Worker secrets. |
 | `google.oneTapEnabled` | Adds the One Tap plugin and client prompt when Google login is enabled. |
 | `invite.required`, `invite.adminEmails` | Gate account credit access and authorize invitation administration; enabling the gate uses migration `0002_invite_codes.sql`. |
 | `desktop.schemes` | Allow-listed app URL schemes for signed-in desktop handoff. |

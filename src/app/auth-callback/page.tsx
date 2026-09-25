@@ -17,6 +17,6 @@ export default async function AuthCallback({ searchParams }: { searchParams: Pro
   const returnURL = `/auth-callback?redirect=${encodeURIComponent(target)}&locale=${locale}`;
   return <main className="handoff-page">
     <h1>{session ? messages[locale].nav.desktopWaiting : messages[locale].nav.desktopSignIn}</h1>
-    {session ? <DesktopHandoff target={target} copy={messages[locale].nav} /> : <AuthControl copy={messages[locale].nav} methods={{ email: auth.email, google: auth.google, github: auth.github }} callbackURL={returnURL} inviteRequired={auth.invite.required} />}
+    {session ? <DesktopHandoff target={target} copy={messages[locale].nav} /> : <AuthControl copy={messages[locale].nav} locale={locale} methods={{ email: auth.email, google: auth.google, github: auth.github }} callbackURL={returnURL} inviteRequired={auth.invite.required} />}
   </main>;
 }
