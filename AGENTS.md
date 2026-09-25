@@ -1,152 +1,268 @@
 # Project architecture guide
 
-This is a configurable preview of an AI video site, with site-local authentication and credit accounting plus implemented invitation and mail-adapter primitives.
-Video generation and checkout are integration points represented by `src/lib/mock-services.ts`, rather than live services.
-`README.md` is the operational reference for local and live verification.
+This repository is a configurable preview of an AI video site with site-local accounts, invitation primitives, a credit ledger, and mail adapters.
+`src/lib/mock-services.ts` marks video generation and checkout as integration points rather than live services.
+`README.md` records the reference site's current state and verification procedure.
 
 ## Overall tech stack
 
-- **Application:** Next.js 15 App Router, React 19, TypeScript, and CSS variables in `src/app/globals.css`.
-- **Runtime:** OpenNext packages the app for a Cloudflare Worker, with HTTP, cron, and queue entry points in `worker.ts`.
-- **Data:** Site-bound Cloudflare D1 with versioned SQL in `migrations/`; R2 media and a Cloudflare Queue are declared bindings for future processing.
-- **Identity:** better-auth with its Drizzle D1 adapter; email/password and Google are enabled in the reference configuration.
-- **Tooling:** Node 22, pnpm 10, Wrangler, Miniflare-backed tests, and TypeScript type checking.
+- **Application:** Next.js 15 App Router, React 19, strict TypeScript, server components for account views, client components for interaction, and CSS variables for visual tokens.
+- **Deployment:** OpenNext compiles the Next.js application into one Cloudflare Worker whose HTTP, scheduled, and queue events enter through `worker.ts`.
+- **Persistence:** Cloudflare D1 stores better-auth identities, invitation records, video task state, and credit lots and entries; SQL migrations in `migrations/` define the schema.
+- **Identity:** better-auth uses the Drizzle D1 adapter for its own tables, while invitation and ledger operations use native D1 statements where atomic batches matter.
+- **Resources:** `wrangler.jsonc` declares this site's D1, R2 media bucket, Queue, email binding, hostname, cron, environment variable, and required secret names.
+- **Tooling:** Node 22, pnpm 10, Wrangler, Miniflare-backed Node tests, and TypeScript type checking; `package.json` owns the runnable scripts.
 
 ## Tech stack of each module
 
-| Area | Current implementation | Responsibility |
+| Area | Files and technology | Contract |
 | --- | --- | --- |
-| Site choices | `site/*.config.ts`, `site/messages/`, `src/lib/config.ts` | Site identity, feature switches, deployment names, theme, and localized copy. |
-| Routing and API | `src/app/` | Next.js pages, metadata, authentication callbacks, and HTTP endpoints. |
-| Presentation | `src/components/`, `src/app/globals.css` | Marketing and workspace layouts, auth controls, invitation flow, and accessible client interaction. |
-| Identity | `src/lib/auth.ts`, `src/lib/auth-schema.ts`, `src/lib/turnstile.ts`, `src/lib/desktop-auth.ts` | Session creation, D1-backed accounts, sign-in verification, and desktop handoff. |
-| Credits and access | `src/lib/ledger.ts`, `src/lib/credit-history.ts`, `src/lib/invites.ts` | Atomic credit movements, user-scoped history, and invitation redemption. |
-| Notifications | `src/lib/email.ts`, `src/lib/notifications.ts` | Cloudflare Email or Resend delivery behind one interface and application email composition. |
-| Video and payments | `src/lib/mock-services.ts`, `src/lib/ledger.ts` | Preview stand-ins and reusable task/credit primitives awaiting live adapters and API flows. |
-| Worker resources | `worker.ts`, `src/lib/env.ts`, `wrangler.jsonc` | OpenNext dispatch, event handlers, binding types, and deployment wiring. |
+| Site configuration | `site/*.config.ts`, `site/messages/`, `src/lib/config.ts` | Compiled site choices and typed localized copy shared by routes and components. |
+| Web and HTTP | `src/app/`, Next.js App Router | Pages, metadata, better-auth handler, and request/response endpoints. |
+| UI | `src/components/`, React server/client components, `src/app/globals.css` | Homepage and workspace composition, sign-in, invitation, language, and desktop interaction. |
+| Authentication | `src/lib/auth.ts`, `src/lib/auth-schema.ts`, better-auth, Drizzle on D1 | Sessions and accounts from this site's DB; enabled methods from `site/auth.config.ts`. |
+| Access control | `src/lib/invites.ts`, `src/lib/turnstile.ts`, `src/lib/desktop-auth.ts`, D1 and Turnstile HTTP API | Invitation eligibility, optional sign-in verification, and allow-listed app handoff. |
+| Credits | `src/lib/ledger.ts`, `src/lib/credit-history.ts`, native D1 statements and batches | Atomic grants, reservations, allocation, refund, balance, and bounded account history. |
+| Email | `src/lib/email.ts`, `src/lib/notifications.ts`, Cloudflare Email or Resend | One `EmailProvider` interface for message delivery and application notification copy. |
+| Video and payments | `src/lib/mock-services.ts`, `src/lib/ledger.ts`, `video_task` | Preview stand-ins and durable task/credit primitives for future provider adapters. |
+| Worker infrastructure | `worker.ts`, `src/lib/env.ts`, `wrangler.jsonc`, OpenNext | HTTP dispatch and scheduled/queue entry points with typed request-time bindings. |
 
 ## Build, compile, and deploy commands
 
-- `pnpm install` installs dependencies from `pnpm-lock.yaml`.
-- `pnpm dev` starts the Next.js development server.
-- `pnpm build` compiles the Next.js app; `pnpm typecheck` checks TypeScript without emitting files.
-- `pnpm cf:build` builds the OpenNext Worker and generates `.open-next/worker.js` and assets.
-- `pnpm cf:preview` previews the Cloudflare build; `pnpm exec wrangler deploy --dry-run --outdir /tmp/ship-template-dryrun` checks its deployable bundle.
-- `pnpm exec wrangler deploy` publishes the configured Worker after a Cloudflare build and the site's bindings, migrations, and secrets are ready.
-- `pnpm exec wrangler d1 migrations apply awesomejev-db --local` applies the reference site's migrations to local D1; target the appropriate site database for other environments.
-- `pnpm test`, `pnpm site-check`, and `pnpm site-check fixtures/second-site` cover logic and configuration; `pnpm site-check --strict` additionally checks required local environment names.
+- `pnpm install` installs the versions pinned in `pnpm-lock.yaml`.
+- `pnpm dev` runs the Next.js development server; `pnpm build` compiles Next.js without producing the Cloudflare Worker bundle.
+- `pnpm typecheck` runs `tsc --noEmit`, and `pnpm test` runs the Node test suite with Miniflare D1 for integration coverage.
+- `pnpm cf:build` runs the OpenNext Cloudflare build and generates `.open-next/worker.js` and `.open-next/assets`.
+- `pnpm cf:preview` previews the built Worker, and `pnpm exec wrangler deploy --dry-run --outdir /tmp/ship-template-dryrun` checks a deployable bundle without publishing it.
+- `pnpm exec wrangler d1 migrations apply awesomejev-db --local` initializes the reference site's local D1; choose the target site's database and environment when applying migrations elsewhere.
+- `pnpm site-check` compares the reference `site/` choices to `wrangler.jsonc`; `pnpm site-check fixtures/second-site` exercises a different site's config and bindings.
+- `pnpm site-check --strict` additionally checks the caller's `SITE_URL` and required credentials by name, with deployed Worker secrets supplied separately from the local shell.
+- After building and provisioning a site's bindings, migrations, and secrets, `pnpm exec wrangler deploy` publishes the configured Worker.
+- `README.md` describes local-only auth tests and live Google-login verification; command success alone does not prove a production OAuth callback works.
 
 ## Architecture
 
-`site/` supplies per-site choices through `src/lib/config.ts`, while `wrangler.jsonc` supplies matching Cloudflare resources and `src/lib/env.ts` types their request-time bindings.
-`src/app/` composes server-rendered pages and API entry points; `src/components/` handles rendering and client interaction; `src/lib/` holds shared business and integration logic.
-A typical authenticated read flows from a page or API handler through `createAuth(workerEnv())` to the site D1, then returns user-scoped data to the view.
-An invite-enabled signup validates a code, redeems it in D1, and triggers the idempotent welcome-credit grant; the credit view reads lots through `src/lib/credit-history.ts` and balances through `src/lib/ledger.ts`.
-OpenNext builds the Next.js HTTP handler, and `worker.ts` connects it to future cron and queue work alongside `fetch`.
-The reference site currently renders a homepage, dashboard, and credit history; its deployed hostname and resource names are examples in `site/site.config.ts` and `wrangler.jsonc`.
+The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangler/`, `node_modules/`, `next-env.d.ts`, and TypeScript build info are generated or local artifacts.
+
+```text
+.
+├── AGENTS.md                         # Architecture map and change guidance
+├── CLAUDE.md                         # Import pointer to AGENTS.md
+├── README.md                         # Local setup, verification, and live reference state
+├── .gitignore                        # Generated builds, local secrets, and dependencies
+├── package.json                      # Scripts and dependency declarations
+├── pnpm-lock.yaml                    # Pinned dependency graph
+├── next.config.ts                    # Next.js file-tracing root
+├── open-next.config.ts               # OpenNext Cloudflare build configuration
+├── tsconfig.json                     # Strict TS settings and @/ / @site/ aliases
+├── worker.ts                         # OpenNext fetch plus scheduled and queue event entry points
+├── wrangler.jsonc                    # Site Worker, resource bindings, route, cron, vars, secret names
+├── migrations/                       # Versioned SQL applied to this site's D1
+│   ├── 0001_initial.sql             # Auth, credit ledger, and video task tables
+│   └── 0002_invite_codes.sql        # Invitation inventory and redemption tables
+├── scripts/
+│   └── site-check.ts                 # Cross-checks site choices, bindings, auth switches, secrets
+├── fixtures/second-site/             # Configuration-only reuse example
+│   ├── site/site.config.ts           # Alternate identity, resources, and mail adapter
+│   ├── site/auth.config.ts           # Alternate auth and verification switches
+│   └── wrangler.jsonc                # Alternate Worker binding declarations
+├── site/                              # Per-site choices compiled into the application
+│   ├── site.config.ts                # Brand, URL, locales, deployment names, email, signup credits
+│   ├── auth.config.ts                # Login methods, invitations, desktop schemes, Turnstile
+│   ├── database.config.ts            # D1 binding and migration directory
+│   ├── theme.config.ts               # Colors and font used by layout CSS tokens
+│   └── messages/                     # One source file per locale with matching message keys
+│       ├── en.ts                     # English navigation, hero, dashboard, credits copy
+│       ├── zh.ts                     # Chinese copy with the same shape
+│       └── index.ts                  # Locale-to-message map
+├── src/                               # Application routes, presentation, and services
+│   ├── app/                          # Next.js App Router pages and API handlers
+│   │   ├── layout.tsx                # Metadata, preview indexing, and theme token injection
+│   │   ├── globals.css               # Shared responsive layout and token-consuming styles
+│   │   ├── page.tsx                  # Default-locale homepage
+│   │   ├── robots.ts                 # Preview indexing policy and sitemap reference
+│   │   ├── sitemap.ts                # Locale-aware homepage URLs and alternates
+│   │   ├── [locale]/                 # Locale-aware marketing and workspace routes
+│   │   │   ├── page.tsx              # Localized homepage composition
+│   │   │   ├── dashboard/page.tsx    # Account summary route
+│   │   │   └── credits/page.tsx      # Credit balance and grant history route
+│   │   ├── admin/invites/page.tsx    # Session- and allow-list-gated invite administration
+│   │   ├── auth-callback/page.tsx    # Signed-in desktop return page
+│   │   └── api/                      # HTTP boundary for auth and account operations
+│   │       ├── auth/[...all]/route.ts         # Better-auth handler with invite/Turnstile checks
+│   │       ├── auth/desktop-handoff/route.ts # Same-origin session-token handoff
+│   │       ├── credits/balance/route.ts      # Session-scoped balance endpoint
+│   │       ├── invites/route.ts              # Invite admin list, create, revoke
+│   │       ├── invites/validate/route.ts     # Code validity check
+│   │       └── invites/redeem/route.ts       # Session-scoped redemption and signup grant
+│   ├── components/                   # UI composition and client controls
+│   │   ├── home-content.tsx          # Server-rendered homepage and welcome balance
+│   │   ├── marketing-nav.tsx         # Navigation assembled from locale and auth choices
+│   │   ├── auth-control.tsx          # Client sign-in card and email/social interactions
+│   │   ├── google-one-tap.tsx        # Optional browser-side One Tap client
+│   │   ├── language-control.tsx      # Locale switch preserving the current route
+│   │   ├── workspace-shell.tsx       # Shared dashboard navigation and heading
+│   │   ├── workspace-content.tsx     # Session-scoped dashboard/credit data and rendering
+│   │   ├── invite-gate.tsx           # Client code redemption form
+│   │   ├── invite-admin.tsx          # Client code inventory and actions
+│   │   └── desktop-handoff.tsx       # Client app-return request and redirect
+│   └── lib/                          # Business logic, config exports, and integration seams
+│       ├── config.ts                 # Exports the site, auth, theme, messages, database choices
+│       ├── env.ts                    # Worker binding and secret types plus context accessor
+│       ├── auth-schema.ts            # Drizzle mapping for better-auth D1 tables
+│       ├── auth.ts                   # Better-auth construction, origin checks, signup grant
+│       ├── invites.ts                # Invite eligibility, validation, redemption, admin match
+│       ├── ledger.ts                 # Atomic credit lots, entries, task transitions, refunds
+│       ├── credit-history.ts         # Bounded user credit-lot query
+│       ├── turnstile.ts              # Token verification and local test path
+│       ├── desktop-auth.ts           # Scheme validation and token-bearing app URL
+│       ├── email.ts                  # Cloudflare/Resend adapter and fake test provider
+│       ├── notifications.ts          # Typed event notification messages
+│       └── mock-services.ts          # Local-only video/payment placeholders
+└── test/                              # Miniflare D1, auth, mail, config, and ledger tests
+    ├── auth-integration.test.ts      # Local better-auth signup and idempotent credits
+    ├── auth-options.test.ts          # Provider switches, invites, desktop handoff
+    ├── config-email-auth.test.ts     # Second-site wiring, mail adapters, Turnstile
+    ├── credit-history.test.ts       # Signed-in and bounded account credit reads
+    └── ledger.test.ts               # Concurrent spend, refunds, and monthly grants
+```
+
+The request path is `page or client control -> src/app page/API -> src/lib service -> this site's D1 or provider binding`.
+Next.js server components such as `src/components/workspace-content.tsx` may read server services directly, while client controls such as `src/components/auth-control.tsx` use better-auth client methods or HTTP endpoints.
+`worker.ts` currently delegates HTTP to OpenNext and leaves real scheduled billing and media queue processing for future integrations.
 
 ## Module system
 
-The repository uses responsibility-based files under `src/lib/` rather than a formal plugin registry or `src/modules/` directory.
-`src/app/` is the composition layer: routes validate requests and sessions, invoke the relevant library functions, and return responses or server-rendered content.
-Client components such as `src/components/auth-control.tsx` call HTTP or better-auth client APIs, while server components such as `src/components/workspace-content.tsx` can use server-side services directly.
-Service seams include `EmailProvider` in `src/lib/email.ts` and the future video and payment adapters; provider-specific formats belong behind these seams while UI and ledger contracts remain stable.
-`src/lib/config.ts` centralizes imports of site choices so new sections and services can share the same per-site values.
+The current code uses responsibility-based files in `src/lib/`, not a formal plugin loader or `src/modules/` directory.
+`src/lib/config.ts` exports site choices; library functions take `Env`, a D1 handle, or an adapter as input, so business operations can be reused by HTTP handlers and Worker events.
+App Router endpoints own request parsing, session and origin checks, HTTP status, and response serialization; library functions own reusable decisions and persistence.
+`src/lib/auth.ts` composes better-auth, `src/lib/invites.ts` and `src/lib/ledger.ts` around signup eligibility, while `src/lib/email.ts` demonstrates a provider interface selected from site configuration.
+Presentation composition lives in `src/components/`, and external vendor response shapes can be translated inside future video or checkout adapters before reaching those components.
+A new capability can be a new `src/lib/` service called by an API endpoint, a server-rendered page, or a Worker event; the existing file layout is an example of responsibilities, not a naming restriction.
 
 ## Key design patterns
 
-- **Site-scoped configuration:** Feature switches drive visible UI and matching server checks; `scripts/site-check.ts` compares selected choices with deployed bindings and required secret names.
-- **Localization:** `site/messages/en.ts` and `site/messages/zh.ts` expose matching keys through `site/messages/index.ts`, and the locale routes under `src/app/[locale]/` choose the appropriate copy.
-- **Visual tokens:** `site/theme.config.ts` feeds CSS variables through `src/app/layout.tsx`; components consume those tokens in `src/app/globals.css`.
-- **Authentication boundary:** `src/lib/auth.ts` creates better-auth against the Worker D1 and configured site URL; `src/app/api/auth/[...all]/route.ts` adds invitation and Turnstile checks around auth requests.
-- **Atomic credit accounting:** `src/lib/ledger.ts` uses native D1 statements and batches for lot allocation, idempotent grants, reservations, and refunds.
-- **Asynchronous task extension:** `video_task` and credit reservations support a submit/status/result flow, with a queue handler and media binding available for eventual processing.
-- **Payment extension:** A checkout endpoint can translate a plan into a provider checkout, and a verified webhook can translate provider events into subscription periods and idempotent ledger grants.
+### Configuration and localization
+
+`site/site.config.ts` supplies brand, locale, deploy, email, and signup-credit choices at build time, while `wrangler.jsonc` declares matching live resources.
+`scripts/site-check.ts` compares the Worker name, D1/R2/Queue names, auth shape, email binding, callback origin, and required secret names before publication.
+`site/messages/en.ts` and `site/messages/zh.ts` share keys under `nav`, `hero`, `dashboard`, and `credits`; `src/app/[locale]/` and `src/components/language-control.tsx` select copy without duplicating business logic.
+`site/theme.config.ts` becomes CSS variables in `src/app/layout.tsx`, and `src/app/globals.css` applies them across marketing and workspace surfaces.
+
+### Authentication and eligibility
+
+`src/lib/auth.ts` constructs better-auth using request-time `SITE_URL`, the Worker D1, and the enabled email/Google/GitHub methods from `site/auth.config.ts`.
+`src/app/api/auth/[...all]/route.ts` wraps signup with invite validation and optional sign-in Turnstile verification before delegating to better-auth.
+On account creation, `ensureSignupCredits` checks invitation eligibility and grants a signup lot with the user ID as its stable source ID.
+`src/app/api/invites/redeem/route.ts` validates the session and request origin, redeems the code through an atomic D1 batch, and grants the eligible user credits.
+`src/components/auth-control.tsx` presents only configured methods; desktop handoff uses `src/lib/desktop-auth.ts` to validate a configured app scheme before `/api/auth/desktop-handoff` issues a session-bearing return URL.
+
+### Credits, tasks, and provider seams
+
+`src/lib/ledger.ts` writes `credit_lot`, `credit_entry`, `credit_alloc`, and `video_task` through native prepared statements and D1 batches, preserving atomic reservations under concurrent requests.
+Grant source IDs, entry idempotency keys, and task state transitions make retries observable; `grantSubscriptionMonth` supplies a monthly grant primitive without a connected billing scheduler.
+A future generation flow can validate identity, prompt, options, and cost at an API boundary, reserve a task, submit through a provider adapter, expose task status, then store media through `MEDIA` and reconcile success or failure.
+A future payment flow can map site plans to checkout, verify provider callbacks, and pass stable event or subscription-period IDs into the ledger; its billing policy belongs in the integration and site configuration, not in a fixed provider name here.
+`src/lib/email.ts` chooses Cloudflare Email or Resend behind `EmailProvider`, and `src/lib/notifications.ts` composes messages independently of delivery.
 
 ## How to add new logic
 
-1. Start with the per-site choices in `site/` when a feature varies by site, and connect new switches to both presentation and server behavior.
-2. Add persistent state through a versioned SQL file in `migrations/`, then reflect the new shape in service types and queries under `src/lib/`.
-3. Place external provider calls behind a library adapter and connect HTTP entry points under `src/app/api/` or background processing under `worker.ts`.
-4. Expose the feature through `src/components/` and a page under `src/app/`, with matching keys in each `site/messages/` language and theme tokens where needed.
-5. Expand `scripts/site-check.ts` for new site-to-Worker contracts and `test/` for identity, concurrency, failure, and idempotency cases.
-6. Consult `README.md` for verification and run `pnpm test`, `pnpm typecheck`, `pnpm cf:build`, and `pnpm site-check` before handoff.
+1. Identify whether the change is site-specific (`site/`), presentation (`src/components/`), request handling (`src/app/`), business logic (`src/lib/`), persisted data (`migrations/`), or event processing (`worker.ts`).
+2. Add or extend site choices and localized keys when the behavior varies by site, then connect each switch to both visible controls and the server path that authorizes it.
+3. Add a versioned SQL migration for new state and reflect it in any relevant Drizzle auth mapping, native D1 query type, service operation, and account-scoped read.
+4. Implement provider translation behind a service adapter so a new upstream changes input and output mapping instead of pushing vendor formats into UI components or ledger calls.
+5. Connect an HTTP endpoint in `src/app/api/` for authenticated requests, or a scheduled/queue branch in `worker.ts` for background work; preserve stable identifiers across asynchronous retries.
+6. Compose the UI from `src/components/` and a page in `src/app/`, with copy from each `site/messages/` language and colors from the theme variables.
+7. Extend `scripts/site-check.ts` for new site-to-Worker contracts and `test/` for user scope, concurrency, failure, and idempotency; run the checks in `README.md` before handoff.
 
 ## Database schema
 
-`migrations/0001_initial.sql` creates `user`, `session`, `account`, and `verification` for authentication; `src/lib/auth-schema.ts` maps those tables for better-auth.
-The same migration creates `credit_lot` for balance and expiry, `credit_entry` for the auditable change log, `credit_alloc` for spend-to-lot allocation, and `video_task` for generation cost and task status.
-Unique source, source ID, and idempotency keys make repeated grants and refunds observable without multiplying credit.
-`migrations/0002_invite_codes.sql` adds `invite_code` with capacity and expiration plus `invite_redemption` tied to a user.
-`src/lib/invites.ts` owns invitation checks and redemption, while `src/lib/ledger.ts` owns credit writes and `src/lib/credit-history.ts` exposes bounded account history.
-Schema evolution travels through a new migration, corresponding TypeScript mappings or query types, and focused tests for the affected data flow.
+`migrations/0001_initial.sql` defines the auth and ledger foundation, while `migrations/0002_invite_codes.sql` adds optional invitation state.
+
+| Table | Core columns and relationships | Owner and use |
+| --- | --- | --- |
+| `user` | Unique `email`, identity and profile fields | better-auth account identity via `src/lib/auth-schema.ts`. |
+| `session` | Unique token, expiry, `user_id` cascading to `user` | better-auth session lookup. |
+| `account` | Provider/account IDs, tokens or password, `user_id` | Email and OAuth credentials. |
+| `verification` | Identifier, verification value, expiry | better-auth verification state. |
+| `credit_lot` | `user_id`, unique `(source, source_id)`, granted/remaining, expiry | Balance, credit provenance, and expiration. |
+| `credit_entry` | `user_id`, kind, amount, requested/ref ID, unique `idem_key` | Auditable grant, consume, refund, and adjustment events. |
+| `credit_alloc` | `(entry_id, lot_id)` primary key and allocated amount | Tracks which lots fund a spend or receive a refund. |
+| `video_task` | `user_id`, cost, status, unique consume entry | Durable reservation and processing state. |
+| `invite_code` | Code, use limit/count, expiry, soft-delete timestamp | Invitation capacity and administration. |
+| `invite_redemption` | One `user_id`, referenced code, creation time | Eligibility record for signup credits and access. |
+
+`src/lib/auth.ts` uses Drizzle's D1 adapter for the four auth tables, while `src/lib/ledger.ts` and `src/lib/invites.ts` use prepared native D1 statements and batches for write-side invariants.
+`src/lib/credit-history.ts` limits history reads to 100 lots for the signed-in user, and `src/app/api/credits/balance/route.ts` validates the session and invite gate before reading a balance.
+Schema changes gain a new reviewed migration and matching service/query types and tests; a site applies those migrations to its own D1 before depending on the new shape.
 
 ## Configuration items
 
-### Per-site choices
+### Site configuration compiled into the app
 
-| Location | Item | Effect |
-| --- | --- | --- |
-| `site/site.config.ts` | `brand`, `previewOnly` | Brand metadata and preview indexing behavior. |
-| `site/site.config.ts` | `apex`, `url` | Canonical host, auth callback origin, metadata, and site-check comparison. |
-| `site/site.config.ts` | `locales`, `defaultLocale` | Available language routes, selector options, and default content. |
-| `site/site.config.ts` | `deploy.worker`, `deploy.d1`, `deploy.r2`, `deploy.queue` | Expected per-site resource names checked against Wrangler. |
-| `site/site.config.ts` | `email.provider`, `email.from` | Delivery adapter selection and notification sender address. |
-| `site/site.config.ts` | `signupCredits` | Credit grant for a newly eligible account. |
-| `site/auth.config.ts` | `backend`, `basePath` | Current better-auth backend and `/api/auth` route contract. |
-| `site/auth.config.ts` | `email.enabled`, `google.enabled`, `github.enabled` | Independent sign-in choices rendered by the UI and configured on the server. |
-| `site/auth.config.ts` | `google.oneTapEnabled` | Google One Tap UI and auth plugin when Google login is active. |
-| `site/auth.config.ts` | `invite.required`, `invite.adminEmails` | Invitation gate and the administrators authorized to manage codes. |
-| `site/auth.config.ts` | `desktop.schemes` | App schemes eligible for signed-in desktop handoff. |
-| `site/auth.config.ts` | `turnstile.onSignIn` | Server-side sign-in token verification when the client supplies tokens. |
-| `site/database.config.ts` | `binding`, `migrationsDir` | D1 binding name and SQL migration location for this site. |
-| `site/theme.config.ts` | `background`, `surface`, `foreground`, `muted`, `accent`, `border`, `font` | Page, card, text, accent, line, and font tokens passed to global CSS. |
-| `site/messages/en.ts`, `site/messages/zh.ts` | `nav`, `hero`, `dashboard`, `credits` | Localized labels for navigation, homepage, workspace, and credit history. |
-
-### Worker and runtime choices
-
-`wrangler.jsonc` declares the current reference site's deployment wiring; its individual fields serve these roles:
-
-| Wrangler item | Effect |
+| Location and item | Current role |
 | --- | --- |
-| `name`, `main` | Worker identity and `worker.ts` entry point. |
+| `site/site.config.ts`: `brand` | Site title and notification brand. |
+| `previewOnly` | Controls robots metadata and `robots.txt` indexing behavior. |
+| `apex`, `url` | Canonical host and absolute base URL for authentication, callbacks, links, metadata, and site-check. |
+| `locales`, `defaultLocale` | Available locale routes and selector values, plus default homepage and document language. |
+| `deploy.worker`, `deploy.d1`, `deploy.r2`, `deploy.queue` | Expected per-site Worker, D1, R2, and Queue names compared with Wrangler. |
+| `email.provider`, `email.from` | Selects the email adapter and sender address. |
+| `signupCredits` | Amount granted once to an eligible new account. |
+| `site/auth.config.ts`: `backend`, `basePath` | Current better-auth selection and `/api/auth` routing contract. |
+| `email.enabled`, `google.enabled`, `github.enabled` | Independently enable sign-in options on UI and server; OAuth options require matching Worker secrets. |
+| `google.oneTapEnabled` | Adds the One Tap plugin and client prompt when Google login is enabled. |
+| `invite.required`, `invite.adminEmails` | Gate account credit access and authorize invitation administration; enabling the gate uses migration `0002_invite_codes.sql`. |
+| `desktop.schemes` | Allow-listed app URL schemes for signed-in desktop handoff. |
+| `turnstile.onSignIn` | Applies Turnstile verification to sign-in requests supplied with a client token. |
+| `site/database.config.ts`: `binding`, `migrationsDir` | Site D1 binding name and migration directory. |
+| `site/theme.config.ts`: `background`, `surface`, `foreground`, `muted`, `accent`, `border`, `font` | CSS values used for page, surface, text, accent, line, and typography tokens. |
+| `site/messages/en.ts`, `zh.ts`: `nav`, `hero`, `dashboard`, `credits` | Same-shape localized strings consumed by navigation and content views. |
+
+### Worker, build, and request-time configuration
+
+| Location and item | Role |
+| --- | --- |
+| `wrangler.jsonc`: `name`, `main` | Worker name and `worker.ts` entry point. |
 | `compatibility_date`, `compatibility_flags` | Cloudflare runtime behavior and Node compatibility. |
-| `assets.directory`, `assets.binding` | OpenNext static asset output and its `ASSETS` binding. |
-| `d1_databases[].binding`, `database_name`, `database_id`, `migrations_dir` | D1 binding, site database identity, and migration path. |
-| `r2_buckets[].binding`, `bucket_name` | Site media binding and bucket identity. |
-| `queues.producers[]`, `queues.consumers[]` | `JOBS` submission and queue delivery to the Worker. |
+| `assets.directory`, `assets.binding` | Generated OpenNext assets and their `ASSETS` binding. |
+| `d1_databases[].binding`, `database_name`, `database_id`, `migrations_dir` | D1 binding, owned database identity, and migration location. |
+| `r2_buckets[].binding`, `bucket_name` | Media binding and bucket identity. |
+| `queues.producers[]`, `queues.consumers[]` | Job submission binding and delivery to the Worker queue handler. |
 | `send_email[].name` | Cloudflare Email binding. |
-| `routes[].pattern`, `routes[].custom_domain` | Custom hostname served by this Worker. |
-| `triggers.crons` | Schedule delivered to `worker.ts`'s `scheduled` handler. |
-| `secrets.required`, `vars.SITE_URL` | Secret-name contract and request-time canonical auth origin. |
+| `routes[].pattern`, `routes[].custom_domain` | Site hostname and custom-domain routing. |
+| `triggers.crons` | Schedule sent to `worker.ts`'s `scheduled` handler. |
+| `secrets.required`, `vars.SITE_URL` | Required secret names and request-time canonical auth base URL. |
+| `next.config.ts`, `open-next.config.ts` | Next.js tracing root and OpenNext's Cloudflare build settings. |
+| `tsconfig.json` | Strict compilation and `@/` and `@site/` import aliases. |
 
-`next.config.ts` sets the Next.js file tracing root, `open-next.config.ts` initializes Cloudflare packaging, and `tsconfig.json` sets strict checking and `@/` and `@site/` path aliases.
-The following runtime values are typed in `src/lib/env.ts` and supplied by the Worker or local test environment:
+`src/lib/env.ts` types the values actually available to Worker code:
 
-| Runtime value | Effect |
+| Env item | Runtime role |
 | --- | --- |
-| `DB`, `MEDIA`, `JOBS`, `EMAIL` | D1 account and ledger data, media bucket, background queue, and Cloudflare Email delivery. |
-| `SITE_URL`, `BETTER_AUTH_SECRET` | Canonical better-auth base URL and signing secret. |
-| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Google OAuth and optional One Tap credentials. |
-| `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` | GitHub OAuth credentials when enabled. |
-| `TURNSTILE_SECRET` | Server-side Turnstile verification when enabled. |
-| `RESEND_API_KEY` | Resend delivery when selected by the site. |
-| `LOCAL_AUTH_TEST` | Explicit loopback-only local authentication test path. |
+| `DB`, `MEDIA`, `JOBS`, `EMAIL` | D1 account and credit data, media storage, background queue, and Cloudflare Email delivery. |
+| `SITE_URL`, `BETTER_AUTH_SECRET` | Better-auth base URL and signing secret. |
+| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Google login and optional One Tap credentials. |
+| `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` | GitHub login credentials when selected. |
+| `TURNSTILE_SECRET` | Server-side verification when the sign-in gate is selected. |
+| `RESEND_API_KEY` | Resend mail delivery when selected. |
+| `LOCAL_AUTH_TEST` | Explicit loopback-only local authentication test mode. |
 
-The `site/` TypeScript choices are compiled into a build, while Worker variables and secrets are read at request time.
-Changing site choices calls for a new build and publication; changing request-time secrets uses the Worker environment contract.
+The `site/` TypeScript values are included in a build, while Worker variables and secrets are read when a request runs.
+A site-choice change is published with a new build, and a runtime-secret change uses the Worker environment contract.
+`fixtures/second-site/` demonstrates different names, URL, email provider, and auth choices while reusing the same application modules.
 
 ## Critical Rules
 
-1. **Preserve the configuration boundary:** site-specific copy and switches enter through `site/`, with matching UI, API, and `site-check` behavior.
-2. **Keep service credentials server-side:** bindings and secret names live in `wrangler.jsonc` and `src/lib/env.ts`, while values come from the site's Worker environment.
-3. **Keep identity and authorization at the server boundary:** account, invitation, credit, and media requests resolve the current session and user before accessing site data.
-4. **Keep provider contracts behind adapters:** generation, mail, and payment integrations translate external APIs into application-level operations that can evolve independently.
-5. **Keep ledger effects atomic and idempotent:** new billing or task events carry stable keys into the native D1 credit operations, with concurrency and retry coverage in tests.
-6. **Evolve persisted data with migrations:** new SQL, TypeScript mappings, service operations, and tests describe one consistent schema.
-7. **Treat preview stubs as preview stubs:** current mocks document integration points; live capabilities receive real routes, adapters, event handling, and end-to-end verification.
-8. **Verify the delivery surface:** use the checks in `README.md` and review the relevant site bindings when changing runtime behavior.
-9. **Keep this guide current:** whenever the stack, module roles, commands, architecture, patterns, extension flow, schema, or configuration contract changes, update this file in the same change.
+1. **Preserve the site boundary:** site-specific identity, copy, switches, theme, and resource names live in `site/`, with corresponding UI, server, and site-check behavior when the contract grows.
+2. **Keep credentials on the server:** Worker bindings and secrets resolve through `src/lib/env.ts`, while committed site configuration describes choices rather than credential values.
+3. **Keep authorization at entry points:** routes and Worker handlers establish identity, user scope, and request origin before invoking account, credit, invite, or media operations.
+4. **Keep provider formats at adapter seams:** UI and ledger operations speak application task, email, or payment concepts so future providers and billing policies can change independently.
+5. **Protect credit invariants:** use native D1 prepared statements and atomic batches for multi-statement ledger effects, stable event keys for retries, and concurrent tests for spend and refunds.
+6. **Evolve storage coherently:** migrations, auth mappings or native D1 queries, API contracts, and tests describe the same schema for each site.
+7. **Represent capability honestly:** mocks remain preview stand-ins; live video or checkout work includes actual endpoints, adapters, processing, and end-to-end checks.
+8. **Verify before handoff:** run `pnpm test`, `pnpm typecheck`, `pnpm cf:build`, and `pnpm site-check`, then follow `README.md` for any relevant live flow.
+9. **Keep this guide synchronized:** whenever the stack, module roles, commands, architecture, patterns, extension flow, schema, configuration, or these working rules change, update this file in the same change.
 
 ## Maintaining this file
 
