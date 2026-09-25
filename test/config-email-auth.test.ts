@@ -20,7 +20,7 @@ test('second site only changes site, wrangler resource names and env, not busine
   assert.notEqual(first.config.deploy.d1,second.config.deploy.d1);
   assert.notEqual(first.config.email.provider,second.config.email.provider);
   assert.ok((await check(resolve('.'),{},true)).errors.includes('GOOGLE_CLIENT_SECRET missing'));
-  const strictEnv = {BETTER_AUTH_SECRET:'test',GOOGLE_CLIENT_ID:'test',GOOGLE_CLIENT_SECRET:'test',TURNSTILE_SECRET:'test',RESEND_API_KEY:'test',WAFFO_API_KEY:'test',WAFFO_MERCHANT_ID:'test',WAFFO_PRIVATE_KEY:'test',WAFFO_PRODUCT_ID:'test',WAFFO_CALLBACK_PUBLIC_KEY:'test',SITE_URL:'https://other.example'};
+  const strictEnv = {BETTER_AUTH_SECRET:'test',GOOGLE_CLIENT_ID:'test',GOOGLE_CLIENT_SECRET:'test',TURNSTILE_SECRET:'test',RESEND_API_KEY:'test',WAFFO_MERCHANT_ID:'test',WAFFO_PRIVATE_KEY:'test',WAFFO_PRODUCT_ID:'test',WAFFO_CALLBACK_PUBLIC_KEY:'test',SITE_URL:'https://other.example'};
   assert.deepEqual((await check(resolve('fixtures/second-site'),strictEnv,true)).errors,[]);
 });
 
@@ -30,7 +30,7 @@ test('live Worker binds only the owned hostname, with per-site D1 and required a
   assert.deepEqual(config.routes,[{pattern:'awesomejev.link',custom_domain:true}]);
   assert.equal(config.vars.SITE_URL,'https://awesomejev.link');
   assert.equal(config.d1_databases[0].database_name,'awesomejev-db');
-  assert.deepEqual(config.secrets.required,['BETTER_AUTH_SECRET','GOOGLE_CLIENT_ID','GOOGLE_CLIENT_SECRET','WAFFO_API_KEY','WAFFO_MERCHANT_ID','WAFFO_PRIVATE_KEY','WAFFO_PRODUCT_ID','WAFFO_CALLBACK_PUBLIC_KEY']);
+  assert.deepEqual(config.secrets.required,['BETTER_AUTH_SECRET','GOOGLE_CLIENT_ID','GOOGLE_CLIENT_SECRET','WAFFO_MERCHANT_ID','WAFFO_PRIVATE_KEY','WAFFO_PRODUCT_ID','WAFFO_CALLBACK_PUBLIC_KEY']);
 });
 
 test('three notification functions dispatch to fake provider without real email', async () => {

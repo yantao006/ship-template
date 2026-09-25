@@ -9,6 +9,6 @@
   "queues": { "producers": [{ "binding": "JOBS", "queue": "second-video-jobs" }], "consumers": [{ "queue": "second-video-jobs" }] },
   "send_email": [{ "name": "EMAIL" }],
   "triggers": { "crons": ["0 0 * * *"] },
-  "secrets": { "required": ["BETTER_AUTH_SECRET", "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "TURNSTILE_SECRET", "RESEND_API_KEY", "WAFFO_API_KEY", "WAFFO_MERCHANT_ID", "WAFFO_PRIVATE_KEY", "WAFFO_PRODUCT_ID", "WAFFO_CALLBACK_PUBLIC_KEY"] },
+  "secrets": { "required": ["BETTER_AUTH_SECRET", "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "TURNSTILE_SECRET", "RESEND_API_KEY", "WAFFO_MERCHANT_ID", "WAFFO_PRIVATE_KEY", "WAFFO_PRODUCT_ID", "WAFFO_CALLBACK_PUBLIC_KEY"] },
   "vars": { "SITE_URL": "https://other.example" }
 }

@@ -15,7 +15,6 @@ export interface Env {
   RESEND_API_KEY?: string;
   SITE_URL?: string;
   LOCAL_AUTH_TEST?: string;
-  WAFFO_API_KEY?: string;
   WAFFO_MERCHANT_ID?: string;
   WAFFO_PRIVATE_KEY?: string;
   WAFFO_PRODUCT_ID?: string;

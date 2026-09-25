@@ -8,7 +8,7 @@ Google login uses the existing dedicated Google Cloud project and exact callback
 The Google consent app is in Testing mode; only the configured Google test users can finish sign-in until its branding and audience are published.
 
 Video generation, model pages, and legal pages are not implemented.
-The mock video service cannot generate media. Checkout creates a real Waffo order and returns its payment URL.
+The mock video service cannot generate media. Checkout opens a Waffo Pancake session for the existing product and returns its payment URL.
 The landing page has a marketing navigation and hero. Pricing at `/{locale}/pricing` lists site plans and starts checkout for a signed-in user. The preview workspace at `/{locale}/dashboard` and the credit-grant table at `/{locale}/credits` show the signed-in account's D1 data.
 
 ## Re-run verification
