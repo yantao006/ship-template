@@ -9,6 +9,7 @@ export function MarketingNav({ locale, userName, callbackURL, hideLanguage = fal
       <a className="brand" href={`/${locale}`} aria-label={`${copy.nav.brand} home`}><span className="brand-mark" aria-hidden="true"><i/><i/><i/></span><span>{copy.nav.brand}</span></a>
       <nav className="marketing-links" aria-label={copy.nav.navigation}>
         <a href={`/${locale}`}>{copy.nav.home}</a>
+        <a href={`/${locale}/pricing`}>{copy.nav.pricing}</a>
         <a href={`/${locale}/dashboard`}>{copy.nav.workspace}</a>
         <a href={`/${locale}/credits`}>{copy.nav.credits}</a>
       </nav>

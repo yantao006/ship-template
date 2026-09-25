@@ -1,3 +1,2 @@
-// Local-only stand-ins; no real provider call, media production, checkout or payment state.
+// Local-only stand-in; no real provider call or media production.
 export const mockVideo = { async submit() { return { status: 'mock-complete' as const, url: null }; } };
-export const mockPayment = { async checkout() { return { status: 'mock-only' as const, charged: false }; } };

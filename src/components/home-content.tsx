@@ -27,7 +27,7 @@ export async function HomeContent({ locale = site.defaultLocale as keyof typeof 
       <div className="hero-copy">
         <h1 id="hero-title">{copy.hero.title}</h1>
         <p className="hero-description">{copy.hero.description}</p>
-        {session ? invited ? <div className="hero-actions"><a className="hero-cta" href={`/${locale}/dashboard`}>{copy.hero.openWorkspace}</a><span className="hero-credits">{copy.hero.credits}: {credits}</span></div> : <InviteGate copy={copy.nav} /> : <a className="hero-cta" href={`/${locale}/dashboard`}>{copy.hero.explore}</a>}
+        {session ? invited ? <div className="hero-actions"><a className="hero-cta" href={`/${locale}/dashboard`}>{copy.hero.openWorkspace}</a><a className="hero-cta hero-cta-secondary" href={`/${locale}/pricing`}>{copy.hero.viewPlans}</a><span className="hero-credits">{copy.hero.credits}: {credits}</span></div> : <InviteGate copy={copy.nav} /> : <div className="hero-actions"><a className="hero-cta" href={`/${locale}/dashboard`}>{copy.hero.explore}</a><a className="hero-cta hero-cta-secondary" href={`/${locale}/pricing`}>{copy.hero.viewPlans}</a></div>}
       </div>
       <div className="hero-art" aria-hidden="true">
         <div className="frame frame-one"><span>IDEA</span><b>01</b></div>

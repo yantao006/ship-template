@@ -2,7 +2,7 @@
 
 This repository is a replicable AI video site template; the current reference site is one configured example.
 A new site changes `site/`, provisions its own D1 and other Worker resources, supplies its own secrets, and keeps sharing the application layers in `src/`.
-The current example has site-local accounts, invitation primitives, a credit ledger, and mail adapters; video generation and checkout remain placeholders in `src/lib/mock-services.ts`.
+The current example has site-local accounts, invitation primitives, a credit ledger, mail adapters, and a Waffo checkout adapter; video generation remains a placeholder in `src/lib/mock-services.ts`.
 `README.md` records the reference site's live state and verification procedure.
 
 ## Design principles
@@ -34,7 +34,7 @@ The current example has site-local accounts, invitation primitives, a credit led
 | Access control | `src/lib/invites.ts`, `src/lib/turnstile.ts`, `src/lib/desktop-auth.ts`, D1 and Turnstile HTTP API | Invitation eligibility, optional sign-in verification, and allow-listed app handoff. |
 | Credits | `src/lib/ledger.ts`, `src/lib/credit-history.ts`, native D1 statements and batches | Atomic grants, reservations, allocation, refund, balance, and bounded account history. |
 | Email | `src/lib/email.ts`, `src/lib/notifications.ts`, Cloudflare Email or Resend | One `EmailProvider` interface for message delivery and application notification copy. |
-| Video and payments | `src/lib/mock-services.ts`, `src/lib/ledger.ts`, `video_task` | Preview stand-ins and durable task/credit primitives for future provider adapters. |
+| Video and payments | `src/lib/mock-services.ts`, `src/lib/waffo.ts`, `src/lib/payments.ts`, `src/lib/ledger.ts`, `video_task` | Video remains a preview stand-in. Checkout calls the Waffo adapter, and a verified callback grants through the ledger. |
 | Worker infrastructure | `worker.ts`, `src/lib/env.ts`, `wrangler.jsonc`, OpenNext | HTTP dispatch and scheduled/queue entry points with typed request-time bindings. |
 
 ## Build, compile, and deploy commands
@@ -96,18 +96,23 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │   │   ├── page.tsx              # Localized homepage composition
 │   │   │   ├── dashboard/page.tsx    # Account summary route
 │   │   │   ├── credits/page.tsx      # Credit balance and grant history route
+│   │   │   ├── pricing/page.tsx      # Plan list and checkout start
 │   │   │   └── reset-password/page.tsx # Password reset form for an emailed token
 │   │   ├── admin/invites/page.tsx    # Session- and allow-list-gated invite administration
 │   │   ├── auth-callback/page.tsx    # Signed-in desktop return page
 │   │   └── api/                      # HTTP boundary for auth and account operations
 │   │       ├── auth/[...all]/route.ts         # Better-auth handler with invite/Turnstile checks
 │   │       ├── auth/desktop-handoff/route.ts # Same-origin session-token handoff
+│   │       ├── checkout/route.ts             # Signed-in checkout handoff to the Waffo adapter
+│   │       ├── webhooks/payment/route.ts     # Verified payment callback
 │   │       ├── credits/balance/route.ts      # Session-scoped balance endpoint
 │   │       ├── invites/route.ts              # Invite admin list, create, revoke
 │   │       ├── invites/validate/route.ts     # Code validity check
 │   │       └── invites/redeem/route.ts       # Session-scoped redemption and signup grant
 │   ├── components/                   # UI composition and client controls
 │   │   ├── home-content.tsx          # Server-rendered homepage and welcome balance
+│   │   ├── pricing-content.tsx       # Server-rendered plan list
+│   │   ├── pricing-checkout.tsx      # Client checkout request for a selected plan
 │   │   ├── marketing-nav.tsx         # Navigation assembled from locale and auth choices
 │   │   ├── auth-control.tsx          # Client sign-in card and email/social interactions
 │   │   ├── reset-password.tsx        # Client form that submits a new password for a reset token
@@ -130,14 +135,17 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │       ├── desktop-auth.ts           # Scheme validation and token-bearing app URL
 │       ├── email.ts                  # Cloudflare/Resend adapter and fake test provider
 │       ├── notifications.ts          # Typed event notification messages
-│       └── mock-services.ts          # Local-only video/payment placeholders
+│       ├── waffo.ts                   # Waffo order, signature, and callback format
+│       ├── payments.ts                # Plan checkout and idempotent payment grants
+│       └── mock-services.ts           # Local-only video placeholder
 └── test/                              # Miniflare D1, auth, mail, config, and ledger tests
     ├── auth-integration.test.ts      # Local better-auth signup and idempotent credits
     ├── auth-options.test.ts          # Provider switches, invites, desktop handoff
     ├── password-reset.test.ts        # Reset switch, mailed link, and reset page
     ├── config-email-auth.test.ts     # Second-site wiring, mail adapters, Turnstile
     ├── credit-history.test.ts       # Signed-in and bounded account credit reads
-    └── ledger.test.ts               # Concurrent spend, refunds, and monthly grants
+    ├── ledger.test.ts               # Concurrent spend, refunds, and monthly grants
+    └── payments.test.ts             # Waffo signature, one-time grant, monthly grant, and replay
 ```
 
 The request path is `page or client control -> src/app page/API -> src/lib service -> this site's D1 or provider binding`.
@@ -174,16 +182,16 @@ On each request, production login accepts the Worker `SITE_URL` only when it equ
 ### Credits, tasks, and provider seams
 
 `src/lib/ledger.ts` writes `credit_lot`, `credit_entry`, `credit_alloc`, and `video_task` with D1's own `prepare().bind()` statements and `batch()` for multi-step writes, preserving atomic reservations under concurrent requests.
-Grant source IDs, entry idempotency keys, and task state transitions make retries observable; `grantSubscriptionMonth` supplies a monthly grant primitive without a connected billing scheduler.
+Grant source IDs, entry idempotency keys, and task state transitions make retries observable. A verified annual payment calls `grantSubscriptionMonth` for the current calendar month only. There is no separate billing scheduler.
 `src/lib/email.ts` chooses Cloudflare Email or Resend behind `EmailProvider`, and `src/lib/notifications.ts` composes messages independently of delivery.
 
 ### Current state and extension paths
 
-The existing homepage, dashboard, and credit history are a preview; `src/lib/mock-services.ts` produces neither generated media nor a paid checkout.
+The existing homepage, dashboard, and credit history are a preview; `src/lib/mock-services.ts` produces no generated media.
 For video, page parameters flow from a generation-tool component to an authenticated API that checks identity, input, options, and credit cost before `src/lib/ledger.ts` reserves the task and credits.
 An upstream adapter submits the work, the queue processing in `worker.ts` observes progress and updates task status, and a status endpoint lets the client follow that progress.
 On success, the service stores the result in the site's `MEDIA` binding and returns an authorized preview or download; on failure, it reconciles task state and the ledger idempotently according to the site's credit policy.
-For payments, site plans flow from pricing UI through a checkout API to a checkout adapter; a verified provider callback translates payment and subscription events into stable, idempotent grants in the same `src/lib/ledger.ts`.
+Site plans in `site/site.config.ts` flow from the pricing page through `POST /api/checkout` to `src/lib/waffo.ts`. That route accepts a signed-in user, then the adapter creates the Waffo order. `POST /api/webhooks/payment` verifies `X-SIGNATURE` before `src/lib/payments.ts` writes a one-time grant or the current subscription month in `src/lib/ledger.ts`. A one-time purchase grants once. Replaying the same payment or the same month does not grant again. Coupons are the only promotion. The product id, merchant id, API key, request signing key, and callback public key are Worker secrets.
 Vendor-specific request and callback formats stay in adapters, while the page, task, and ledger contracts describe this application's behavior.
 
 ## How to add new logic
@@ -233,6 +241,7 @@ Schema changes gain a new reviewed migration and matching service/query types an
 | `deploy.worker`, `deploy.d1`, `deploy.r2`, `deploy.queue` | Expected per-site Worker, D1, R2, and Queue names compared with Wrangler. |
 | `email.provider`, `email.from` | Selects the email adapter and sender address. |
 | `signupCredits` | Amount granted once to an eligible new account. |
+| `plans` | One-time and annual plan id, price, currency, and credit amount. |
 | `site/auth.config.ts`: `backend`, `basePath` | Current better-auth selection and `/api/auth` routing contract. |
 | `email.enabled`, `email.requireVerification`, `email.passwordReset`, `google.enabled`, `github.enabled` | Independently enable sign-in options; email verification delays the session and signup credits until the emailed link is opened, password reset shows one forgot-password path and sends through `EmailProvider` only when that switch is on, and OAuth options require matching Worker secrets. |
 | `google.oneTapEnabled` | Adds the One Tap plugin and client prompt when Google login is enabled. |
@@ -269,6 +278,9 @@ Schema changes gain a new reviewed migration and matching service/query types an
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Google login and optional One Tap credentials. |
 | `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` | GitHub login credentials when selected. |
 | `TURNSTILE_SECRET` | Server-side verification when the sign-in gate is selected. |
+| `WAFFO_API_KEY`, `WAFFO_MERCHANT_ID`, `WAFFO_PRIVATE_KEY` | Waffo request authentication. The private key signs the order body. |
+| `WAFFO_PRODUCT_ID` | Existing goods id sent as `goodsInfo.goodsId`. |
+| `WAFFO_CALLBACK_PUBLIC_KEY` | PEM public key that verifies `X-SIGNATURE` over the raw callback body. |
 | `RESEND_API_KEY` | Resend mail delivery when selected. |
 | `LOCAL_AUTH_TEST` | Explicit loopback-only local authentication test mode. |
 
