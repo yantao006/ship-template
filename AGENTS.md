@@ -1,8 +1,18 @@
 # Project architecture guide
 
-This repository is a configurable preview of an AI video site with site-local accounts, invitation primitives, a credit ledger, and mail adapters.
-`src/lib/mock-services.ts` marks video generation and checkout as integration points rather than live services.
-`README.md` records the reference site's current state and verification procedure.
+This repository is a replicable AI video site template; the current reference site is one configured example.
+A new site changes `site/`, provisions its own D1 and other Worker resources, supplies its own secrets, and keeps sharing the application layers in `src/`.
+The current example has site-local accounts, invitation primitives, a credit ledger, and mail adapters; video generation and checkout remain placeholders in `src/lib/mock-services.ts`.
+`README.md` records the reference site's live state and verification procedure.
+
+## Design principles
+
+- **Configuration decides what appears:** `site/` describes the site's identity, features, copy, and theme; the UI reflects enabled choices and the server enforces the same choices.
+- **One language per file:** `site/messages/en.ts` and `site/messages/zh.ts` keep corresponding keys, and locale-aware pages select one message set at a time.
+- **One navigation path per purpose:** the navigation has one language control and one sign-in entry; its sign-in card lists only the methods enabled in `site/auth.config.ts`.
+- **Theme owns color:** `site/theme.config.ts` feeds variables through `src/app/layout.tsx` to `src/app/globals.css` and the components it styles.
+- **Pages compose sections:** a full site can grow from navigation and hero into a generation tool, showcase, features, pricing, FAQ, and footer, with each section taking its content from site choices.
+- **Long-running work is observable:** video generation uses an asynchronous task and progress flow, while the server validates costs and records credit movements in the ledger.
 
 ## Overall tech stack
 
@@ -152,6 +162,7 @@ A new capability can be a new `src/lib/` service called by an API endpoint, a se
 ### Authentication and eligibility
 
 `src/lib/auth.ts` constructs better-auth using request-time `SITE_URL`, the Worker D1, and the enabled email/Google/GitHub methods from `site/auth.config.ts`.
+On each request, production login accepts the Worker `SITE_URL` only when it equals `site.url` from `site/site.config.ts`; a mismatch refuses login rather than creating a session on another origin.
 `src/app/api/auth/[...all]/route.ts` wraps signup with invite validation and optional sign-in Turnstile verification before delegating to better-auth.
 On account creation, `ensureSignupCredits` checks invitation eligibility and grants a signup lot with the user ID as its stable source ID.
 `src/app/api/invites/redeem/route.ts` validates the session and request origin, redeems the code through an atomic D1 batch, and grants the eligible user credits.
@@ -159,21 +170,31 @@ On account creation, `ensureSignupCredits` checks invitation eligibility and gra
 
 ### Credits, tasks, and provider seams
 
-`src/lib/ledger.ts` writes `credit_lot`, `credit_entry`, `credit_alloc`, and `video_task` through native prepared statements and D1 batches, preserving atomic reservations under concurrent requests.
+`src/lib/ledger.ts` writes `credit_lot`, `credit_entry`, `credit_alloc`, and `video_task` with D1's own `prepare().bind()` statements and `batch()` for multi-step writes, preserving atomic reservations under concurrent requests.
 Grant source IDs, entry idempotency keys, and task state transitions make retries observable; `grantSubscriptionMonth` supplies a monthly grant primitive without a connected billing scheduler.
-A future generation flow can validate identity, prompt, options, and cost at an API boundary, reserve a task, submit through a provider adapter, expose task status, then store media through `MEDIA` and reconcile success or failure.
-A future payment flow can map site plans to checkout, verify provider callbacks, and pass stable event or subscription-period IDs into the ledger; its billing policy belongs in the integration and site configuration, not in a fixed provider name here.
 `src/lib/email.ts` chooses Cloudflare Email or Resend behind `EmailProvider`, and `src/lib/notifications.ts` composes messages independently of delivery.
+
+### Current state and extension paths
+
+The existing homepage, dashboard, and credit history are a preview; `src/lib/mock-services.ts` produces neither generated media nor a paid checkout.
+For video, page parameters flow from a generation-tool component to an authenticated API that checks identity, input, options, and credit cost before `src/lib/ledger.ts` reserves the task and credits.
+An upstream adapter submits the work, the queue processing in `worker.ts` observes progress and updates task status, and a status endpoint lets the client follow that progress.
+On success, the service stores the result in the site's `MEDIA` binding and returns an authorized preview or download; on failure, it reconciles task state and the ledger idempotently according to the site's credit policy.
+For payments, site plans flow from pricing UI through a checkout API to a checkout adapter; a verified provider callback translates payment and subscription events into stable, idempotent grants in the same `src/lib/ledger.ts`.
+Vendor-specific request and callback formats stay in adapters, while the page, task, and ledger contracts describe this application's behavior.
 
 ## How to add new logic
 
-1. Identify whether the change is site-specific (`site/`), presentation (`src/components/`), request handling (`src/app/`), business logic (`src/lib/`), persisted data (`migrations/`), or event processing (`worker.ts`).
-2. Add or extend site choices and localized keys when the behavior varies by site, then connect each switch to both visible controls and the server path that authorizes it.
-3. Add a versioned SQL migration for new state and reflect it in any relevant Drizzle auth mapping, native D1 query type, service operation, and account-scoped read.
-4. Implement provider translation behind a service adapter so a new upstream changes input and output mapping instead of pushing vendor formats into UI components or ledger calls.
-5. Connect an HTTP endpoint in `src/app/api/` for authenticated requests, or a scheduled/queue branch in `worker.ts` for background work; preserve stable identifiers across asynchronous retries.
-6. Compose the UI from `src/components/` and a page in `src/app/`, with copy from each `site/messages/` language and colors from the theme variables.
-7. Extend `scripts/site-check.ts` for new site-to-Worker contracts and `test/` for user scope, concurrency, failure, and idempotency; run the checks in `README.md` before handoff.
+| Change | Start here, then connect |
+| --- | --- |
+| Change copy or switches | Edit `site/messages/en.ts` and `site/messages/zh.ts` together for text, or `site/site.config.ts` and `site/auth.config.ts` for site choices; connect new switches to their `src/components/` view, `src/lib/` or `src/app/api/` server gate, and `scripts/site-check.ts` when bindings change. |
+| Add a page section | Compose it from `src/components/home-content.tsx` or a new component under `src/components/`; supply localized content from `site/messages/`, tokens from `site/theme.config.ts` and `src/app/globals.css`, and a route under `src/app/` when it needs its own page. |
+| Add a sign-in method | Extend `site/auth.config.ts`, the method selection in `src/lib/auth.ts`, the card in `src/components/auth-control.tsx`, and the callback or guard in `src/app/api/auth/[...all]/route.ts`; declare credentials in `src/lib/env.ts`, `wrangler.jsonc`, and `scripts/site-check.ts`, with auth tests under `test/`. |
+| Add a table | Add the next SQL file in `migrations/`, then update `src/lib/auth-schema.ts` for better-auth tables or native D1 queries and types in the owning `src/lib/` service; expose user-scoped reads through `src/app/` and test the migration and operation. |
+| Add an upstream | Put provider-specific calls and response mapping behind an adapter in `src/lib/`; connect it through a validated `src/app/api/` endpoint and, for long-running work, `worker.ts`, `src/lib/ledger.ts`, and a progress-aware component; add its Worker secret names to `src/lib/env.ts`, `wrangler.jsonc`, and `scripts/site-check.ts`. |
+| Replicate a site | Use `fixtures/second-site/` as the shape example, then create the new `site/` choices and matching `wrangler.jsonc`, provision that site's D1, R2, Queue, hostname, and secrets, apply `migrations/` to its D1, and run `pnpm site-check` against the new site. |
+
+Changes to these paths receive focused tests in `test/` and the verification commands documented in `README.md`.
 
 ## Database schema
 
