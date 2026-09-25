@@ -6,7 +6,7 @@ import { createAuthClient } from 'better-auth/react';
 import type { AuthSettings } from '@/lib/auth';
 
 const authClient = createAuthClient({ basePath: '/api/auth' });
-type Copy = { verifyTitle: string; verifyHint: string; verificationSent: string; resendVerification: string; resendFailed: string; verifyLink: string; emailNotVerified: string; login: string; google: string; github: string; email: string; orEmail: string; logout: string; signIn: string; signUp: string; name: string; password: string; noMethods: string; invite: string; wait: string; close: string; emailLabel: string; authFailed: string; socialFailed: string; signOutFailed: string; inviteInvalid: string; createdButInviteFailed: string };
+type Copy = { verifyTitle: string; verifyHint: string; verificationSent: string; resendVerification: string; resendFailed: string; verifyLink: string; emailNotVerified: string; login: string; google: string; github: string; email: string; orEmail: string; logout: string; signIn: string; signUp: string; name: string; password: string; noMethods: string; invite: string; wait: string; close: string; emailLabel: string; authFailed: string; socialFailed: string; signOutFailed: string; inviteInvalid: string; createdButInviteFailed: string; forgotPassword: string; forgotTitle: string; forgotHint: string; resetSent: string; resetSendFailed: string };
 
 export function AuthControl({ copy, methods, userName, callbackURL, locale, inviteRequired = false }: { copy: Copy; methods: Pick<AuthSettings, 'email' | 'google' | 'github'>; userName?: string; callbackURL: string; locale: string; inviteRequired?: boolean }) {
   const [pending, setPending] = useState(false);
@@ -15,7 +15,10 @@ export function AuthControl({ copy, methods, userName, callbackURL, locale, invi
   const [register, setRegister] = useState(false);
   const [verificationEmail, setVerificationEmail] = useState('');
   const [verificationNotice, setVerificationNotice] = useState('');
+  const [forgot, setForgot] = useState(false);
+  const [resetNotice, setResetNotice] = useState('');
   const needsVerification = !!methods.email.requireVerification;
+  const canReset = !!methods.email.passwordReset;
   const verifyPath = `/${locale}/verify-email`;
   const dialogRef = useRef<HTMLElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -89,6 +92,21 @@ export function AuthControl({ copy, methods, userName, callbackURL, locale, invi
     finally { setPending(false); }
   }
 
+  async function submitForgot(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!methods.email.enabled || !canReset || pending) return;
+    setPending(true);
+    setError('');
+    setResetNotice('');
+    const email = String(new FormData(event.currentTarget).get('email') ?? '').trim();
+    try {
+      const result = await authClient.requestPasswordReset({ email, redirectTo: `/${locale}/reset-password` });
+      if (result.error) setError(copy.resetSendFailed);
+      else setResetNotice(copy.resetSent);
+    } catch { setError(copy.resetSendFailed); }
+    finally { setPending(false); }
+  }
+
   async function resendVerification() {
     if (!verificationEmail || pending) return;
     setPending(true);
@@ -114,19 +132,26 @@ export function AuthControl({ copy, methods, userName, callbackURL, locale, invi
       <span className="account-name" title={userName}>{userName}</span>
       <button className="auth-button" type="button" disabled={pending} onClick={signOut}>{copy.logout}</button>
     </> : <>
-      {(methods.google.enabled || methods.github.enabled || methods.email.enabled) ? <button ref={triggerRef} className="auth-button" type="button" disabled={pending} onClick={() => { setError(''); setVerificationEmail(''); setRegister(false); setOpen(true); }}>{copy.login}</button> : <span className="account-name">{copy.noMethods}</span>}
+      {(methods.google.enabled || methods.github.enabled || methods.email.enabled) ? <button ref={triggerRef} className="auth-button" type="button" disabled={pending} onClick={() => { setError(''); setVerificationEmail(''); setRegister(false); setForgot(false); setResetNotice(''); setOpen(true); }}>{copy.login}</button> : <span className="account-name">{copy.noMethods}</span>}
     </>}
     {error && !open && <p className="auth-error" role="alert">{error}</p>}
     {open && <div className="auth-overlay" onMouseDown={event => { if (event.target === event.currentTarget) setOpen(false); }}>
       <section ref={dialogRef} className="auth-panel" role="dialog" aria-modal="true" aria-labelledby="auth-title">
         <button className="auth-close" type="button" aria-label={copy.close} onClick={() => setOpen(false)}>×</button>
-        <h2 id="auth-title">{verificationEmail ? copy.verifyTitle : register ? copy.signUp : copy.signIn}</h2>
+        <h2 id="auth-title">{verificationEmail ? copy.verifyTitle : forgot ? copy.forgotTitle : register ? copy.signUp : copy.signIn}</h2>
         {verificationEmail ? <div className="verification-actions">
           <p role="status">{verificationNotice} {verificationEmail}</p>
           <p>{copy.verifyHint}</p>
           <button className="auth-button" type="button" disabled={pending} onClick={resendVerification}>{pending ? copy.wait : copy.resendVerification}</button>
           <a className="auth-switch" href={`${verifyPath}?email=${encodeURIComponent(verificationEmail)}`}>{copy.verifyLink}</a>
           <button className="auth-switch" type="button" onClick={() => { setVerificationEmail(''); setRegister(false); setError(''); }}>{copy.signIn}</button>
+        </div> : forgot ? <div className="verification-actions">
+          <p>{copy.forgotHint}</p>
+          {resetNotice ? <p role="status">{resetNotice}</p> : <form onSubmit={submitForgot}>
+            <label>{copy.emailLabel}<input name="email" type="email" autoComplete="email" required /></label>
+            <button className="auth-button" type="submit" disabled={pending}>{pending ? copy.wait : copy.forgotPassword}</button>
+          </form>}
+          <button className="auth-switch" type="button" onClick={() => { setForgot(false); setResetNotice(''); setError(''); }}>{copy.signIn}</button>
         </div> : <>
         {(methods.google.enabled || methods.github.enabled) && <div className="social-methods">
           {methods.google.enabled && <button className="social-button" type="button" disabled={pending} onClick={() => social('google')}>{copy.google}</button>}
@@ -142,7 +167,8 @@ export function AuthControl({ copy, methods, userName, callbackURL, locale, invi
             {register && inviteRequired && <label>{copy.invite}<input name="inviteCode" autoComplete="off" required maxLength={32} /></label>}
             <button className="auth-button" type="submit" disabled={pending}>{pending ? copy.wait : register ? copy.signUp : copy.signIn}</button>
           </form>
-          <button className="auth-switch" type="button" onClick={() => { setRegister(!register); setError(''); }}>{register ? copy.signIn : copy.signUp}</button>
+          {!register && canReset && <button className="auth-switch" type="button" onClick={() => { setForgot(true); setError(''); }}>{copy.forgotPassword}</button>}
+          <button className="auth-switch" type="button" onClick={() => { setRegister(!register); setForgot(false); setError(''); }}>{register ? copy.signIn : copy.signUp}</button>
         </>}
         </>}
         {error && <p className="form-error" role="alert">{error}</p>}

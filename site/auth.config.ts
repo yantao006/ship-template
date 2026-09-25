@@ -4,7 +4,7 @@
 export default {
   backend: 'better-auth' as const,
   basePath: '/api/auth',
-  email: { enabled: true, requireVerification: true },
+  email: { enabled: true, requireVerification: true, passwordReset: true },
   google: { enabled: true, oneTapEnabled: false },
   github: { enabled: false },
   invite: { required: false, adminEmails: [] as string[] },
