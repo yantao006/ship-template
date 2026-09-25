@@ -26,7 +26,15 @@ export async function check(root: string, env: Record<string, string | undefined
   if (auth.desktop?.schemes?.some((scheme: string) => !/^[a-z][a-z0-9+.-]*$/i.test(scheme) || ['http', 'https', 'file', 'javascript', 'data', 'blob', 'vbscript'].includes(scheme.toLowerCase()))) errors.push('Invalid desktop scheme');
   if (config.email.provider === 'cloudflare' && !wrangler.send_email?.some((item: {name: string}) => item.name === 'EMAIL')) errors.push('EMAIL binding missing');
   if (config.email.provider !== 'cloudflare' && config.email.provider !== 'resend') errors.push('Invalid email provider');
-  const requiredSecrets = ['BETTER_AUTH_SECRET', ...(auth.google.enabled ? ['GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET'] : []), ...(auth.github.enabled ? ['GITHUB_CLIENT_ID', 'GITHUB_CLIENT_SECRET'] : []), ...(auth.turnstile.onSignIn ? ['TURNSTILE_SECRET'] : []), ...(config.email.provider === 'resend' ? ['RESEND_API_KEY'] : [])];
+  const paymentSecrets = ['WAFFO_API_KEY', 'WAFFO_MERCHANT_ID', 'WAFFO_PRIVATE_KEY', 'WAFFO_PRODUCT_ID', 'WAFFO_CALLBACK_PUBLIC_KEY'];
+  const requiredSecrets = ['BETTER_AUTH_SECRET', ...(auth.google.enabled ? ['GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET'] : []), ...(auth.github.enabled ? ['GITHUB_CLIENT_ID', 'GITHUB_CLIENT_SECRET'] : []), ...(auth.turnstile.onSignIn ? ['TURNSTILE_SECRET'] : []), ...(config.email.provider === 'resend' ? ['RESEND_API_KEY'] : []), ...paymentSecrets];
+  const plans = config.plans as { id: string; billing: string; credits: number; amount: string; currency: string; description: string }[] | undefined;
+  const planIds = new Set<string>();
+  if (!plans?.length) errors.push('Site plans missing');
+  for (const plan of plans ?? []) {
+    if (!plan.id || planIds.has(plan.id) || (plan.billing !== 'once' && plan.billing !== 'year') || !Number.isSafeInteger(plan.credits) || plan.credits <= 0 || !/^\d+\.\d{2}$/.test(plan.amount) || !/^[A-Z]{3}$/.test(plan.currency) || !plan.description) errors.push('Invalid site plan');
+    planIds.add(plan.id);
+  }
   if (JSON.stringify([...wrangler.secrets?.required ?? []].sort()) !== JSON.stringify(requiredSecrets.sort())) errors.push('Required secrets declaration mismatch');
   if (strict) {
     for (const name of requiredSecrets) requireValue(name);

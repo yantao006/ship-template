@@ -7,9 +7,9 @@ Navigation, hero, workspace and credits copy live in `site/messages/en.ts` and `
 Google login uses the existing dedicated Google Cloud project and exact callback `https://awesomejev.link/api/auth/callback/google`.
 The Google consent app is in Testing mode; only the configured Google test users can finish sign-in until its branding and audience are published.
 
-Video generation, checkout, subscription billing, model pages, and legal pages are not implemented.
-Mock video/payment services cannot generate media or charge anyone.
-The landing page has a marketing navigation and hero. The preview workspace at `/{locale}/dashboard` and the credit-grant table at `/{locale}/credits` show only the signed-in account's existing D1 data, without enabling video or checkout.
+Video generation, model pages, and legal pages are not implemented.
+The mock video service cannot generate media. Checkout creates a real Waffo order and returns its payment URL.
+The landing page has a marketing navigation and hero. Pricing at `/{locale}/pricing` lists site plans and starts checkout for a signed-in user. The preview workspace at `/{locale}/dashboard` and the credit-grant table at `/{locale}/credits` show the signed-in account's D1 data.
 
 ## Re-run verification
 
@@ -59,5 +59,5 @@ Cloudflare Email is the default adapter; Resend is selectable through `site.emai
 Notification functions use fake email in tests; they are not connected to real video or payment events.
 Turnstile verification remains implemented and locally tested, but this reference site's `site/auth.config.ts` disables the sign-in gate until a real client widget and secret are configured.
 Do not flip it on without both pieces, or Google login will be blocked.
-Annual credits have an idempotent monthly grant primitive, but no billing scheduler is connected.
+Annual checkout grants the current calendar month through the idempotent monthly grant. Replaying that payment does not grant the month again, and a one-time purchase grants once.
 Failures/timeouts refund reserved credits once; submitted user cancellations do not refund.
