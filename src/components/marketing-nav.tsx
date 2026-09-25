@@ -14,7 +14,7 @@ export function MarketingNav({ locale, userName, callbackURL, hideLanguage = fal
       </nav>
       <div className="nav-right">
         {!hideLanguage && <LanguageControl locale={locale} locales={site.locales} label={copy.nav.language} />}
-        <AuthControl copy={copy.nav} methods={{ email: auth.email, google: auth.google, github: auth.github }} userName={userName} callbackURL={callbackURL ?? `/${locale}`} inviteRequired={auth.invite.required} />
+        <AuthControl copy={copy.nav} locale={locale} methods={{ email: auth.email, google: auth.google, github: auth.github }} userName={userName} callbackURL={callbackURL ?? `/${locale}`} inviteRequired={auth.invite.required} />
       </div>
     </div>
   </header>;

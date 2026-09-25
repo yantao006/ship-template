@@ -19,6 +19,7 @@ export async function check(root: string, env: Record<string, string | undefined
   if (!/^https:\/\/[^/]+$/.test(config.url) || new URL(config.url).hostname !== config.apex) errors.push('Canonical site URL mismatch');
   if (wrangler.vars?.SITE_URL !== config.url) errors.push('Worker SITE_URL mismatch');
   if (auth.backend !== 'better-auth' || auth.basePath !== '/api/auth' || !['email', 'google', 'github'].every(key => typeof auth[key as 'email' | 'google' | 'github']?.enabled === 'boolean')) errors.push('Auth config mismatch');
+  if (typeof auth.email.requireVerification !== 'boolean' || (auth.email.requireVerification && !auth.email.enabled)) errors.push('Invalid email verification switch');
   if (auth.google.oneTapEnabled && !auth.google.enabled) errors.push('Google One Tap requires Google auth');
   if (auth.invite?.required && (!Array.isArray(auth.invite.adminEmails) || !auth.invite.adminEmails.length)) errors.push('Invite admin email missing');
   if (auth.desktop?.schemes?.some((scheme: string) => !/^[a-z][a-z0-9+.-]*$/i.test(scheme) || ['http', 'https', 'file', 'javascript', 'data', 'blob', 'vbscript'].includes(scheme.toLowerCase()))) errors.push('Invalid desktop scheme');
