@@ -1,17 +1,21 @@
 'use client';
 
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { LogOut, UserRound, Wallet, LayoutDashboard } from 'lucide-react';
 import { createAuthClient } from 'better-auth/react';
 import type { AuthSettings } from '@/lib/auth';
 
 const authClient = createAuthClient({ basePath: '/api/auth' });
 type Copy = { verifyTitle: string; verifyHint: string; verificationSent: string; resendVerification: string; resendFailed: string; verifyLink: string; emailNotVerified: string; login: string; google: string; github: string; email: string; orEmail: string; logout: string; signIn: string; signUp: string; name: string; password: string; noMethods: string; invite: string; wait: string; close: string; emailLabel: string; authFailed: string; socialFailed: string; signOutFailed: string; inviteInvalid: string; createdButInviteFailed: string; forgotPassword: string; forgotTitle: string; forgotHint: string; resetSent: string; resetSendFailed: string };
 
-export function AuthControl({ copy, methods, userName, callbackURL, locale, inviteRequired = false }: { copy: Copy; methods: Pick<AuthSettings, 'email' | 'google' | 'github'>; userName?: string; callbackURL: string; locale: string; inviteRequired?: boolean }) {
+export function AuthControl({ copy, methods, userName, userEmail, callbackURL, locale, inviteRequired = false, variant = 'default', accountLinks }: { copy: Copy; methods: Pick<AuthSettings, 'email' | 'google' | 'github'>; userName?: string; userEmail?: string; callbackURL: string; locale: string; inviteRequired?: boolean; variant?: 'default' | 'avatar'; accountLinks?: { workspace: { label: string; href: string }; credits: { label: string; href: string }; pricing: { label: string; href: string } } }) {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState('');
   const [open, setOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
+  const accountRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
   const [register, setRegister] = useState(false);
   const [verificationEmail, setVerificationEmail] = useState('');
   const [verificationNotice, setVerificationNotice] = useState('');
@@ -23,6 +27,16 @@ export function AuthControl({ copy, methods, userName, callbackURL, locale, invi
   const dialogRef = useRef<HTMLElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const router = useRouter();
+
+  useEffect(() => { setAccountOpen(false); }, [pathname]);
+  useEffect(() => {
+    if (!accountOpen) return;
+    const outside = (event: MouseEvent) => { if (!accountRef.current?.contains(event.target as Node)) setAccountOpen(false); };
+    const escape = (event: KeyboardEvent) => { if (event.key === 'Escape') { setAccountOpen(false); triggerRef.current?.focus(); } };
+    document.addEventListener('mousedown', outside);
+    document.addEventListener('keydown', escape);
+    return () => { document.removeEventListener('mousedown', outside); document.removeEventListener('keydown', escape); };
+  }, [accountOpen]);
 
   useEffect(() => {
     if (!open) return;
@@ -122,13 +136,27 @@ export function AuthControl({ copy, methods, userName, callbackURL, locale, invi
   async function signOut() {
     setPending(true);
     setError('');
-    try { const result = await authClient.signOut(); if (result.error) setError(copy.signOutFailed); else router.refresh(); }
+    try { const result = await authClient.signOut(); if (result.error) setError(copy.signOutFailed); else { setAccountOpen(false); router.refresh(); } }
     catch { setError(copy.signOutFailed); }
     finally { setPending(false); }
   }
 
-  return <div className="auth-actions">
-    {userName ? <>
+  return <div className={variant === 'avatar' ? 'auth-actions replica-auth' : 'auth-actions'} ref={accountRef}>
+    {variant === 'avatar' ? <>
+      <button ref={triggerRef} className="replica-avatar" type="button" aria-label={userName ? copy.name : copy.login} aria-expanded={userName ? accountOpen : undefined} aria-haspopup={userName ? 'menu' : 'dialog'} onClick={() => {
+        if (userName) setAccountOpen(value => !value);
+        else { setError(''); setVerificationEmail(''); setRegister(false); setForgot(false); setResetNotice(''); setOpen(true); }
+      }}>{userName ? userName.trim().split(/\s+/).map(part => part[0]).slice(0, 2).join('').toUpperCase() : <UserRound size={19} aria-hidden="true" />}</button>
+      {userName && accountOpen && <div className="replica-popover replica-account-menu" role="menu" aria-label={copy.name}>
+        <div className="replica-profile"><span className="replica-avatar replica-avatar-large" aria-hidden="true">{userName.trim().split(/\s+/).map(part => part[0]).slice(0, 2).join('').toUpperCase()}</span><div><strong>{userName}</strong>{userEmail && <small>{userEmail}</small>}</div></div>
+        {accountLinks && <div className="replica-account-list">
+          <a role="menuitem" href={accountLinks.workspace.href}><LayoutDashboard size={18} />{accountLinks.workspace.label}</a>
+          <a role="menuitem" href={accountLinks.credits.href}><Wallet size={18} />{accountLinks.credits.label}</a>
+          <a role="menuitem" href={accountLinks.pricing.href}>{accountLinks.pricing.label}</a>
+        </div>}
+        <div className="replica-account-list"><button role="menuitem" type="button" className="replica-sign-out" disabled={pending} onClick={signOut}><LogOut size={18} />{copy.logout}</button></div>
+      </div>}
+    </> : userName ? <>
       <span className="account-name" title={userName}>{userName}</span>
       <button className="auth-button" type="button" disabled={pending} onClick={signOut}>{copy.logout}</button>
     </> : <>

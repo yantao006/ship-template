@@ -1,29 +1,32 @@
+import { Coins, Home, LayoutDashboard, Tags } from 'lucide-react';
 import { site, auth, messages } from '@/lib/config';
-import Navigation12 from '@/components/blocks/navigation-12';
+import { ReplicaNavigation } from '@/components/blocks/replica-navigation';
 import { AuthControl } from '@/components/auth-control';
-import { LanguageControl } from '@/components/language-control';
 
-export function Header({ locale, userName }: { locale: keyof typeof messages; userName?: string }) {
+export function Header({ locale, userName, userEmail, credits }: { locale: keyof typeof messages; userName?: string; userEmail?: string; credits?: number }) {
   const copy = messages[locale];
-  const actions = () => <>
-    <LanguageControl locale={locale} locales={site.locales} label={copy.nav.language} />
-    <AuthControl copy={copy.nav} locale={locale} methods={{ email: auth.email, google: auth.google, github: auth.github }} userName={userName} callbackURL={`/${locale}`} inviteRequired={auth.invite.required} />
-  </>;
-
   return <section id="header">
-    <Navigation12
+    <ReplicaNavigation
       brand={copy.nav.brand}
+      logo={site.logo}
       brandHref={`/${locale}`}
       navigationLabel={copy.nav.navigation}
-      closeLabel={copy.nav.close}
+      locale={locale}
+      locales={site.locales}
+      languageLabel={copy.nav.language}
+      creditsLabel={copy.nav.availableCredits}
+      pricingLabel={copy.nav.pricing}
+      pricingHref={`/${locale}/pricing`}
+      lightLabel={copy.nav.lightMode}
+      darkLabel={copy.nav.darkMode}
+      balance={credits}
       links={[
-        { label: copy.nav.home, href: `/${locale}` },
-        { label: copy.nav.pricing, href: `/${locale}/pricing` },
-        { label: copy.nav.workspace, href: `/${locale}/dashboard` },
-        { label: copy.nav.credits, href: `/${locale}/credits` },
+        { label: copy.nav.home, href: `/${locale}`, icon: <Home aria-hidden="true" /> },
+        { label: copy.nav.pricing, href: `/${locale}/pricing`, icon: <Tags aria-hidden="true" /> },
+        { label: copy.nav.workspace, href: `/${locale}/dashboard`, icon: <LayoutDashboard aria-hidden="true" /> },
+        { label: copy.nav.credits, href: `/${locale}/credits`, icon: <Coins aria-hidden="true" /> },
       ]}
-      desktopActions={actions()}
-      mobileActions={actions()}
+      accountControl={<AuthControl variant="avatar" copy={copy.nav} locale={locale} methods={{ email: auth.email, google: auth.google, github: auth.github }} userName={userName} userEmail={userEmail} callbackURL={`/${locale}`} inviteRequired={auth.invite.required} accountLinks={{ workspace: { label: copy.nav.workspace, href: `/${locale}/dashboard` }, credits: { label: copy.nav.credits, href: `/${locale}/credits` }, pricing: { label: copy.nav.pricing, href: `/${locale}/pricing` } }} />}
     />
   </section>;
 }

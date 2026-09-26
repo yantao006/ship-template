@@ -25,23 +25,29 @@ test('unfinished sections are empty with stable ids', () => {
 test('homepage composes eight sections in order, using the configured navigation and existing video tool', () => {
   const home = section('HomePage');
   const names = sectionNames.map(([name]) => name);
-  assert.deepEqual([...home.matchAll(/<([A-Z]\w+)(?: locale=\{locale\}(?: userName=\{userName\})?)? \/>/g)].map(match => match[1]), names);
+  assert.deepEqual([...home.matchAll(/<([A-Z]\w+)(?: [^>]+)? \/>/g)].map(match => match[1]), names);
   assert.match(section('VideoToolSection'), /import \{ VideoToolSection as ExistingVideoToolSection \} from '@\/components\/video-tool\/video-tool-section'/);
   assert.match(section('VideoToolSection'), /<ExistingVideoToolSection locale=\{locale\} \/>/);
   const entry = readFileSync(new URL('../src/components/home-content.tsx', import.meta.url), 'utf8');
   assert.doesNotMatch(entry, /MarketingNav/);
-  assert.match(entry, /<HomePage locale=\{locale\} userName=\{session\?\.user\.name\} \/>/);
-  assert.match(home, /<Header locale=\{locale\} userName=\{userName\} \/>/);
+  assert.match(entry, /<HomePage locale=\{locale\} userName=\{session\?\.user\.name\} userEmail=\{session\?\.user\.email\} credits=\{credits\} \/>/);
+  assert.match(entry, /credits = await balance\(env\.DB, session\.user\.id\)/);
+  assert.match(home, /<Header locale=\{locale\} userName=\{userName\} userEmail=\{userEmail\} credits=\{credits\} \/>/);
   const header = section('Header');
   assert.match(header, /<section id="header">/);
-  assert.match(header, /import Navigation12 from '@\/components\/blocks\/navigation-12'/);
-  for (const field of ['brand', 'home', 'pricing', 'workspace', 'credits', 'language', 'navigation']) {
+  assert.match(header, /import \{ ReplicaNavigation \} from '@\/components\/blocks\/replica-navigation'/);
+  for (const field of ['brand', 'home', 'pricing', 'workspace', 'credits', 'language', 'navigation', 'lightMode', 'darkMode', 'availableCredits']) {
     assert.match(header, new RegExp(`copy\\.nav\\.${field}`));
   }
-  assert.match(header, /<AuthControl/);
-  assert.match(header, /<LanguageControl/);
-  const block = readFileSync(new URL('../src/components/blocks/navigation-12.tsx', import.meta.url), 'utf8');
-  assert.match(block, /export default function Navigation12/);
+  assert.match(header, /logo=\{site\.logo\}/);
+  assert.match(header, /<AuthControl variant="avatar"/);
+  const block = readFileSync(new URL('../src/components/blocks/replica-navigation.tsx', import.meta.url), 'utf8');
+  assert.match(block, /export function ReplicaNavigation/);
   assert.match(block, /href=\{link\.href\}/);
-  assert.doesNotMatch(block, /Overview|Customers|Start free|href="#"/);
+  assert.match(block, /balance !== undefined/);
+  assert.match(block, /pathForLocale\(pathname, code, locales\)/);
+  assert.match(block, /href=\{pricingHref\}/);
+  assert.match(block, /aria-current=\{activeHref === link\.href \? 'page' : undefined\}/);
+  assert.match(block, /if \(!menuArea\.current\?\.contains\(event\.target as Node\)\) setOpen\(null\)/);
+  assert.doesNotMatch(block, /MiniMax|Awesomejev|AI Video|Explore|href="#"/);
 });

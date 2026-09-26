@@ -1,5 +1,6 @@
 export default {
   brand: 'Awesomejev Test Video',
+  logo: undefined as { src: string; alt: string } | undefined,
   previewOnly: true,
   apex: 'awesomejev.link',
   url: 'https://awesomejev.link',

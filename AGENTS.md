@@ -11,7 +11,7 @@ The current example has site-local accounts, invitation primitives, a credit led
 - **One language per file:** `site/messages/en.ts` and `site/messages/zh.ts` keep corresponding keys, and locale-aware pages select one message set at a time.
 - **One navigation path per purpose:** the navigation has one language control and one sign-in entry; its sign-in card lists only the methods enabled in `site/auth.config.ts`.
 - **Theme owns color:** `site/theme.config.ts` feeds variables through `src/app/layout.tsx` to `src/app/globals.css` and the components it styles.
-- **Pages compose sections:** `src/components/sections/HomePage.tsx` orders eight homepage sections. `Header` mounts the configured React Bits navigation; six sections remain empty scaffolds, and the video tool renders its existing implementation.
+- **Pages compose sections:** `src/components/sections/HomePage.tsx` orders eight homepage sections. `Header` mounts the configurable replica-style navigation; six sections remain empty scaffolds, and the video tool renders its existing implementation.
 - **Long-running work is observable:** video generation uses an asynchronous task and progress flow, while the server validates costs and records credit movements in the ledger.
 
 ## Overall tech stack
@@ -29,7 +29,7 @@ The current example has site-local accounts, invitation primitives, a credit led
 | --- | --- | --- |
 | Site configuration | `site/*.config.ts`, `site/messages/`, `src/lib/config.ts` | Compiled site choices and typed localized copy shared by routes and components. |
 | Web and HTTP | `src/app/`, Next.js App Router | Pages, metadata, better-auth handler, and request/response endpoints. |
-| UI | `src/components/`, React server/client components, CSS, Motion and Lucide | Homepage and workspace composition, React Bits navigation, sign-in, invitation, language, and desktop interaction. |
+| UI | `src/components/`, React server/client components, CSS, Motion and Lucide | Homepage and workspace composition, configurable homepage navigation, sign-in, invitation, language, and desktop interaction. |
 | Authentication | `src/lib/auth.ts`, `src/lib/auth-schema.ts`, better-auth, Drizzle on D1 | Sessions and accounts from this site's DB; enabled methods from `site/auth.config.ts`. |
 | Access control | `src/lib/invites.ts`, `src/lib/turnstile.ts`, `src/lib/desktop-auth.ts`, D1 and Turnstile HTTP API | Invitation eligibility, optional sign-in verification, and allow-listed app handoff. |
 | Credits | `src/lib/ledger.ts`, `src/lib/credit-history.ts`, native D1 statements and batches | Atomic grants, reservations, allocation, refund, balance, and bounded account history. |
@@ -117,7 +117,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │       └── invites/redeem/route.ts       # Session-scoped redemption and signup grant
 │   ├── components/                   # UI composition and client controls
 │   │   ├── home-content.tsx          # Session-aware homepage entry, existing nav, and section composition
-│   │   ├── blocks/navigation-12.tsx # Installed React Bits nav adapted to accept site copy, links and actions
+│   │   ├── blocks/replica-navigation.tsx # Configurable homepage bar, menus, theme toggle, and mobile links
 │   │   ├── sections/                 # Ordered homepage sections; Header mounts navigation, tool mounts workbench
 │   │   ├── video-tool/               # Bound copy, scoped presentation, interaction state, pure selectors
 │   │   ├── pricing-content.tsx       # Server-rendered plan list
@@ -176,7 +176,7 @@ A new capability can be a new `src/lib/` service called by an API endpoint, a se
 
 ### Configuration and localization
 
-`site/site.config.ts` supplies brand, locale, deploy, email, and signup-credit choices at build time, while `wrangler.jsonc` declares matching live resources.
+`site/site.config.ts` supplies brand, optional logo, locale, deploy, email, and signup-credit choices at build time, while `wrangler.jsonc` declares matching live resources.
 `scripts/site-check.ts` compares the Worker name, D1/R2/Queue names, auth shape, email binding, callback origin, and required secret names before publication.
 `site/messages/en.ts` and `site/messages/zh.ts` share keys under `nav`, `hero`, `videoTool`, `dashboard`, and `credits`; `src/app/[locale]/` and `src/components/language-control.tsx` select copy without duplicating business logic.
 `site/theme.config.ts` becomes CSS variables in `src/app/layout.tsx`, and `src/app/globals.css` applies them across marketing and workspace surfaces.
@@ -200,7 +200,7 @@ Grant source IDs, entry idempotency keys, and task state transitions make retrie
 
 The existing homepage, dashboard, and credit history are a preview; `src/lib/mock-services.ts` produces no generated media.
 `src/components/home-content.tsx` passes the signed-in name to `src/components/sections/HomePage.tsx`, which orders Header, VideoHero, VideoToolSection, VideoShowcase, VideoFeatures, VideoPricing, VideoFAQ, and Footer.
-`Header` passes localized brand, links, language control and configured authentication to the adapted React Bits `navigation-12` block; pricing and workspace still use `MarketingNav`.
+`Header` passes localized brand, optional site logo, links, language choices, real signed-in credits and account controls to `blocks/replica-navigation.tsx`; pricing and workspace still use `MarketingNav`.
 The six non-header, non-tool sections remain empty sections with stable ids.
 `sections/VideoToolSection.tsx` mounts the existing `src/components/video-tool/video-tool-section.tsx` without altering its behavior.
 `bind-copy.ts` localizes links and assembles asset copy, then `video-tool-section.tsx` passes props and shows the create-payload preview.
@@ -226,7 +226,7 @@ Vendor-specific request and callback formats stay in adapters, while the page, t
 | Change | Start here, then connect |
 | --- | --- |
 | Change copy or switches | Edit `site/messages/en.ts` and `site/messages/zh.ts` together for text, or `site/site.config.ts` and `site/auth.config.ts` for site choices; connect new switches to their `src/components/` view, `src/lib/` or `src/app/api/` server gate, and `scripts/site-check.ts` when bindings change. |
-| Add a page section | Implement or extend a section in `src/components/sections/` and compose it from `HomePage.tsx`; supply localized content from `site/messages/`, tokens from `site/theme.config.ts` and `src/app/globals.css`, and a route under `src/app/` when it needs its own page. The homepage navigation is in `Header.tsx` and `src/components/blocks/navigation-12.tsx`. |
+| Add a page section | Implement or extend a section in `src/components/sections/` and compose it from `HomePage.tsx`; supply localized content from `site/messages/`, tokens from `site/theme.config.ts` and `src/app/globals.css`, and a route under `src/app/` when it needs its own page. The homepage navigation is in `Header.tsx` and `src/components/blocks/replica-navigation.tsx`. |
 | Add a sign-in method | Extend `site/auth.config.ts`, the method selection in `src/lib/auth.ts`, the card in `src/components/auth-control.tsx`, and the callback or guard in `src/app/api/auth/[...all]/route.ts`; declare credentials in `src/lib/env.ts`, `wrangler.jsonc`, and `scripts/site-check.ts`, with auth tests under `test/`. |
 | Add a table | Add the next SQL file in `migrations/`, then update `src/lib/auth-schema.ts` for better-auth tables or native D1 queries and types in the owning `src/lib/` service; expose user-scoped reads through `src/app/` and test the migration and operation. |
 | Add an upstream | Put provider-specific calls and response mapping behind an adapter in `src/lib/`; connect it through a validated `src/app/api/` endpoint and, for long-running work, `worker.ts`, `src/lib/ledger.ts`, and a progress-aware component; add its Worker secret names to `src/lib/env.ts`, `wrangler.jsonc`, and `scripts/site-check.ts`. |
@@ -261,7 +261,7 @@ Schema changes gain a new reviewed migration and matching service/query types an
 
 | Location and item | Current role |
 | --- | --- |
-| `site/site.config.ts`: `brand` | Site title and notification brand. |
+| `site/site.config.ts`: `brand`, optional `logo` | Site title and notification brand, plus optional homepage navigation logo image and alt text. |
 | `previewOnly` | Controls robots metadata and `robots.txt` indexing behavior. |
 | `apex`, `url` | Canonical host and absolute base URL for authentication, callbacks, links, metadata, and site-check. |
 | `locales`, `defaultLocale` | Available locale routes and selector values, plus default homepage and document language. |
