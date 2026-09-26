@@ -4,7 +4,6 @@ import { workerEnv } from '@/lib/env';
 import { site, auth, messages } from '@/lib/config';
 import { GoogleOneTap } from './google-one-tap';
 import { hasInvite } from '@/lib/invites';
-import { MarketingNav } from './marketing-nav';
 import { HomePage } from './sections/HomePage';
 
 export async function HomeContent({ locale = site.defaultLocale as keyof typeof messages }: { locale?: keyof typeof messages }) {
@@ -17,7 +16,6 @@ export async function HomeContent({ locale = site.defaultLocale as keyof typeof 
 
   return <div className="site-shell">
     {!session && auth.google.enabled && auth.google.oneTapEnabled && env.GOOGLE_CLIENT_ID && <GoogleOneTap clientId={env.GOOGLE_CLIENT_ID} callbackURL={`/${locale}`} />}
-    <MarketingNav locale={locale} userName={session?.user.name} />
-    <HomePage locale={locale} />
+    <HomePage locale={locale} userName={session?.user.name} />
   </div>;
 }

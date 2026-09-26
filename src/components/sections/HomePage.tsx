@@ -8,9 +8,9 @@ import { VideoPricing } from './VideoPricing';
 import { VideoFAQ } from './VideoFAQ';
 import { Footer } from './Footer';
 
-export function HomePage({ locale }: { locale: keyof typeof messages }) {
+export function HomePage({ locale, userName }: { locale: keyof typeof messages; userName?: string }) {
   return <main>
-    <Header />
+    <Header locale={locale} userName={userName} />
     <VideoHero />
     <VideoToolSection locale={locale} />
     <VideoShowcase />
