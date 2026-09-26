@@ -1,5 +1,6 @@
 import { site, auth, messages } from '@/lib/config';
 import { navigationLinks, routePath } from '@/lib/routes';
+import { browserNavCopy } from '@/lib/browser-nav-copy';
 import { AuthControl } from './auth-control';
 import { LanguageControl } from './language-control';
 
@@ -12,8 +13,8 @@ export function MarketingNav({ locale, userName, callbackURL, hideLanguage = fal
         {navigationLinks(locale).map(link => <a key={link.id} href={link.href}>{link.label}</a>)}
       </nav>
       <div className="nav-right">
-        {!hideLanguage && <LanguageControl locale={locale} locales={site.locales} label={copy.nav.language} />}
-        <AuthControl copy={copy.nav} locale={locale} methods={{ email: auth.email, google: auth.google, github: auth.github }} userName={userName} callbackURL={callbackURL ?? routePath(locale, 'home')} inviteRequired={auth.invite.required} />
+        {!hideLanguage && <LanguageControl locale={locale} locales={site.languages} label={copy.nav.language} />}
+        <AuthControl copy={browserNavCopy(copy.nav)} locale={locale} methods={{ email: auth.email, google: auth.google, github: auth.github }} userName={userName} callbackURL={callbackURL ?? routePath(locale, 'home')} inviteRequired={auth.invite.required} />
       </div>
     </div>
   </header>;

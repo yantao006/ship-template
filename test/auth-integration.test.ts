@@ -8,7 +8,7 @@ import { site } from '../src/lib/config';
 import { balance } from '../src/lib/ledger';
 import type { Env } from '../src/lib/env';
 
-const emailSettings: AuthSettings = { basePath: '/api/auth', email: { enabled: true, requireVerification: false }, google: { enabled: false }, github: { enabled: false } };
+const emailSettings: AuthSettings = { email: { enabled: true, requireVerification: false }, google: { enabled: false }, github: { enabled: false } };
 
 test('verification disabled: email sign-up immediately creates a session and grants credits once', async () => {
   const mf = new Miniflare({ modules:true, script:'export default { fetch() { return new Response("ok") } }', d1Databases:{DB:'auth-test'} });

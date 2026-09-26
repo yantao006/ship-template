@@ -17,7 +17,7 @@ export function WorkspaceShell({ locale, userName, title, currentItem, children 
         <p className="sidebar-footnote">{copy.dashboard.preview}</p>
       </aside>
       <main className="workspace-main">
-        <div className="workspace-heading"><div><p className="workspace-breadcrumb">{copy.nav.workspace} / {title}</p><h1>{title}</h1></div><LanguageControl locale={locale} locales={site.locales} label={copy.nav.language} /></div>
+        <div className="workspace-heading"><div><p className="workspace-breadcrumb">{copy.nav.workspace} / {title}</p><h1>{title}</h1></div><LanguageControl locale={locale} locales={site.languages} label={copy.nav.language} /></div>
         {children}
       </main>
     </div>

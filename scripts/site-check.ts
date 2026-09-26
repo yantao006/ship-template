@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve, join } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { authBasePath } from '../src/lib/auth-path';
 
 export async function check(root: string, env: Record<string, string | undefined> = process.env, strict = false) {
   const config = (await import(pathToFileURL(join(root, 'site/site.config.ts')).href)).default;
@@ -18,7 +19,7 @@ export async function check(root: string, env: Record<string, string | undefined
   if (wrangler.main !== 'worker.ts') errors.push('Custom Worker entry missing');
   if (!/^https:\/\/[^/]+$/.test(config.url) || new URL(config.url).hostname !== config.apex) errors.push('Canonical site URL mismatch');
   if (wrangler.vars?.SITE_URL !== config.url) errors.push('Worker SITE_URL mismatch');
-  if (auth.backend !== 'better-auth' || auth.basePath !== '/api/auth' || !['email', 'google', 'github'].every(key => typeof auth[key as 'email' | 'google' | 'github']?.enabled === 'boolean')) errors.push('Auth config mismatch');
+  if (auth.backend !== 'better-auth' || Object.hasOwn(auth, 'basePath') || !['email', 'google', 'github'].every(key => typeof auth[key as 'email' | 'google' | 'github']?.enabled === 'boolean')) errors.push('Auth config mismatch');
   if (typeof auth.email.requireVerification !== 'boolean' || (auth.email.requireVerification && !auth.email.enabled)) errors.push('Invalid email verification switch');
   if (typeof auth.email.passwordReset !== 'boolean' || (auth.email.passwordReset && !auth.email.enabled)) errors.push('Invalid password reset switch');
   if (auth.google.oneTapEnabled && !auth.google.enabled) errors.push('Google One Tap requires Google auth');
@@ -51,7 +52,7 @@ export async function check(root: string, env: Record<string, string | undefined
     if (env.SITE_URL !== config.url) errors.push('SITE_URL mismatch');
     if (d1?.database_id === 'REPLACE_WITH_SITE_D1_ID') errors.push('D1 id placeholder');
   }
-  return { config, callback: `${config.url}${auth.basePath}/callback/google`, githubCallback: `${config.url}${auth.basePath}/callback/github`, errors };
+  return { config, callback: `${config.url}${authBasePath}/callback/google`, githubCallback: `${config.url}${authBasePath}/callback/github`, errors };
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === resolve(new URL(import.meta.url).pathname)) {

@@ -5,6 +5,7 @@ import { DesktopHandoff } from '@/components/desktop-handoff';
 import { readSession } from '@/lib/request-context';
 import { allowedDesktopTarget } from '@/lib/desktop-auth';
 import { auth, messages, localeFor } from '@/lib/config';
+import { browserNavCopy } from '@/lib/browser-nav-copy';
 import { workerEnv } from '@/lib/env';
 
 export default async function AuthCallback({ searchParams }: { searchParams: Promise<{ redirect?: string; locale?: string }> }) {
@@ -17,6 +18,6 @@ export default async function AuthCallback({ searchParams }: { searchParams: Pro
   const returnURL = `/auth-callback?redirect=${encodeURIComponent(target)}&locale=${locale}`;
   return <main className="handoff-page">
     <h1>{session ? messages[locale].nav.desktopWaiting : messages[locale].nav.desktopSignIn}</h1>
-    {session ? <DesktopHandoff target={target} copy={messages[locale].nav} /> : <AuthControl copy={messages[locale].nav} locale={locale} methods={{ email: auth.email, google: auth.google, github: auth.github }} callbackURL={returnURL} inviteRequired={auth.invite.required} />}
+    {session ? <DesktopHandoff target={target} copy={browserNavCopy(messages[locale].nav)} /> : <AuthControl copy={browserNavCopy(messages[locale].nav)} locale={locale} methods={{ email: auth.email, google: auth.google, github: auth.github }} callbackURL={returnURL} inviteRequired={auth.invite.required} />}
   </main>;
 }

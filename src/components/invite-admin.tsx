@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
+import { requestJson } from '@/lib/json-request';
 
 type Code = { code: string; max_uses: number; used_count: number; expires_at: number | null };
 export function InviteAdmin() {
@@ -17,7 +18,7 @@ export function InviteAdmin() {
     event.preventDefault(); setPending(true); setError('');
     const form = new FormData(event.currentTarget);
     try {
-      const response = await fetch('/api/invites', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ maxUses: Number(form.get('maxUses')) }) });
+      const response = await requestJson('/api/invites', { maxUses: Number(form.get('maxUses')) });
       if (!response.ok) throw new Error('Could not create invite code');
       await load();
     } catch (reason) { setError((reason as Error).message); }
@@ -27,7 +28,7 @@ export function InviteAdmin() {
     if (!window.confirm('Revoke this invite code?')) return;
     setPending(true); setError('');
     try {
-      const response = await fetch('/api/invites', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code }) });
+      const response = await requestJson('/api/invites', { code }, 'DELETE');
       if (!response.ok) throw new Error('Could not revoke invite code');
       await load();
     } catch (reason) { setError((reason as Error).message); }

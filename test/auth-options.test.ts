@@ -8,7 +8,7 @@ import { createInvite, hasInvite, listInvites, normalizeInviteCode, redeemInvite
 import type { Env } from '../src/lib/env';
 
 const secret = 'this-is-only-a-local-test-secret-long-enough';
-const settings: AuthSettings = { basePath: '/api/auth', email: { enabled: true }, google: { enabled: false }, github: { enabled: false } };
+const settings: AuthSettings = { email: { enabled: true }, google: { enabled: false }, github: { enabled: false } };
 async function database(name: string) {
   const mf = new Miniflare({ modules: true, script: 'export default { fetch() { return new Response("ok") } }', d1Databases: { DB: name } });
   const db = await mf.getD1Database('DB') as unknown as Env['DB'];

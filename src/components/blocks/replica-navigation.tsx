@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Coins, Globe2, Moon, Sun } from 'lucide-react';
 import { pathForLocale } from '@/components/language-control';
-import { languageFor } from '@/lib/config';
+import { useDismissableLayer } from '@/lib/use-dismissable-layer';
 import './replica-navigation.css';
 
 type NavLink = { label: string; href: string; icon: ReactNode };
@@ -18,7 +18,7 @@ export type ReplicaNavigationProps = {
   navigationLabel: string;
   links: readonly NavLink[];
   locale: string;
-  locales: readonly string[];
+  locales: readonly { code: string; name: string }[];
   languageLabel: string;
   creditsLabel: string;
   pricingLabel: string;
@@ -48,22 +48,7 @@ export function ReplicaNavigation({ brand, logo, brandHref, navigationLabel, lin
       document.documentElement.classList.remove('replica-light');
     };
   }, [light]);
-  useEffect(() => {
-    if (!open) return;
-    const outside = (event: MouseEvent) => {
-      const menuArea = open === 'language' ? languageArea : creditsArea;
-      if (!menuArea.current?.contains(event.target as Node)) setOpen(null);
-    };
-    const escape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        (open === 'language' ? languageRef : creditsRef).current?.focus();
-        setOpen(null);
-      }
-    };
-    document.addEventListener('mousedown', outside);
-    document.addEventListener('keydown', escape);
-    return () => { document.removeEventListener('mousedown', outside); document.removeEventListener('keydown', escape); };
-  }, [open]);
+  useDismissableLayer({ active: !!open, area: open === 'language' ? languageArea : creditsArea, trigger: open === 'language' ? languageRef : creditsRef, onClose: () => setOpen(null) });
 
   const currentPath = pathname === '/' ? brandHref : pathname;
   const activeHref = [...links].sort((a, b) => b.href.length - a.href.length).find(link => currentPath === link.href || (link.href !== brandHref && currentPath.startsWith(`${link.href}/`)))?.href;
@@ -83,7 +68,7 @@ export function ReplicaNavigation({ brand, logo, brandHref, navigationLabel, lin
         <div className="replica-action-wrap" ref={languageArea}>
           <button ref={languageRef} className={`replica-icon ${open === 'language' ? 'selected' : ''}`} type="button" aria-label={languageLabel} aria-expanded={open === 'language'} aria-haspopup="menu" onClick={() => toggle('language')}><Globe2 size={19} /></button>
           {open === 'language' && <div className="replica-popover replica-language-menu" role="menu" aria-label={languageLabel}>
-            {locales.map(code => <button key={code} type="button" role="menuitemradio" aria-checked={locale === code} className={locale === code ? 'current' : ''} onClick={() => { setOpen(null); window.location.assign(pathForLocale(pathname, code, locales)); }}><span className="replica-language-dot" />{languageFor(code).name}</button>)}
+            {locales.map(item => <button key={item.code} type="button" role="menuitemradio" aria-checked={locale === item.code} className={locale === item.code ? 'current' : ''} onClick={() => { setOpen(null); window.location.assign(pathForLocale(pathname, item.code, locales.map(language => language.code))); }}><span className="replica-language-dot" />{item.name}</button>)}
           </div>}
         </div>
         {balance !== undefined && <div className="replica-action-wrap" ref={creditsArea}>

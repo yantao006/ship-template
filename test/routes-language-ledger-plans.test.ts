@@ -30,7 +30,7 @@ test('one route table supplies locale paths and ordered navigation, without copi
   }
   assert.equal(routePath('zh', 'credits'), '/zh/credits');
   for (const file of sourceFiles('src')) {
-    if (file.endsWith('/lib/routes.ts')) continue;
+    if (file.endsWith('/lib/routes.ts') || file.endsWith('/lib/route-paths.ts')) continue;
     const source = readFileSync(file, 'utf8');
     assert.doesNotMatch(source, /\/\$\{(?:locale|code)\}(?:\/(?:pricing|credits|dashboard|verify-email|reset-password)|\$?\{)/, file);
     assert.doesNotMatch(source, /\/\$\{(?:locale|code)\}`/, file);
@@ -86,5 +86,6 @@ test('every configured plan has id-based names and descriptions in every languag
   }
   assert.throws(() => planCopy('en', 'unknown'), /Missing plan copy/);
   assert.match(readFileSync('src/components/pricing-content.tsx', 'utf8'), /planCopy\(locale, plan\.id\)/);
-  assert.match(readFileSync('src/components/blocks/account-popovers.tsx', 'utf8'), /planCopy\(locale as keyof typeof messages, plan\.id\)/);
+  assert.match(readFileSync('src/components/sections/Header.tsx', 'utf8'), /planCopy\(locale, plan\.id\)\.name/);
+  assert.match(readFileSync('src/components/blocks/account-popovers.tsx', 'utf8'), /<h3>\{plan\.name\}<\/h3>/);
 });

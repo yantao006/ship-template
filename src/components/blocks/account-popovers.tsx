@@ -2,20 +2,20 @@
 
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { createAuthClient } from 'better-auth/react';
+import { useRouter } from 'next/navigation';
+import { authClient } from '@/lib/auth-client';
+import { requestJson } from '@/lib/json-request';
+import { useDismissableLayer } from '@/lib/use-dismissable-layer';
 import { FaFacebookF, FaLinkedinIn, FaRedditAlien, FaTelegram, FaWhatsapp, FaXTwitter } from 'react-icons/fa6';
 import { Check, ChevronDown, CircleHelp, Coins, Copy, FileText, Gift, LogOut, Mail, MessageCircle, Plus, Settings, Share2, ShieldCheck, Sparkles, X } from 'lucide-react';
-import { languageFor, type messages } from '@/lib/config';
-import { routePath, sitePath } from '@/lib/routes';
-import { planCopy } from '@/lib/plan-copy';
+import type en from '@site/messages/en';
+import { routePath, sitePath } from '@/lib/route-paths';
 import { dailyRewardState } from './account-popover-state';
 import { AccountPopoverCard, type PopoverRow } from './account-popover-card';
 import './account-popovers.css';
 
-const authClient = createAuthClient({ basePath: '/api/auth' });
-type Copy = (typeof messages)['en']['account'];
-type Plan = { id: string; billing: 'once' | 'year'; credits: number; amount: string; currency: string };
+type Copy = (typeof en)['account'];
+type Plan = { id: string; billing: 'once' | 'year'; credits: number; amount: string; currency: string; name: string };
 type Network = 'Facebook' | 'X' | 'WhatsApp' | 'LinkedIn' | 'Telegram' | 'Reddit';
 type Settings = { checkIn: { enabled: boolean; credits: number }; share: { enabled: boolean; credits: number; maxSubmissions: number }; referral: { enabled: boolean; inviterCredits: number; friendCredits: number }; contactEmail: string; feedbackEmail: string; commercialUseHref: string; shareNetworks: readonly Network[]; sharePostNetworks: readonly Network[]; icons: { checkin: string; share: string; invite: string; contact: string; feedback: string } };
 type Activity = { balance: number; referralCode: string; checkInDays: string[]; submissions: { id: string; url: string; status: string; created_at: number }[]; referralCount: number; purchases: { source_id: string; granted: number; created_at: number }[]; leaderboard: { name: string; total: number }[] };
@@ -28,27 +28,14 @@ function SocialIcon({ name }: { name: Network }) { const Icon = socialIcons[name
 
 function PopupDialog({ title, closeLabel, onClose, children, wide = false, variant }: { title: string; closeLabel: string; onClose: () => void; children: ReactNode; wide?: boolean; variant?: string }) {
   const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const previous = document.activeElement as HTMLElement | null;
-    const overflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    ref.current?.querySelector<HTMLElement>('button')?.focus();
-    function keydown(event: KeyboardEvent) {
-      if (event.key === 'Escape') onClose();
-      if (event.key !== 'Tab') return;
-      const focusable = [...(ref.current?.querySelectorAll<HTMLElement>('button:not([disabled]),a[href],input:not([disabled]),summary') ?? [])];
-      if (event.shiftKey && document.activeElement === focusable[0]) { event.preventDefault(); focusable.at(-1)?.focus(); }
-      else if (!event.shiftKey && document.activeElement === focusable.at(-1)) { event.preventDefault(); focusable[0]?.focus(); }
-    }
-    document.addEventListener('keydown', keydown);
-    return () => { document.removeEventListener('keydown', keydown); document.body.style.overflow = overflow; previous?.focus(); };
-  }, [onClose]);
-  return <div className="account-overlay" onMouseDown={e => { if (e.target === e.currentTarget) onClose(); }}><div className={`account-dialog${wide ? ' wide' : ''}${variant ? ` account-${variant}-dialog` : ''}`}  ref={ref} role="dialog" aria-modal="true" aria-labelledby="account-dialog-title"><button type="button" className="account-close" aria-label={closeLabel} onClick={onClose}><X size={20} /></button><h2 id="account-dialog-title">{title}</h2>{children}</div></div>;
+  const overlay = useRef<HTMLDivElement>(null);
+  useDismissableLayer({ active: true, area: ref, backdrop: overlay, onClose, trapFocus: true });
+  useEffect(() => { const overflow = document.body.style.overflow; document.body.style.overflow = 'hidden'; return () => { document.body.style.overflow = overflow; }; }, []);
+  return <div className="account-overlay" ref={overlay}><div className={`account-dialog${wide ? ' wide' : ''}${variant ? ` account-${variant}-dialog` : ''}`}  ref={ref} role="dialog" aria-modal="true" aria-labelledby="account-dialog-title"><button type="button" className="account-close" aria-label={closeLabel} onClick={onClose}><X size={20} /></button><h2 id="account-dialog-title">{title}</h2>{children}</div></div>;
 }
 
-export function AccountPopovers({ user, balance, locale, copy, labels, settings, palette, plans, siteUrl, brand }: { user: { name: string; email: string; image?: string | null }; balance: number; locale: string; copy: Copy; labels: { credits: string; logout: string; signOutFailed: string }; settings: Settings; palette: { accent: string; accentEnd: string; accentText: string }; plans: Plan[]; siteUrl: string; brand: string }) {
+export function AccountPopovers({ user, balance, locale, dateLocale, copy, labels, settings, palette, plans, siteUrl, brand }: { user: { name: string; email: string; image?: string | null }; balance: number; locale: string; dateLocale: string; copy: Copy; labels: { credits: string; logout: string; signOutFailed: string }; settings: Settings; palette: { accent: string; accentEnd: string; accentText: string }; plans: Plan[]; siteUrl: string; brand: string }) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [menu, setMenu] = useState<Menu>(null);
   const [dialog, setDialog] = useState<Dialog>(null);
   const [activity, setActivity] = useState<Activity | null>(null);
@@ -61,7 +48,6 @@ export function AccountPopovers({ user, balance, locale, copy, labels, settings,
   const area = useRef<HTMLDivElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
   const creditTrigger = useRef<HTMLButtonElement>(null);
-  const referralRequest = useRef<string | null>(null);
   const closeDialog = useCallback(() => setDialog(null), []);
   const refresh = useCallback(async () => {
     try {
@@ -73,28 +59,11 @@ export function AccountPopovers({ user, balance, locale, copy, labels, settings,
   }, [copy.loadFailed]);
   useEffect(() => { void refresh(); }, [refresh]);
   useEffect(() => {
-    const code = searchParams.get('ref') ?? sessionStorage.getItem('account-referral-code');
-    if (!code || !/^[a-f0-9]{32}$/.test(code)) return;
-    const key = `referral:${code}`;
-    if (sessionStorage.getItem(key) || referralRequest.current === code) return;
-    referralRequest.current = code;
-    void fetch('/api/account/activity', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'referral', code }) }).then(async response => {
-      if (response.ok) { setActivity(await response.json()); setNotice(copy.referralNotice); router.refresh(); }
-      if (response.ok || (response.status >= 400 && response.status < 500 && response.status !== 401)) {
-        sessionStorage.setItem(key, '1');
-        sessionStorage.removeItem('account-referral-code');
-        const url = new URL(location.href); url.searchParams.delete('ref'); history.replaceState(null, '', url.pathname + url.search + url.hash);
-      }
-    }).catch(() => { /* Keep the referral code for the next visit if the network is unavailable. */ }).finally(() => { referralRequest.current = null; });
-  }, [searchParams, copy.referralNotice, router]);
-  useEffect(() => {
-    if (!menu) return;
-    const outside = (event: MouseEvent) => { if (!area.current?.contains(event.target as Node)) setMenu(null); };
-    const escape = (event: KeyboardEvent) => { if (event.key === 'Escape') { (menu === 'account' ? trigger : creditTrigger).current?.focus(); setMenu(null); } };
-    document.addEventListener('mousedown', outside);
-    document.addEventListener('keydown', escape);
-    return () => { document.removeEventListener('mousedown', outside); document.removeEventListener('keydown', escape); };
-  }, [menu]);
+    const claimed = (event: Event) => { setActivity((event as CustomEvent<Activity>).detail); setNotice(copy.referralNotice); };
+    window.addEventListener('account-referral-claimed', claimed);
+    return () => window.removeEventListener('account-referral-claimed', claimed);
+  }, [copy.referralNotice]);
+  useDismissableLayer({ active: !!menu && !dialog, area, trigger: menu === 'account' ? trigger : creditTrigger, onClose: () => setMenu(null) });
   const show = (target: Dialog) => { setMenu(null); setError(''); setNotice(''); setDetailsOpen(false); setDialog(target); void refresh(); };
   const currentBalance = activity?.balance ?? balance;
   const { claimedToday, completed: streakDays, nextClaimAt } = dailyRewardState(activity?.checkInDays ?? [], new Date());
@@ -109,7 +78,7 @@ export function AccountPopovers({ user, balance, locale, copy, labels, settings,
     { name: 'Telegram', href: `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(brand)}` },
   ];
   const networks = (url: string, names: readonly Network[]) => names.map(name => shareTargets(url).find(item => item.name === name)!);
-  const nextClaim = nextClaimAt.toLocaleString(languageFor(locale).dateLocale);
+  const nextClaim = nextClaimAt.toLocaleString(dateLocale);
   async function copyText(text: string) {
     try { await navigator.clipboard.writeText(text); setNotice(copy.copied); } catch { setError(copy.copyFailed); }
   }
@@ -117,7 +86,7 @@ export function AccountPopovers({ user, balance, locale, copy, labels, settings,
     if (busy) return;
     setBusy(true); setError(''); setNotice('');
     try {
-      const response = await fetch('/api/account/activity', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: kind, ...(kind === 'share' ? { url: postUrl } : {}) }) });
+      const response = await requestJson('/api/account/activity', { action: kind, ...(kind === 'share' ? { url: postUrl } : {}) });
       if (!response.ok) throw new Error(copy.actionFailed);
       setActivity(await response.json());
       setNotice(kind === 'checkin' ? copy.claimedNotice : copy.sent);
@@ -162,8 +131,8 @@ export function AccountPopovers({ user, balance, locale, copy, labels, settings,
     {dialog === 'share' && <><div className="account-hero account-checkin-hero"><span className="account-hero-icon"><FeatureIcon name={settings.icons.share}/></span><div><span className="account-kicker">+{settings.share.credits}</span><h2>{copy.shareHeroTitle.replace('{credits}', String(settings.share.credits))}</h2><p>{copy.shareLead}</p></div></div><div className="account-body account-share-body"><div className="account-panel"><h3>{copy.publishStep}</h3><p>{copy.publishLead}</p><p><b>{copy.publishAdvice}</b></p><button className="account-primary" onClick={() => void copyText(shareText)}><Copy size={17}/>{copy.quickCopy}</button><div className="account-sharelinks">{networks(siteUrl, settings.sharePostNetworks).map(item => <a key={item.name} href={item.href} target="_blank" rel="noopener noreferrer" aria-label={item.name}><SocialIcon name={item.name as Network}/></a>)}</div><details><summary>{copy.shareWhere}<ChevronDown size={15}/></summary><p>{copy.shareWhereDetail}</p></details></div><form className="account-panel" onSubmit={event => { event.preventDefault(); void action('share'); }}><h3>{copy.submitStep}</h3><p>{copy.submitLead.replace('{credits}', String(settings.share.credits))}</p><div className="account-submit"><input type="url" required value={postUrl} onChange={event => setPostUrl(event.target.value)} placeholder={copy.postPlaceholder} aria-label={copy.submitPost} /><button type="submit" disabled={busy || !activity || activity.submissions.length >= settings.share.maxSubmissions}>{activity && activity.submissions.length >= settings.share.maxSubmissions ? copy.shareLimit : busy ? copy.loading : copy.submit}</button></div></form>{!!activity?.submissions.length && <div className="account-panel account-share-history"><h3>{copy.submissions}</h3>{activity.submissions.map(item => <p className="account-entry" key={item.id}><a href={item.url} target="_blank" rel="noopener noreferrer">{item.url}</a><span>{copy[item.status as 'pending' | 'approved' | 'rejected'] ?? item.status}</span></p>)}</div>}</div></>}
     {dialog === 'invite' && <><div className="account-hero account-checkin-hero account-invite-hero"><span className="account-hero-icon"><FeatureIcon name={settings.icons.invite}/></span><div><span className="account-kicker">{settings.referral.inviterCredits} {labels.credits}</span><h2>{copy.inviteTitle}</h2><p>{copy.inviteLead}</p></div></div><div className="account-body account-invite-grid"><section className="account-panel account-invite-link"><h3><Gift size={20}/>{copy.referralLink}</h3><p>{copy.inviteLead}</p><div className="account-referral"><span>{activity ? link : copy.loading}</span><button disabled={!activity} onClick={() => void copyText(link)}><Copy size={15}/>{copy.copyLink}</button></div><div className="account-invite-social"><small>{copy.shareVia}</small><div className="account-sharelinks">{activity && networks(link, settings.shareNetworks).map(item => <a key={item.name} href={item.href} target="_blank" rel="noopener noreferrer" aria-label={item.name}><SocialIcon name={item.name as Network}/></a>)}</div></div></section><section className="account-panel account-invite-rewards"><h3><Gift size={18}/>{copy.yourRewards}</h3><p>{copy.inviteSummary.replace('{inviter}', String(settings.referral.inviterCredits)).replace('{friend}', String(settings.referral.friendCredits))}</p><div className="account-stats"><span>{copy.youGet}<b>+{settings.referral.inviterCredits}</b></span><span>{copy.friendGets}<b>+{settings.referral.friendCredits}</b></span></div><div className="account-invite-totals"><span>{copy.totalEarned}<b>{(activity?.referralCount ?? 0) * settings.referral.inviterCredits}</b></span><span>{copy.referred}<b>{activity?.referralCount ?? 0}</b></span></div><div className="account-invite-rules"><strong>{copy.rewardRules}</strong><p>{copy.referralRules}</p></div></section><section className="account-panel account-invite-leaderboard"><h3>{copy.leaderboard}</h3><p>{copy.leaderboardLead}</p>{activity?.leaderboard.length ? <ol className="account-leaderboard">{activity.leaderboard.map(item => <li key={item.name}>{item.name} <span>{item.total} {copy.referred}</span></li>)}</ol> : <p>{copy.noLeaderboard}</p>}</section><section className="account-panel account-referral-history"><h3>{copy.history}</h3><p>{activity?.referralCount ? `${activity.referralCount} ${copy.referred}` : copy.noReferrals}</p></section></div></>}
     {dialog === 'contact' || dialog === 'feedback' ? <div className="account-body account-contact">{dialog === 'contact' ? <CircleHelp size={28}/> : <MessageCircle size={28}/>}<p>{dialog === 'contact' ? copy.contactLead : copy.feedbackLead}</p><a href={`mailto:${dialog === 'contact' ? settings.contactEmail : settings.feedbackEmail}`}>{dialog === 'contact' ? settings.contactEmail : settings.feedbackEmail}</a></div> : null}
-    {dialog === 'plans' && <div className="account-body"><div className="account-tabs">{(['once','year'] as const).map(period => <button key={period} className={planBilling === period ? 'selected' : ''} onClick={() => setPlanBilling(period)}>{copy[period]}</button>)}</div><div className="account-plans">{plans.filter(plan => plan.billing === planBilling).map(plan => <Link key={plan.id} href={routePath(locale, 'pricing')}><h3>{planCopy(locale as keyof typeof messages, plan.id).name}</h3><strong>{plan.currency} {plan.amount}</strong><span>{plan.credits} {labels.credits}</span></Link>)}</div><p>{copy.planHint}</p><Link className="account-primary" href={routePath(locale, 'pricing')}>{copy.viewPlans}</Link></div>}
-    {dialog === 'invoices' && <div className="account-body"><p>{copy.invoiceLead}</p>{activity?.purchases.length ? activity.purchases.map(item => <div className="account-entry" key={item.source_id}><span><b>{item.source_id}</b><small>{new Date(item.created_at).toLocaleDateString(languageFor(locale).dateLocale)}</small></span><strong>+{item.granted} {labels.credits}</strong></div>) : <div className="account-panel">{copy.noInvoices}</div>}<a className="account-secondary" href={`mailto:${settings.contactEmail}?subject=${encodeURIComponent(copy.requestInvoice)}`}><Mail size={16}/>{copy.requestInvoice}</a></div>}
+    {dialog === 'plans' && <div className="account-body"><div className="account-tabs">{(['once','year'] as const).map(period => <button key={period} className={planBilling === period ? 'selected' : ''} onClick={() => setPlanBilling(period)}>{copy[period]}</button>)}</div><div className="account-plans">{plans.filter(plan => plan.billing === planBilling).map(plan => <Link key={plan.id} href={routePath(locale, 'pricing')}><h3>{plan.name}</h3><strong>{plan.currency} {plan.amount}</strong><span>{plan.credits} {labels.credits}</span></Link>)}</div><p>{copy.planHint}</p><Link className="account-primary" href={routePath(locale, 'pricing')}>{copy.viewPlans}</Link></div>}
+    {dialog === 'invoices' && <div className="account-body"><p>{copy.invoiceLead}</p>{activity?.purchases.length ? activity.purchases.map(item => <div className="account-entry" key={item.source_id}><span><b>{item.source_id}</b><small>{new Date(item.created_at).toLocaleDateString(dateLocale)}</small></span><strong>+{item.granted} {labels.credits}</strong></div>) : <div className="account-panel">{copy.noInvoices}</div>}<a className="account-secondary" href={`mailto:${settings.contactEmail}?subject=${encodeURIComponent(copy.requestInvoice)}`}><Mail size={16}/>{copy.requestInvoice}</a></div>}
     {(error || notice) && <p className={error ? 'account-error' : 'account-message'} role={error ? 'alert' : 'status'}>{error || notice}</p>}
   </PopupDialog></div>}
   </>;
