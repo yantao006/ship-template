@@ -10,7 +10,7 @@ The current example has site-local accounts, invitation primitives, configurable
 - **Configuration decides what appears:** `site/` describes the site's identity, features, copy, and theme; the UI reflects enabled choices and the server enforces the same choices. The landing video tool is a client-only request preview, not a generation or credit operation.
 - **One language per file:** `site/messages/en.ts` and `site/messages/zh.ts` keep corresponding keys, and locale-aware pages select one message set at a time.
 - **One navigation path per purpose:** the navigation has one language control and one sign-in entry; its sign-in card lists only the methods enabled in `site/auth.config.ts`.
-- **Theme owns color:** `site/theme.config.ts` defines paired light/dark palettes, default modes, account accents, and named tones; `src/lib/theme-tokens.ts` generates the stylesheet in `src/app/layout.tsx`.
+- **Theme owns color:** `site/theme.config.ts` defines paired light/dark palettes, top-bar and account-card chrome, row tones, default modes, and account accents; `src/lib/theme-tokens.ts` generates the stylesheet in `src/app/layout.tsx`.
   The homepage defaults dark and other pages light, while the homepage control selects the mode on `<html>`; legacy CSS surfaces still await migration.
 - **Pages compose sections:** `src/components/sections/HomePage.tsx` orders eight homepage sections. `Header` mounts the configurable replica-style navigation; six sections remain empty scaffolds, and the video tool renders its existing implementation.
 - **Long-running work is observable:** video generation uses an asynchronous task and progress flow, while the server validates costs and records credit movements in the ledger.
@@ -191,7 +191,7 @@ A new capability can be a new `src/lib/` service called by an API endpoint, a se
 `site/site.config.ts` supplies brand, optional logo, locale, deploy, email, and signup-credit choices at build time, while `wrangler.jsonc` declares matching live resources.
 `scripts/site-check.ts` compares the Worker name, D1/R2/Queue names, auth shape, email binding, callback origin, and required secret names before publication.
 `site/messages/en.ts` and `site/messages/zh.ts` share keys under `nav`, `hero`, `videoTool`, `account`, `dashboard`, and `credits`; `src/app/[locale]/` and `src/components/language-control.tsx` select copy without duplicating business logic.
-`site/theme.config.ts` provides same-key light and dark palettes, mode defaults, account colors, and named tones; `src/lib/theme-tokens.ts` generates the CSS token stylesheet in `src/app/layout.tsx` instead of inline body styles.
+`site/theme.config.ts` provides same-key light and dark palettes, paired top-bar/account-card chrome and row tones, mode defaults, and account colors; `src/lib/theme-tokens.ts` generates the CSS token stylesheet in `src/app/layout.tsx` instead of inline body styles.
 The homepage header marks the dark default, while `ReplicaNavigation` selects `data-mode` on `<html>` for toggling; other pages default light.
 `src/app/globals.css` applies the tokens across marketing and workspace surfaces, and `.auth-panel` sets foreground with its surface background.
 
@@ -213,7 +213,8 @@ Grant source IDs, entry idempotency keys, and task state transitions make retrie
 ### Current state and extension paths
 
 The homepage account popovers read the signed-in balance and profile and expose configured check-ins, referral sharing and a masked real-data leaderboard, pending share submissions, support links, plans and payment receipts.
-`src/components/blocks/account-popover-card.tsx` renders both menus from ordered rows with optional badges and per-row dividers; their distinct balance/buy and profile headers and all row actions remain in `account-popovers.tsx`.
+`src/components/blocks/account-popover-card.tsx` renders both menus from ordered rows with optional badges, one named tone, and per-row dividers; their distinct balance/buy and profile headers and all row actions remain in `account-popovers.tsx`.
+`replica-navigation.css` owns the shared popover shell for language and account menus; `account-popovers.css` owns account-card content, while paired chrome tokens keep the light and dark surfaces synchronized.
 `docs/research/account-popovers/components/source-spec.md` records source-observed desktop/mobile metrics and click-state evidence; the implementation uses local site copy and capabilities rather than the reference site's product claims.
 Receipts reflect settled credit ledger grants, not tax invoices; share submissions do not award credits until reviewed.
 The existing homepage, dashboard, and credit history are a preview; `src/lib/mock-services.ts` produces no generated media.
@@ -299,7 +300,7 @@ Schema changes gain a new reviewed migration and matching service/query types an
 | `desktop.schemes` | Allow-listed app URL schemes for signed-in desktop handoff. |
 | `turnstile.onSignIn` | Applies Turnstile verification to sign-in requests supplied with a client token. |
 | `site/database.config.ts`: `binding`, `migrationsDir` | Site D1 binding name and migration directory. |
-| `site/theme.config.ts`: `light`, `dark`, `defaultMode`, `font`, `account`, `tones` | Paired semantic palettes, homepage/other-page defaults, account accents, and named tones emitted through `src/lib/theme-tokens.ts`. |
+| `site/theme.config.ts`: `light`, `dark`, `chrome`, `rowTones`, `defaultMode`, `font`, `account`, `tones` | Paired semantic palettes and navigation/account-card chrome, row tones, homepage/other-page defaults, and account accents emitted through `src/lib/theme-tokens.ts`. |
 | `site/video-tool.config.ts` | Landing tool media, workflows, models, fields, references, assets, and optional promo. |
 | `site/messages/en.ts`, `zh.ts`: `nav`, `hero`, `videoTool`, `account`, `dashboard`, `credits` | Same-shape localized strings consumed by navigation, the video tool, and content views. |
 

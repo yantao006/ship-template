@@ -7,11 +7,11 @@ import { AccountPopoverCard, AccountPopoverRow, type PopoverRow } from '../src/c
 const row = (overrides: Partial<PopoverRow> = {}): PopoverRow => ({ id: 'example', icon: createElement('svg', { 'aria-label': 'icon' }), label: 'Example', ...overrides });
 const renderRow = (overrides: Partial<PopoverRow> = {}) => renderToStaticMarkup(createElement(AccountPopoverRow, { row: row(overrides) }));
 
-test('row badge is absent unless supplied and supports an unboxed small label', () => {
+test('row badge is absent unless supplied and an unboxed badge receives its row tone', () => {
   assert.doesNotMatch(renderRow(), /account-row-badge/);
-  const markup = renderRow({ badge: { label: '+10', boxed: false, textColor: '#123456' } });
+  const markup = renderRow({ tone: 'info', badge: { label: '+10', boxed: false } });
   assert.match(markup, /class="account-row-badge"/);
-  assert.match(markup, /color:#123456/);
+  assert.match(markup, /--row-tone:var\(--account-tone-info\)/);
   assert.match(markup, /\+10/);
   assert.doesNotMatch(markup, /account-row-badge boxed/);
 });
@@ -21,11 +21,14 @@ test('row divider is controlled solely by the row input', () => {
   assert.match(renderRow({ dividerBelow: true }), /class="account-row account-row-divider"/);
 });
 
-test('boxed badge uses the supplied box and text colors', () => {
-  const markup = renderRow({ badge: { label: 'Free', boxed: true, boxColor: '#abcdef', textColor: '#123456' } });
+test('boxed badge uses one named row tone; a row without a badge tones its label', () => {
+  const markup = renderRow({ tone: 'account', badge: { label: 'Free', boxed: true } });
   assert.match(markup, /class="account-row-badge boxed"/);
-  assert.match(markup, /--badge-box-color:#abcdef/);
-  assert.match(markup, /color:#123456/);
+  assert.match(markup, /--row-tone:var\(--account-tone-account\)/);
+  assert.match(markup, /--row-box-tone:var\(--account-tone-account-box\)/);
+  assert.doesNotMatch(markup, /tone-label/);
+  assert.match(renderRow({ tone: 'danger' }), /class="account-row tone-label"/);
+  assert.doesNotMatch(renderRow({ tone: 'danger' }), /account-row-badge/);
 });
 
 test('card renders exactly its ordered row list with the supplied header and menu semantics', () => {

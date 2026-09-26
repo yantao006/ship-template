@@ -130,9 +130,9 @@ export function AccountPopovers({ user, balance, locale, copy, labels, settings,
     catch { setError(labels.signOutFailed); } finally { setBusy(false); }
   }
   const rewardRows = (): PopoverRow[] => [
-    ...(settings.checkIn.enabled ? [{ id: 'checkin', icon: <FeatureIcon name={settings.icons.checkin}/>, label: copy.daily, badge: { label: copy.free, boxed: true, boxColor: 'var(--account-accent)', textColor: '#d6c6ff' }, onClick: () => show('checkin') }] : []),
-    ...(settings.share.enabled ? [{ id: 'share', icon: <FeatureIcon name={settings.icons.share}/>, label: copy.share, badge: { label: `+${settings.share.credits}`, boxed: true, boxColor: '#ba4add', textColor: '#eeb7f5' }, onClick: () => show('share') }] : []),
-    ...(settings.referral.enabled ? [{ id: 'invite', icon: <FeatureIcon name={settings.icons.invite}/>, label: copy.invite, badge: { label: `+${settings.referral.inviterCredits}`, boxed: true, boxColor: '#3b82f6', textColor: '#a6ceff' }, onClick: () => show('invite') }] : []),
+    ...(settings.checkIn.enabled ? [{ id: 'checkin', icon: <FeatureIcon name={settings.icons.checkin}/>, label: copy.daily, tone: 'account' as const, badge: { label: copy.free, boxed: true }, onClick: () => show('checkin') }] : []),
+    ...(settings.share.enabled ? [{ id: 'share', icon: <FeatureIcon name={settings.icons.share}/>, label: copy.share, tone: 'pink' as const, badge: { label: `+${settings.share.credits}`, boxed: true }, onClick: () => show('share') }] : []),
+    ...(settings.referral.enabled ? [{ id: 'invite', icon: <FeatureIcon name={settings.icons.invite}/>, label: copy.invite, tone: 'info' as const, badge: { label: `+${settings.referral.inviterCredits}`, boxed: true }, onClick: () => show('invite') }] : []),
   ];
   const creditRows: PopoverRow[] = [
     ...rewardRows(),
@@ -145,7 +145,7 @@ export function AccountPopovers({ user, balance, locale, copy, labels, settings,
     { id: 'account', icon: <Settings/>, label: copy.account, href: `/${locale}/dashboard`, onClick: () => setMenu(null) },
     { id: 'invoices', icon: <FileText/>, label: copy.invoices, onClick: () => show('invoices') },
     { id: 'center', icon: <Coins/>, label: copy.center, href: `/${locale}/credits`, onClick: () => setMenu(null), dividerBelow: true },
-    { id: 'signout', icon: <LogOut/>, label: labels.logout, textColor: '#f87171', disabled: busy, onClick: () => void signOut() },
+    { id: 'signout', icon: <LogOut/>, label: labels.logout, tone: 'danger', disabled: busy, onClick: () => void signOut() },
   ];
   const accountStyle = { '--account-accent': palette.accent, '--account-accent-end': palette.accentEnd, '--account-accent-text': palette.accentText } as CSSProperties;
   return <><div className="account-controls" ref={area} style={accountStyle}>
