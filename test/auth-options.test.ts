@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { Miniflare } from 'miniflare';
 import { createAuth, type AuthSettings } from '../src/lib/auth';
 import { allowedDesktopTarget, handoffURL } from '../src/lib/desktop-auth';
-import { hasInvite, redeemInvite, validateInvite } from '../src/lib/invites';
+import { createInvite, hasInvite, listInvites, normalizeInviteCode, redeemInvite, revokeInvite, validateInvite, validInviteCode } from '../src/lib/invites';
 import type { Env } from '../src/lib/env';
 
 const secret = 'this-is-only-a-local-test-secret-long-enough';
@@ -55,6 +55,21 @@ test('invite redemption is capacity-limited and idempotent on D1', async () => {
     assert.equal(await hasInvite(env, 'one', true), true);
     assert.equal(await hasInvite(env, 'two', true), false);
     assert.equal((await db.prepare('SELECT used_count FROM invite_code').first<{used_count:number}>())?.used_count, 1);
+  } finally { await mf.dispose(); }
+});
+
+test('invite inventory lifecycle and code normalization have one service owner', async () => {
+  const { mf, db } = await database('invite-admin-test');
+  try {
+    const env = { DB: db } as Env;
+    const code = await createInvite(env, 2);
+    assert.equal(validInviteCode(code), true);
+    assert.equal(normalizeInviteCode(` ${code.toLowerCase()} `), code);
+    assert.equal((await listInvites(env)).length, 1);
+    assert.equal(await validateInvite(env, code, true), true);
+    assert.equal(await revokeInvite(env, code), true);
+    assert.equal(await revokeInvite(env, code), false);
+    assert.deepEqual(await listInvites(env), []);
   } finally { await mf.dispose(); }
 });
 

@@ -1,17 +1,18 @@
-import { createAuth } from '@/lib/auth';
-import { isAllowedBrowserOrigin, site, auth } from '@/lib/config';
+import { site, auth } from '@/lib/config';
 import { workerEnv } from '@/lib/env';
 import { hasInvite } from '@/lib/invites';
 import { planById, startCheckout } from '@/lib/payments';
+import { browserWriteAllowed, readJson, readSession } from '@/lib/request-context';
 
 export async function POST(request: Request) {
-  if (!isAllowedBrowserOrigin(request.headers.get('origin'))) return Response.json({ error: 'Forbidden' }, { status: 403 });
   const env = workerEnv();
-  const session = await createAuth(env, new URL(request.url).hostname).api.getSession({ headers: request.headers });
+  if (!browserWriteAllowed(request, env)) return Response.json({ error: 'Forbidden' }, { status: 403 });
+  const session = await readSession(env, request);
   if (!session) return Response.json({ error: 'Unauthorized' }, { status: 401 });
   if (auth.invite.required && !await hasInvite(env, session.user.id)) return Response.json({ error: 'Invite required' }, { status: 403 });
-  let body: { planId?: string; coupon?: string; locale?: string };
-  try { body = await request.json(); } catch { return Response.json({ error: 'Invalid request' }, { status: 400 }); }
+  const parsed = await readJson<{ planId?: string; coupon?: string; locale?: string }>(request);
+  if (!parsed.ok) return Response.json({ error: 'Invalid request' }, { status: 400 });
+  const body = parsed.body;
   const plan = planById(body.planId ?? '');
   const locale = body.locale && (site.locales as readonly string[]).includes(body.locale) ? body.locale : site.defaultLocale;
   const coupon = body.coupon?.trim();

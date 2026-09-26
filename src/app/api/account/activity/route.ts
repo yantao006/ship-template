@@ -1,42 +1,38 @@
-import { createAuth } from '@/lib/auth';
-import { accountActivity, claimCheckIn, claimReferral, submitShare } from '@/lib/account-rewards';
-import { hasInvite } from '@/lib/invites';
-import { isAllowedBrowserOrigin } from '@/lib/config';
+import { accountActivity, AccountRewardError, claimCheckIn, claimReferral, submitShare } from '@/lib/account-rewards';
 import { workerEnv } from '@/lib/env';
-
-async function authorized(request: Request) {
-  const env = workerEnv();
-  const session = await createAuth(env, new URL(request.url).hostname).api.getSession({ headers: request.headers });
-  if (!session || !await hasInvite(env, session.user.id)) return null;
-  return { env, userId: session.user.id };
-}
+import { accountSnapshot, browserWriteAllowed, readJson } from '@/lib/request-context';
 
 export async function GET(request: Request) {
-  const context = await authorized(request);
-  if (!context) return Response.json({ error: 'Unauthorized' }, { status: 401 });
-  return Response.json(await accountActivity(context.env, context.userId), { headers: { 'Cache-Control': 'no-store' } });
+  const env = workerEnv();
+  const { session, invited } = await accountSnapshot(env, request);
+  if (!session || !invited) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  return Response.json(await accountActivity(env, session.user.id), { headers: { 'Cache-Control': 'no-store' } });
 }
 
 export async function POST(request: Request) {
   const env = workerEnv();
-  const origin = request.headers.get('origin');
-  const local = env.LOCAL_AUTH_TEST === '1' && origin === env.SITE_URL && /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
-  if ((!local && !isAllowedBrowserOrigin(origin)) || request.headers.get('sec-fetch-site') === 'cross-site') return Response.json({ error: 'Forbidden' }, { status: 403 });
-  const context = await authorized(request);
-  if (!context) return Response.json({ error: 'Unauthorized' }, { status: 401 });
-  let body: { action?: string; url?: string; code?: string };
-  try { body = await request.json(); } catch { return Response.json({ error: 'Invalid request' }, { status: 400 }); }
+  if (!browserWriteAllowed(request, env, { allowLocalTest: true })) return Response.json({ error: 'Forbidden' }, { status: 403 });
+  const { session, invited } = await accountSnapshot(env, request);
+  if (!session || !invited) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  const parsed = await readJson<{ action?: string; url?: string; code?: string }>(request);
+  if (!parsed.ok) return Response.json({ error: 'Invalid request' }, { status: 400 });
+  const body = parsed.body;
   try {
     switch (body.action) {
-      case 'checkin': await claimCheckIn(env, context.userId); break;
-      case 'share': await submitShare(env, context.userId, body.url ?? ''); break;
-      case 'referral': await claimReferral(env, context.userId, body.code ?? ''); break;
+      case 'checkin': await claimCheckIn(env, session.user.id); break;
+      case 'share': await submitShare(env, session.user.id, body.url ?? ''); break;
+      case 'referral': await claimReferral(env, session.user.id, body.code ?? ''); break;
       default: return Response.json({ error: 'Unknown action' }, { status: 400 });
     }
-    return Response.json(await accountActivity(env, context.userId), { headers: { 'Cache-Control': 'no-store' } });
+    return Response.json(await accountActivity(env, session.user.id), { headers: { 'Cache-Control': 'no-store' } });
   } catch (error) {
-    const known = ['Invalid URL', 'Limit reached', 'Already submitted or limit reached', 'Invalid referral', 'Already claimed', 'Claim window expired', 'Disabled'];
-    if (error instanceof Error && known.includes(error.message)) return Response.json({ error: error.message }, { status: 400 });
+    if (error instanceof AccountRewardError) {
+      const statusByCode: Record<AccountRewardError['code'], number> = {
+        disabled: 400, invalid_url: 400, limit_reached: 400, duplicate_share: 400,
+        invalid_referral: 400, already_claimed: 400, claim_expired: 400,
+      };
+      return Response.json({ error: error.message }, { status: statusByCode[error.code] });
+    }
     return Response.json({ error: 'Request failed' }, { status: 500 });
   }
 }

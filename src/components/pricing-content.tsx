@@ -1,5 +1,5 @@
 import { headers } from 'next/headers';
-import { createAuth } from '@/lib/auth';
+import { readSession } from '@/lib/request-context';
 import { site, messages } from '@/lib/config';
 import { workerEnv } from '@/lib/env';
 import { MarketingNav } from './marketing-nav';
@@ -8,7 +8,7 @@ import { PricingCheckout } from './pricing-checkout';
 export async function PricingContent({ locale = site.defaultLocale as keyof typeof messages }: { locale?: keyof typeof messages }) {
   const env = workerEnv();
   const requestHeaders = await headers();
-  const session = await createAuth(env, requestHeaders.get('host')?.split(':')[0]).api.getSession({ headers: requestHeaders });
+  const session = await readSession(env, requestHeaders);
   const copy = messages[locale];
   const cards = site.plans.map(plan => ({
     id: plan.id,

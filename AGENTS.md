@@ -32,7 +32,7 @@ The current example has site-local accounts, invitation primitives, configurable
 | Web and HTTP | `src/app/`, Next.js App Router | Pages, metadata, better-auth handler, and request/response endpoints. |
 | UI | `src/components/`, React server/client components, CSS, Motion, Lucide and React Icons | Homepage and workspace composition, configurable homepage navigation, signed-in account cards, sign-in, invitation, language, and desktop interaction. |
 | Authentication | `src/lib/auth.ts`, `src/lib/auth-schema.ts`, better-auth, Drizzle on D1 | Sessions and accounts from this site's DB; enabled methods from `site/auth.config.ts`. |
-| Access control | `src/lib/invites.ts`, `src/lib/turnstile.ts`, `src/lib/desktop-auth.ts`, D1 and Turnstile HTTP API | Invitation eligibility, optional sign-in verification, and allow-listed app handoff. |
+| Access control | `src/lib/request-context.ts`, `src/lib/invites.ts`, `src/lib/turnstile.ts`, `src/lib/desktop-auth.ts`, D1 and Turnstile HTTP API | Centralized request session, browser write guard, JSON parsing and account snapshot; invitation eligibility, optional sign-in verification, and allow-listed app handoff. |
 | Credits | `src/lib/ledger.ts`, `src/lib/credit-history.ts`, native D1 statements and batches | Atomic grants, reservations, allocation, refund, balance, and bounded account history. |
 | Email | `src/lib/email.ts`, `src/lib/notifications.ts`, Cloudflare Email or Resend | One `EmailProvider` interface for message delivery and application notification copy. |
 | Video and payments | `src/components/video-tool/`, `src/lib/mock-services.ts`, `src/lib/waffo.ts`, `src/lib/payments.ts`, `src/lib/ledger.ts`, `video_task` | The landing tool previews a create payload from site config. Checkout calls the Waffo adapter, and a verified callback grants through the ledger. |
@@ -145,6 +145,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │       ├── env.ts                    # Worker binding and secret types plus context accessor
 │       ├── auth-schema.ts            # Drizzle mapping for better-auth D1 tables
 │       ├── auth.ts                   # Better-auth construction, origin checks, signup grant
+│       ├── request-context.ts        # Session, browser write guard, JSON reader and account snapshot
 │       ├── invites.ts                # Invite eligibility, validation, redemption, admin match
 │       ├── ledger.ts                 # Atomic credit lots, entries, task transitions, refunds
 │       ├── credit-history.ts         # Bounded user credit-lot query
@@ -182,6 +183,7 @@ The current code uses responsibility-based files in `src/lib/`, not a formal plu
 `src/lib/config.ts` exports site choices; library functions take `Env`, a D1 handle, or an adapter as input, so business operations can be reused by HTTP handlers and Worker events.
 App Router endpoints own request parsing, session and origin checks, HTTP status, and response serialization; library functions own reusable decisions and persistence.
 `src/lib/auth.ts` composes better-auth, `src/lib/invites.ts` and `src/lib/ledger.ts` around signup eligibility, while `src/lib/email.ts` demonstrates a provider interface selected from site configuration.
+`src/lib/request-context.ts` owns server session lookup, browser-write origin and cross-site checks, JSON reads, and the invited account snapshot with its read-time signup grant and balance; signed payment callbacks remain server-to-server.
 Presentation composition lives in `src/components/`, and external vendor response shapes can be translated inside future video or checkout adapters before reaching those components.
 A new capability can be a new `src/lib/` service called by an API endpoint, a server-rendered page, or a Worker event; the existing file layout is an example of responsibilities, not a naming restriction.
 
@@ -202,7 +204,8 @@ The homepage header marks the dark default, while `ReplicaNavigation` selects `d
 On each request, production login accepts the Worker `SITE_URL` only when it equals `site.url` from `site/site.config.ts`; a mismatch refuses login rather than creating a session on another origin.
 `src/app/api/auth/[...all]/route.ts` wraps signup with invite validation and optional sign-in Turnstile verification before delegating to better-auth.
 `ensureSignupCredits` checks invitation eligibility and grants a signup lot with the user ID as its stable source ID; when email verification is enabled, it waits until the emailed link marks the account verified.
-`src/app/api/invites/redeem/route.ts` validates the session and request origin, redeems the code through an atomic D1 batch, and grants the eligible user credits.
+`src/app/api/invites/redeem/route.ts` uses the shared session and browser-write guard, redeems the code through an atomic D1 batch, and grants the eligible user credits.
+`src/lib/invites.ts` owns invite code format, normalization, inventory reads, creation, and revocation.
 `src/components/auth-control.tsx` presents only configured methods and, when `email.passwordReset` is on, one forgot-password path whose link is sent by `sendResetPassword` through `EmailProvider`; `src/components/verify-email.tsx` provides the verification waiting and resend page; `src/components/reset-password.tsx` accepts the new password; desktop handoff uses `src/lib/desktop-auth.ts` to validate a configured app scheme before `/api/auth/desktop-handoff` issues a session-bearing return URL.
 
 ### Credits, tasks, and provider seams
@@ -276,7 +279,7 @@ Changes to these paths receive focused tests in `test/` and the verification com
 | `account_referral_code`, `account_referral` | Opaque user code and one claim per referred user | Idempotent referral grants. |
 
 `src/lib/auth.ts` uses Drizzle's D1 adapter for the four auth tables, while `src/lib/ledger.ts` and `src/lib/invites.ts` use prepared native D1 statements and batches for write-side invariants.
-`src/lib/account-rewards.ts` scopes reward reads and writes by user and grants check-in/referral credits through the ledger.
+`src/lib/account-rewards.ts` scopes reward reads and writes by user, owns the referral-code format, throws coded account reward errors, and grants check-in/referral credits through the ledger.
 `src/lib/credit-history.ts` limits history reads to 100 lots for the signed-in user, and `src/app/api/credits/balance/route.ts` validates the session and invite gate before reading a balance.
 Schema changes gain a new reviewed migration and matching service/query types and tests; a site applies those migrations to its own D1 before depending on the new shape.
 

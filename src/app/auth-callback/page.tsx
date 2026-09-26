@@ -2,7 +2,7 @@ import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { AuthControl } from '@/components/auth-control';
 import { DesktopHandoff } from '@/components/desktop-handoff';
-import { createAuth } from '@/lib/auth';
+import { readSession } from '@/lib/request-context';
 import { allowedDesktopTarget } from '@/lib/desktop-auth';
 import { auth, messages } from '@/lib/config';
 import { workerEnv } from '@/lib/env';
@@ -13,7 +13,7 @@ export default async function AuthCallback({ searchParams }: { searchParams: Pro
   if (!target) redirect('/');
   const locale: keyof typeof messages = params.locale === 'zh' ? 'zh' : 'en';
   const requestHeaders = await headers();
-  const session = await createAuth(workerEnv(), requestHeaders.get('host')?.split(':')[0]).api.getSession({ headers: requestHeaders });
+  const session = await readSession(workerEnv(), requestHeaders);
   const returnURL = `/auth-callback?redirect=${encodeURIComponent(target)}&locale=${locale}`;
   return <main className="handoff-page">
     <h1>{session ? messages[locale].nav.desktopWaiting : messages[locale].nav.desktopSignIn}</h1>
