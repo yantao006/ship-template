@@ -1,6 +1,7 @@
 import { videoTemplatesZh } from './video-templates-zh';
 
 export default {
+  metadata: { description: '抢先体验未来的视频创作工作台。' },
   nav: { brand: 'Awesomejev', navigation: '主导航', lightMode: '切换为浅色模式', darkMode: '切换为深色模式', availableCredits: '可用积分', home: '首页', pricing: '价格', workspace: '工作台', credits: '积分', language: '语言', login: '登录', google: '使用 Google 登录', github: '使用 GitHub 登录', email: '使用邮箱', orEmail: '或使用邮箱继续', signIn: '登录', signUp: '注册账号', name: '姓名', password: '密码', noMethods: '暂未开放登录', logout: '退出登录', invite: '兑换邀请码', wait: '请稍候…', close: '关闭', emailLabel: '邮箱', authFailed: '登录失败，请重试。', socialFailed: '无法发起登录，请重试。', signOutFailed: '退出登录失败，请重试。', inviteInvalid: '邀请码无效或已用完。', inviteRedeemFailed: '兑换邀请码失败，请重试。', createdButInviteFailed: '账号已创建，但邀请码兑换失败。请登录后再次输入邀请码。', desktopSignIn: '登录后继续', desktopWaiting: '正在登录你的应用', desktopReturning: '正在返回应用…', desktopFailed: '无法完成桌面应用登录。', verifyTitle: '请查收验证邮件', verifyHint: '登录前请打开邮件中的验证链接。如果没有收到，请检查垃圾邮件。', verificationSent: '验证链接已发送至', resendVerification: '重新发送验证邮件', resendFailed: '验证邮件发送失败，请重试。', verifyLink: '打开验证页面', emailNotVerified: '邮箱尚未验证。请查看收件箱或重新发送验证邮件。', verifyContinue: '我已验证邮箱', forgotPassword: '忘记密码？', forgotTitle: '重置密码', forgotHint: '输入账号邮箱。我们会发送一个链接，用来设置新密码。', resetSent: '如果该邮箱已注册，重置链接正在发送。', resetSendFailed: '重置邮件发送失败，请重试。', resetTitle: '设置新密码', resetHint: '为账号输入新密码，至少 8 个字符。', newPassword: '新密码', confirmPassword: '确认密码', updatePassword: '更新密码', resetSuccess: '密码已更新。请使用新密码登录。', resetInvalid: '重置链接无效或已过期。请从登录表单重新申请。', passwordMismatch: '两次输入的密码不一致。', resetMailSubject: '重置 Awesomejev 密码', resetMailLead: '打开此链接以设置新密码：', resetMailAction: '重置密码', resetMailExpiry: '此链接将在 1 小时后失效。' },
   hero: {
     title: '从下一帧开始。',
@@ -66,6 +67,7 @@ export default {
     copied: '已复制到剪贴板', copyFailed: '无法使用剪贴板，请手动复制链接。', sent: '已提交审核，尚未发放积分。', claimedNotice: '奖励积分已到账。', referralNotice: '邀请奖励已到账。', actionFailed: '操作失败，请重试。', loadFailed: '无法加载账号活动，请重新打开卡片。', close: '关闭', loading: '加载中…',
   },
   dashboard: { title: '概览', navigation: '工作台导航', preview: '预览工作台', signInTitle: '登录后查看工作台', signInDescription: '点击导航中的登录，查看你的账号和积分。', backHome: '返回首页', summary: '视频生成功能开放后即可使用积分。', nextTitle: '在一处查看你的账号', nextDescription: '查看积分余额和发放记录。可在价格页购买套餐。此预览版不提供视频工具。', viewCredits: '查看积分', viewPlans: '查看套餐' },
-  credits: { title: '积分', listTitle: '积分记录', description: '发放到你账号的积分，仅展示你的记录。', balance: '可用', source: '来源', granted: '发放', remaining: '剩余', expires: '到期', signup: '欢迎积分', payment: '购买', subscription: '订阅', noExpiry: '无期限', empty: '暂无积分发放记录。' },
+  credits: { title: '积分', listTitle: '积分记录', description: '发放到你账号的积分，仅展示你的记录。', balance: '可用', source: '来源', granted: '发放', remaining: '剩余', expires: '到期', sources: { signup: '欢迎积分', payment: '购买', subscription_month: '订阅', checkin: '每日签到', referral_inviter: '邀请好友奖励', referral_friend: '好友推荐奖励', adjust: '积分调整' }, otherSource: '其他积分', noExpiry: '无期限', empty: '暂无积分发放记录。' },
+  planCopy: { pack: { name: '积分包', detail: '一次购买只发放一次积分。' }, annual: { name: '年付', detail: '一次支付全年费用。这次结账只发放当前自然月的积分。' } },
   pricing: { title: '套餐', lead: '选择套餐并通过 Waffo 结账。可以使用优惠券。年付套餐只发放当前自然月的积分。', checkout: '结账', signInRequired: '请先登录再结账。', wait: '请稍候…', failed: '无法发起结账，请重试。', coupon: '优惠券', once: '一次性', year: '年付', credits: '积分', packName: '积分包', packDetail: '一次购买只发放一次积分。', annualName: '年付', annualDetail: '一次支付全年费用。这次结账只发放当前自然月的积分。' },
 };

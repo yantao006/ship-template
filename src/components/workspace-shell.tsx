@@ -1,18 +1,18 @@
 import type { ReactNode } from 'react';
 import { site, messages } from '@/lib/config';
+import { navigationLinks, routePath, type NavigationId } from '@/lib/routes';
 import { LanguageControl } from './language-control';
 import { MarketingNav } from './marketing-nav';
 
-export function WorkspaceShell({ locale, userName, title, children }: { locale: keyof typeof messages; userName?: string; title: string; children: ReactNode }) {
+export function WorkspaceShell({ locale, userName, title, currentItem, children }: { locale: keyof typeof messages; userName?: string; title: string; currentItem: NavigationId; children: ReactNode }) {
   const copy = messages[locale];
   return <div className="workspace-page">
-    <MarketingNav locale={locale} userName={userName} callbackURL={`/${locale}/dashboard`} hideLanguage />
+    <MarketingNav locale={locale} userName={userName} callbackURL={routePath(locale, 'dashboard')} hideLanguage />
     <div className="workspace-layout">
       <aside className="workspace-sidebar" aria-label={copy.dashboard.navigation}>
-        <a className="sidebar-heading" href={`/${locale}`}>{copy.nav.brand}</a>
+        <a className="sidebar-heading" href={routePath(locale, 'home')}>{copy.nav.brand}</a>
         <nav aria-label={copy.dashboard.navigation}>
-          <a className={title === copy.dashboard.title ? 'active' : ''} href={`/${locale}/dashboard`}>{copy.nav.workspace}</a>
-          <a className={title === copy.credits.title ? 'active' : ''} href={`/${locale}/credits`}>{copy.nav.credits}</a>
+          {navigationLinks(locale).filter(link => link.id === 'dashboard' || link.id === 'credits').map(link => <a key={link.id} className={currentItem === link.id ? 'active' : ''} aria-current={currentItem === link.id ? 'page' : undefined} href={link.href}>{link.label}</a>)}
         </nav>
         <p className="sidebar-footnote">{copy.dashboard.preview}</p>
       </aside>

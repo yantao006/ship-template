@@ -49,10 +49,11 @@ test('homepage composes eight sections in order, using the configured navigation
   const header = section('Header');
   assert.match(header, /<section id="header">/);
   assert.match(header, /import \{ ReplicaNavigation \} from '@\/components\/blocks\/replica-navigation'/);
-  for (const field of ['brand', 'home', 'pricing', 'workspace', 'credits', 'language', 'navigation', 'lightMode', 'darkMode', 'availableCredits']) {
+  for (const field of ['brand', 'pricing', 'language', 'navigation', 'lightMode', 'darkMode', 'availableCredits']) {
     assert.match(header, new RegExp(`copy\\.nav\\.${field}`));
   }
   assert.match(header, /logo=\{site\.logo\}/);
+  assert.match(header, /navigationLinks\(locale\)/);
   assert.match(header, /<AuthControl variant="avatar"/);
   assert.match(header, /<AccountPopovers user=/);
   const block = readFileSync(new URL('../src/components/blocks/replica-navigation.tsx', import.meta.url), 'utf8');

@@ -9,6 +9,7 @@ The current example has site-local accounts, invitation primitives, configurable
 
 - **Configuration decides what appears:** `site/` describes the site's identity, features, copy, and theme; the UI reflects enabled choices and the server enforces the same choices. The landing video tool is a client-only request preview, not a generation or credit operation.
 - **One language per file:** `site/messages/en.ts` and `site/messages/zh.ts` keep corresponding keys, and locale-aware pages select one message set at a time.
+  `site/site.config.ts` owns language entries, and `src/lib/routes.ts` owns localized paths and navigation link metadata.
 - **One navigation path per purpose:** the navigation has one language control and one sign-in entry; its sign-in card lists only the methods enabled in `site/auth.config.ts`.
 - **Theme owns color:** `site/theme.config.ts` defines paired light/dark palettes, top-bar and account-card chrome, dialog and video-tool surfaces, row tones, default modes, and account accents; `src/lib/theme-tokens.ts` generates the stylesheet in `src/app/layout.tsx`.
   The homepage defaults dark and other pages light, while the homepage control selects the mode on `<html>`; legacy CSS surfaces still await migration.
@@ -94,8 +95,9 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │       ├── video-templates-zh.ts     # Chinese image-template titles and descriptions
 │       └── index.ts                  # Locale-to-message map
 ├── src/                               # Application routes, presentation, and services
+│   ├── middleware.ts                 # Forwards route locale to the root layout
 │   ├── app/                          # Next.js App Router pages and API handlers
-│   │   ├── layout.tsx                # Metadata, preview indexing, and theme token stylesheet
+│   │   ├── layout.tsx                # Request-locale html lang/metadata, preview indexing and theme tokens
 │   │   ├── globals.css               # Shared responsive layout and token-consuming styles
 │   │   ├── page.tsx                  # Default-locale homepage
 │   │   ├── robots.ts                 # Preview indexing policy and sitemap reference
@@ -141,13 +143,15 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │   └── desktop-handoff.tsx       # Client app-return request and redirect
 │   └── lib/                          # Business logic, config exports, and integration seams
 │       ├── config.ts                 # Exports site, auth, theme, messages, database, and video-tool choices
+│       ├── routes.ts                 # Localized paths, navigation entries and request-locale lookup
+│       ├── plan-copy.ts              # Localized display copy selected by plan id
 │       ├── theme-tokens.ts           # Generated mode-aware CSS tokens from site theme
 │       ├── env.ts                    # Worker binding and secret types plus context accessor
 │       ├── auth-schema.ts            # Drizzle mapping for better-auth D1 tables
 │       ├── auth.ts                   # Better-auth construction, origin checks, signup grant
 │       ├── request-context.ts        # Session, browser write guard, JSON reader and account snapshot
 │       ├── invites.ts                # Invite eligibility, validation, redemption, admin match
-│       ├── ledger.ts                 # Atomic credit lots, entries, task transitions, refunds
+│       ├── ledger.ts                 # Atomic credits, source registry, paid-source policy and labels
 │       ├── credit-history.ts         # Bounded user credit-lot query
 │       ├── account-rewards.ts        # Check-in/referral grants and pending share state
 │       ├── turnstile.ts              # Token verification and local test path
@@ -158,6 +162,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │       ├── payments.ts                # Plan checkout and idempotent payment grants
 │       └── mock-services.ts           # Local-only video placeholder
 └── test/                              # Miniflare D1, auth, mail, config, and ledger tests
+    ├── routes-language-ledger-plans.test.ts # Route, locale, source and plan copy guards
     ├── account-rewards.test.ts       # Reward persistence, concurrency and user scope
     ├── account-popover-state.test.ts # Seven-day completion and next UTC claim
     ├── account-popover-card.test.ts  # Row badge, divider, box and ordered card rendering
@@ -196,6 +201,7 @@ A new capability can be a new `src/lib/` service called by an API endpoint, a se
 `site/messages/en.ts` and `site/messages/zh.ts` share keys under `nav`, `hero`, `videoTool`, `account`, `dashboard`, and `credits`; `src/app/[locale]/` and `src/components/language-control.tsx` select copy without duplicating business logic.
 `site/theme.config.ts` provides same-key light and dark palettes, paired top-bar/account-card/dialog/video-tool colors and row tones, mode defaults, and account colors; `src/lib/theme-tokens.ts` generates the CSS token stylesheet in `src/app/layout.tsx` instead of inline body styles.
 The homepage header marks the dark default, while `ReplicaNavigation` selects `data-mode` on `<html>` for toggling; other pages default light.
+`src/middleware.ts` forwards the route locale so the root layout sets matching `<html lang>` and metadata, including for the default-language `/` homepage.
 `src/app/globals.css` applies the tokens across marketing and workspace surfaces, and `.auth-panel` sets foreground with its surface background.
 
 ### Authentication and eligibility
@@ -210,6 +216,7 @@ On each request, production login accepts the Worker `SITE_URL` only when it equ
 
 ### Credits, tasks, and provider seams
 
+`src/lib/ledger.ts` owns source IDs and paid-source membership, while `site/messages/` supplies localized names; `src/lib/plan-copy.ts` selects plan display copy by ID.
 `src/lib/ledger.ts` writes `credit_lot`, `credit_entry`, `credit_alloc`, and `video_task` with D1's own `prepare().bind()` statements and `batch()` for multi-step writes, preserving atomic reservations under concurrent requests.
 Grant source IDs, entry idempotency keys, and task state transitions make retries observable. A verified annual payment calls `grantSubscriptionMonth` for the current calendar month only. There is no separate billing scheduler.
 `src/lib/email.ts` chooses Cloudflare Email or Resend behind `EmailProvider`, and `src/lib/notifications.ts` composes messages independently of delivery.
@@ -292,7 +299,7 @@ Schema changes gain a new reviewed migration and matching service/query types an
 | `site/site.config.ts`: `brand`, optional `logo` | Site title and notification brand, plus optional homepage navigation logo image and alt text. |
 | `previewOnly` | Controls robots metadata and `robots.txt` indexing behavior. |
 | `apex`, `url` | Canonical host and absolute base URL for authentication, callbacks, links, metadata, and site-check. |
-| `locales`, `defaultLocale` | Available locale routes and selector values, plus default homepage and document language. |
+| `languages`, derived `locales`, `defaultLocale` | Code, native name and date locale for every language; default homepage and request-locale document language. |
 | `deploy.worker`, `deploy.d1`, `deploy.r2`, `deploy.queue` | Expected per-site Worker, D1, R2, and Queue names compared with Wrangler. |
 | `email.provider`, `email.from` | Selects the email adapter and sender address. |
 | `signupCredits` | Amount granted once to an eligible new account. |
@@ -307,7 +314,7 @@ Schema changes gain a new reviewed migration and matching service/query types an
 | `site/database.config.ts`: `binding`, `migrationsDir` | Site D1 binding name and migration directory. |
 | `site/theme.config.ts`: `light`, `dark`, `chrome`, `rowTones`, `defaultMode`, `font`, `account`, `tones` | Paired semantic palettes and navigation/account-card chrome, row tones, homepage/other-page defaults, and account accents emitted through `src/lib/theme-tokens.ts`. |
 | `site/video-tool.config.ts` | Landing tool media, workflows, models, fields, references, assets, and optional promo. |
-| `site/messages/en.ts`, `zh.ts`: `nav`, `hero`, `videoTool`, `account`, `dashboard`, `credits` | Same-shape localized strings consumed by navigation, the video tool, and content views. |
+| `site/messages/en.ts`, `zh.ts`: `metadata`, `nav`, `hero`, `videoTool`, `account`, `dashboard`, `credits`, `planCopy` | Same-shape localized strings consumed by metadata, navigation, credit sources, plans, the video tool, and content views. |
 
 ### Worker, build, and request-time configuration
 

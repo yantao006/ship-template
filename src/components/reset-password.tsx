@@ -2,6 +2,7 @@
 
 import React, { useState, type FormEvent } from 'react';
 import { createAuthClient } from 'better-auth/react';
+import { routePath } from '@/lib/routes';
 
 const authClient = createAuthClient({ basePath: '/api/auth' });
 
@@ -39,6 +40,6 @@ export function ResetPassword({ locale, token, enabled, copy }: {
     </form>}
     {notice && <p role="status">{notice}</p>}
     {error && <p className="form-error" role="alert">{error}</p>}
-    <a className="auth-switch" href={`/${locale}`}>{copy.signIn}</a>
+    <a className="auth-switch" href={routePath(locale, 'home')}>{copy.signIn}</a>
   </section></main>;
 }

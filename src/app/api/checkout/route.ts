@@ -1,4 +1,5 @@
 import { site, auth } from '@/lib/config';
+import { routePath } from '@/lib/routes';
 import { workerEnv } from '@/lib/env';
 import { hasInvite } from '@/lib/invites';
 import { planById, startCheckout } from '@/lib/payments';
@@ -19,7 +20,7 @@ export async function POST(request: Request) {
   if (!plan) return Response.json({ error: 'Unknown plan' }, { status: 400 });
   if (coupon && !/^[A-Za-z0-9_-]{1,64}$/.test(coupon)) return Response.json({ error: 'Invalid coupon' }, { status: 400 });
   if (!session.user.email) return Response.json({ error: 'Email required' }, { status: 400 });
-  const returnUrl = `${site.url}/${locale}/pricing`;
+  const returnUrl = `${site.url}${routePath(locale, 'pricing')}`;
   try {
     const created = await startCheckout(env, {
       userId: session.user.id,

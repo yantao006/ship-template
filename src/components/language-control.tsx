@@ -1,6 +1,7 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
+import { languageFor } from '@/lib/config';
 
 export function pathForLocale(pathname: string, locale: string, locales: readonly string[]) {
   const parts = pathname.split('/');
@@ -16,7 +17,7 @@ export function LanguageControl({ locale, locales, label }: { locale: string; lo
     <select aria-label={label} value={locale} onChange={event => {
       window.location.assign(pathForLocale(pathname, event.target.value, locales));
     }}>
-      {locales.map(code => <option key={code} value={code}>{code === 'zh' ? '中文' : code === 'en' ? 'English' : code.toUpperCase()}</option>)}
+      {locales.map(code => <option key={code} value={code}>{languageFor(code).name}</option>)}
     </select>
   </label>;
 }
