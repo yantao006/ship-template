@@ -6,6 +6,7 @@ node_modules/
 !.env.example
 *.tsbuildinfo
 next-env.d.ts
+visual-loop/
 
 .dev.vars
 .dev.vars.*
