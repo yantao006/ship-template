@@ -4,14 +4,14 @@ import { AuthControl } from '@/components/auth-control';
 import { DesktopHandoff } from '@/components/desktop-handoff';
 import { readSession } from '@/lib/request-context';
 import { allowedDesktopTarget } from '@/lib/desktop-auth';
-import { auth, messages } from '@/lib/config';
+import { auth, messages, localeFor } from '@/lib/config';
 import { workerEnv } from '@/lib/env';
 
 export default async function AuthCallback({ searchParams }: { searchParams: Promise<{ redirect?: string; locale?: string }> }) {
   const params = await searchParams;
   const target = allowedDesktopTarget(params.redirect ?? null);
   if (!target) redirect('/');
-  const locale: keyof typeof messages = params.locale === 'zh' ? 'zh' : 'en';
+  const locale = localeFor(params.locale ?? '');
   const requestHeaders = await headers();
   const session = await readSession(workerEnv(), requestHeaders);
   const returnURL = `/auth-callback?redirect=${encodeURIComponent(target)}&locale=${locale}`;

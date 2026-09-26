@@ -15,4 +15,5 @@ export function isAllowedBrowserOrigin(origin: string | null, config: SiteConfig
 }
 export function googleCallback(config: SiteConfig) { return `${config.url}${auth.basePath}/callback/google`; }
 export function githubCallback(config: SiteConfig) { return `${config.url}${auth.basePath}/callback/github`; }
-export function localeFor(value: string): keyof typeof messages { return value in messages ? value as keyof typeof messages : site.defaultLocale as keyof typeof messages; }
+export function languageFor(value: string) { return site.languages.find(language => language.code === value) ?? site.languages.find(language => language.code === site.defaultLocale)!; }
+export function localeFor(value: string): keyof typeof messages { return languageFor(value).code; }

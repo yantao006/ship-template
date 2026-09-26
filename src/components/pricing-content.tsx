@@ -2,6 +2,7 @@ import { headers } from 'next/headers';
 import { readSession } from '@/lib/request-context';
 import { site, messages } from '@/lib/config';
 import { workerEnv } from '@/lib/env';
+import { planCopy } from '@/lib/plan-copy';
 import { MarketingNav } from './marketing-nav';
 import { PricingCheckout } from './pricing-checkout';
 
@@ -16,8 +17,7 @@ export async function PricingContent({ locale = site.defaultLocale as keyof type
     credits: plan.credits,
     amount: plan.amount,
     currency: plan.currency,
-    name: plan.id === 'annual' ? copy.pricing.annualName : copy.pricing.packName,
-    detail: plan.id === 'annual' ? copy.pricing.annualDetail : copy.pricing.packDetail,
+    ...planCopy(locale, plan.id),
   }));
   return <div className="site-shell">
     <MarketingNav locale={locale} userName={session?.user.name} />

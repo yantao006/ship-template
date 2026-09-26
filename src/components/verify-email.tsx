@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from 'react';
 import { createAuthClient } from 'better-auth/react';
+import { routePath } from '@/lib/routes';
 
 const authClient = createAuthClient({ basePath: '/api/auth' });
 
@@ -21,7 +22,7 @@ export function VerifyEmail({ locale, email: initialEmail, enabled, copy }: {
     setPending(true);
     setError('');
     try {
-      const result = await authClient.sendVerificationEmail({ email: email.trim(), callbackURL: `/${locale}` });
+      const result = await authClient.sendVerificationEmail({ email: email.trim(), callbackURL: routePath(locale, 'home') });
       if (result.error) setError(copy.resendFailed);
       else setNotice(copy.verificationSent);
     } catch { setError(copy.resendFailed); }
@@ -29,7 +30,7 @@ export function VerifyEmail({ locale, email: initialEmail, enabled, copy }: {
   }
   async function continueToSite() {
     const result = await authClient.getSession();
-    if (result.data?.user) window.location.assign(`/${locale}`);
+    if (result.data?.user) window.location.assign(routePath(locale, 'home'));
     else setError(copy.emailNotVerified);
   }
   return <main className="verify-page"><section className="auth-panel">
@@ -42,6 +43,6 @@ export function VerifyEmail({ locale, email: initialEmail, enabled, copy }: {
     {notice && <p role="status">{notice}</p>}
     {error && <p className="form-error" role="alert">{error}</p>}
     <button className="auth-switch" type="button" onClick={continueToSite}>{copy.verifyContinue}</button>
-    <a className="auth-switch" href={`/${locale}`}>{copy.signIn}</a>
+    <a className="auth-switch" href={routePath(locale, 'home')}>{copy.signIn}</a>
   </section></main>;
 }

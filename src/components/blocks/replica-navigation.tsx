@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Coins, Globe2, Moon, Sun } from 'lucide-react';
 import { pathForLocale } from '@/components/language-control';
+import { languageFor } from '@/lib/config';
 import './replica-navigation.css';
 
 type NavLink = { label: string; href: string; icon: ReactNode };
@@ -82,7 +83,7 @@ export function ReplicaNavigation({ brand, logo, brandHref, navigationLabel, lin
         <div className="replica-action-wrap" ref={languageArea}>
           <button ref={languageRef} className={`replica-icon ${open === 'language' ? 'selected' : ''}`} type="button" aria-label={languageLabel} aria-expanded={open === 'language'} aria-haspopup="menu" onClick={() => toggle('language')}><Globe2 size={19} /></button>
           {open === 'language' && <div className="replica-popover replica-language-menu" role="menu" aria-label={languageLabel}>
-            {locales.map(code => <button key={code} type="button" role="menuitemradio" aria-checked={locale === code} className={locale === code ? 'current' : ''} onClick={() => { setOpen(null); window.location.assign(pathForLocale(pathname, code, locales)); }}><span className="replica-language-dot" />{code === 'zh' ? '中文' : code === 'en' ? 'English' : code.toUpperCase()}</button>)}
+            {locales.map(code => <button key={code} type="button" role="menuitemradio" aria-checked={locale === code} className={locale === code ? 'current' : ''} onClick={() => { setOpen(null); window.location.assign(pathForLocale(pathname, code, locales)); }}><span className="replica-language-dot" />{languageFor(code).name}</button>)}
           </div>}
         </div>
         {balance !== undefined && <div className="replica-action-wrap" ref={creditsArea}>

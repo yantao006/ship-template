@@ -1,6 +1,23 @@
 import type { D1Database } from '@cloudflare/workers-types';
+import { messages } from './config';
 // Write-side ledger: D1 native statements and a single batch per business action.
 export type DB = Pick<D1Database, 'prepare' | 'batch'>;
+// The source registry is the shared contract for grants, credit history and paid receipts.
+export const ledgerSources = {
+  signup: { paid: false },
+  payment: { paid: true },
+  subscription_month: { paid: true },
+  checkin: { paid: false },
+  referral_inviter: { paid: false },
+  referral_friend: { paid: false },
+  adjust: { paid: false },
+} as const;
+export type LedgerSource = keyof typeof ledgerSources;
+export const paidLedgerSources = (Object.keys(ledgerSources) as LedgerSource[]).filter(source => ledgerSources[source].paid);
+export function ledgerSourceLabel(locale: keyof typeof messages, source: string) {
+  return Object.hasOwn(ledgerSources, source) ? messages[locale].credits.sources[source as LedgerSource] : messages[locale].credits.otherSource;
+}
+
 const stmt = (db: DB, sql: string, ...args: (string | number | null)[]) => db.prepare(sql).bind(...args);
 const id = () => crypto.randomUUID();
 

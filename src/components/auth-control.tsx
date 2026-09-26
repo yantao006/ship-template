@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { LogOut, UserRound, Wallet, LayoutDashboard } from 'lucide-react';
 import { createAuthClient } from 'better-auth/react';
 import type { AuthSettings } from '@/lib/auth';
+import { routePath } from '@/lib/routes';
 
 const authClient = createAuthClient({ basePath: '/api/auth' });
 type Copy = { verifyTitle: string; verifyHint: string; verificationSent: string; resendVerification: string; resendFailed: string; verifyLink: string; emailNotVerified: string; login: string; google: string; github: string; email: string; orEmail: string; logout: string; signIn: string; signUp: string; name: string; password: string; noMethods: string; invite: string; wait: string; close: string; emailLabel: string; authFailed: string; socialFailed: string; signOutFailed: string; inviteInvalid: string; createdButInviteFailed: string; forgotPassword: string; forgotTitle: string; forgotHint: string; resetSent: string; resetSendFailed: string };
@@ -23,7 +24,7 @@ export function AuthControl({ copy, methods, userName, userEmail, callbackURL, l
   const [resetNotice, setResetNotice] = useState('');
   const needsVerification = !!methods.email.requireVerification;
   const canReset = !!methods.email.passwordReset;
-  const verifyPath = `/${locale}/verify-email`;
+  const verifyPath = routePath(locale, 'verifyEmail');
   const dialogRef = useRef<HTMLElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const router = useRouter();
@@ -118,7 +119,7 @@ export function AuthControl({ copy, methods, userName, userEmail, callbackURL, l
     setResetNotice('');
     const email = String(new FormData(event.currentTarget).get('email') ?? '').trim();
     try {
-      const result = await authClient.requestPasswordReset({ email, redirectTo: `/${locale}/reset-password` });
+      const result = await authClient.requestPasswordReset({ email, redirectTo: routePath(locale, 'resetPassword') });
       if (result.error) setError(copy.resetSendFailed);
       else setResetNotice(copy.resetSent);
     } catch { setError(copy.resetSendFailed); }

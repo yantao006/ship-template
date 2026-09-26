@@ -1,3 +1,8 @@
+const languages = [
+  { code: 'en', name: 'English', dateLocale: 'en-US' },
+  { code: 'zh', name: '中文', dateLocale: 'zh-CN' },
+] as const;
+
 export default {
   brand: 'Awesomejev Test Video',
   logo: { src: '/brand/logo.svg', alt: 'Awesomejev logo' },
@@ -5,7 +10,8 @@ export default {
   apex: 'awesomejev.link',
   url: 'https://awesomejev.link',
   previewOrigin: 'https://popovers-awesomejev-test.yantao006.workers.dev',
-  locales: ['en', 'zh'] as const,
+  languages,
+  locales: languages.map(language => language.code),
   defaultLocale: 'en',
   deploy: { worker: 'awesomejev-test', d1: 'awesomejev-db', r2: 'awesomejev-media', queue: 'awesomejev-jobs' },
   email: { provider: 'cloudflare' as 'cloudflare' | 'resend', from: 'noreply@awesomejev.link' },
