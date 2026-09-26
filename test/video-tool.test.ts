@@ -45,7 +45,7 @@ test('configured ids have copy in both locales', () => {
 });
 
 test('catalog is grouped and the default video model matches the workbench', () => {
-  assert.deepEqual(config.vendors.map(vendor => vendor.id), ['minimax', 'seedance', 'wan', 'grok', 'kling', 'seedream', 'openai', 'nano']);
+  assert.deepEqual(config.vendors.map(vendor => vendor.id), ['minimax', 'seedance', 'wan', 'grok', 'kling', 'seedream', 'openai', 'nano-banana']);
   assert.deepEqual(config.models.map(model => model.id), [...videoModels, ...imageModels]);
   assert.ok(config.models.every(model => config.vendors.some(vendor => vendor.id === model.vendorId)));
   assert.equal(modelForMedia(config, 'video')?.id, 'minimax-h3');
@@ -69,6 +69,11 @@ test('catalog is grouped and the default video model matches the workbench', () 
     assert.ok(cases.every(asset => asset.url.startsWith('/video-tool/') && existsSync(`public${asset.url}`)));
   }
   assert.deepEqual(config.referenceKinds.filter(kind => !kind.mediaIds || kind.mediaIds.includes('image')).map(kind => kind.id), ['image']);
+  assert.deepEqual(config.references.map(item => item.id), ['lattice-pie-photo', 'fruit-tarts-photo', 'seeded-loaf-photo', 'layer-cake-photo', 'kitchen-video', 'kitchen-audio']);
+  for (const item of config.references.filter(item => item.kind !== 'image')) {
+    assert.ok(item.url.startsWith('/video-tool/') && existsSync(`public${item.url}`));
+    assert.ok(item.thumbnail && existsSync(`public${item.thumbnail}`));
+  }
   assert.deepEqual(config.workflows.find(item => item.id === 'text-video')?.referenceLimits, {});
   assert.deepEqual(config.workflows.find(item => item.id === 'image-video')?.referenceLimits, { image: 2 });
   assert.deepEqual(config.workflows.find(item => item.id === 'image-edit')?.referenceLimits, { image: 16 });
@@ -128,10 +133,10 @@ test('preview cost follows configured model duration and quantity without chargi
 test('create payload contains only enabled field values and selected references', () => {
   const model = config.models.find(item => item.id === 'minimax-h3');
   assert.ok(model);
-  assert.deepEqual(buildCreatePayload(model, 'text-video', 'hello', 2, { ratio: '16-9', duration: 10, seed: 'x' }, ['pie']), {
-    modelId: 'minimax-h3', workflowId: 'text-video', prompt: 'hello', quantity: 2, values: { ratio: '16-9', duration: 10 }, referenceIds: ['pie'],
+  assert.deepEqual(buildCreatePayload(model, 'text-video', 'hello', 2, { ratio: '16-9', duration: 10, seed: 'x' }, ['lattice-pie-photo']), {
+    modelId: 'minimax-h3', workflowId: 'text-video', prompt: 'hello', quantity: 2, values: { ratio: '16-9', duration: 10 }, referenceIds: ['lattice-pie-photo'],
   });
-  assert.deepEqual(buildCreatePayload(model, 'image-video', '', 1, { duration: 6 }, ['tarts', 'pie'], { start: 'tarts', end: 'pie' }), {
-    modelId: 'minimax-h3', workflowId: 'image-video', prompt: '', quantity: 1, values: { duration: 6 }, referenceIds: ['tarts', 'pie'], referenceFrames: { start: 'tarts', end: 'pie' },
+  assert.deepEqual(buildCreatePayload(model, 'image-video', '', 1, { duration: 6 }, ['fruit-tarts-photo', 'lattice-pie-photo'], { start: 'fruit-tarts-photo', end: 'lattice-pie-photo' }), {
+    modelId: 'minimax-h3', workflowId: 'image-video', prompt: '', quantity: 1, values: { duration: 6 }, referenceIds: ['fruit-tarts-photo', 'lattice-pie-photo'], referenceFrames: { start: 'fruit-tarts-photo', end: 'lattice-pie-photo' },
   });
 });

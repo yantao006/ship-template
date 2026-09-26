@@ -15,7 +15,7 @@ export default {
     title: '从一条片子开始', description: '预览这次请求。目前不会生成，也不会扣积分。',
     media: { video: '视频', image: '图片' },
     workflows: { 'multi-reference': '多参考', 'text-video': '文生视频', 'image-video': '图生视频', 'text-image': '文生图片', 'image-edit': '图生图片', 'multi-image': '图层拆解' },
-    vendors: { minimax: 'MiniMax', seedance: 'Seedance', wan: 'Wan', grok: 'Grok', kling: 'Kling', seedream: 'Seedream', openai: 'GPT Image', nano: 'Nano Banana' },
+    vendors: { minimax: 'MiniMax', seedance: 'Seedance', wan: 'Wan', grok: 'Grok', kling: 'Kling', seedream: 'Seedream', openai: 'GPT Image', 'nano-banana': 'Nano Banana' },
     modelSubtitles: { 'seedream-5-pro': '创作更自由', 'seedream-5-lite': '创作更自由' }, galleryHeadings: { image: '热门模板' },
     models: {
       'minimax-h3-max': 'MiniMax H3 Max', 'minimax-h3': 'MiniMax H3', 'minimax-h3-lite': 'MiniMax H3 Lite',
@@ -36,7 +36,7 @@ export default {
     references: {
       title: '参考素材', titleByWorkflow: { 'image-video': '图片', 'image-edit': '输入图片', 'multi-image': '输入图片' }, uploadHint: '点击或拖拽上传图片、视频或音频', uploadHintByMedia: { image: '点击或拖拽上传参考图片' }, hintsByWorkflow: { 'image-video': '添加首帧或尾帧', 'image-edit': '点击上传（最多 16 张）', 'multi-image': '点击上传（最多 1 张）' }, startFrame: '首帧', endFrame: '尾帧', library: '使用素材库', closeLibrary: '关闭素材库',
       limits: { image: '图片', video: '视频', audio: '音频' },
-      candidates: { pie: '格子派', tarts: '水果塔', bread: '杂粮面包', cake: '夹层蛋糕', clip: '厨房片段', score: '环境声' },
+      candidates: { 'lattice-pie-photo': '格子派', 'fruit-tarts-photo': '水果塔', 'seeded-loaf-photo': '杂粮面包', 'layer-cake-photo': '夹层蛋糕', 'kitchen-video': '厨房视频', 'kitchen-audio': '厨房音轨' },
     },
     prompt: { title: '提示词', titleByWorkflow: { 'multi-image': '拆解说明（可选）' }, placeholder: '描述你想要的画面。用 @1、@2 引用已上传的素材', placeholderByMedia: { image: '描述你想生成的图片...' }, placeholderByWorkflow: { 'multi-image': '留空则自动拆解，也可以指定要分离的元素...' }, maxLength: 7000, maxLengthByMedia: { image: 20000 }, assist: '用 AI 生成', suggestion: '第一人称厨房烘焙，轻微广角，画面里只有手和前臂。' },
     model: '模型', workflowLabel: '工作流', parameters: '参数', expand: '展开参数', collapse: '收起参数', quantity: '数量', quantityPrefix: 'x', create: '创建',

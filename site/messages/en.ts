@@ -15,7 +15,7 @@ export default {
     title: 'Shape a clip', description: 'Preview the request. Nothing is generated or charged yet.',
     media: { video: 'Videos', image: 'Images' },
     workflows: { 'multi-reference': 'Multi Reference', 'text-video': 'Text to Video', 'image-video': 'Image to Video', 'text-image': 'Text to Image', 'image-edit': 'Image to Image', 'multi-image': 'Layer Decomposition' },
-    vendors: { minimax: 'MiniMax', seedance: 'Seedance', wan: 'Wan', grok: 'Grok', kling: 'Kling', seedream: 'Seedream', openai: 'GPT Image', nano: 'Nano Banana' },
+    vendors: { minimax: 'MiniMax', seedance: 'Seedance', wan: 'Wan', grok: 'Grok', kling: 'Kling', seedream: 'Seedream', openai: 'GPT Image', 'nano-banana': 'Nano Banana' },
     modelSubtitles: { 'seedream-5-pro': 'More Freedom', 'seedream-5-lite': 'More Freedom' }, galleryHeadings: { image: 'Popular' },
     models: {
       'minimax-h3-max': 'MiniMax H3 Max', 'minimax-h3': 'MiniMax H3', 'minimax-h3-lite': 'MiniMax H3 Lite',
@@ -36,7 +36,7 @@ export default {
     references: {
       title: 'Reference Assets', titleByWorkflow: { 'image-video': 'Image', 'image-edit': 'Input Images', 'multi-image': 'Input Images' }, uploadHint: 'Click or drag to upload images, videos, or audio', uploadHintByMedia: { image: 'Click or drag to upload reference images' }, hintsByWorkflow: { 'image-video': 'Add a first or last frame', 'image-edit': 'Click to upload (16 max)', 'multi-image': 'Click to upload (1 max)' }, startFrame: 'Start Frame', endFrame: 'End Frame', library: 'Use Asset Library', closeLibrary: 'Close library',
       limits: { image: 'Images', video: 'Videos', audio: 'Audio' },
-      candidates: { pie: 'Lattice pie', tarts: 'Fruit tarts', bread: 'Seeded loaf', cake: 'Layer cake', clip: 'Kitchen clip', score: 'Room tone' },
+      candidates: { 'lattice-pie-photo': 'Lattice pie', 'fruit-tarts-photo': 'Fruit tarts', 'seeded-loaf-photo': 'Seeded loaf', 'layer-cake-photo': 'Layer cake', 'kitchen-video': 'Kitchen video', 'kitchen-audio': 'Kitchen audio' },
     },
     prompt: { title: 'Prompt', titleByWorkflow: { 'multi-image': 'Decomposition instructions (optional)' }, placeholder: 'Describe what you want. Use @1, @2... to reference uploaded assets', placeholderByMedia: { image: 'Describe the image you want to generate...' }, placeholderByWorkflow: { 'multi-image': 'Leave blank for automatic decomposition, or specify the elements to separate...' }, maxLength: 7000, maxLengthByMedia: { image: 20000 }, assist: 'Generate with AI', suggestion: 'First-person kitchen baking vlog, slight wide lens, only hands and forearms in frame.' },
     model: 'Model', workflowLabel: 'Workflow', parameters: 'Parameters', expand: 'Show parameters', collapse: 'Hide parameters', quantity: 'Quantity', quantityPrefix: 'x', create: 'Create',

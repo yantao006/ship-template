@@ -21,7 +21,7 @@ export type VideoToolStructure = {
   vendors: { id: string; icon?: string }[];
   models: ToolModel[];
   fields: ToolField[];
-  references: { id: string; kind: string; url: string }[];
+  references: { id: string; kind: string; url: string; thumbnail?: string }[];
   referenceKinds: { id: string; icon: string; mediaIds?: string[] }[];
   referenceLimits: Record<string, number>;
   quantity: { min: number; max: number; default: number };

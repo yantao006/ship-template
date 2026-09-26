@@ -193,7 +193,7 @@ export function VideoGenerationTool({ config, copy, assets, status = { state: 'i
             {!templateMedia && <div className="vt-limits">{kinds.map(kind => <span key={kind.id} aria-label={`${copy.references.limits[kind.id]} ${used(kind.id)}/${referenceLimits[kind.id]}`}><Mark icon={kind.icon} /><span aria-hidden="true">{used(kind.id)}/{referenceLimits[kind.id]}</span></span>)}</div>}
             {referenceIds.length > 0 && <div className="vt-selected">{referenceIds.map(id => {
               const item = config.references.find(reference => reference.id === id);
-              return item ? <button key={id} type="button" aria-label={copy.references.candidates[id]} onClick={() => toggleReference(id)}><img src={item.url} alt="" /></button> : null;
+              return item ? <button key={id} type="button" aria-label={copy.references.candidates[id]} onClick={() => toggleReference(id)}><img src={item.thumbnail ?? item.url} alt="" /></button> : null;
             })}</div>}
             <div className="vt-upload">
               <div className="vt-upload-icons" aria-hidden="true">{kinds.map(kind => <Mark key={kind.id} icon={kind.icon} />)}</div>
@@ -206,7 +206,7 @@ export function VideoGenerationTool({ config, copy, assets, status = { state: 'i
               setFrameReferences(previous => ({ ...previous, [framePick]: item.id }));
               setLibraryOpen(false);
             } else toggleReference(item.id);
-          }}><img src={item.url} alt="" /><span>{copy.references.candidates[item.id]}</span></button>)}</div>}
+          }}><img src={item.thumbnail ?? item.url} alt="" /><span>{copy.references.candidates[item.id]}</span></button>)}</div>}
         </div>}
         <div className="vt-prompt">
           <div className="vt-row"><label htmlFor="vt-prompt">{copy.prompt.titleByWorkflow?.[currentWorkflowId] ?? copy.prompt.title}</label>{copy.prompt.assist && <button type="button" className="vt-assist" onClick={() => setDrafts(previous => ({ ...previous, [mediaId]: (copy.prompt.suggestion ?? '').slice(0, promptLimit) }))}>{copy.prompt.assist}</button>}</div>
