@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { Miniflare } from 'miniflare';
 import { createAuth, ensureSignupCredits, type AuthSettings } from '../src/lib/auth';
 import { FakeEmail } from '../src/lib/email';
-import { site } from '../src/lib/config';
+import { site, messages } from '../src/lib/config';
 import { balance } from '../src/lib/ledger';
 import type { Env } from '../src/lib/env';
 
@@ -77,6 +77,7 @@ test('verification required: signup and login are gated until emailed link is vi
     assert.equal(mail.sent.length, 1);
     assert.equal(mail.sent[0].from, site.email.from);
     assert.equal(mail.sent[0].to, 'verify@example.com');
+    assert.equal(mail.sent[0].subject, `Verify your email for ${site.brand}`);
     assert.match(mail.sent[0].text, /verify-email\?token=/);
     const login = await post('sign-in/email', { email: 'verify@example.com', password: 'long-password' });
     assert.equal(login.status, 403);
@@ -85,6 +86,8 @@ test('verification required: signup and login are gated until emailed link is vi
     const resent = await post('send-verification-email', { email: 'verify@example.com', callbackURL: '/zh/dashboard?from=email&tab=credits' });
     assert.equal(resent.status, 200);
     assert.equal(mail.sent.length, 2);
+    assert.equal(mail.sent[1].subject, '验证 Awesomejev Test Video 邮箱');
+    assert.match(mail.sent[1].text, new RegExp(messages.zh.mail.verifyLead));
     const link = mail.sent[1].text.match(/https?:\/\/[^\s]+/)?.[0];
     assert.ok(link);
     const verified = await auth.handler(new Request(link));

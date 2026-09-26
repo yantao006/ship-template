@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 import { check } from '../scripts/site-check';
 import { site, googleCallback, githubCallback } from '../src/lib/config';
 import { FakeEmail, createEmailProvider } from '../src/lib/email';
-import { notifyGenerationComplete, notifyCreditsExpiring, notifyRenewalFailed } from '../src/lib/notifications';
+import { notifyGenerationComplete, notifyCreditsExpiring, notifyRenewalFailed, notifyVerification } from '../src/lib/notifications';
 import { verifyTurnstile } from '../src/lib/turnstile';
 
 test('second site only changes site, wrangler resource names and env, not business code', async () => {
@@ -42,6 +42,17 @@ test('three notification functions dispatch to fake provider without real email'
   assert.match(email.sent[0].text,/history/);
   assert.match(email.sent[1].html,/20 credits/);
   assert.match(email.sent[2].subject,/Renewal failed/);
+});
+
+test('verification mail selects callback language and escapes dynamic HTML once', async () => {
+  const email = new FakeEmail();
+  const link = 'https://awesomejev.link/api/auth/verify-email?token=a&callbackURL=%2Fzh%2Fdashboard';
+  await notifyVerification(email, { ...site, brand: '<Video & Co>' }, 'user@example.com', link);
+  assert.equal(email.sent[0].subject, '验证 <Video & Co> 邮箱');
+  assert.match(email.sent[0].text, /打开此链接以验证邮箱/);
+  assert.match(email.sent[0].html, /href="https:\/\/awesomejev.link\/api\/auth\/verify-email\?token=a&amp;callbackURL=/);
+  assert.doesNotMatch(email.sent[0].html, /&amp;amp;/);
+  assert.doesNotMatch(email.sent[0].html, /<Video & Co>/);
 });
 
 test('provider selection fails closed and Resend propagates failure', async () => {

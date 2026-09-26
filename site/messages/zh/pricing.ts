@@ -1,0 +1,1 @@
+export default { title: '套餐', lead: '选择套餐并通过 Waffo 结账。可以使用优惠券。年付套餐只发放当前自然月的积分。', checkout: '结账', signInRequired: '请先登录再结账。', wait: '请稍候…', failed: '无法发起结账，请重试。', coupon: '优惠券', once: '一次性', year: '年付', credits: '积分', packName: '积分包', packDetail: '一次购买只发放一次积分。', annualName: '年付', annualDetail: '一次支付全年费用。这次结账只发放当前自然月的积分。' };

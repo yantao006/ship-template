@@ -1,7 +1,8 @@
 import { auth } from './config';
 
 // Never permit web URLs or executable schemes, even if accidentally allow-listed.
-const unsafe = new Set(['http', 'https', 'javascript', 'data', 'file', 'blob', 'vbscript']);
+export const dangerousProtocols = ['http', 'https', 'javascript', 'data', 'file', 'blob', 'vbscript'] as const;
+const unsafe = new Set<string>(dangerousProtocols);
 export function allowedDesktopTarget(input: string | null, schemes: readonly string[] = auth.desktop.schemes): string | null {
   if (!input || input.length > 2048 || /[\u0000-\u0020\\]/.test(input)) return null;
   const match = /^([a-z][a-z0-9+.-]*):\/\/([^/?#]+)(?:[/?#]|$)/i.exec(input);

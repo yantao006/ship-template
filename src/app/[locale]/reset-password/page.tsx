@@ -6,5 +6,5 @@ export default async function ResetPasswordPage({ params, searchParams }: { para
   const locale = localeFor((await params).locale);
   const query = await searchParams;
   const token = query.error === 'INVALID_TOKEN' ? '' : (query.token ?? '');
-  return <ResetPassword locale={locale} token={token} enabled={auth.email.enabled && !!auth.email.passwordReset} copy={browserNavCopy(messages[locale].nav)} />;
+  return <ResetPassword locale={locale} token={token} enabled={auth.email.enabled && !!auth.email.passwordReset} copy={browserNavCopy(messages[locale])} />;
 }

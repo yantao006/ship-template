@@ -1,0 +1,1 @@
+export default { pack: { name: 'Credit pack', detail: 'One purchase adds credits once.' }, annual: { name: 'Annual', detail: 'One yearly payment. This checkout grants the current calendar month only.' } };

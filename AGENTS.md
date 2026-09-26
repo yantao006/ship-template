@@ -8,7 +8,7 @@ The current example has site-local accounts, invitation primitives, configurable
 ## Design principles
 
 - **Configuration decides what appears:** `site/` describes the site's identity, features, copy, and theme; the UI reflects enabled choices and the server enforces the same choices. The landing video tool is a client-only request preview, not a generation or credit operation.
-- **One language per file:** `site/messages/en.ts` and `site/messages/zh.ts` keep corresponding keys, and locale-aware pages select one message set at a time.
+- **One language per file:** `site/messages/en.ts` and `site/messages/zh.ts` compose matching per-module message files in `site/messages/en/` and `site/messages/zh/`; locale-aware pages select one set at a time.
   `site/site.config.ts` owns language entries; `src/lib/routes.ts` owns server navigation metadata, while `src/lib/route-paths.ts` holds client-safe route paths.
 - **One navigation path per purpose:** the navigation has one language control and one sign-in entry; its sign-in card lists only the methods enabled in `site/auth.config.ts`.
 - **Theme owns color:** `site/theme.config.ts` defines paired light/dark palettes, top-bar and account-card chrome, dialog and video-tool surfaces, row tones, default modes, and account accents; `src/lib/theme-tokens.ts` generates the stylesheet in `src/app/layout.tsx`.
@@ -79,6 +79,8 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   ├── site/site.config.ts           # Alternate identity, resources, and mail adapter
 │   ├── site/auth.config.ts           # Alternate auth and verification switches
 │   ├── site/video-tool.config.ts     # Alternate tool structure, without a promo
+│   ├── site/theme.config.ts          # Alternate theme
+│   ├── site/messages/                # Independent localized copy
 │   └── wrangler.jsonc                # Alternate Worker binding declarations
 ├── public/video-tool/                 # Site-local model icons, preview video, and template images
 ├── site/                              # Per-site choices compiled into the application
@@ -89,8 +91,8 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   ├── video-tool.config.ts          # Landing tool structure, models, references, preview assets
 │   ├── video-tool-templates.config.ts # Image template ids and asset paths
 │   └── messages/                     # Locale-specific copy with matching message keys
-│       ├── en.ts                     # English navigation, hero, video tool, dashboard, credits copy
-│       ├── zh.ts                     # Chinese copy with the same shape
+│       ├── en.ts, zh.ts              # Locale-specific message composition
+│       ├── en/, zh/                  # Matching per-module navigation, sign-in, mail, invites, handoff, account, workspace, credits, pricing, video-tool copy
 │       ├── video-templates-en.ts     # English image-template titles and descriptions
 │       ├── video-templates-zh.ts     # Chinese image-template titles and descriptions
 │       └── index.ts                  # Locale-to-message map
@@ -147,12 +149,12 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │   ├── invite-admin.tsx          # Client code inventory and actions
 │   │   └── desktop-handoff.tsx       # Client app-return request and redirect
 │   └── lib/                          # Business logic, config exports, and integration seams
-│       ├── config.ts                 # Exports site, auth, theme, messages, database, and video-tool choices
+│       ├── config.ts                 # Typed site/auth/theme/database contracts and compiled choices
 │       ├── routes.ts                 # Server navigation entries and request-locale lookup
 │       ├── route-paths.ts            # Client-safe localized route primitives
 │       ├── auth-path.ts              # Template auth route prefix
 │       ├── auth-client.ts            # Singleton browser auth client and One Tap
-│       ├── browser-nav-copy.ts       # Strips server mail-only copy from client props
+│       ├── browser-nav-copy.ts       # Assembles client navigation/auth copy without mail
 │       ├── use-dismissable-layer.ts  # Popover/dialog dismissal and focus
 │       ├── use-referral-claim.ts      # Home referral persistence and claim
 │       ├── json-request.ts           # Browser JSON write helper
@@ -169,7 +171,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │       ├── turnstile.ts              # Token verification and local test path
 │       ├── desktop-auth.ts           # Scheme validation and token-bearing app URL
 │       ├── email.ts                  # Cloudflare/Resend adapter and fake test provider
-│       ├── notifications.ts          # Typed event notification messages
+│       ├── notifications.ts          # Localized mail composition and one HTML escaping boundary
 │       ├── waffo.ts                   # Waffo Pancake checkout and callback format
 │       ├── payments.ts                # Plan checkout and idempotent payment grants
 │       └── mock-services.ts           # Local-only video placeholder
@@ -210,9 +212,9 @@ A new capability can be a new `src/lib/` service called by an API endpoint, a se
 
 ### Configuration and localization
 
-`site/site.config.ts` supplies brand, optional logo, locale, deploy, email, and signup-credit choices at build time, while `wrangler.jsonc` declares matching live resources.
+`src/lib/config.ts` declares the site, auth, and database config contracts; site files use `satisfies` to check build-time choices, while `wrangler.jsonc` declares matching live resources.
 `scripts/site-check.ts` compares the Worker name, D1/R2/Queue names, auth shape, email binding, callback origin, and required secret names before publication.
-`site/messages/en.ts` and `site/messages/zh.ts` share keys under `nav`, `hero`, `videoTool`, `account`, `dashboard`, and `credits`; `src/app/[locale]/` and `src/components/language-control.tsx` select copy without duplicating business logic.
+`site/messages/en.ts` and `site/messages/zh.ts` compose matching per-module copy under `site/messages/{en,zh}/`, including separate mail, sign-in, invites, handoff, account, workspace, credits, pricing, and video-tool files; `src/app/[locale]/` and `src/components/language-control.tsx` select copy without duplicating business logic.
 `site/theme.config.ts` provides same-key light and dark palettes, paired top-bar/account-card/dialog/video-tool colors and row tones, mode defaults, and account colors; `src/lib/theme-tokens.ts` generates the CSS token stylesheet in `src/app/layout.tsx` instead of inline body styles.
 The homepage header marks the dark default, while `ReplicaNavigation` selects `data-mode` on `<html>` for toggling; other pages default light.
 `src/middleware.ts` forwards the route locale so the root layout sets matching `<html lang>` and metadata, including for the default-language `/` homepage.
@@ -226,14 +228,15 @@ On each request, production login accepts the Worker `SITE_URL` only when it equ
 `ensureSignupCredits` checks invitation eligibility and grants a signup lot with the user ID as its stable source ID; when email verification is enabled, it waits until the emailed link marks the account verified.
 `src/app/api/invites/redeem/route.ts` uses the shared session and browser-write guard, redeems the code through an atomic D1 batch, and grants the eligible user credits.
 `src/lib/invites.ts` owns invite code format, normalization, inventory reads, creation, and revocation.
-`src/components/auth-control.tsx` handles signed-in controls and mounts `src/components/sign-in-card.tsx` for configured sign-in methods; `src/lib/auth-client.ts` owns the browser auth client, and `src/lib/browser-nav-copy.ts` removes mail-only strings from client props. When `email.passwordReset` is on, the forgot-password link is sent through `EmailProvider`; `src/components/verify-email.tsx` provides the verification waiting and resend page; `src/components/reset-password.tsx` accepts the new password; desktop handoff uses `src/lib/desktop-auth.ts` to validate a configured app scheme before `/api/auth/desktop-handoff` issues a session-bearing return URL.
+`src/components/auth-control.tsx` handles signed-in controls and mounts `src/components/sign-in-card.tsx` for configured sign-in methods; `src/lib/auth-client.ts` owns the browser auth client, and `src/lib/browser-nav-copy.ts` assembles navigation and auth copy without sending mail strings to client props.
+When `email.passwordReset` is on, the forgot-password link is sent through `EmailProvider`; `src/components/verify-email.tsx` provides the verification waiting and resend page; `src/components/reset-password.tsx` accepts the new password; desktop handoff uses `src/lib/desktop-auth.ts` to validate a configured app scheme before `/api/auth/desktop-handoff` issues a session-bearing return URL.
 
 ### Credits, tasks, and provider seams
 
 `src/lib/ledger.ts` owns source IDs and paid-source membership, while `site/messages/` supplies localized names; `src/lib/plan-copy.ts` selects plan display copy by ID.
 `src/lib/ledger.ts` writes `credit_lot`, `credit_entry`, `credit_alloc`, and `video_task` with D1's own `prepare().bind()` statements and `batch()` for multi-step writes, preserving atomic reservations under concurrent requests.
 Grant source IDs, entry idempotency keys, and task state transitions make retries observable. A verified annual payment calls `grantSubscriptionMonth` for the current calendar month only. There is no separate billing scheduler.
-`src/lib/email.ts` chooses Cloudflare Email or Resend behind `EmailProvider`, and `src/lib/notifications.ts` composes messages independently of delivery.
+`src/lib/email.ts` chooses Cloudflare Email or Resend behind `EmailProvider`, and `src/lib/notifications.ts` composes and escapes localized mail, including verification and password reset links, independently of delivery.
 
 ### Current state and extension paths
 
@@ -367,7 +370,7 @@ Schema changes gain a new reviewed migration and matching service/query types an
 
 The `site/` TypeScript values are included in a build, while Worker variables and secrets are read when a request runs.
 A site-choice change is published with a new build, and a runtime-secret change uses the Worker environment contract.
-`fixtures/second-site/` demonstrates different names, URL, email provider, and auth choices while reusing the same application modules.
+`fixtures/second-site/` demonstrates its own site, auth, theme, and localized copy with different names, URL, and email provider while reusing the same application modules.
 
 ## Critical Rules
 
