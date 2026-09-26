@@ -7,7 +7,7 @@ The current example has site-local accounts, invitation primitives, a credit led
 
 ## Design principles
 
-- **Configuration decides what appears:** `site/` describes the site's identity, features, copy, and theme; the UI reflects enabled choices and the server enforces the same choices.
+- **Configuration decides what appears:** `site/` describes the site's identity, features, copy, and theme; the UI reflects enabled choices and the server enforces the same choices. The landing video tool is a client-only request preview, not a generation or credit operation.
 - **One language per file:** `site/messages/en.ts` and `site/messages/zh.ts` keep corresponding keys, and locale-aware pages select one message set at a time.
 - **One navigation path per purpose:** the navigation has one language control and one sign-in entry; its sign-in card lists only the methods enabled in `site/auth.config.ts`.
 - **Theme owns color:** `site/theme.config.ts` feeds variables through `src/app/layout.tsx` to `src/app/globals.css` and the components it styles.
@@ -34,7 +34,7 @@ The current example has site-local accounts, invitation primitives, a credit led
 | Access control | `src/lib/invites.ts`, `src/lib/turnstile.ts`, `src/lib/desktop-auth.ts`, D1 and Turnstile HTTP API | Invitation eligibility, optional sign-in verification, and allow-listed app handoff. |
 | Credits | `src/lib/ledger.ts`, `src/lib/credit-history.ts`, native D1 statements and batches | Atomic grants, reservations, allocation, refund, balance, and bounded account history. |
 | Email | `src/lib/email.ts`, `src/lib/notifications.ts`, Cloudflare Email or Resend | One `EmailProvider` interface for message delivery and application notification copy. |
-| Video and payments | `src/lib/mock-services.ts`, `src/lib/waffo.ts`, `src/lib/payments.ts`, `src/lib/ledger.ts`, `video_task` | Video remains a preview stand-in. Checkout calls the Waffo adapter, and a verified callback grants through the ledger. |
+| Video and payments | `src/components/video-tool/`, `src/lib/mock-services.ts`, `src/lib/waffo.ts`, `src/lib/payments.ts`, `src/lib/ledger.ts`, `video_task` | The landing tool previews a create payload from site config. Checkout calls the Waffo adapter, and a verified callback grants through the ledger. |
 | Worker infrastructure | `worker.ts`, `src/lib/env.ts`, `wrangler.jsonc`, OpenNext | HTTP dispatch and scheduled/queue entry points with typed request-time bindings. |
 
 ## Build, compile, and deploy commands
@@ -62,7 +62,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 ├── .gitignore                        # Generated builds, local secrets, and dependencies
 ├── package.json                      # Scripts and dependency declarations
 ├── pnpm-lock.yaml                    # Pinned dependency graph
-├── next.config.ts                    # Next.js file-tracing root
+├── next.config.ts                    # Tracing root and local Cloudflare context for next dev
 ├── open-next.config.ts               # OpenNext Cloudflare build configuration
 ├── tsconfig.json                     # Strict TS settings and @/ / @site/ aliases
 ├── worker.ts                         # OpenNext fetch plus scheduled and queue event entry points
@@ -75,14 +75,16 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 ├── fixtures/second-site/             # Configuration-only reuse example
 │   ├── site/site.config.ts           # Alternate identity, resources, and mail adapter
 │   ├── site/auth.config.ts           # Alternate auth and verification switches
+│   ├── site/video-tool.config.ts     # Alternate tool structure, with no promo
 │   └── wrangler.jsonc                # Alternate Worker binding declarations
 ├── site/                              # Per-site choices compiled into the application
 │   ├── site.config.ts                # Brand, URL, locales, deployment names, email, signup credits
 │   ├── auth.config.ts                # Login methods, invitations, desktop schemes, Turnstile
 │   ├── database.config.ts            # D1 binding and migration directory
 │   ├── theme.config.ts               # Colors and font used by layout CSS tokens
+│   ├── video-tool.config.ts          # Landing tool structure, models, references, preview assets
 │   └── messages/                     # One source file per locale with matching message keys
-│       ├── en.ts                     # English navigation, hero, dashboard, credits copy
+│       ├── en.ts                     # English navigation, hero, video tool, dashboard, credits copy
 │       ├── zh.ts                     # Chinese copy with the same shape
 │       └── index.ts                  # Locale-to-message map
 ├── src/                               # Application routes, presentation, and services
@@ -110,7 +112,8 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │       ├── invites/validate/route.ts     # Code validity check
 │   │       └── invites/redeem/route.ts       # Session-scoped redemption and signup grant
 │   ├── components/                   # UI composition and client controls
-│   │   ├── home-content.tsx          # Server-rendered homepage and welcome balance
+│   │   ├── home-content.tsx          # Server-rendered homepage and tool placement
+│   │   ├── video-tool/               # Props-only tool, controls/state, site-aware section
 │   │   ├── pricing-content.tsx       # Server-rendered plan list
 │   │   ├── pricing-checkout.tsx      # Client checkout request for a selected plan
 │   │   ├── marketing-nav.tsx         # Navigation assembled from locale and auth choices
@@ -124,7 +127,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │   ├── invite-admin.tsx          # Client code inventory and actions
 │   │   └── desktop-handoff.tsx       # Client app-return request and redirect
 │   └── lib/                          # Business logic, config exports, and integration seams
-│       ├── config.ts                 # Exports the site, auth, theme, messages, database choices
+│       ├── config.ts                 # Exports site, auth, theme, messages, database, and video-tool choices
 │       ├── env.ts                    # Worker binding and secret types plus context accessor
 │       ├── auth-schema.ts            # Drizzle mapping for better-auth D1 tables
 │       ├── auth.ts                   # Better-auth construction, origin checks, signup grant
@@ -145,7 +148,8 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
     ├── config-email-auth.test.ts     # Second-site wiring, mail adapters, Turnstile
     ├── credit-history.test.ts       # Signed-in and bounded account credit reads
     ├── ledger.test.ts               # Concurrent spend, refunds, and monthly grants
-    └── payments.test.ts             # Waffo signature, one-time grant, monthly grant, and replay
+    ├── payments.test.ts             # Waffo signature, one-time grant, monthly grant, and replay
+    └── video-tool.test.ts           # Tool helpers and locale copy shape
 ```
 
 The request path is `page or client control -> src/app page/API -> src/lib service -> this site's D1 or provider binding`.
@@ -167,7 +171,7 @@ A new capability can be a new `src/lib/` service called by an API endpoint, a se
 
 `site/site.config.ts` supplies brand, locale, deploy, email, and signup-credit choices at build time, while `wrangler.jsonc` declares matching live resources.
 `scripts/site-check.ts` compares the Worker name, D1/R2/Queue names, auth shape, email binding, callback origin, and required secret names before publication.
-`site/messages/en.ts` and `site/messages/zh.ts` share keys under `nav`, `hero`, `dashboard`, and `credits`; `src/app/[locale]/` and `src/components/language-control.tsx` select copy without duplicating business logic.
+`site/messages/en.ts` and `site/messages/zh.ts` share keys under `nav`, `hero`, `videoTool`, `dashboard`, and `credits`; `src/app/[locale]/` and `src/components/language-control.tsx` select copy without duplicating business logic.
 `site/theme.config.ts` becomes CSS variables in `src/app/layout.tsx`, and `src/app/globals.css` applies them across marketing and workspace surfaces.
 
 ### Authentication and eligibility
@@ -188,7 +192,12 @@ Grant source IDs, entry idempotency keys, and task state transitions make retrie
 ### Current state and extension paths
 
 The existing homepage, dashboard, and credit history are a preview; `src/lib/mock-services.ts` produces no generated media.
-For video, page parameters flow from a generation-tool component to an authenticated API that checks identity, input, options, and credit cost before `src/lib/ledger.ts` reserves the task and credits.
+The homepage hero is followed by `src/components/video-tool/`.
+`video-tool-section.tsx` turns `site/video-tool.config.ts` and the `videoTool` message copy into props.
+`video-generation-tool.tsx` renders those props and shows the create payload on the page.
+That preview does not upload files, call a generation API, or write the ledger.
+`fixtures/second-site/site/video-tool.config.ts` is a separate structural example and has no message file.
+When generation is connected, page parameters flow from that payload to an authenticated API that checks identity, input, options, and credit cost before `src/lib/ledger.ts` reserves the task and credits.
 An upstream adapter submits the work, the queue processing in `worker.ts` observes progress and updates task status, and a status endpoint lets the client follow that progress.
 On success, the service stores the result in the site's `MEDIA` binding and returns an authorized preview or download; on failure, it reconciles task state and the ledger idempotently according to the site's credit policy.
 Site plans in `site/site.config.ts` flow from the pricing page through `POST /api/checkout` to `src/lib/waffo.ts`. That route accepts a signed-in user, then the adapter opens a Waffo Pancake checkout for the existing product id with `@waffo/pancake-ts`. `POST /api/webhooks/payment` verifies `X-Waffo-Signature` with that SDK before `src/lib/payments.ts` writes a one-time grant or the current subscription month in `src/lib/ledger.ts`. A one-time purchase grants once. Replaying the same payment or the same month does not grant again. Coupons are the only promotion. The product id, merchant id, request signing key, and callback public key are Worker secrets.
@@ -250,7 +259,8 @@ Schema changes gain a new reviewed migration and matching service/query types an
 | `turnstile.onSignIn` | Applies Turnstile verification to sign-in requests supplied with a client token. |
 | `site/database.config.ts`: `binding`, `migrationsDir` | Site D1 binding name and migration directory. |
 | `site/theme.config.ts`: `background`, `surface`, `foreground`, `muted`, `accent`, `border`, `font` | CSS values used for page, surface, text, accent, line, and typography tokens. |
-| `site/messages/en.ts`, `zh.ts`: `nav`, `hero`, `dashboard`, `credits` | Same-shape localized strings consumed by navigation and content views. |
+| `site/video-tool.config.ts` | Landing tool media, workflows, models, fields, references, assets, and optional promo. |
+| `site/messages/en.ts`, `zh.ts`: `nav`, `hero`, `videoTool`, `dashboard`, `credits` | Same-shape localized strings consumed by navigation, the video tool, and content views. |
 
 ### Worker, build, and request-time configuration
 
@@ -266,7 +276,7 @@ Schema changes gain a new reviewed migration and matching service/query types an
 | `routes[].pattern`, `routes[].custom_domain` | Site hostname and custom-domain routing. |
 | `triggers.crons` | Schedule sent to `worker.ts`'s `scheduled` handler. |
 | `secrets.required`, `vars.SITE_URL` | Required secret names and request-time canonical auth base URL. |
-| `next.config.ts`, `open-next.config.ts` | Next.js tracing root and OpenNext's Cloudflare build settings. |
+| `next.config.ts`, `open-next.config.ts` | Next.js tracing root, local Cloudflare context for `next dev`, and OpenNext's Cloudflare build settings. |
 | `tsconfig.json` | Strict compilation and `@/` and `@site/` import aliases. |
 
 `src/lib/env.ts` types the values actually available to Worker code:
@@ -297,7 +307,7 @@ A site-choice change is published with a new build, and a runtime-secret change 
 5. **Protect credit invariants:** use native D1 prepared statements and atomic batches for multi-statement ledger effects, stable event keys for retries, and concurrent tests for spend and refunds.
 6. **Evolve storage coherently:** migrations, auth mappings or native D1 queries, API contracts, and tests describe the same schema for each site.
 7. **Represent capability honestly:** mocks remain preview stand-ins; live video or checkout work includes actual endpoints, adapters, processing, and end-to-end checks.
-8. **Verify before handoff:** run `pnpm test`, `pnpm typecheck`, `pnpm cf:build`, and `pnpm site-check`, then follow `README.md` for any relevant live flow.
+8. **Verify before handoff:** run `pnpm test`, `pnpm typecheck`, `pnpm cf:build`, and `pnpm site-check`, then follow `README.md` for any relevant live flow. The landing tool also needs `pnpm site-check fixtures/second-site`.
 9. **Keep this guide synchronized:** whenever the stack, module roles, commands, architecture, patterns, extension flow, schema, configuration, or these working rules change, update this file in the same change.
 
 ## Maintaining this file

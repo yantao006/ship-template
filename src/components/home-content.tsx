@@ -7,6 +7,7 @@ import { GoogleOneTap } from './google-one-tap';
 import { InviteGate } from './invite-gate';
 import { hasInvite } from '@/lib/invites';
 import { MarketingNav } from './marketing-nav';
+import { VideoToolSection } from './video-tool/video-tool-section';
 
 export async function HomeContent({ locale = site.defaultLocale as keyof typeof messages }: { locale?: keyof typeof messages }) {
   const env = workerEnv();
@@ -36,5 +37,6 @@ export async function HomeContent({ locale = site.defaultLocale as keyof typeof 
         <div className="art-caption">{copy.hero.detail}</div>
       </div>
     </section>
+    <VideoToolSection locale={locale} />
   </div>;
 }
