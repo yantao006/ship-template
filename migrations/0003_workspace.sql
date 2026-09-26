@@ -1,0 +1,12 @@
+CREATE TABLE payment_record (id TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES user(id) ON DELETE CASCADE, plan_id TEXT NOT NULL, subscription_id TEXT, billing TEXT NOT NULL CHECK(billing IN ('once','year')), amount TEXT NOT NULL, currency TEXT NOT NULL, status TEXT NOT NULL, invoice_url TEXT, created_at INTEGER NOT NULL);
+CREATE INDEX payment_record_user ON payment_record(user_id,created_at DESC);
+CREATE TABLE user_subscription (id TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES user(id) ON DELETE CASCADE, plan_id TEXT NOT NULL, status TEXT NOT NULL CHECK(status IN ('active','canceling','canceled')), period_start INTEGER, period_end INTEGER, updated_at INTEGER NOT NULL);
+CREATE INDEX user_subscription_user ON user_subscription(user_id,updated_at DESC);
+CREATE TABLE user_api_key (id TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES user(id) ON DELETE CASCADE, name TEXT NOT NULL, prefix TEXT NOT NULL, key_hash TEXT NOT NULL UNIQUE, created_at INTEGER NOT NULL);
+CREATE INDEX user_api_key_user ON user_api_key(user_id,created_at DESC);
+CREATE TABLE user_notification (id TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES user(id) ON DELETE CASCADE, title TEXT NOT NULL, body TEXT NOT NULL, read_at INTEGER, created_at INTEGER NOT NULL);
+CREATE INDEX user_notification_user ON user_notification(user_id,created_at DESC);
+CREATE TABLE support_ticket (id TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES user(id) ON DELETE CASCADE, subject TEXT NOT NULL, status TEXT NOT NULL CHECK(status IN ('open','replied','closed')), created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL);
+CREATE INDEX support_ticket_user ON support_ticket(user_id,updated_at DESC);
+CREATE TABLE ticket_message (id TEXT PRIMARY KEY, ticket_id TEXT NOT NULL REFERENCES support_ticket(id) ON DELETE CASCADE, user_id TEXT NOT NULL REFERENCES user(id) ON DELETE CASCADE, body TEXT NOT NULL, attachment_key TEXT, created_at INTEGER NOT NULL);
+CREATE INDEX ticket_message_ticket ON ticket_message(ticket_id,created_at);
