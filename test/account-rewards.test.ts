@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { Miniflare } from 'miniflare';
 import type { Env } from '../src/lib/env';
-import { accountActivity, claimCheckIn, claimReferral, submitShare } from '../src/lib/account-rewards';
+import { accountActivity, AccountRewardError, claimCheckIn, claimReferral, submitShare } from '../src/lib/account-rewards';
 import { grant } from '../src/lib/ledger';
 import en from '../site/messages/en';
 import zh from '../site/messages/zh';
@@ -38,7 +38,7 @@ test('daily claim changes the ledger exactly once even under concurrency and ret
 });
 
 test('share submissions persist as pending, enforce URL validation and cap without granting credits', async () => {
-  await assert.rejects(submitShare(env, 'bob', 'http://localhost/secret', 3000), /Invalid URL/);
+  await assert.rejects(submitShare(env, 'bob', 'http://localhost/secret', 3000), (error: unknown) => error instanceof AccountRewardError && error.code === 'invalid_url' && error.message === 'Invalid URL');
   await submitShare(env, 'bob', 'https://reddit.com/r/example/one', 3000);
   await assert.rejects(submitShare(env, 'bob', 'https://reddit.com/r/example/one', 3000), /Already submitted/);
   await submitShare(env, 'bob', 'https://reddit.com/r/example/two', 3000);
@@ -52,7 +52,7 @@ test('share submissions persist as pending, enforce URL validation and cap witho
 
 test('referral rewards are user-scoped, once per new account, with safe retry and age limit', async () => {
   const code = (await accountActivity(env, 'alice', 3000)).referralCode;
-  await assert.rejects(claimReferral(env, 'alice', code, 3000), /Invalid referral/);
+  await assert.rejects(claimReferral(env, 'alice', code, 3000), (error: unknown) => error instanceof AccountRewardError && error.code === 'invalid_referral' && error.message === 'Invalid referral');
   await Promise.all(Array.from({ length: 4 }, () => claimReferral(env, 'bob', code, 3000)));
   await claimReferral(env, 'bob', code, 3000);
   assert.equal((await accountActivity(env, 'alice', 3000)).balance, 8);

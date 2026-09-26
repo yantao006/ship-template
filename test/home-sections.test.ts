@@ -43,7 +43,8 @@ test('homepage composes eight sections in order, using the configured navigation
   const entry = readFileSync(new URL('../src/components/home-content.tsx', import.meta.url), 'utf8');
   assert.doesNotMatch(entry, /MarketingNav/);
   assert.match(entry, /<HomePage locale=\{locale\} userName=\{session\?\.user\.name\} userEmail=\{session\?\.user\.email\} userImage=\{session\?\.user\.image\} credits=\{credits\} \/>/);
-  assert.match(entry, /credits = await balance\(env\.DB, session\.user\.id\)/);
+  assert.match(entry, /const \{ session, credits \} = await accountSnapshot\(env, requestHeaders\)/);
+  assert.match(readFileSync(new URL('../src/lib/request-context.ts', import.meta.url), 'utf8'), /await ensureSignupCredits\(env, session\.user\.id\)/);
   assert.match(home, /<Header locale=\{locale\} userName=\{userName\} userEmail=\{userEmail\} userImage=\{userImage\} credits=\{credits\} \/>/);
   const header = section('Header');
   assert.match(header, /<section id="header">/);

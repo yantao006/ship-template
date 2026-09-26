@@ -1,9 +1,7 @@
 import { headers } from 'next/headers';
-import { createAuth, ensureSignupCredits } from '@/lib/auth';
+import { accountSnapshot } from '@/lib/request-context';
 import { messages } from '@/lib/config';
 import { workerEnv } from '@/lib/env';
-import { hasInvite } from '@/lib/invites';
-import { balance } from '@/lib/ledger';
 import { creditHistory, type CreditLot } from '@/lib/credit-history';
 import { InviteGate } from './invite-gate';
 import { WorkspaceShell } from './workspace-shell';
@@ -12,13 +10,10 @@ export async function WorkspaceContent({ locale, section }: { locale: keyof type
   const copy = messages[locale];
   const env = workerEnv();
   const requestHeaders = await headers();
-  const session = await createAuth(env, requestHeaders.get('host')?.split(':')[0]).api.getSession({ headers: requestHeaders });
-  const invited = session ? await hasInvite(env, session.user.id) : false;
-  let credits = 0;
+  const { session, invited, credits: accountCredits } = await accountSnapshot(env, requestHeaders);
+  const credits = accountCredits ?? 0;
   let lots: CreditLot[] = [];
   if (session && invited) {
-    await ensureSignupCredits(env, session.user.id);
-    credits = await balance(env.DB, session.user.id);
     if (section === 'credits') {
       lots = await creditHistory(env.DB, session.user.id);
     }
