@@ -204,6 +204,7 @@ Media, workflows and their reference limits, grouped models and duration-specifi
 The image-template list lives in `site/video-tool-templates.config.ts`, localized titles in `site/messages/video-templates-*.ts`, and the referenced local media in `public/video-tool/`.
 The model menu shows only the selected workflow's compatible models, and optional workflow defaults reset fields and quantities when switching.
 Parameter fields stay behind a summary of the current values until the summary is opened, and a duration control only offers the selected model's numeric stops.
+The site config also sets each field's presentation and order and each model's options, stops, and optional defaults; expanded controls scroll within the editor above its anchored summary and actions without covering the prompt.
 Frame-pair workflows name start and end references in the preview payload.
 That preview does not upload files, call a generation API, or write the ledger.
 `fixtures/second-site/site/video-tool.config.ts` repeats the same structure without a promo and has no message file.

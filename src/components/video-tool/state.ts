@@ -28,10 +28,11 @@ export function fieldStops(field: ToolField, model: ToolModel) {
 }
 
 export function defaultFieldValue(field: ToolField, model: ToolModel): FieldValue {
-  if (field.type === 'switch') return false;
-  if (field.type === 'number') return fieldStops(field, model)[0] ?? 0;
-  if (field.type === 'option') return model.options[field.id]?.[0] ?? '';
-  return '';
+  const configured = model.defaults?.[field.id];
+  if (field.type === 'switch') return typeof configured === 'boolean' ? configured : false;
+  if (field.type === 'number') return typeof configured === 'number' && fieldStops(field, model).includes(configured) ? configured : fieldStops(field, model)[0] ?? 0;
+  if (field.type === 'option') return typeof configured === 'string' && model.options[field.id]?.includes(configured) ? configured : model.options[field.id]?.[0] ?? '';
+  return typeof configured === 'string' ? configured : '';
 }
 
 export function reconcileFieldValues(fields: ToolField[], model: ToolModel, values: Record<string, FieldValue>): Record<string, FieldValue> {

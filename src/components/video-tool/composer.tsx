@@ -61,6 +61,10 @@ function References({ view, actions }: { view: ReferenceView; actions: ComposerP
 
 export function Composer({ title, workflowLabel, media, workflows, modelMenu, references, prompt, parameters, quantity, create, promo, actions }: ComposerProps) {
   const editorRef = useRef<HTMLDivElement>(null);
+  const mainRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (parameters.expanded && mainRef.current) mainRef.current.scrollTop = mainRef.current.scrollHeight;
+  }, [parameters.expanded]);
   const { onOutside, onCloseMenu, onCloseQuantity } = actions;
   useEffect(() => {
     function onPointer(event: PointerEvent) {
@@ -82,7 +86,7 @@ export function Composer({ title, workflowLabel, media, workflows, modelMenu, re
   }, [onOutside, onCloseMenu, onCloseQuantity]);
 
   return <div className="vt-editor" ref={editorRef}>
-    <div className={`vt-editor-main${modelMenu.open ? ' vt-menu-active' : ''}`}>
+    <div ref={mainRef} className={`vt-editor-main${modelMenu.open ? ' vt-menu-active' : ''}`}>
       <div className="vt-media" role="group" aria-label={title}>{media.map(item => <button key={item.id} type="button" aria-pressed={item.selected} onClick={() => actions.onMedia(item.id)}><Mark icon={item.icon} />{item.label}</button>)}</div>
       <div className="vt-workflows" role="group" aria-label={workflowLabel}>{workflows.map(item => <button key={item.id} type="button" aria-pressed={item.selected} onClick={() => actions.onWorkflow(item.id)}><Mark icon={item.icon} />{item.label}</button>)}</div>
       <ModelMenu {...modelMenu} />
@@ -92,6 +96,7 @@ export function Composer({ title, workflowLabel, media, workflows, modelMenu, re
         <textarea id="vt-prompt" maxLength={prompt.maxLength} placeholder={prompt.placeholder} value={prompt.value} onChange={event => actions.onPrompt(event.target.value)} />
         <span className="vt-prompt-count" aria-live="polite">{prompt.value.length}/{prompt.maxLength}</span>
       </div>
+      {parameters.expanded && <div className="vt-fields" id="vt-parameters" role="group" aria-label={parameters.fallbackLabel}>{parameters.fields.map(field => <ParameterField key={field.id} {...field} />)}</div>}
     </div>
     <div className="vt-dock">
       <div className="vt-bar">
@@ -101,7 +106,6 @@ export function Composer({ title, workflowLabel, media, workflows, modelMenu, re
           {quantity.open && <div className="vt-quantity-menu" role="listbox" aria-label={quantity.label}>{quantity.values.map(count => <button key={count} type="button" role="option" aria-selected={count === quantity.value} onClick={() => actions.onQuantity(count)}>{quantity.prefix}{count}</button>)}</div>}
         </div>
       </div>
-      {parameters.expanded && <div className="vt-fields" id="vt-parameters">{parameters.fields.map(field => <ParameterField key={field.id} {...field} />)}</div>}
       <button className="vt-create" type="button" disabled={create.disabled} onClick={actions.onCreate}>{create.label}</button>
       {promo && <div className="vt-promo"><a href={promo.href}><Mark icon={promo.icon} />{promo.label}</a>{promo.dismissLabel && <button type="button" aria-label={promo.dismissLabel} onClick={actions.onPromoDismiss}>×</button>}</div>}
     </div>

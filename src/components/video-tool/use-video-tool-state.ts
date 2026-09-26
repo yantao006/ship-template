@@ -36,7 +36,7 @@ export function useVideoToolState({ config, copy, assets, status = { state: 'idl
   const currentWorkflowId = supportedWorkflows.some(item => item.id === workflowId) ? workflowId : supportedWorkflows[0]?.id ?? '';
   const currentWorkflow = config.workflows.find(item => item.id === currentWorkflowId);
   const currentValues = model ? reconcileFieldValues(config.fields, model, values) : {};
-  const enabledFields = config.fields.filter(field => model?.fieldIds.includes(field.id));
+  const enabledFields = config.fields.filter(field => model?.fieldIds.includes(field.id)).sort((a, b) => (a.order ?? 99) - (b.order ?? 99));
   const summary = model ? summaryFields(config.fields, model).map(field => {
     const value = currentValues[field.id];
     return field.type === 'number' ? `${value ?? ''}${field.unit ?? ''}` : copy.options[field.id]?.[String(value ?? '')] ?? String(value ?? '');
@@ -121,6 +121,7 @@ export function useVideoToolState({ config, copy, assets, status = { state: 'idl
   });
   const fieldProps: ParameterFieldProps[] = model ? enabledFields.map(field => ({
     id: field.id, type: field.type, label: copy.fields[field.id], value: currentValues[field.id],
+    presentation: field.presentation, unit: field.unit, switchStates: copy.switchStates,
     stops: fieldStops(field, model), uploadHint: copy.references.uploadHint,
     options: field.type === 'upload' ? config.references.map(item => ({ value: item.id, label: copy.references.candidates[item.id] }))
       : (model.options[field.id] ?? []).map(value => ({ value, label: copy.options[field.id]?.[value] ?? value })),

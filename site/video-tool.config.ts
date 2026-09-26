@@ -29,6 +29,7 @@ const aspectLandscapePortraitSet = ['16-9', '9-16'];
 const resolutionSet = ['720p', '1080p'];
 const videoFlows = ['multi-reference', 'text-video', 'image-video'];
 const videoFields = ['ratio', 'resolution', 'duration'];
+const h3RatioSet = ['adaptive', '21-9', '16-9', '4-3', '1-1', '3-4', '9-16'];
 const useLinks = [{ id: 'cases', href: '/{locale}/pricing' }, { id: 'prompts', href: '/{locale}/pricing' }];
 const useActions = ['reference', 'edit'];
 
@@ -48,7 +49,7 @@ const config: VideoToolStructure = {
   ],
   models: [
     { id: 'minimax-h3-max', vendorId: 'minimax', icon: minimaxLogo, workflowIds: videoFlows, fieldIds: videoFields, options: { ratio: aspectWideSet, resolution: resolutionSet }, stops: { duration: [6, 10] }, tags: [{ id: 'max', tone: 'crown', icon: premiumBadgeIcon }], count: 68, costByDuration: { 6: 68, 10: 148 } },
-    { id: 'minimax-h3', vendorId: 'minimax', icon: minimaxLogo, workflowIds: videoFlows, fieldIds: videoFields, options: { ratio: aspectLandscapePortraitSet, resolution: resolutionSet }, stops: { duration: [6, 10] }, tags: [], count: 42, costByDuration: { 6: 42, 10: 104 } },
+    { id: 'minimax-h3', vendorId: 'minimax', icon: minimaxLogo, workflowIds: videoFlows, fieldIds: [...videoFields, 'generateAudio'], options: { ratio: h3RatioSet, resolution: ['720p', '2k'] }, stops: { duration: [4, 5, 6, 8, 10, 15] }, defaults: { ratio: '16-9', duration: 6, generateAudio: true }, tags: [], count: 42, costByDuration: { 4: 28, 5: 35, 6: 42, 8: 72, 10: 104, 15: 156 } },
     { id: 'minimax-h3-lite', vendorId: 'minimax', icon: minimaxLogo, workflowIds: videoFlows, fieldIds: videoFields, options: { ratio: ['16-9'], resolution: ['720p'] }, stops: { duration: [6] }, tags: [{ id: 'free', tone: 'success' }], count: 18, costByDuration: { 6: 18 } },
     { id: 'seedance-2-5', vendorId: 'seedance', icon: seedanceLogo, workflowIds: videoFlows, fieldIds: videoFields, options: { ratio: aspectWideSet, resolution: resolutionSet }, stops: { duration: [5, 10] }, tags: [], count: 55, costByDuration: { 5: 55, 10: 110 } },
     { id: 'seedance-2-0', vendorId: 'seedance', icon: seedanceLogo, workflowIds: videoFlows, fieldIds: videoFields, options: { ratio: aspectLandscapePortraitSet, resolution: resolutionSet }, stops: { duration: [5, 10] }, tags: [], count: 40, costByDuration: { 5: 40, 10: 80 } },
@@ -70,12 +71,13 @@ const config: VideoToolStructure = {
     { id: 'nano-banana', vendorId: 'nano-banana', icon: bananaLogo, workflowIds: ['text-image'], fieldIds: ['ratio', 'size'], options: { ratio: ['1-1'], size: ['1k'] }, tags: [], count: 8 },
   ],
   fields: [
-    { id: 'ratio', type: 'option' },
-    { id: 'resolution', type: 'option' },
-    { id: 'duration', type: 'number', unit: 's' },
+    { id: 'ratio', type: 'option', presentation: 'ratio', order: 3 },
+    { id: 'resolution', type: 'option', presentation: 'segmented', order: 1 },
+    { id: 'duration', type: 'number', unit: 's', order: 2 },
+    { id: 'generateAudio', type: 'switch', summary: false, order: 4 },
     { id: 'seed', type: 'text', summary: false },
-    { id: 'size', type: 'option' },
-    { id: 'format', type: 'option' },
+    { id: 'size', type: 'option', presentation: 'segmented' },
+    { id: 'format', type: 'option', presentation: 'segmented' },
   ],
   references: [
     { id: 'lattice-pie-photo', kind: 'image', url: latticePieImageUrl },

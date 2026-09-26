@@ -126,7 +126,13 @@ test('summary stays on option and number values and duration uses model stops', 
   const pro = config.models.find(model => model.id === 'seedance-1-5-pro');
   assert.ok(h3 && pro);
   assert.deepEqual(summaryFields(config.fields, h3).map(field => field.id), ['ratio', 'resolution', 'duration']);
-  assert.deepEqual(reconcileFieldValues(config.fields, h3, {}), { ratio: '16-9', resolution: '720p', duration: 6 });
+  assert.deepEqual(reconcileFieldValues(config.fields, h3, {}), { ratio: '16-9', resolution: '720p', duration: 6, generateAudio: true });
+  assert.deepEqual(h3.options.ratio, ['adaptive', '21-9', '16-9', '4-3', '1-1', '3-4', '9-16']);
+  assert.deepEqual(h3.options.resolution, ['720p', '2k']);
+  assert.deepEqual(h3.stops?.duration, [4, 5, 6, 8, 10, 15]);
+  assert.deepEqual(reconcileFieldValues(config.fields, h3, { ratio: '21-9', resolution: '2k', duration: 15, generateAudio: false }), { ratio: '21-9', resolution: '2k', duration: 15, generateAudio: false });
+  assert.deepEqual(reconcileFieldValues(config.fields, h3, { ratio: '9-16', duration: 7 }), { ratio: '9-16', resolution: '720p', duration: 6, generateAudio: true });
+  assert.equal(config.models.find(item => item.id === 'minimax-h3-lite')?.fieldIds.includes('generateAudio'), false);
   assert.deepEqual(summaryFields(config.fields, pro).map(field => field.id), ['ratio', 'resolution', 'duration']);
   assert.deepEqual(reconcileFieldValues(config.fields, pro, { ratio: '1-1', duration: 6, seed: '42' }), { ratio: '16-9', resolution: '720p', duration: 4, seed: '42' });
   const still = config.models.find(model => model.id === 'seedream-5-lite');
@@ -146,8 +152,8 @@ test('preview cost follows configured model duration and quantity without chargi
 test('create payload contains only enabled field values and selected references', () => {
   const model = config.models.find(item => item.id === 'minimax-h3');
   assert.ok(model);
-  assert.deepEqual(buildCreatePayload(model, 'text-video', 'hello', 2, { ratio: '16-9', duration: 10, seed: 'x' }, ['lattice-pie-photo']), {
-    modelId: 'minimax-h3', workflowId: 'text-video', prompt: 'hello', quantity: 2, values: { ratio: '16-9', duration: 10 }, referenceIds: ['lattice-pie-photo'],
+  assert.deepEqual(buildCreatePayload(model, 'text-video', 'hello', 2, { ratio: '16-9', duration: 10, generateAudio: false, seed: 'x' }, ['lattice-pie-photo']), {
+    modelId: 'minimax-h3', workflowId: 'text-video', prompt: 'hello', quantity: 2, values: { ratio: '16-9', duration: 10, generateAudio: false }, referenceIds: ['lattice-pie-photo'],
   });
   assert.deepEqual(buildCreatePayload(model, 'image-video', '', 1, { duration: 6 }, ['fruit-tarts-photo', 'lattice-pie-photo'], { start: 'fruit-tarts-photo', end: 'lattice-pie-photo' }), {
     modelId: 'minimax-h3', workflowId: 'image-video', prompt: '', quantity: 1, values: { duration: 6 }, referenceIds: ['fruit-tarts-photo', 'lattice-pie-photo'], referenceFrames: { start: 'fruit-tarts-photo', end: 'lattice-pie-photo' },

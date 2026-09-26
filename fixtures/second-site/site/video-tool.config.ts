@@ -15,7 +15,7 @@ export default {
     { id: 'bench-clip', vendorId: 'clip-lab', icon: '▶', workflowIds: ['multi', 'text-video', 'image-video'], fieldIds: ['ratio', 'duration'], options: { ratio: ['wide'] }, stops: { duration: [6, 10] }, tags: [{ id: 'short', tone: 'neutral' }], count: 4, costByDuration: { 6: 4, 10: 8 } },
     { id: 'bench-still', vendorId: 'still-lab', icon: '◻', workflowIds: ['text-image'], fieldIds: ['ratio'], options: { ratio: ['square'] }, tags: [], count: 2 },
   ],
-  fields: [{ id: 'ratio', type: 'option' }, { id: 'duration', type: 'number', unit: 's' }],
+  fields: [{ id: 'ratio', type: 'option', presentation: 'ratio', order: 3 }, { id: 'duration', type: 'number', unit: 's', order: 2 }],
   references: [{ id: 'loaf', kind: 'image', url: still }],
   referenceKinds: [{ id: 'image', icon: '◻' }],
   referenceLimits: { image: 2 },
