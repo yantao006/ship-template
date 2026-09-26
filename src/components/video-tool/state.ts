@@ -4,6 +4,21 @@ export function visibleWorkflows(config: VideoToolStructure, mediaId: string, mo
   return config.workflows.filter(workflow => workflow.mediaId === mediaId && model.workflowIds.includes(workflow.id));
 }
 
+export function modelForMedia(config: VideoToolStructure, mediaId: string, preferredId?: string) {
+  const supports = (model: ToolModel) => visibleWorkflows(config, mediaId, model).length > 0;
+  return config.models.find(model => model.id === preferredId && supports(model))
+    ?? config.models.find(model => model.id === config.defaultModelId && supports(model))
+    ?? config.models.find(supports);
+}
+
+export function summaryFields(fields: ToolField[], model: ToolModel) {
+  const byId = new Map(fields.map(field => [field.id, field]));
+  return model.fieldIds.flatMap(id => {
+    const field = byId.get(id);
+    return field && field.summary !== false && (field.type === 'option' || field.type === 'number') ? [field] : [];
+  });
+}
+
 export function snapToStops(value: number, stops: readonly number[]): number | undefined {
   return stops.length ? stops.reduce((nearest, stop) => Math.abs(stop - value) < Math.abs(nearest - value) ? stop : nearest) : undefined;
 }

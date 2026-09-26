@@ -75,7 +75,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 ├── fixtures/second-site/             # Configuration-only reuse example
 │   ├── site/site.config.ts           # Alternate identity, resources, and mail adapter
 │   ├── site/auth.config.ts           # Alternate auth and verification switches
-│   ├── site/video-tool.config.ts     # Alternate tool structure, with no promo
+│   ├── site/video-tool.config.ts     # Alternate tool structure, without a promo
 │   └── wrangler.jsonc                # Alternate Worker binding declarations
 ├── site/                              # Per-site choices compiled into the application
 │   ├── site.config.ts                # Brand, URL, locales, deployment names, email, signup credits
@@ -194,9 +194,12 @@ Grant source IDs, entry idempotency keys, and task state transitions make retrie
 The existing homepage, dashboard, and credit history are a preview; `src/lib/mock-services.ts` produces no generated media.
 The homepage hero is followed by `src/components/video-tool/`.
 `video-tool-section.tsx` turns `site/video-tool.config.ts` and the `videoTool` message copy into props.
-`video-generation-tool.tsx` renders those props and shows the create payload on the page.
+`video-generation-tool.tsx` renders those props as a dark two-column workbench and shows the create payload on the page.
+Media, workflows, grouped models, references, and preview image URLs come from that config.
+Parameter fields stay behind a summary of the current values until the summary is opened, and a duration control only offers the selected model's numeric stops.
 That preview does not upload files, call a generation API, or write the ledger.
-`fixtures/second-site/site/video-tool.config.ts` is a separate structural example and has no message file.
+`fixtures/second-site/site/video-tool.config.ts` repeats the same structure without a promo and has no message file.
+The workbench chrome stays with the component, so a shorter second-site catalog does not become a different layout.
 When generation is connected, page parameters flow from that payload to an authenticated API that checks identity, input, options, and credit cost before `src/lib/ledger.ts` reserves the task and credits.
 An upstream adapter submits the work, the queue processing in `worker.ts` observes progress and updates task status, and a status endpoint lets the client follow that progress.
 On success, the service stores the result in the site's `MEDIA` binding and returns an authorized preview or download; on failure, it reconciles task state and the ledger idempotently according to the site's credit policy.

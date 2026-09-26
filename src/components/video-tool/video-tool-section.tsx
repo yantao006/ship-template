@@ -15,7 +15,7 @@ export function VideoToolSection({ locale }: { locale: keyof typeof messages }) 
       id: asset.id, type: asset.type, url: asset.url, poster: asset.poster, tabId: asset.tabId,
       title: text.title, description: text.description, badge: text.badge,
       secondaryActions: asset.actionIds?.map(id => ({ id, label: text.actions?.[id] ?? '' })),
-      footerLink: asset.footerHref && text.footer ? { label: text.footer, href: asset.footerHref.replace('{locale}', locale) } : undefined,
+      links: asset.links?.map(link => ({ id: link.id, label: text.links?.[link.id] ?? '', href: link.href.replace('{locale}', locale) })).filter(link => link.label),
     };
   });
   return <section className="vt-section" aria-labelledby="vt-title">
