@@ -9,6 +9,12 @@ The Google consent app is in Testing mode; only the configured Google test users
 
 Video generation, model pages, and legal pages are not implemented.
 The mock video service cannot generate media. Checkout opens a Waffo Pancake session for the existing product and returns its payment URL.
+The homepage navigation has signed-in account and credit popovers with shared accessible dialogs for daily credit claims, referral links, share submissions, contact, feedback, payment receipts and plans.
+`site/site.config.ts` configures rewards, limits, contact addresses, link and icon choices; `site/messages/en.ts` and `zh.ts` provide all account copy.
+Migration `0003_account_rewards.sql` stores check-ins, pending share submissions and referral claims in this site's D1.
+Check-in and eligible referral credits use the existing idempotent ledger; share submissions remain pending and do not award credits without review.
+The payment receipts card reads settled credit grants, not tax invoices; the request-invoice link contacts support.
+Apply the migration before using the signed-in homepage on an existing D1.
 The landing page has a marketing navigation and hero. Pricing at `/{locale}/pricing` lists site plans and starts checkout for a signed-in user. The preview workspace at `/{locale}/dashboard` and the credit-grant table at `/{locale}/credits` show the signed-in account's D1 data.
 
 ## Re-run verification
@@ -33,6 +39,8 @@ Secrets already installed on the deployed Worker are not exported into the local
 For local-only D1 smoke checks, first run `pnpm exec wrangler d1 migrations apply awesomejev-db --local`.
 The local-only auth test path uses an explicit `LOCAL_AUTH_TEST=1` and a loopback `SITE_URL`, as exercised by `test/auth-integration.test.ts`; it cannot be used on a non-loopback request.
 For a local Next.js preview, set `NEXT_DEV_WRANGLER_CONFIG` to a local, uncommitted Wrangler config whose `vars.SITE_URL` is the exact preview origin and whose `vars.LOCAL_AUTH_TEST` is `1`.
+Apply migrations `0001` through `0003` locally for a preview with account rewards.
+Do not use production credentials in local preview configs.
 Google OAuth additionally needs real local credentials and that exact origin's `/api/auth/callback/google` registered on the OAuth client; fake credentials can only test the sign-in start, not complete the callback.
 Never commit that preview config or `.dev.vars`.
 Email/password signup and login use the same site's D1-backed better-auth session and account tables.

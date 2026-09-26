@@ -9,6 +9,15 @@ export default {
   deploy: { worker: 'awesomejev-test', d1: 'awesomejev-db', r2: 'awesomejev-media', queue: 'awesomejev-jobs' },
   email: { provider: 'cloudflare' as 'cloudflare' | 'resend', from: 'noreply@awesomejev.link' },
   signupCredits: 30,
+  account: {
+    checkIn: { enabled: true, credits: 1 },
+    share: { enabled: true, credits: 40, maxSubmissions: 3 },
+    referral: { enabled: true, inviterCredits: 6, friendCredits: 4, claimWindowHours: 24 },
+    contactEmail: 'support@awesomejev.link',
+    feedbackEmail: 'support@awesomejev.link',
+    commercialUseHref: '/pricing',
+    icons: { checkin: 'sparkles', share: 'share', invite: 'gift', contact: 'mail', feedback: 'message' },
+  },
   plans: [
     { id: 'pack', billing: 'once' as const, credits: 100, amount: '9.90', currency: 'USD', description: 'Awesomejev credit pack' },
     { id: 'annual', billing: 'year' as const, credits: 80, amount: '79.00', currency: 'USD', description: 'Awesomejev annual plan' },

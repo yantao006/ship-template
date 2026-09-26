@@ -42,9 +42,9 @@ test('homepage composes eight sections in order, using the configured navigation
   assert.match(section('VideoToolSection'), /<ExistingVideoToolSection locale=\{locale\} \/>/);
   const entry = readFileSync(new URL('../src/components/home-content.tsx', import.meta.url), 'utf8');
   assert.doesNotMatch(entry, /MarketingNav/);
-  assert.match(entry, /<HomePage locale=\{locale\} userName=\{session\?\.user\.name\} userEmail=\{session\?\.user\.email\} credits=\{credits\} \/>/);
+  assert.match(entry, /<HomePage locale=\{locale\} userName=\{session\?\.user\.name\} userEmail=\{session\?\.user\.email\} userImage=\{session\?\.user\.image\} credits=\{credits\} \/>/);
   assert.match(entry, /credits = await balance\(env\.DB, session\.user\.id\)/);
-  assert.match(home, /<Header locale=\{locale\} userName=\{userName\} userEmail=\{userEmail\} credits=\{credits\} \/>/);
+  assert.match(home, /<Header locale=\{locale\} userName=\{userName\} userEmail=\{userEmail\} userImage=\{userImage\} credits=\{credits\} \/>/);
   const header = section('Header');
   assert.match(header, /<section id="header">/);
   assert.match(header, /import \{ ReplicaNavigation \} from '@\/components\/blocks\/replica-navigation'/);
@@ -53,10 +53,11 @@ test('homepage composes eight sections in order, using the configured navigation
   }
   assert.match(header, /logo=\{site\.logo\}/);
   assert.match(header, /<AuthControl variant="avatar"/);
+  assert.match(header, /<AccountPopovers user=/);
   const block = readFileSync(new URL('../src/components/blocks/replica-navigation.tsx', import.meta.url), 'utf8');
   assert.match(block, /export function ReplicaNavigation/);
   assert.match(block, /href=\{link\.href\}/);
-  assert.match(block, /balance !== undefined/);
+  assert.match(header, /credits !== undefined/);
   assert.match(block, /pathForLocale\(pathname, code, locales\)/);
   assert.match(block, /href=\{pricingHref\}/);
   assert.match(block, /aria-current=\{activeHref === link\.href \? 'page' : undefined\}/);
