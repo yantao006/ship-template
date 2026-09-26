@@ -11,7 +11,7 @@ The current example has site-local accounts, invitation primitives, a credit led
 - **One language per file:** `site/messages/en.ts` and `site/messages/zh.ts` keep corresponding keys, and locale-aware pages select one message set at a time.
 - **One navigation path per purpose:** the navigation has one language control and one sign-in entry; its sign-in card lists only the methods enabled in `site/auth.config.ts`.
 - **Theme owns color:** `site/theme.config.ts` feeds variables through `src/app/layout.tsx` to `src/app/globals.css` and the components it styles.
-- **Pages compose sections:** a full site can grow from navigation and hero into a generation tool, showcase, features, pricing, FAQ, and footer, with each section taking its content from site choices.
+- **Pages compose sections:** `src/components/sections/HomePage.tsx` orders eight homepage sections after the existing navigation. Seven sections are empty scaffolds; only the video tool renders its existing implementation.
 - **Long-running work is observable:** video generation uses an asynchronous task and progress flow, while the server validates costs and records credit movements in the ledger.
 
 ## Overall tech stack
@@ -116,7 +116,8 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │       ├── invites/validate/route.ts     # Code validity check
 │   │       └── invites/redeem/route.ts       # Session-scoped redemption and signup grant
 │   ├── components/                   # UI composition and client controls
-│   │   ├── home-content.tsx          # Server-rendered homepage and tool placement
+│   │   ├── home-content.tsx          # Session-aware homepage entry, existing nav, and section composition
+│   │   ├── sections/                 # Ordered homepage skeleton; tool wrapper mounts existing workbench
 │   │   ├── video-tool/               # Bound copy, scoped presentation, interaction state, pure selectors
 │   │   ├── pricing-content.tsx       # Server-rendered plan list
 │   │   ├── pricing-checkout.tsx      # Client checkout request for a selected plan
@@ -152,6 +153,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
     ├── config-email-auth.test.ts     # Second-site wiring, mail adapters, Turnstile
     ├── credit-history.test.ts       # Signed-in and bounded account credit reads
     ├── ledger.test.ts               # Concurrent spend, refunds, and monthly grants
+    ├── home-sections.test.ts        # Homepage section scaffold order and stable ids
     ├── payments.test.ts             # Waffo signature, one-time grant, monthly grant, and replay
     └── video-tool.test.ts           # Tool helpers and locale copy shape
 ```
@@ -196,7 +198,9 @@ Grant source IDs, entry idempotency keys, and task state transitions make retrie
 ### Current state and extension paths
 
 The existing homepage, dashboard, and credit history are a preview; `src/lib/mock-services.ts` produces no generated media.
-The homepage hero is followed by `src/components/video-tool/`.
+`src/components/home-content.tsx` renders the existing `MarketingNav` and then `src/components/sections/HomePage.tsx`, which orders Header, VideoHero, VideoToolSection, VideoShowcase, VideoFeatures, VideoPricing, VideoFAQ, and Footer.
+The seven non-tool sections are empty sections with stable ids; the Header scaffold does not replace the live navigation.
+`sections/VideoToolSection.tsx` mounts the existing `src/components/video-tool/video-tool-section.tsx` without altering its behavior.
 `bind-copy.ts` localizes links and assembles asset copy, then `video-tool-section.tsx` passes props and shows the create-payload preview.
 `video-generation-tool.tsx` composes the dark workbench from `composer.tsx` and `stage.tsx`.
 `use-video-tool-state.ts` owns interactive state and calls pure selectors in `state.ts`; `model-menu.tsx` and `parameter-field.tsx` accept only their scoped presentation data.
@@ -220,7 +224,7 @@ Vendor-specific request and callback formats stay in adapters, while the page, t
 | Change | Start here, then connect |
 | --- | --- |
 | Change copy or switches | Edit `site/messages/en.ts` and `site/messages/zh.ts` together for text, or `site/site.config.ts` and `site/auth.config.ts` for site choices; connect new switches to their `src/components/` view, `src/lib/` or `src/app/api/` server gate, and `scripts/site-check.ts` when bindings change. |
-| Add a page section | Compose it from `src/components/home-content.tsx` or a new component under `src/components/`; supply localized content from `site/messages/`, tokens from `site/theme.config.ts` and `src/app/globals.css`, and a route under `src/app/` when it needs its own page. |
+| Add a page section | Implement or extend a section in `src/components/sections/` and compose it from `HomePage.tsx`; supply localized content from `site/messages/`, tokens from `site/theme.config.ts` and `src/app/globals.css`, and a route under `src/app/` when it needs its own page. |
 | Add a sign-in method | Extend `site/auth.config.ts`, the method selection in `src/lib/auth.ts`, the card in `src/components/auth-control.tsx`, and the callback or guard in `src/app/api/auth/[...all]/route.ts`; declare credentials in `src/lib/env.ts`, `wrangler.jsonc`, and `scripts/site-check.ts`, with auth tests under `test/`. |
 | Add a table | Add the next SQL file in `migrations/`, then update `src/lib/auth-schema.ts` for better-auth tables or native D1 queries and types in the owning `src/lib/` service; expose user-scoped reads through `src/app/` and test the migration and operation. |
 | Add an upstream | Put provider-specific calls and response mapping behind an adapter in `src/lib/`; connect it through a validated `src/app/api/` endpoint and, for long-running work, `worker.ts`, `src/lib/ledger.ts`, and a progress-aware component; add its Worker secret names to `src/lib/env.ts`, `wrangler.jsonc`, and `scripts/site-check.ts`. |
