@@ -123,7 +123,10 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   ├── components/                   # UI composition and client controls
 │   │   ├── home-content.tsx          # Session-aware homepage entry, existing nav, and section composition
 │   │   ├── blocks/replica-navigation.tsx # Configurable homepage bar, language, theme and mobile links
-│   │   ├── blocks/account-popovers.tsx   # Signed-in account/credit menu data, actions and dialogs
+│   │   ├── blocks/account-popovers.tsx   # Signed-in account/credit menu data and actions
+│   │   ├── blocks/account-dialogs.tsx    # Seven account dialog bodies and shared dialog hero
+│   │   ├── blocks/account-profile.tsx    # Shared avatar trigger and profile header
+│   │   ├── blocks/account-gate-rows.tsx  # Invite-gated menu rows using route-table links
 │   │   ├── blocks/account-popover-card.tsx # Shared ordered-row popover shell and row presentation
 │   │   ├── blocks/tags.css               # Shared semantic tag tones for badges and model labels
 │   │   ├── blocks/account-popover-state.ts # Pure seven-day streak presentation
@@ -174,7 +177,8 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
     ├── routes-language-ledger-plans.test.ts # Route, locale, source and plan copy guards
     ├── account-rewards.test.ts       # Reward persistence, concurrency and user scope
     ├── account-popover-state.test.ts # Seven-day completion and next UTC claim
-    ├── account-popover-card.test.ts  # Row badge, divider, box and ordered card rendering
+    ├── account-popover-card.test.ts  # Row badges, dividers, shared profile and invite-gate destinations
+    ├── account-dialogs.test.ts       # Seven dialog bodies, shared hero and route destinations
     ├── client-boundary.test.ts       # Client imports, singleton auth, localized props guards
     ├── auth-integration.test.ts      # Local better-auth signup and idempotent credits
     ├── auth-options.test.ts          # Provider switches, invites, desktop handoff
@@ -235,9 +239,10 @@ Grant source IDs, entry idempotency keys, and task state transitions make retrie
 
 The homepage account popovers read the signed-in balance and profile and expose configured check-ins, referral sharing and a masked real-data leaderboard, pending share submissions, support links, plans and payment receipts.
 `src/lib/use-dismissable-layer.ts` centralizes client dismissal, Escape and focus handling; `src/lib/use-referral-claim.ts` owns home referral capture and redemption, and `src/lib/json-request.ts` owns JSON writes.
-`src/components/blocks/account-popover-card.tsx` renders both menus from ordered rows with optional badges, one named tone, and per-row dividers; their distinct balance/buy and profile headers and all row actions remain in `account-popovers.tsx`.
+`src/components/blocks/account-popover-card.tsx` renders account menus from ordered rows with optional badges, one named tone, and per-row dividers.
+`account-profile.tsx` shares avatar and profile presentation across the full and invite-gated menus; `account-gate-rows.tsx` maps existing route-table links into shared rows, while `account-popovers.tsx` owns account actions and `account-dialogs.tsx` owns seven dialog bodies and their shared hero.
 `src/components/blocks/tags.css` shares semantic tag tones between row badges and video-model labels, while `src/components/video-tool/video-tool.css` owns the themed workbench.
-`replica-navigation.css` owns the shared popover shell for language and account menus; `account-popovers.css` owns account-card content, while paired chrome tokens keep the light and dark surfaces synchronized.
+`replica-navigation.css` owns the shared popover shell, avatar and credit pill; `account-popovers.css` owns account-card content, while paired chrome tokens keep the light and dark surfaces synchronized.
 `docs/research/account-popovers/components/source-spec.md` records source-observed desktop/mobile metrics and click-state evidence; the implementation uses local site copy and capabilities rather than the reference site's product claims.
 Receipts reflect settled credit ledger grants, not tax invoices; share submissions do not award credits until reviewed.
 The existing homepage, dashboard, and credit history are a preview; `src/lib/mock-services.ts` produces no generated media.

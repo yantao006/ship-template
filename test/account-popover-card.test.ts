@@ -3,6 +3,8 @@ import { test } from 'node:test';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { AccountPopoverCard, AccountPopoverRow, type PopoverRow } from '../src/components/blocks/account-popover-card';
+import { ProfileHeader, AvatarTrigger } from '../src/components/blocks/account-profile';
+import { inviteGateRows } from '../src/components/blocks/account-gate-rows';
 
 const row = (overrides: Partial<PopoverRow> = {}): PopoverRow => ({ id: 'example', icon: createElement('svg', { 'aria-label': 'icon' }), label: 'Example', ...overrides });
 const renderRow = (overrides: Partial<PopoverRow> = {}) => renderToStaticMarkup(createElement(AccountPopoverRow, { row: row(overrides) }));
@@ -41,4 +43,28 @@ test('card renders exactly its ordered row list with the supplied header and men
   assert.ok(markup.indexOf('First') < markup.indexOf('Second'));
   assert.equal((markup.match(/account-row-divider/g) ?? []).length, 1);
   assert.match(markup, /href="\/credits"/);
+});
+
+test('invite-gated account uses the same profile card, row semantics and unchanged route targets', () => {
+  const links = {
+    workspace: { href: '/zh/dashboard', label: 'Dashboard' },
+    credits: { href: '/zh/credits', label: 'Credits' },
+    pricing: { href: '/zh/pricing', label: 'Pricing' },
+  };
+  const rows = inviteGateRows(links, 'Sign out', () => {}, false);
+  assert.deepEqual(rows.map(item => item.id), ['workspace', 'credits', 'pricing', 'signout']);
+  assert.match(renderToStaticMarkup(createElement('span', null, rows[2].icon)), /lucide-tags/);
+  const markup = renderToStaticMarkup(createElement(AccountPopoverCard, {
+    header: createElement(ProfileHeader, { name: 'Test User', email: 'test@example.com' }),
+    label: 'Account', role: 'menu', className: 'account-menu', rows,
+  }));
+  assert.match(markup, /class="account-profile"/);
+  assert.match(markup, /class="replica-avatar replica-avatar-large"/);
+  assert.equal((markup.match(/role="menuitem"/g) ?? []).length, 4);
+  for (const { href } of Object.values(links)) assert.match(markup, new RegExp(`href="${href}"`));
+  assert.ok(markup.indexOf('Dashboard') < markup.indexOf('Credits'));
+  assert.ok(markup.indexOf('Credits') < markup.indexOf('Pricing'));
+  assert.match(renderToStaticMarkup(createElement(AvatarTrigger, { name: 'Test User', label: 'Account', open: false, onClick: () => {} })), /aria-haspopup="menu"/);
+  assert.equal(inviteGateRows(undefined, 'Sign out', () => {}, true).length, 1);
+  assert.equal(inviteGateRows(undefined, 'Sign out', () => {}, true)[0].disabled, true);
 });

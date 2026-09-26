@@ -87,5 +87,5 @@ test('every configured plan has id-based names and descriptions in every languag
   assert.throws(() => planCopy('en', 'unknown'), /Missing plan copy/);
   assert.match(readFileSync('src/components/pricing-content.tsx', 'utf8'), /planCopy\(locale, plan\.id\)/);
   assert.match(readFileSync('src/components/sections/Header.tsx', 'utf8'), /planCopy\(locale, plan\.id\)\.name/);
-  assert.match(readFileSync('src/components/blocks/account-popovers.tsx', 'utf8'), /<h3>\{plan\.name\}<\/h3>/);
+  assert.match(readFileSync('src/components/blocks/account-dialogs.tsx', 'utf8'), /<h3>\{plan\.name\}<\/h3>/);
 });
