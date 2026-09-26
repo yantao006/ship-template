@@ -4,6 +4,7 @@ import { workerEnv } from '@/lib/env';
 import { site, auth, messages } from '@/lib/config';
 import { routePath } from '@/lib/routes';
 import { GoogleOneTap } from './google-one-tap';
+import { ReferralCapture } from './referral-capture';
 import { HomePage } from './sections/HomePage';
 
 export async function HomeContent({ locale = site.defaultLocale as keyof typeof messages }: { locale?: keyof typeof messages }) {
@@ -12,6 +13,7 @@ export async function HomeContent({ locale = site.defaultLocale as keyof typeof 
   const { session, credits } = await accountSnapshot(env, requestHeaders);
 
   return <div className="site-shell">
+    <ReferralCapture signedIn={!!session} />
     {!session && auth.google.enabled && auth.google.oneTapEnabled && env.GOOGLE_CLIENT_ID && <GoogleOneTap clientId={env.GOOGLE_CLIENT_ID} callbackURL={routePath(locale, 'home')} />}
     <HomePage locale={locale} userName={session?.user.name} userEmail={session?.user.email} userImage={session?.user.image} credits={credits} />
   </div>;

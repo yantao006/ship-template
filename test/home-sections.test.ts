@@ -39,7 +39,7 @@ test('homepage composes eight sections in order, using the configured navigation
   const names = sectionNames.map(([name]) => name);
   assert.deepEqual([...home.matchAll(/<([A-Z]\w+)(?: [^>]+)? \/>/g)].map(match => match[1]), names);
   assert.match(section('VideoToolSection'), /import \{ VideoToolSection as ExistingVideoToolSection \} from '@\/components\/video-tool\/video-tool-section'/);
-  assert.match(section('VideoToolSection'), /<ExistingVideoToolSection locale=\{locale\} \/>/);
+  assert.match(section('VideoToolSection'), /<ExistingVideoToolSection copy=\{copy\} config=\{config\} assets=\{assets\} \/>/);
   const entry = readFileSync(new URL('../src/components/home-content.tsx', import.meta.url), 'utf8');
   assert.doesNotMatch(entry, /MarketingNav/);
   assert.match(entry, /<HomePage locale=\{locale\} userName=\{session\?\.user\.name\} userEmail=\{session\?\.user\.email\} userImage=\{session\?\.user\.image\} credits=\{credits\} \/>/);
@@ -60,9 +60,9 @@ test('homepage composes eight sections in order, using the configured navigation
   assert.match(block, /export function ReplicaNavigation/);
   assert.match(block, /href=\{link\.href\}/);
   assert.match(header, /credits !== undefined/);
-  assert.match(block, /pathForLocale\(pathname, code, locales\)/);
+  assert.match(block, /pathForLocale\(pathname, item\.code, locales\.map\(language => language\.code\)\)/);
   assert.match(block, /href=\{pricingHref\}/);
   assert.match(block, /aria-current=\{activeHref === link\.href \? 'page' : undefined\}/);
-  assert.match(block, /if \(!menuArea\.current\?\.contains\(event\.target as Node\)\) setOpen\(null\)/);
+  assert.match(block, /useDismissableLayer\(\{ active: !!open/);
   assert.doesNotMatch(block, /MiniMax|Awesomejev|AI Video|Explore|href="#"/);
 });

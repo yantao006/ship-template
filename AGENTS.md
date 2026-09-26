@@ -9,7 +9,7 @@ The current example has site-local accounts, invitation primitives, configurable
 
 - **Configuration decides what appears:** `site/` describes the site's identity, features, copy, and theme; the UI reflects enabled choices and the server enforces the same choices. The landing video tool is a client-only request preview, not a generation or credit operation.
 - **One language per file:** `site/messages/en.ts` and `site/messages/zh.ts` keep corresponding keys, and locale-aware pages select one message set at a time.
-  `site/site.config.ts` owns language entries, and `src/lib/routes.ts` owns localized paths and navigation link metadata.
+  `site/site.config.ts` owns language entries; `src/lib/routes.ts` owns server navigation metadata, while `src/lib/route-paths.ts` holds client-safe route paths.
 - **One navigation path per purpose:** the navigation has one language control and one sign-in entry; its sign-in card lists only the methods enabled in `site/auth.config.ts`.
 - **Theme owns color:** `site/theme.config.ts` defines paired light/dark palettes, top-bar and account-card chrome, dialog and video-tool surfaces, row tones, default modes, and account accents; `src/lib/theme-tokens.ts` generates the stylesheet in `src/app/layout.tsx`.
   The homepage defaults dark and other pages light, while the homepage control selects the mode on `<html>`; legacy CSS surfaces still await migration.
@@ -132,7 +132,9 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │   ├── pricing-content.tsx       # Server-rendered plan list
 │   │   ├── pricing-checkout.tsx      # Client checkout request for a selected plan
 │   │   ├── marketing-nav.tsx         # Navigation assembled from locale and auth choices
-│   │   ├── auth-control.tsx          # Client sign-in card and email/social interactions
+│   │   ├── auth-control.tsx          # Client signed-in controls and sign-in card entry
+│   │   ├── sign-in-card.tsx          # Client email/social sign-in dialog
+│   │   ├── referral-capture.tsx      # Always-mounted home referral hook host
 │   │   ├── reset-password.tsx        # Client form that submits a new password for a reset token
 │   │   ├── google-one-tap.tsx        # Optional browser-side One Tap client
 │   │   ├── language-control.tsx      # Locale switch preserving the current route
@@ -143,7 +145,14 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │   └── desktop-handoff.tsx       # Client app-return request and redirect
 │   └── lib/                          # Business logic, config exports, and integration seams
 │       ├── config.ts                 # Exports site, auth, theme, messages, database, and video-tool choices
-│       ├── routes.ts                 # Localized paths, navigation entries and request-locale lookup
+│       ├── routes.ts                 # Server navigation entries and request-locale lookup
+│       ├── route-paths.ts            # Client-safe localized route primitives
+│       ├── auth-path.ts              # Template auth route prefix
+│       ├── auth-client.ts            # Singleton browser auth client and One Tap
+│       ├── browser-nav-copy.ts       # Strips server mail-only copy from client props
+│       ├── use-dismissable-layer.ts  # Popover/dialog dismissal and focus
+│       ├── use-referral-claim.ts      # Home referral persistence and claim
+│       ├── json-request.ts           # Browser JSON write helper
 │       ├── plan-copy.ts              # Localized display copy selected by plan id
 │       ├── theme-tokens.ts           # Generated mode-aware CSS tokens from site theme
 │       ├── env.ts                    # Worker binding and secret types plus context accessor
@@ -166,6 +175,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
     ├── account-rewards.test.ts       # Reward persistence, concurrency and user scope
     ├── account-popover-state.test.ts # Seven-day completion and next UTC claim
     ├── account-popover-card.test.ts  # Row badge, divider, box and ordered card rendering
+    ├── client-boundary.test.ts       # Client imports, singleton auth, localized props guards
     ├── auth-integration.test.ts      # Local better-auth signup and idempotent credits
     ├── auth-options.test.ts          # Provider switches, invites, desktop handoff
     ├── password-reset.test.ts        # Reset switch, mailed link, and reset page
@@ -212,7 +222,7 @@ On each request, production login accepts the Worker `SITE_URL` only when it equ
 `ensureSignupCredits` checks invitation eligibility and grants a signup lot with the user ID as its stable source ID; when email verification is enabled, it waits until the emailed link marks the account verified.
 `src/app/api/invites/redeem/route.ts` uses the shared session and browser-write guard, redeems the code through an atomic D1 batch, and grants the eligible user credits.
 `src/lib/invites.ts` owns invite code format, normalization, inventory reads, creation, and revocation.
-`src/components/auth-control.tsx` presents only configured methods and, when `email.passwordReset` is on, one forgot-password path whose link is sent by `sendResetPassword` through `EmailProvider`; `src/components/verify-email.tsx` provides the verification waiting and resend page; `src/components/reset-password.tsx` accepts the new password; desktop handoff uses `src/lib/desktop-auth.ts` to validate a configured app scheme before `/api/auth/desktop-handoff` issues a session-bearing return URL.
+`src/components/auth-control.tsx` handles signed-in controls and mounts `src/components/sign-in-card.tsx` for configured sign-in methods; `src/lib/auth-client.ts` owns the browser auth client, and `src/lib/browser-nav-copy.ts` removes mail-only strings from client props. When `email.passwordReset` is on, the forgot-password link is sent through `EmailProvider`; `src/components/verify-email.tsx` provides the verification waiting and resend page; `src/components/reset-password.tsx` accepts the new password; desktop handoff uses `src/lib/desktop-auth.ts` to validate a configured app scheme before `/api/auth/desktop-handoff` issues a session-bearing return URL.
 
 ### Credits, tasks, and provider seams
 
@@ -224,6 +234,7 @@ Grant source IDs, entry idempotency keys, and task state transitions make retrie
 ### Current state and extension paths
 
 The homepage account popovers read the signed-in balance and profile and expose configured check-ins, referral sharing and a masked real-data leaderboard, pending share submissions, support links, plans and payment receipts.
+`src/lib/use-dismissable-layer.ts` centralizes client dismissal, Escape and focus handling; `src/lib/use-referral-claim.ts` owns home referral capture and redemption, and `src/lib/json-request.ts` owns JSON writes.
 `src/components/blocks/account-popover-card.tsx` renders both menus from ordered rows with optional badges, one named tone, and per-row dividers; their distinct balance/buy and profile headers and all row actions remain in `account-popovers.tsx`.
 `src/components/blocks/tags.css` shares semantic tag tones between row badges and video-model labels, while `src/components/video-tool/video-tool.css` owns the themed workbench.
 `replica-navigation.css` owns the shared popover shell for language and account menus; `account-popovers.css` owns account-card content, while paired chrome tokens keep the light and dark surfaces synchronized.
@@ -233,8 +244,8 @@ The existing homepage, dashboard, and credit history are a preview; `src/lib/moc
 `src/components/home-content.tsx` passes the signed-in name to `src/components/sections/HomePage.tsx`, which orders Header, VideoHero, VideoToolSection, VideoShowcase, VideoFeatures, VideoPricing, VideoFAQ, and Footer.
 `Header` passes localized brand, optional site logo, links, language choices, real signed-in credits and account controls to `blocks/replica-navigation.tsx`; pricing and workspace still use `MarketingNav`.
 The six non-header, non-tool sections remain empty sections with stable ids.
-`sections/VideoToolSection.tsx` mounts the existing `src/components/video-tool/video-tool-section.tsx` without altering its behavior.
-`bind-copy.ts` localizes links and assembles asset copy, then `video-tool-section.tsx` passes props and shows the create-payload preview.
+`sections/VideoToolSection.tsx` binds one locale's tool copy and assets on the server and passes them to `src/components/video-tool/video-tool-section.tsx`.
+`bind-copy.ts` localizes links and assembles asset copy; the client `video-tool-section.tsx` shows the create-payload preview without importing site configuration.
 `video-generation-tool.tsx` composes the dark workbench from `composer.tsx` and `stage.tsx`.
 `use-video-tool-state.ts` owns interactive state and calls pure selectors in `state.ts`; `model-menu.tsx` and `parameter-field.tsx` accept only their scoped presentation data.
 Media, workflows and their reference limits, grouped models and duration-specific preview costs, and media-filtered use cases come from that config.
@@ -258,7 +269,7 @@ Vendor-specific request and callback formats stay in adapters, while the page, t
 | --- | --- |
 | Change copy or switches | Edit `site/messages/en.ts` and `site/messages/zh.ts` together for text, or `site/site.config.ts` and `site/auth.config.ts` for site choices; connect new switches to their `src/components/` view, `src/lib/` or `src/app/api/` server gate, and `scripts/site-check.ts` when bindings change. |
 | Add a page section | Implement or extend a section in `src/components/sections/` and compose it from `HomePage.tsx`; supply localized content from `site/messages/`, tokens from `site/theme.config.ts` and `src/app/globals.css`, and a route under `src/app/` when it needs its own page. The homepage navigation is in `Header.tsx` and `src/components/blocks/replica-navigation.tsx`. |
-| Add a sign-in method | Extend `site/auth.config.ts`, the method selection in `src/lib/auth.ts`, the card in `src/components/auth-control.tsx`, and the callback or guard in `src/app/api/auth/[...all]/route.ts`; declare credentials in `src/lib/env.ts`, `wrangler.jsonc`, and `scripts/site-check.ts`, with auth tests under `test/`. |
+| Add a sign-in method | Extend `site/auth.config.ts`, the method selection in `src/lib/auth.ts`, the card in `src/components/sign-in-card.tsx`, and the callback or guard in `src/app/api/auth/[...all]/route.ts`; declare credentials in `src/lib/env.ts`, `wrangler.jsonc`, and `scripts/site-check.ts`, with auth tests under `test/`. |
 | Add a table | Add the next SQL file in `migrations/`, then update `src/lib/auth-schema.ts` for better-auth tables or native D1 queries and types in the owning `src/lib/` service; expose user-scoped reads through `src/app/` and test the migration and operation. |
 | Add an upstream | Put provider-specific calls and response mapping behind an adapter in `src/lib/`; connect it through a validated `src/app/api/` endpoint and, for long-running work, `worker.ts`, `src/lib/ledger.ts`, and a progress-aware component; add its Worker secret names to `src/lib/env.ts`, `wrangler.jsonc`, and `scripts/site-check.ts`. |
 | Replicate a site | Use `fixtures/second-site/` as the shape example, then create the new `site/` choices and matching `wrangler.jsonc`, provision that site's D1, R2, Queue, hostname, and secrets, apply `migrations/` to its D1, and run `pnpm site-check` against the new site. |
@@ -305,7 +316,8 @@ Schema changes gain a new reviewed migration and matching service/query types an
 | `signupCredits` | Amount granted once to an eligible new account. |
 | `account` | Reward switches/amounts, submission cap, contact addresses, commercial-use link, icon and share-network choices. |
 | `plans` | One-time and annual plan id, price, currency, and credit amount. |
-| `site/auth.config.ts`: `backend`, `basePath` | Current better-auth selection and `/api/auth` routing contract. |
+| `site/auth.config.ts`: `backend` | Current better-auth selection. |
+| `src/lib/auth-path.ts`: `authBasePath` | Template-owned `/api/auth` route contract shared by server and browser. |
 | `email.enabled`, `email.requireVerification`, `email.passwordReset`, `google.enabled`, `github.enabled` | Independently enable sign-in options; email verification delays the session and signup credits until the emailed link is opened, password reset shows one forgot-password path and sends through `EmailProvider` only when that switch is on, and OAuth options require matching Worker secrets. |
 | `google.oneTapEnabled` | Adds the One Tap plugin and client prompt when Google login is enabled. |
 | `invite.required`, `invite.adminEmails` | Gate account credit access and authorize invitation administration; enabling the gate uses migration `0002_invite_codes.sql`. |

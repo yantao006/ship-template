@@ -8,9 +8,9 @@ import { hasInvite } from './invites';
 import { createEmailProvider, type EmailProvider } from './email';
 import type { Env } from './env';
 import { site, auth, messages, localeFor, allowedBrowserOrigins } from './config';
+import { authBasePath } from './auth-path';
 
 export interface AuthSettings {
-  basePath: string;
   email: { enabled: boolean; requireVerification?: boolean; passwordReset?: boolean };
   google: { enabled: boolean; oneTapEnabled?: boolean };
   github: { enabled: boolean };
@@ -40,7 +40,7 @@ export function createAuth(env: Env, requestHostname?: string, settings: AuthSet
     database: drizzleAdapter(db, { provider: 'sqlite', schema: authSchema }),
     secret: env.BETTER_AUTH_SECRET,
     baseURL,
-    basePath: settings.basePath,
+    basePath: authBasePath,
     trustedOrigins: local ? [env.SITE_URL!] : allowedBrowserOrigins(),
     socialProviders: {
       ...(settings.google.enabled ? { google: { clientId: env.GOOGLE_CLIENT_ID!, clientSecret: env.GOOGLE_CLIENT_SECRET! } } : {}),

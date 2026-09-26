@@ -3,7 +3,6 @@
 // and registering https://awesomejev.link/api/auth/callback/github with GitHub.
 export default {
   backend: 'better-auth' as const,
-  basePath: '/api/auth',
   email: { enabled: true, requireVerification: true, passwordReset: true },
   google: { enabled: true, oneTapEnabled: false },
   github: { enabled: false },

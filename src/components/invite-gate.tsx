@@ -1,5 +1,6 @@
 'use client';
 
+import { requestJson } from '@/lib/json-request';
 import { useState, type FormEvent } from 'react';
 
 export function InviteGate({ copy }: { copy: { invite: string; inviteInvalid: string; inviteRedeemFailed: string; wait: string } }) {
@@ -10,7 +11,7 @@ export function InviteGate({ copy }: { copy: { invite: string; inviteInvalid: st
     setPending(true); setError('');
     const code = String(new FormData(event.currentTarget).get('code') ?? '');
     try {
-      const result = await fetch('/api/invites/redeem', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code }) });
+      const result = await requestJson('/api/invites/redeem', { code });
       if (!result.ok) setError(copy.inviteInvalid);
       else window.location.reload();
     } catch { setError(copy.inviteRedeemFailed); }

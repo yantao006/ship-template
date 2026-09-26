@@ -1,10 +1,8 @@
 'use client';
 
 import React, { useState, type FormEvent } from 'react';
-import { createAuthClient } from 'better-auth/react';
-import { routePath } from '@/lib/routes';
-
-const authClient = createAuthClient({ basePath: '/api/auth' });
+import { authClient } from '@/lib/auth-client';
+import { routePath } from '@/lib/route-paths';
 
 export function ResetPassword({ locale, token, enabled, copy }: {
   locale: string;

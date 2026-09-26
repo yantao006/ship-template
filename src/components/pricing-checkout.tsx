@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { requestJson } from '@/lib/json-request';
 
 type PlanCard = { id: string; billing: 'once' | 'year'; credits: number; amount: string; currency: string; name: string; detail: string };
 type Copy = { checkout: string; signInRequired: string; wait: string; failed: string; coupon: string; once: string; year: string; credits: string };
@@ -14,11 +15,7 @@ export function PricingCheckout({ locale, plans, copy }: { locale: string; plans
     setPending(planId);
     setError('');
     try {
-      const result = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ planId, coupon, locale }),
-      });
+      const result = await requestJson('/api/checkout', { planId, coupon, locale });
       if (result.status === 401) setError(copy.signInRequired);
       else if (!result.ok) setError(copy.failed);
       else {

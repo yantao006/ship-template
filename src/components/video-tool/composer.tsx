@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { useDismissableLayer } from '@/lib/use-dismissable-layer';
 import { Mark } from './mark';
 import { ModelMenu, type ModelMenuProps } from './model-menu';
 import { ParameterField, type ParameterFieldProps } from './parameter-field';
@@ -66,24 +67,13 @@ export function Composer({ title, workflowLabel, media, workflows, modelMenu, re
     if (parameters.expanded && mainRef.current) mainRef.current.scrollTop = mainRef.current.scrollHeight;
   }, [parameters.expanded]);
   const { onOutside, onCloseMenu, onCloseQuantity } = actions;
-  useEffect(() => {
-    function onPointer(event: PointerEvent) {
-      const target = event.target as Node;
-      const root = editorRef.current;
-      if (!root?.contains(target)) { onOutside(); return; }
-      if (!root.querySelector('.vt-model-wrap')?.contains(target)) onCloseMenu();
-      if (!root.querySelector('.vt-quantity')?.contains(target)) onCloseQuantity();
-    }
-    function onKey(event: KeyboardEvent) {
-      if (event.key === 'Escape') onOutside();
-    }
-    document.addEventListener('pointerdown', onPointer);
-    document.addEventListener('keydown', onKey);
-    return () => {
-      document.removeEventListener('pointerdown', onPointer);
-      document.removeEventListener('keydown', onKey);
-    };
-  }, [onOutside, onCloseMenu, onCloseQuantity]);
+  useDismissableLayer({ active: true, area: editorRef, onClose: onOutside, onPointer: event => {
+    const target = event.target as Node;
+    const root = editorRef.current;
+    if (!root?.contains(target)) return;
+    if (!root.querySelector('.vt-model-wrap')?.contains(target)) onCloseMenu();
+    if (!root.querySelector('.vt-quantity')?.contains(target)) onCloseQuantity();
+  } });
 
   return <div className="vt-editor" ref={editorRef}>
     <div ref={mainRef} className={`vt-editor-main${modelMenu.open ? ' vt-menu-active' : ''}`}>

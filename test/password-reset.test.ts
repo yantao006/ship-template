@@ -11,7 +11,7 @@ import { ResetPassword } from '../src/components/reset-password';
 import type { Env } from '../src/lib/env';
 
 const secret = 'this-is-only-a-local-test-secret-long-enough';
-const base: AuthSettings = { basePath: '/api/auth', email: { enabled: true, requireVerification: false, passwordReset: false }, google: { enabled: false }, github: { enabled: false } };
+const base: AuthSettings = { email: { enabled: true, requireVerification: false, passwordReset: false }, google: { enabled: false }, github: { enabled: false } };
 
 async function database(name: string) {
   const mf = new Miniflare({ modules: true, script: 'export default { fetch() { return new Response("ok") } }', d1Databases: { DB: name } });
