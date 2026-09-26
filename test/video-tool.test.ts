@@ -1,10 +1,11 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { existsSync } from 'node:fs';
 import en from '../site/messages/en';
 import zh from '../site/messages/zh';
 import config from '../site/video-tool.config';
 import second from '../fixtures/second-site/site/video-tool.config';
-import { buildCreatePayload, modelForMedia, reconcileFieldValues, snapToStops, summaryFields, visibleWorkflows } from '../src/components/video-tool/state';
+import { buildCreatePayload, modelForMedia, previewCost, reconcileFieldValues, snapToStops, summaryFields, visibleWorkflows } from '../src/components/video-tool/state';
 import type { VideoToolCopy } from '../src/components/video-tool/types';
 
 const videoModels = ['minimax-h3-max', 'minimax-h3', 'minimax-h3-lite', 'seedance-2-5', 'seedance-2-0', 'seedance-2-0-fast', 'seedance-2-0-mini', 'seedance-1-5-pro', 'wan-3-0', 'wan-2-7', 'wan-2-6', 'grok-imagine', 'kling-3-0'];
@@ -48,16 +49,40 @@ test('catalog is grouped and the default video model matches the workbench', () 
   assert.deepEqual(config.models.map(model => model.id), [...videoModels, ...imageModels]);
   assert.ok(config.models.every(model => config.vendors.some(vendor => vendor.id === model.vendorId)));
   assert.equal(modelForMedia(config, 'video')?.id, 'minimax-h3');
-  assert.equal(modelForMedia(config, 'image')?.id, 'seedream-5-pro');
+  assert.equal(modelForMedia(config, 'image')?.id, 'gpt-image-2');
+  const imageDefault = modelForMedia(config, 'image');
+  assert.ok(imageDefault);
+  assert.deepEqual(visibleWorkflows(config, 'image', imageDefault).map(item => item.id), ['text-image', 'image-edit']);
+  assert.deepEqual(reconcileFieldValues(config.fields, imageDefault, {}), { ratio: 'auto', size: '1k', format: 'jpeg' });
   const h3 = config.models.find(model => model.id === 'minimax-h3');
   assert.ok(h3);
   assert.deepEqual(visibleWorkflows(config, 'video', h3).map(item => item.id), ['multi-reference', 'text-video', 'image-video']);
   assert.deepEqual(visibleWorkflows(config, 'image', h3), []);
   const lite = config.models.find(model => model.id === 'minimax-h3-lite');
   assert.ok(lite);
-  assert.deepEqual(visibleWorkflows(config, 'video', lite).map(item => item.id), ['text-video', 'image-video']);
-  assert.equal(config.assets.filter(asset => asset.tabId === 'use-cases').length, 3);
-  assert.ok(config.assets.filter(asset => asset.tabId === 'use-cases').every(asset => asset.url.startsWith('https://')));
+  assert.deepEqual(visibleWorkflows(config, 'video', lite).map(item => item.id), ['multi-reference', 'text-video', 'image-video']);
+  assert.equal(config.models.filter(model => model.workflowIds.includes('multi-reference') && model.vendorId === 'minimax').length, 3);
+  assert.equal(config.models.filter(model => model.workflowIds.includes('multi-reference') && model.vendorId === 'seedance').length, 5);
+  for (const mediaId of ['video', 'image']) {
+    const cases = config.assets.filter(asset => asset.tabId === 'use-cases' && asset.mediaIds?.includes(mediaId));
+    assert.equal(cases.length, mediaId === 'image' ? 57 : 3);
+    assert.ok(cases.every(asset => asset.url.startsWith('/video-tool/') && existsSync(`public${asset.url}`)));
+  }
+  assert.deepEqual(config.referenceKinds.filter(kind => !kind.mediaIds || kind.mediaIds.includes('image')).map(kind => kind.id), ['image']);
+  assert.deepEqual(config.workflows.find(item => item.id === 'text-video')?.referenceLimits, {});
+  assert.deepEqual(config.workflows.find(item => item.id === 'image-video')?.referenceLimits, { image: 2 });
+  assert.deepEqual(config.workflows.find(item => item.id === 'image-edit')?.referenceLimits, { image: 16 });
+  assert.deepEqual(config.workflows.find(item => item.id === 'multi-image')?.referenceLimits, { image: 1 });
+  assert.deepEqual(config.models.filter(model => model.workflowIds.includes('multi-image')).map(model => model.id), ['seedream-5-pro']);
+  assert.equal(en.videoTool.prompt.titleByWorkflow?.['multi-image'], 'Decomposition instructions (optional)');
+  assert.equal(zh.videoTool.prompt.titleByWorkflow?.['multi-image'], '拆解说明（可选）');
+  assert.equal(config.galleryModes?.image, 'template-grid');
+  assert.equal(config.defaultWorkflowIdsByMedia?.image, 'image-edit');
+  assert.equal(config.defaultModelIdsByWorkflow?.['multi-image'], 'seedream-5-pro');
+  assert.deepEqual(config.defaultFieldValuesByWorkflow?.['text-image'], { ratio: '16-9', size: '1k', format: 'jpeg' });
+  for (const model of config.models.filter(item => item.stops?.duration)) {
+    assert.deepEqual(Object.keys(model.costByDuration ?? {}).map(Number).sort((a, b) => a - b), [...(model.stops?.duration ?? [])].sort((a, b) => a - b));
+  }
   assert.equal(config.assets.some(asset => asset.tabId === 'history'), false);
 });
 
@@ -69,6 +94,7 @@ test('second site keeps the same structure without a promo', () => {
   assert.ok(second.assets.some(asset => asset.tabId === 'use-cases' && asset.url.startsWith('https://')));
   assert.equal(second.assets.some(asset => asset.tabId === 'history'), false);
   assert.ok(second.referenceKinds.length > 0);
+  assert.equal(previewCost(second.models[0], { duration: 10 }, 2), 16);
 });
 
 test('numbers snap to legal model stops', () => {
@@ -90,10 +116,22 @@ test('summary stays on option and number values and duration uses model stops', 
   assert.deepEqual(summaryFields(config.fields, still).map(field => field.id), ['ratio', 'size']);
 });
 
+test('preview cost follows configured model duration and quantity without charging credits', () => {
+  const h3 = config.models.find(item => item.id === 'minimax-h3');
+  const image = config.models.find(item => item.id === 'seedream-5-pro');
+  assert.ok(h3 && image);
+  assert.equal(previewCost(h3, { duration: 6 }, 1), 42);
+  assert.equal(previewCost(h3, { duration: 10 }, 2), 208);
+  assert.equal(previewCost(image, { size: '2k' }, 2), 48);
+});
+
 test('create payload contains only enabled field values and selected references', () => {
   const model = config.models.find(item => item.id === 'minimax-h3');
   assert.ok(model);
   assert.deepEqual(buildCreatePayload(model, 'text-video', 'hello', 2, { ratio: '16-9', duration: 10, seed: 'x' }, ['pie']), {
     modelId: 'minimax-h3', workflowId: 'text-video', prompt: 'hello', quantity: 2, values: { ratio: '16-9', duration: 10 }, referenceIds: ['pie'],
+  });
+  assert.deepEqual(buildCreatePayload(model, 'image-video', '', 1, { duration: 6 }, ['tarts', 'pie'], { start: 'tarts', end: 'pie' }), {
+    modelId: 'minimax-h3', workflowId: 'image-video', prompt: '', quantity: 1, values: { duration: 6 }, referenceIds: ['tarts', 'pie'], referenceFrames: { start: 'tarts', end: 'pie' },
   });
 });

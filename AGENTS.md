@@ -77,15 +77,19 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   ├── site/auth.config.ts           # Alternate auth and verification switches
 │   ├── site/video-tool.config.ts     # Alternate tool structure, without a promo
 │   └── wrangler.jsonc                # Alternate Worker binding declarations
+├── public/video-tool/                 # Site-local model icons, preview video, and template images
 ├── site/                              # Per-site choices compiled into the application
 │   ├── site.config.ts                # Brand, URL, locales, deployment names, email, signup credits
 │   ├── auth.config.ts                # Login methods, invitations, desktop schemes, Turnstile
 │   ├── database.config.ts            # D1 binding and migration directory
 │   ├── theme.config.ts               # Colors and font used by layout CSS tokens
 │   ├── video-tool.config.ts          # Landing tool structure, models, references, preview assets
-│   └── messages/                     # One source file per locale with matching message keys
+│   ├── video-tool-templates.config.ts # Image template ids and asset paths
+│   └── messages/                     # Locale-specific copy with matching message keys
 │       ├── en.ts                     # English navigation, hero, video tool, dashboard, credits copy
 │       ├── zh.ts                     # Chinese copy with the same shape
+│       ├── video-templates-en.ts     # English image-template titles and descriptions
+│       ├── video-templates-zh.ts     # Chinese image-template titles and descriptions
 │       └── index.ts                  # Locale-to-message map
 ├── src/                               # Application routes, presentation, and services
 │   ├── app/                          # Next.js App Router pages and API handlers
@@ -195,8 +199,11 @@ The existing homepage, dashboard, and credit history are a preview; `src/lib/moc
 The homepage hero is followed by `src/components/video-tool/`.
 `video-tool-section.tsx` turns `site/video-tool.config.ts` and the `videoTool` message copy into props.
 `video-generation-tool.tsx` renders those props as a dark two-column workbench and shows the create payload on the page.
-Media, workflows, grouped models, references, and preview image URLs come from that config.
+Media, workflows and their reference limits, grouped models and duration-specific preview costs, and media-filtered use cases come from that config.
+The image-template list lives in `site/video-tool-templates.config.ts`, localized titles in `site/messages/video-templates-*.ts`, and the referenced local media in `public/video-tool/`.
+The model menu shows only the selected workflow's compatible models, and optional workflow defaults reset fields and quantities when switching.
 Parameter fields stay behind a summary of the current values until the summary is opened, and a duration control only offers the selected model's numeric stops.
+Frame-pair workflows name start and end references in the preview payload.
 That preview does not upload files, call a generation API, or write the ledger.
 `fixtures/second-site/site/video-tool.config.ts` repeats the same structure without a promo and has no message file.
 The workbench chrome stays with the component, so a shorter second-site catalog does not become a different layout.

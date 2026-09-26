@@ -1,3 +1,5 @@
+import { videoTemplatesZh } from './video-templates-zh';
+
 export default {
   nav: { brand: 'Awesomejev', navigation: '主导航', home: '首页', pricing: '价格', workspace: '工作台', credits: '积分', language: '语言', login: '登录', google: '使用 Google 登录', github: '使用 GitHub 登录', email: '使用邮箱', orEmail: '或使用邮箱继续', signIn: '登录', signUp: '注册账号', name: '姓名', password: '密码', noMethods: '暂未开放登录', logout: '退出登录', invite: '兑换邀请码', wait: '请稍候…', close: '关闭', emailLabel: '邮箱', authFailed: '登录失败，请重试。', socialFailed: '无法发起登录，请重试。', signOutFailed: '退出登录失败，请重试。', inviteInvalid: '邀请码无效或已用完。', inviteRedeemFailed: '兑换邀请码失败，请重试。', createdButInviteFailed: '账号已创建，但邀请码兑换失败。请登录后再次输入邀请码。', desktopSignIn: '登录后继续', desktopWaiting: '正在登录你的应用', desktopReturning: '正在返回应用…', desktopFailed: '无法完成桌面应用登录。', verifyTitle: '请查收验证邮件', verifyHint: '登录前请打开邮件中的验证链接。如果没有收到，请检查垃圾邮件。', verificationSent: '验证链接已发送至', resendVerification: '重新发送验证邮件', resendFailed: '验证邮件发送失败，请重试。', verifyLink: '打开验证页面', emailNotVerified: '邮箱尚未验证。请查看收件箱或重新发送验证邮件。', verifyContinue: '我已验证邮箱', forgotPassword: '忘记密码？', forgotTitle: '重置密码', forgotHint: '输入账号邮箱。我们会发送一个链接，用来设置新密码。', resetSent: '如果该邮箱已注册，重置链接正在发送。', resetSendFailed: '重置邮件发送失败，请重试。', resetTitle: '设置新密码', resetHint: '为账号输入新密码，至少 8 个字符。', newPassword: '新密码', confirmPassword: '确认密码', updatePassword: '更新密码', resetSuccess: '密码已更新。请使用新密码登录。', resetInvalid: '重置链接无效或已过期。请从登录表单重新申请。', passwordMismatch: '两次输入的密码不一致。', resetMailSubject: '重置 Awesomejev 密码', resetMailLead: '打开此链接以设置新密码：', resetMailAction: '重置密码', resetMailExpiry: '此链接将在 1 小时后失效。' },
   hero: {
@@ -12,8 +14,9 @@ export default {
   videoTool: {
     title: '从一条片子开始', description: '预览这次请求。目前不会生成，也不会扣积分。',
     media: { video: '视频', image: '图片' },
-    workflows: { 'multi-reference': '多参考', 'text-video': '文生视频', 'image-video': '图生视频', 'text-image': '文生图片', 'image-edit': '图片编辑', 'multi-image': '多参考' },
-    vendors: { minimax: 'MiniMax', seedance: 'Seedance', wan: 'Wan', grok: 'Grok', kling: 'Kling', seedream: 'Seedream', openai: 'OpenAI', nano: 'Nano Banana' },
+    workflows: { 'multi-reference': '多参考', 'text-video': '文生视频', 'image-video': '图生视频', 'text-image': '文生图片', 'image-edit': '图生图片', 'multi-image': '图层拆解' },
+    vendors: { minimax: 'MiniMax', seedance: 'Seedance', wan: 'Wan', grok: 'Grok', kling: 'Kling', seedream: 'Seedream', openai: 'GPT Image', nano: 'Nano Banana' },
+    modelSubtitles: { 'seedream-5-pro': '创作更自由', 'seedream-5-lite': '创作更自由' }, galleryHeadings: { image: '热门模板' },
     models: {
       'minimax-h3-max': 'MiniMax H3 Max', 'minimax-h3': 'MiniMax H3', 'minimax-h3-lite': 'MiniMax H3 Lite',
       'seedance-2-5': 'Seedance 2.5', 'seedance-2-0': 'Seedance 2.0', 'seedance-2-0-fast': 'Seedance 2.0 Fast', 'seedance-2-0-mini': 'Seedance 2.0 Mini', 'seedance-1-5-pro': 'Seedance 1.5 Pro',
@@ -22,27 +25,29 @@ export default {
       'gpt-image-2-5': 'GPT Image 2.5', 'gpt-image-2': 'GPT Image 2',
       'nano-banana-2': 'Nano Banana 2', 'nano-banana-pro': 'Nano Banana Pro', 'nano-banana': 'Nano Banana',
     },
-    tags: { max: '旗舰', fast: '极速', pro: '专业' },
-    fields: { ratio: '画面比例', resolution: '分辨率', duration: '时长', seed: '随机种子', size: '尺寸' },
+    tags: { max: '旗舰', fast: '极速', pro: '专业', free: '每日免费', quality: '最佳质量' },
+    fields: { ratio: '画面比例', resolution: '分辨率', duration: '时长', seed: '随机种子', size: '尺寸', format: '输出格式' },
     options: {
-      ratio: { '16-9': '16:9', '9-16': '9:16', '1-1': '1:1', '3-4': '3:4' },
+      ratio: { 'auto': '自动', '16-9': '16:9', '9-16': '9:16', '1-1': '1:1', '3-4': '3:4', '4-3': '4:3' },
       resolution: { '720p': '720P', '1080p': '1080P' },
       size: { '1k': '1K', '2k': '2K', '4k': '4K' },
+      format: { jpeg: 'JPEG', png: 'PNG' },
     },
     references: {
-      title: '参考素材', uploadHint: '点击或拖拽上传图片、视频或音频', library: '使用素材库', closeLibrary: '关闭素材库',
+      title: '参考素材', titleByWorkflow: { 'image-video': '图片', 'image-edit': '输入图片', 'multi-image': '输入图片' }, uploadHint: '点击或拖拽上传图片、视频或音频', uploadHintByMedia: { image: '点击或拖拽上传参考图片' }, hintsByWorkflow: { 'image-video': '添加首帧或尾帧', 'image-edit': '点击上传（最多 16 张）', 'multi-image': '点击上传（最多 1 张）' }, startFrame: '首帧', endFrame: '尾帧', library: '使用素材库', closeLibrary: '关闭素材库',
       limits: { image: '图片', video: '视频', audio: '音频' },
       candidates: { pie: '格子派', tarts: '水果塔', bread: '杂粮面包', cake: '夹层蛋糕', clip: '厨房片段', score: '环境声' },
     },
-    prompt: { title: '提示词', placeholder: '描述你想要的画面。用 @1、@2 引用已上传的素材', maxLength: 500, assist: '用 AI 生成', suggestion: '第一人称厨房烘焙，轻微广角，画面里只有手和前臂。' },
+    prompt: { title: '提示词', titleByWorkflow: { 'multi-image': '拆解说明（可选）' }, placeholder: '描述你想要的画面。用 @1、@2 引用已上传的素材', placeholderByMedia: { image: '描述你想生成的图片...' }, placeholderByWorkflow: { 'multi-image': '留空则自动拆解，也可以指定要分离的元素...' }, maxLength: 7000, maxLengthByMedia: { image: 20000 }, assist: '用 AI 生成', suggestion: '第一人称厨房烘焙，轻微广角，画面里只有手和前臂。' },
     model: '模型', workflowLabel: '工作流', parameters: '参数', expand: '展开参数', collapse: '收起参数', quantity: '数量', quantityPrefix: 'x', create: '创建',
-    promo: '年付方案：只要 30 积分，立省 30% →',
+    promo: '年付方案：只要 30 积分，立省 30% →', promoDismiss: '关闭年付优惠',
     tabs: {
-      'use-cases': { label: '用例', empty: '暂无用例。' },
+      'use-cases': { label: '用例', empty: '暂无用例。', labelByMedia: { image: '模板' } },
       history: { label: '历史', empty: '还没有生成记录。' },
       break: { label: '休息一下 🌴', empty: '休息一会儿。用例还在旁边的页签里。' },
     },
     assets: {
+      ...videoTemplatesZh,
       'lattice-pie': { title: '格子派', description: '第一人称厨房烘焙，轻微广角，手持沉浸。全程不露脸，只有手和前臂。@ 图片 1', actions: { reference: '参考生成', edit: '视频编辑' }, links: { cases: '探索更多用例 →', prompts: '探索 6000+ 提示词 →' } },
       'fruit-tarts': { title: '水果塔', description: '柔光下俯拍一盘水果塔。不露脸。@ 图片 1', actions: { reference: '参考生成', edit: '视频编辑' }, links: { cases: '探索更多用例 →', prompts: '探索 6000+ 提示词 →' } },
       'seeded-loaf': { title: '杂粮面包', description: '贴近深色案板上沾着面粉的面包，手持缓移。@ 图片 1', actions: { reference: '参考生成', edit: '视频编辑' }, links: { cases: '探索更多用例 →', prompts: '探索 6000+ 提示词 →' } },

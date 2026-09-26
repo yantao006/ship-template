@@ -7,7 +7,7 @@ export function visibleWorkflows(config: VideoToolStructure, mediaId: string, mo
 export function modelForMedia(config: VideoToolStructure, mediaId: string, preferredId?: string) {
   const supports = (model: ToolModel) => visibleWorkflows(config, mediaId, model).length > 0;
   return config.models.find(model => model.id === preferredId && supports(model))
-    ?? config.models.find(model => model.id === config.defaultModelId && supports(model))
+    ?? config.models.find(model => model.id === (config.defaultModelIdsByMedia?.[mediaId] ?? config.defaultModelId) && supports(model))
     ?? config.models.find(supports);
 }
 
@@ -44,6 +44,13 @@ export function reconcileFieldValues(fields: ToolField[], model: ToolModel, valu
   }));
 }
 
-export function buildCreatePayload(model: ToolModel, workflowId: string, prompt: string, quantity: number, values: Record<string, FieldValue>, referenceIds: string[]): CreatePayload {
-  return { modelId: model.id, workflowId, prompt, quantity, values: Object.fromEntries(Object.entries(values).filter(([id]) => model.fieldIds.includes(id))), referenceIds: [...referenceIds] };
+export function previewCost(model: ToolModel, values: Record<string, FieldValue>, quantity: number): number | undefined {
+  if (model.count === undefined) return undefined;
+  const duration = values.duration;
+  const unitCost = typeof duration === 'number' ? model.costByDuration?.[duration] ?? model.count : model.count;
+  return unitCost * quantity;
+}
+
+export function buildCreatePayload(model: ToolModel, workflowId: string, prompt: string, quantity: number, values: Record<string, FieldValue>, referenceIds: string[], referenceFrames?: { start?: string; end?: string }): CreatePayload {
+  return { modelId: model.id, workflowId, prompt, quantity, values: Object.fromEntries(Object.entries(values).filter(([id]) => model.fieldIds.includes(id))), referenceIds: [...referenceIds], ...(referenceFrames && { referenceFrames: { ...referenceFrames } }) };
 }

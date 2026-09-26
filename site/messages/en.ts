@@ -1,3 +1,5 @@
+import { videoTemplatesEn } from './video-templates-en';
+
 export default {
   nav: { brand: 'Awesomejev', navigation: 'Main navigation', home: 'Home', pricing: 'Pricing', workspace: 'Workspace', credits: 'Credits', language: 'Language', login: 'Sign In', google: 'Continue with Google', github: 'Continue with GitHub', email: 'Use email', orEmail: 'Or continue with email', signIn: 'Sign in', signUp: 'Create account', name: 'Name', password: 'Password', noMethods: 'Sign-in unavailable', logout: 'Sign out', invite: 'Redeem invite', wait: 'Please wait…', close: 'Close', emailLabel: 'Email', authFailed: 'Authentication failed. Please try again.', socialFailed: 'Sign-in could not start. Please try again.', signOutFailed: 'Sign-out failed. Please try again.', inviteInvalid: 'Invalid or exhausted invite code.', inviteRedeemFailed: 'Could not redeem invite code. Please try again.', createdButInviteFailed: 'Account created, but invite redemption failed. Enter your code after signing in.', desktopSignIn: 'Sign in to continue', desktopWaiting: 'Signing in to your app', desktopReturning: 'Returning to your app…', desktopFailed: 'Desktop sign-in could not finish.', verifyTitle: 'Check your email', verifyHint: 'Open the verification link we emailed you before signing in. Check spam if it has not arrived.', verificationSent: 'Verification link sent to', resendVerification: 'Resend verification email', resendFailed: 'Could not send the verification email. Please try again.', verifyLink: 'Open verification page', emailNotVerified: 'Your email is not verified yet. Check your inbox or resend the link.', verifyContinue: 'I have verified my email', forgotPassword: 'Forgot password?', forgotTitle: 'Reset your password', forgotHint: 'Enter the email on your account. We will send one link to choose a new password.', resetSent: 'If an account exists for that email, a reset link is on its way.', resetSendFailed: 'Could not send the reset email. Please try again.', resetTitle: 'Choose a new password', resetHint: 'Enter a new password for your account. It must be at least 8 characters.', newPassword: 'New password', confirmPassword: 'Confirm password', updatePassword: 'Update password', resetSuccess: 'Password updated. Sign in with your new password.', resetInvalid: 'This reset link is invalid or has expired. Request a new one from the sign-in form.', passwordMismatch: 'Those passwords do not match.', resetMailSubject: 'Reset your password for Awesomejev', resetMailLead: 'Open this link to choose a new password:', resetMailAction: 'Reset password', resetMailExpiry: 'This link expires in 1 hour.' },
   hero: {
@@ -12,8 +14,9 @@ export default {
   videoTool: {
     title: 'Shape a clip', description: 'Preview the request. Nothing is generated or charged yet.',
     media: { video: 'Videos', image: 'Images' },
-    workflows: { 'multi-reference': 'Multi Reference', 'text-video': 'Text to Video', 'image-video': 'Image to Video', 'text-image': 'Text to Image', 'image-edit': 'Image Edit', 'multi-image': 'Multi Reference' },
-    vendors: { minimax: 'MiniMax', seedance: 'Seedance', wan: 'Wan', grok: 'Grok', kling: 'Kling', seedream: 'Seedream', openai: 'OpenAI', nano: 'Nano Banana' },
+    workflows: { 'multi-reference': 'Multi Reference', 'text-video': 'Text to Video', 'image-video': 'Image to Video', 'text-image': 'Text to Image', 'image-edit': 'Image to Image', 'multi-image': 'Layer Decomposition' },
+    vendors: { minimax: 'MiniMax', seedance: 'Seedance', wan: 'Wan', grok: 'Grok', kling: 'Kling', seedream: 'Seedream', openai: 'GPT Image', nano: 'Nano Banana' },
+    modelSubtitles: { 'seedream-5-pro': 'More Freedom', 'seedream-5-lite': 'More Freedom' }, galleryHeadings: { image: 'Popular' },
     models: {
       'minimax-h3-max': 'MiniMax H3 Max', 'minimax-h3': 'MiniMax H3', 'minimax-h3-lite': 'MiniMax H3 Lite',
       'seedance-2-5': 'Seedance 2.5', 'seedance-2-0': 'Seedance 2.0', 'seedance-2-0-fast': 'Seedance 2.0 Fast', 'seedance-2-0-mini': 'Seedance 2.0 Mini', 'seedance-1-5-pro': 'Seedance 1.5 Pro',
@@ -22,27 +25,29 @@ export default {
       'gpt-image-2-5': 'GPT Image 2.5', 'gpt-image-2': 'GPT Image 2',
       'nano-banana-2': 'Nano Banana 2', 'nano-banana-pro': 'Nano Banana Pro', 'nano-banana': 'Nano Banana',
     },
-    tags: { max: 'Max', fast: 'Fast', pro: 'Pro' },
-    fields: { ratio: 'Aspect ratio', resolution: 'Resolution', duration: 'Duration', seed: 'Seed', size: 'Size' },
+    tags: { max: 'Max', fast: 'Fast', pro: 'Pro', free: 'Free every day', quality: 'Best Quality' },
+    fields: { ratio: 'Aspect ratio', resolution: 'Resolution', duration: 'Duration', seed: 'Seed', size: 'Size', format: 'Output Format' },
     options: {
-      ratio: { '16-9': '16:9', '9-16': '9:16', '1-1': '1:1', '3-4': '3:4' },
+      ratio: { 'auto': 'auto', '16-9': '16:9', '9-16': '9:16', '1-1': '1:1', '3-4': '3:4', '4-3': '4:3' },
       resolution: { '720p': '720P', '1080p': '1080P' },
       size: { '1k': '1K', '2k': '2K', '4k': '4K' },
+      format: { jpeg: 'JPEG', png: 'PNG' },
     },
     references: {
-      title: 'Reference Assets', uploadHint: 'Click or drag to upload images, videos, or audio', library: 'Use Asset Library', closeLibrary: 'Close library',
+      title: 'Reference Assets', titleByWorkflow: { 'image-video': 'Image', 'image-edit': 'Input Images', 'multi-image': 'Input Images' }, uploadHint: 'Click or drag to upload images, videos, or audio', uploadHintByMedia: { image: 'Click or drag to upload reference images' }, hintsByWorkflow: { 'image-video': 'Add a first or last frame', 'image-edit': 'Click to upload (16 max)', 'multi-image': 'Click to upload (1 max)' }, startFrame: 'Start Frame', endFrame: 'End Frame', library: 'Use Asset Library', closeLibrary: 'Close library',
       limits: { image: 'Images', video: 'Videos', audio: 'Audio' },
       candidates: { pie: 'Lattice pie', tarts: 'Fruit tarts', bread: 'Seeded loaf', cake: 'Layer cake', clip: 'Kitchen clip', score: 'Room tone' },
     },
-    prompt: { title: 'Prompt', placeholder: 'Describe what you want. Use @1, @2... to reference uploaded assets', maxLength: 500, assist: 'Generate with AI', suggestion: 'First-person kitchen baking vlog, slight wide lens, only hands and forearms in frame.' },
+    prompt: { title: 'Prompt', titleByWorkflow: { 'multi-image': 'Decomposition instructions (optional)' }, placeholder: 'Describe what you want. Use @1, @2... to reference uploaded assets', placeholderByMedia: { image: 'Describe the image you want to generate...' }, placeholderByWorkflow: { 'multi-image': 'Leave blank for automatic decomposition, or specify the elements to separate...' }, maxLength: 7000, maxLengthByMedia: { image: 20000 }, assist: 'Generate with AI', suggestion: 'First-person kitchen baking vlog, slight wide lens, only hands and forearms in frame.' },
     model: 'Model', workflowLabel: 'Workflow', parameters: 'Parameters', expand: 'Show parameters', collapse: 'Hide parameters', quantity: 'Quantity', quantityPrefix: 'x', create: 'Create',
-    promo: 'Annual plan: only 30 credits, save 30% →',
+    promo: 'Annual plan: only 30 credits, save 30% →', promoDismiss: 'Dismiss annual plan offer',
     tabs: {
-      'use-cases': { label: 'Use Cases', empty: 'No use cases yet.' },
+      'use-cases': { label: 'Use Cases', empty: 'No use cases yet.', labelByMedia: { image: 'Templates' } },
       history: { label: 'History', empty: 'No generations yet.' },
       break: { label: 'Take a break 🌴', empty: 'Take a minute. Your use cases stay on the other tab.' },
     },
     assets: {
+      ...videoTemplatesEn,
       'lattice-pie': { title: 'Lattice pie', description: 'First-person kitchen baking vlog with a slight wide-angle lens and an immersive handheld feel. No face appears throughout - only hands and forearms are visible. @ Image 1', actions: { reference: 'Reference Generation', edit: 'Video Editing' }, links: { cases: 'Explore more use cases →', prompts: 'Explore 6000+ prompts →' } },
       'fruit-tarts': { title: 'Fruit tarts', description: 'Overhead pass across a tray of fruit tarts in soft daylight. No faces. @ Image 1', actions: { reference: 'Reference Generation', edit: 'Video Editing' }, links: { cases: 'Explore more use cases →', prompts: 'Explore 6000+ prompts →' } },
       'seeded-loaf': { title: 'Seeded loaf', description: 'Close handheld move over flour-dusted loaves on a dark board. @ Image 1', actions: { reference: 'Reference Generation', edit: 'Video Editing' }, links: { cases: 'Explore more use cases →', prompts: 'Explore 6000+ prompts →' } },
