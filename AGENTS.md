@@ -120,7 +120,8 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   ├── components/                   # UI composition and client controls
 │   │   ├── home-content.tsx          # Session-aware homepage entry, existing nav, and section composition
 │   │   ├── blocks/replica-navigation.tsx # Configurable homepage bar, language, theme and mobile links
-│   │   ├── blocks/account-popovers.tsx   # Signed-in account/credit menus and shared dialog
+│   │   ├── blocks/account-popovers.tsx   # Signed-in account/credit menu data, actions and dialogs
+│   │   ├── blocks/account-popover-card.tsx # Shared ordered-row popover shell and row presentation
 │   │   ├── blocks/account-popover-state.ts # Pure seven-day streak presentation
 │   │   ├── sections/                 # Ordered homepage sections; Header mounts navigation, tool mounts workbench
 │   │   ├── video-tool/               # Bound copy, scoped presentation, interaction state, pure selectors
@@ -155,6 +156,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 └── test/                              # Miniflare D1, auth, mail, config, and ledger tests
     ├── account-rewards.test.ts       # Reward persistence, concurrency and user scope
     ├── account-popover-state.test.ts # Seven-day completion and next UTC claim
+    ├── account-popover-card.test.ts  # Row badge, divider, box and ordered card rendering
     ├── auth-integration.test.ts      # Local better-auth signup and idempotent credits
     ├── auth-options.test.ts          # Provider switches, invites, desktop handoff
     ├── password-reset.test.ts        # Reset switch, mailed link, and reset page
@@ -206,6 +208,7 @@ Grant source IDs, entry idempotency keys, and task state transitions make retrie
 ### Current state and extension paths
 
 The homepage account popovers read the signed-in balance and profile and expose configured check-ins, referral sharing and a masked real-data leaderboard, pending share submissions, support links, plans and payment receipts.
+`src/components/blocks/account-popover-card.tsx` renders both menus from ordered rows with optional badges and per-row dividers; their distinct balance/buy and profile headers and all row actions remain in `account-popovers.tsx`.
 `docs/research/account-popovers/components/source-spec.md` records source-observed desktop/mobile metrics and click-state evidence; the implementation uses local site copy and capabilities rather than the reference site's product claims.
 Receipts reflect settled credit ledger grants, not tax invoices; share submissions do not award credits until reviewed.
 The existing homepage, dashboard, and credit history are a preview; `src/lib/mock-services.ts` produces no generated media.

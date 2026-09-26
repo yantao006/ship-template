@@ -8,6 +8,7 @@ import { FaFacebookF, FaLinkedinIn, FaRedditAlien, FaTelegram, FaWhatsapp, FaXTw
 import { Check, ChevronDown, CircleHelp, Coins, Copy, FileText, Gift, LogOut, Mail, MessageCircle, Plus, Settings, Share2, ShieldCheck, Sparkles, X } from 'lucide-react';
 import type { messages } from '@/lib/config';
 import { dailyRewardState } from './account-popover-state';
+import { AccountPopoverCard, type PopoverRow } from './account-popover-card';
 import './account-popovers.css';
 
 const authClient = createAuthClient({ basePath: '/api/auth' });
@@ -128,14 +129,30 @@ export function AccountPopovers({ user, balance, locale, copy, labels, settings,
     try { const result = await authClient.signOut(); if (result.error) throw new Error(); setMenu(null); setActivity(null); router.refresh(); }
     catch { setError(labels.signOutFailed); } finally { setBusy(false); }
   }
-  const reward = (target: Exclude<Dialog, null>, icon: string, text: string, tag: string, color: string, asMenu = false) => <button type="button" role={asMenu ? 'menuitem' : undefined} className={`account-reward ${color}`} onClick={() => show(target)}><FeatureIcon name={icon} /><span>{text}</span>{tag && <b>{tag}</b>}</button>;
-  const rewards = (asMenu = false) => <>{settings.checkIn.enabled && reward('checkin', settings.icons.checkin, copy.daily, copy.free, 'violet', asMenu)}{settings.share.enabled && reward('share', settings.icons.share, copy.share, `+${settings.share.credits}`, 'pink', asMenu)}{settings.referral.enabled && reward('invite', settings.icons.invite, copy.invite, `+${settings.referral.inviterCredits}`, 'blue', asMenu)}</>;
+  const rewardRows = (): PopoverRow[] => [
+    ...(settings.checkIn.enabled ? [{ id: 'checkin', icon: <FeatureIcon name={settings.icons.checkin}/>, label: copy.daily, badge: { label: copy.free, boxed: true, boxColor: 'var(--account-accent)', textColor: '#d6c6ff' }, onClick: () => show('checkin') }] : []),
+    ...(settings.share.enabled ? [{ id: 'share', icon: <FeatureIcon name={settings.icons.share}/>, label: copy.share, badge: { label: `+${settings.share.credits}`, boxed: true, boxColor: '#ba4add', textColor: '#eeb7f5' }, onClick: () => show('share') }] : []),
+    ...(settings.referral.enabled ? [{ id: 'invite', icon: <FeatureIcon name={settings.icons.invite}/>, label: copy.invite, badge: { label: `+${settings.referral.inviterCredits}`, boxed: true, boxColor: '#3b82f6', textColor: '#a6ceff' }, onClick: () => show('invite') }] : []),
+  ];
+  const creditRows: PopoverRow[] = [
+    ...rewardRows(),
+    { id: 'feedback', icon: <FeatureIcon name={settings.icons.feedback}/>, label: copy.feedback, onClick: () => show('feedback') },
+  ];
+  const accountRows: PopoverRow[] = [
+    ...rewardRows().map((row, index, rows) => ({ ...row, dividerBelow: index === rows.length - 1 })),
+    { id: 'license', icon: <ShieldCheck/>, label: copy.license, href: `/${locale}${settings.commercialUseHref}`, onClick: () => setMenu(null) },
+    { id: 'contact', icon: <FeatureIcon name={settings.icons.contact}/>, label: copy.contact, onClick: () => show('contact'), dividerBelow: true },
+    { id: 'account', icon: <Settings/>, label: copy.account, href: `/${locale}/dashboard`, onClick: () => setMenu(null) },
+    { id: 'invoices', icon: <FileText/>, label: copy.invoices, onClick: () => show('invoices') },
+    { id: 'center', icon: <Coins/>, label: copy.center, href: `/${locale}/credits`, onClick: () => setMenu(null), dividerBelow: true },
+    { id: 'signout', icon: <LogOut/>, label: labels.logout, textColor: '#f87171', disabled: busy, onClick: () => void signOut() },
+  ];
   const accountStyle = { '--account-accent': palette.accent, '--account-accent-end': palette.accentEnd, '--account-accent-text': palette.accentText } as CSSProperties;
   return <><div className="account-controls" ref={area} style={accountStyle}>
     <div className="account-anchor"><button ref={creditTrigger} className="replica-credits-pill" type="button" aria-label={`${currentBalance} ${labels.credits}`} aria-haspopup="dialog" aria-expanded={menu === 'credits'} onClick={() => setMenu(menu === 'credits' ? null : 'credits')}><Coins size={17}/>{currentBalance}</button>
-      {menu === 'credits' && <div className="account-popover account-credits" role="dialog" aria-label={labels.credits}><div className="account-balance"><strong><Coins size={23}/>{currentBalance}</strong><span>{labels.credits}</span></div><div className="account-rewards"><button type="button" className="account-buy" onClick={() => show('plans')}><Plus size={19}/>{copy.buy}</button>{rewards()}{reward('feedback', settings.icons.feedback, copy.feedback, '', 'cyan')}</div></div>}</div>
+      {menu === 'credits' && <AccountPopoverCard role="dialog" label={labels.credits} className="account-credits" header={<div className="account-credit-header"><div className="account-balance"><strong><Coins size={23}/>{currentBalance}</strong><span>{labels.credits}</span></div><button type="button" className="account-buy" onClick={() => show('plans')}><Plus size={19}/>{copy.buy}</button></div>} rows={creditRows} />}</div>
     <div className="account-anchor"><button ref={trigger} className="replica-avatar" type="button" aria-label={copy.menu} aria-haspopup="menu" aria-expanded={menu === 'account'} onClick={() => setMenu(menu === 'account' ? null : 'account')}>{user.image ? <img src={user.image} alt="" width={34} height={34} /> : user.name.trim().split(/\s+/).map(part => part[0]).slice(0, 2).join('').toUpperCase()}</button>
-      {menu === 'account' && <div className="account-popover account-menu" role="menu" aria-label={copy.menu}><div className="account-profile"><span className="replica-avatar replica-avatar-large" aria-hidden="true">{user.image ? <img src={user.image} alt="" /> : user.name.trim().split(/\s+/).map(part => part[0]).slice(0, 2).join('').toUpperCase()}</span><div><strong>{user.name}</strong><small>{user.email}</small></div></div><div className="account-rewards">{rewards(true)}</div><div className="account-list"><Link role="menuitem" href={`/${locale}${settings.commercialUseHref}`} onClick={() => setMenu(null)}><span className="account-icon violet"><ShieldCheck/></span>{copy.license}</Link><button role="menuitem" type="button" onClick={() => show('contact')}><span className="account-icon cyan"><FeatureIcon name={settings.icons.contact}/></span>{copy.contact}</button></div><div className="account-list"><Link role="menuitem" href={`/${locale}/dashboard`} onClick={() => setMenu(null)}><span className="account-icon"><Settings/></span>{copy.account}</Link><button role="menuitem" type="button" onClick={() => show('invoices')}><span className="account-icon"><FileText/></span>{copy.invoices}</button><Link role="menuitem" href={`/${locale}/credits`} onClick={() => setMenu(null)}><span className="account-icon blue"><Coins/></span>{copy.center}</Link></div><div className="account-list"><button role="menuitem" type="button" className="account-signout" disabled={busy} onClick={() => void signOut()}><span className="account-icon red"><LogOut/></span>{labels.logout}</button></div></div>}</div>
+      {menu === 'account' && <AccountPopoverCard role="menu" label={copy.menu} className="account-menu" header={<div className="account-profile"><span className="replica-avatar replica-avatar-large" aria-hidden="true">{user.image ? <img src={user.image} alt="" /> : user.name.trim().split(/\s+/).map(part => part[0]).slice(0, 2).join('').toUpperCase()}</span><div><strong>{user.name}</strong><small>{user.email}</small></div></div>} rows={accountRows} />}</div>
   </div>
   {!dialog && (error || notice) && <p className="account-toast" role={error ? 'alert' : 'status'}>{error || notice}<button aria-label={copy.close} onClick={() => { setError(''); setNotice(''); }}><X size={15}/></button></p>}
   {dialog && <div style={accountStyle}><PopupDialog title={{ checkin: copy.checkinTitle, share: copy.shareTitle, invite: copy.inviteTitle, contact: copy.contactTitle, feedback: copy.feedbackTitle, plans: copy.plansTitle, invoices: copy.invoiceTitle }[dialog]} closeLabel={copy.close} onClose={closeDialog} wide={dialog === 'invite' || dialog === 'plans' || dialog === 'checkin' || dialog === 'share'} variant={dialog}>
