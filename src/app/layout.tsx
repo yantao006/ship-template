@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { site, theme } from '@/lib/config';
 import { themeTokenStylesheet } from '@/lib/theme-tokens';
 import './globals.css';
+import '@/components/blocks/tags.css';
 
 export const metadata = {
   metadataBase: new URL(site.url),

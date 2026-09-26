@@ -1,0 +1,15 @@
+/* Shared semantic tag tones for model labels and account-row badges. */
+.tone-tag{--tag-text:var(--video-secondary,var(--text));--tag-bg:var(--video-raised,var(--surface-raised));--tag-box:var(--account-accent)}
+.tone-tag.tone-accent{--tag-text:var(--video-accent-text);--tag-bg:var(--video-accent-soft);--tag-box:var(--account-accent)}
+.tone-tag.tone-info{--tag-text:var(--video-info-text);--tag-bg:var(--video-info-bg);--tag-box:var(--account-tone-info-box)}
+.tone-tag.tone-success{--tag-text:var(--video-success-text);--tag-bg:var(--video-success-bg);--tag-box:var(--tone-success)}
+.tone-tag.tone-crown{--tag-text:var(--video-crown-text);--tag-bg:var(--video-crown-bg);--tag-box:var(--tone-warning)}
+.tone-tag.tone-neutral{--tag-text:var(--video-neutral-text);--tag-bg:var(--video-neutral-bg);--tag-box:var(--line)}
+.tone-tag.tone-plain{--tag-text:var(--video-secondary);--tag-bg:transparent;--tag-box:var(--line)}
+.tone-tag.tone-account{--tag-text:var(--account-tone-account);--tag-box:var(--account-tone-account-box)}
+.tone-tag.tone-pink{--tag-text:var(--account-tone-pink);--tag-box:var(--account-tone-pink-box)}
+.tone-tag.tone-danger{--tag-text:var(--account-tone-danger);--tag-box:var(--account-tone-danger-box)}
+.account-row-badge.tone-info{--tag-text:var(--account-tone-info)}
+.account-row-badge.tone-neutral{--tag-text:var(--text)}
+.account-row-badge{flex:none;color:var(--tag-text);font-size:12px;font-weight:700;white-space:nowrap}
+.account-row-badge.boxed{border:1px solid color-mix(in srgb,var(--tag-box) 42%,transparent);background:color-mix(in srgb,var(--tag-box) 17%,transparent);border-radius:999px;padding:3px 8px}

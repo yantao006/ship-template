@@ -10,7 +10,7 @@ const renderRow = (overrides: Partial<PopoverRow> = {}) => renderToStaticMarkup(
 test('row badge is absent unless supplied and an unboxed badge receives its row tone', () => {
   assert.doesNotMatch(renderRow(), /account-row-badge/);
   const markup = renderRow({ tone: 'info', badge: { label: '+10', boxed: false } });
-  assert.match(markup, /class="account-row-badge"/);
+  assert.match(markup, /class="tone-tag tone-info account-row-badge"/);
   assert.match(markup, /--row-tone:var\(--account-tone-info\)/);
   assert.match(markup, /\+10/);
   assert.doesNotMatch(markup, /account-row-badge boxed/);
@@ -23,9 +23,8 @@ test('row divider is controlled solely by the row input', () => {
 
 test('boxed badge uses one named row tone; a row without a badge tones its label', () => {
   const markup = renderRow({ tone: 'account', badge: { label: 'Free', boxed: true } });
-  assert.match(markup, /class="account-row-badge boxed"/);
+  assert.match(markup, /class="tone-tag tone-account account-row-badge boxed"/);
   assert.match(markup, /--row-tone:var\(--account-tone-account\)/);
-  assert.match(markup, /--row-box-tone:var\(--account-tone-account-box\)/);
   assert.doesNotMatch(markup, /tone-label/);
   assert.match(renderRow({ tone: 'danger' }), /class="account-row tone-label"/);
   assert.doesNotMatch(renderRow({ tone: 'danger' }), /account-row-badge/);
