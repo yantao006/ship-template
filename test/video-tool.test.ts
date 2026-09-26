@@ -5,6 +5,7 @@ import en from '../site/messages/en';
 import zh from '../site/messages/zh';
 import config from '../site/video-tool.config';
 import second from '../fixtures/second-site/site/video-tool.config';
+import { bindToolSite } from '../src/components/video-tool/bind-copy';
 import { buildCreatePayload, modelForMedia, previewCost, reconcileFieldValues, snapToStops, summaryFields, visibleWorkflows } from '../src/components/video-tool/state';
 import type { VideoToolCopy } from '../src/components/video-tool/types';
 
@@ -42,6 +43,18 @@ test('locale tool keys and value types match', () => assert.deepEqual(shape(en.v
 test('configured ids have copy in both locales', () => {
   assertCopy(en.videoTool);
   assertCopy(zh.videoTool);
+});
+
+test('binding localizes links and asset copy without mutating site structure', () => {
+  const english = bindToolSite(config, en.videoTool, 'en');
+  const chinese = bindToolSite(config, zh.videoTool, 'zh');
+  assert.equal(english.config.promo?.href, '/en/pricing');
+  assert.equal(chinese.config.promo?.href, '/zh/pricing');
+  assert.equal(config.promo?.href, '/{locale}/pricing');
+  assert.equal(english.assets[0].title, 'Lattice pie');
+  assert.equal(chinese.assets[0].title, '格子派');
+  assert.equal(chinese.assets[0].links?.[0].href, '/zh/pricing');
+  assert.equal(english.assets.filter(asset => asset.tabId === 'use-cases').length, 60);
 });
 
 test('catalog is grouped and the default video model matches the workbench', () => {

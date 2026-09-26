@@ -117,7 +117,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │       └── invites/redeem/route.ts       # Session-scoped redemption and signup grant
 │   ├── components/                   # UI composition and client controls
 │   │   ├── home-content.tsx          # Server-rendered homepage and tool placement
-│   │   ├── video-tool/               # Props-only tool, controls/state, site-aware section
+│   │   ├── video-tool/               # Bound copy, scoped presentation, interaction state, pure selectors
 │   │   ├── pricing-content.tsx       # Server-rendered plan list
 │   │   ├── pricing-checkout.tsx      # Client checkout request for a selected plan
 │   │   ├── marketing-nav.tsx         # Navigation assembled from locale and auth choices
@@ -197,8 +197,9 @@ Grant source IDs, entry idempotency keys, and task state transitions make retrie
 
 The existing homepage, dashboard, and credit history are a preview; `src/lib/mock-services.ts` produces no generated media.
 The homepage hero is followed by `src/components/video-tool/`.
-`video-tool-section.tsx` turns `site/video-tool.config.ts` and the `videoTool` message copy into props.
-`video-generation-tool.tsx` renders those props as a dark two-column workbench and shows the create payload on the page.
+`bind-copy.ts` localizes links and assembles asset copy, then `video-tool-section.tsx` passes props and shows the create-payload preview.
+`video-generation-tool.tsx` composes the dark workbench from `composer.tsx` and `stage.tsx`.
+`use-video-tool-state.ts` owns interactive state and calls pure selectors in `state.ts`; `model-menu.tsx` and `parameter-field.tsx` accept only their scoped presentation data.
 Media, workflows and their reference limits, grouped models and duration-specific preview costs, and media-filtered use cases come from that config.
 The image-template list lives in `site/video-tool-templates.config.ts`, localized titles in `site/messages/video-templates-*.ts`, and the referenced local media in `public/video-tool/`.
 The model menu shows only the selected workflow's compatible models, and optional workflow defaults reset fields and quantities when switching.
