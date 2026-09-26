@@ -14,8 +14,8 @@ export type PopoverRow = {
 };
 
 export function AccountPopoverRow({ row, itemRole }: { row: PopoverRow; itemRole?: 'menuitem' }) {
-  const content = <><span className="account-row-icon" aria-hidden="true">{row.icon}</span><span className="account-row-label">{row.label}</span>{row.badge && <span className={`account-row-badge${row.badge.boxed ? ' boxed' : ''}`}>{row.badge.label}</span>}</>;
-  return <div className={`account-row${row.dividerBelow ? ' account-row-divider' : ''}${row.tone && !row.badge ? ' tone-label' : ''}`} style={row.tone ? { '--row-tone': `var(--account-tone-${row.tone})`, '--row-box-tone': `var(--account-tone-${row.tone}-box)` } as CSSProperties : undefined}>
+  const content = <><span className="account-row-icon" aria-hidden="true">{row.icon}</span><span className="account-row-label">{row.label}</span>{row.badge && <span className={`tone-tag tone-${row.tone ?? 'neutral'} account-row-badge${row.badge.boxed ? ' boxed' : ''}`}>{row.badge.label}</span>}</>;
+  return <div className={`account-row${row.dividerBelow ? ' account-row-divider' : ''}${row.tone && !row.badge ? ' tone-label' : ''}`} style={row.tone ? { '--row-tone': `var(--account-tone-${row.tone})` } as CSSProperties : undefined}>
     {row.href !== undefined
       ? <Link href={row.href} role={itemRole} onClick={row.onClick}>{content}</Link>
       : <button type="button" role={itemRole} disabled={row.disabled} onClick={row.onClick}>{content}</button>}

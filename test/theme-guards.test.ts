@@ -77,9 +77,32 @@ test('navigation, menu, credit pill and account cards use paired theme colors an
   assert.match(navigation, /\.account-popover,\s*\.replica-popover\s*\{/);
   assert.match(navigation, /\.replica-language-menu button/);
   assert.match(cards, /\.account-row-label\{[^}]*white-space:nowrap/);
-  assert.match(cards, /\.account-row-badge\.boxed\{[^}]*var\(--row-box-tone/);
+  const tags = read('src/components/blocks/tags.css');
+  assert.match(tags, /\.account-row-badge\.boxed\{[^}]*var\(--tag-box/);
+  assert.match(tags, /\.tone-tag\.tone-info\{/);
+  assert.doesNotMatch(read('src/components/video-tool/video-tool.css'), /\.vt-tone-/);
   assert.doesNotMatch(cards, /\.account-popover\{position:absolute/);
   assert.doesNotMatch(navigation, /\.replica-popover\s*\{position:absolute/);
+});
+
+test('video workbench and account dialogs use paired theme surfaces with one tag vocabulary', () => {
+  const sheet = themeTokenStylesheet();
+  for (const name of ['dialog-canvas', 'dialog-panel', 'dialog-text', 'dialog-border', 'video-canvas', 'video-panel', 'video-text', 'video-border', 'video-tab-selected-bg']) {
+    assert.match(sheet, new RegExp(`--${name}:`));
+  }
+  assert.deepEqual(Object.keys(theme.dialog.light).sort(), Object.keys(theme.dialog.dark).sort());
+  assert.deepEqual(Object.keys(theme.videoTool.light).sort(), Object.keys(theme.videoTool.dark).sort());
+  assert.notEqual(theme.dialog.light.canvas, theme.dialog.dark.canvas);
+  assert.notEqual(theme.videoTool.light.panel, theme.videoTool.dark.panel);
+  const globals = read('src/app/globals.css');
+  assert.doesNotMatch(globals, /\.vt-section\s*\{/);
+  const tool = read('src/components/video-tool/video-tool.css');
+  assert.match(tool, /\.vt-section\s*\{[^}]*var\(--video-canvas\)/);
+  assert.match(tool, /\.vt-editor, \.vt-gallery\s*\{[^}]*var\(--video-panel\)/);
+  assert.match(read('src/components/video-tool/video-tool-section.tsx'), /import '\.\/video-tool\.css'/);
+  assert.match(read('src/components/blocks/account-popovers.css'), /\.account-dialog\{[^}]*var\(--dialog-canvas\)/);
+  assert.match(read('src/components/video-tool/mark.tsx'), /mask|vt-icon/);
+  assert.doesNotMatch(read('site/video-tool.config.ts'), /stroke="#|fill="#/);
 });
 
 test('literal colors remain confined to the documented 224-color baseline and allowlist', () => {

@@ -2,10 +2,10 @@ import type { VideoToolStructure } from '../src/components/video-tool/types';
 import { videoToolTemplates } from './video-tool-templates.config';
 
 const svg = (body: string) => `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">${body}</svg>`)}`;
-const line = (body: string) => svg(`<g fill="none" stroke="#e4e4e7" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${body}</g>`);
+const line = (body: string) => svg(`<g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${body}</g>`);
 
 const film = line('<rect x="3.5" y="6" width="17" height="12" rx="2"/><path d="M8 6v12M16 6v12M3.5 10h4.5M3.5 14h4.5M16 10h4.5M16 14h4.5"/>');
-const frame = line('<rect x="4" y="5" width="16" height="14" rx="2"/><circle cx="9" cy="10" r="1.3" fill="#e4e4e7" stroke="none"/><path d="M4.5 16l4.2-3.6 2.8 2.6 2.3-2.1L19.5 16"/>');
+const frame = line('<rect x="4" y="5" width="16" height="14" rx="2"/><circle cx="9" cy="10" r="1.3" fill="currentColor" stroke="none"/><path d="M4.5 16l4.2-3.6 2.8 2.6 2.3-2.1L19.5 16"/>');
 const stacked = line('<rect x="3" y="7" width="12" height="12" rx="2"/><path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4H19a1.5 1.5 0 0 1 1.5 1.5V14a1.5 1.5 0 0 1-1.5 1.5H15"/>');
 const pen = line('<path d="M4.5 19.5l2.2-6.4L16.2 3.6a1.7 1.7 0 0 1 2.4 0l1.8 1.8a1.7 1.7 0 0 1 0 2.4L10.9 17.3z"/><path d="M13.2 6.6l4.2 4.2"/>');
 const note = line('<path d="M9 16.5V7.2l10-2v9"/><circle cx="7.2" cy="16.5" r="2.1"/><circle cx="17.2" cy="14.2" r="2.1"/>');
@@ -17,7 +17,7 @@ const klingLogo = '/video-tool/kling-logo.svg';
 const seedreamLogo = '/video-tool/seedream-logo.svg';
 const openaiLogo = '/video-tool/openai-logo.svg';
 const bananaLogo = '/video-tool/banana-logo.svg';
-const premiumBadgeIcon = svg('<path fill="#8a5a32" d="M4 16.5l1.8-8 4.2 4.4L12 6.2l1.9 6.7 4.3-4.4 1.8 8z"/><path d="M4.5 18.2h15" stroke="#8a5a32" stroke-width="1.6" stroke-linecap="round"/>');
+const premiumBadgeIcon = svg('<path fill="currentColor" d="M4 16.5l1.8-8 4.2 4.4L12 6.2l1.9 6.7 4.3-4.4 1.8 8z"/><path d="M4.5 18.2h15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>');
 
 const latticePieImageUrl = 'https://images.unsplash.com/photo-1621743478914-cc8a86d7e7b5?auto=format&fit=crop&w=1600&q=80';
 const fruitTartsImageUrl = 'https://images.unsplash.com/photo-1495147466023-ac5c588e2e94?auto=format&fit=crop&w=1200&q=80';

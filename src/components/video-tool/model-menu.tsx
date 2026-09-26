@@ -8,7 +8,7 @@ export type ModelMenuProps = {
 };
 
 function Tags({ tags }: { tags: ModelMenuItem['tags'] }) {
-  return <>{tags.map(tag => <span className={`vt-tag vt-tone-${tag.tone}`} key={tag.id}>{tag.icon && <Mark icon={tag.icon} />}{tag.label}</span>)}</>;
+  return <>{tags.map(tag => <span className={`tone-tag tone-${tag.tone} vt-tag`} key={tag.id}>{tag.icon && <Mark icon={tag.icon} />}{tag.label}</span>)}</>;
 }
 
 export function ModelMenu({ label, selectedId, selected, groups, open, onToggle, onSelect }: ModelMenuProps) {
@@ -25,7 +25,7 @@ export function ModelMenu({ label, selectedId, selected, groups, open, onToggle,
         {group.models.map(item => <button key={item.id} type="button" role="option" aria-selected={item.id === selectedId} className={item.id === selectedId ? 'is-selected' : undefined} onClick={() => onSelect(item.id)}>
           <Mark icon={item.icon} />
           <span className="vt-model-copy"><span>{item.label}</span>{item.subtitle && <small>{item.subtitle}</small>}</span>
-          {item.tags.map(tag => <em className={`vt-tag vt-tone-${tag.tone}`} key={tag.id}>{tag.icon && <Mark icon={tag.icon} />}{tag.label}</em>)}
+          {item.tags.map(tag => <em className={`tone-tag tone-${tag.tone} vt-tag`} key={tag.id}>{tag.icon && <Mark icon={tag.icon} />}{tag.label}</em>)}
           {item.id === selectedId && <span className="vt-check" aria-hidden="true">✓</span>}
         </button>)}
       </div>)}

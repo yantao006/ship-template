@@ -5,6 +5,7 @@ import { messages, videoTool } from '@/lib/config';
 import { bindToolSite } from './bind-copy';
 import { VideoGenerationTool } from './video-generation-tool';
 import type { CreatePayload, VideoToolCopy } from './types';
+import './video-tool.css';
 
 export function VideoToolSection({ locale }: { locale: keyof typeof messages }) {
   const copy: VideoToolCopy = messages[locale].videoTool;
