@@ -65,6 +65,23 @@ test('light and dark palettes have the same six semantic keys', () => {
   assert.match(css, /body \{[^}]*background: var\(--bg\); color: var\(--text\)/);
 });
 
+test('navigation, menu, credit pill and account cards use paired theme colors and one shared shell', () => {
+  const sheet = themeTokenStylesheet();
+  assert.notEqual(theme.chrome.light.navBg, theme.chrome.dark.navBg);
+  assert.notEqual(theme.chrome.light.popoverBg, theme.chrome.dark.popoverBg);
+  for (const name of ['nav-bg', 'nav-muted', 'nav-hover', 'nav-line', 'popover-bg', 'popover-end', 'popover-header', 'popover-border', 'popover-line', 'pill-bg', 'pill-hover', 'pill-line', 'row-hover', 'row-icon', 'buy-bg', 'buy-text', 'account-tone-account', 'account-tone-pink', 'account-tone-info', 'account-tone-danger']) {
+    assert.match(sheet, new RegExp(`--${name}:`));
+  }
+  const navigation = read('src/components/blocks/replica-navigation.css');
+  const cards = read('src/components/blocks/account-popovers.css');
+  assert.match(navigation, /\.account-popover,\s*\.replica-popover\s*\{/);
+  assert.match(navigation, /\.replica-language-menu button/);
+  assert.match(cards, /\.account-row-label\{[^}]*white-space:nowrap/);
+  assert.match(cards, /\.account-row-badge\.boxed\{[^}]*var\(--row-box-tone/);
+  assert.doesNotMatch(cards, /\.account-popover\{position:absolute/);
+  assert.doesNotMatch(navigation, /\.replica-popover\s*\{position:absolute/);
+});
+
 test('literal colors remain confined to the documented 224-color baseline and allowlist', () => {
   const original = new Set<string>();
   for (const [path, list] of Object.entries(legacyColors)) {

@@ -5,26 +5,20 @@ export type PopoverRow = {
   id: string;
   icon: ReactNode;
   label: string;
-  badge?: {
-    label: string;
-    boxed: boolean;
-    boxColor?: string;
-    textColor?: string;
-  };
+  tone?: 'account' | 'pink' | 'info' | 'danger';
+  badge?: { label: string; boxed: boolean };
   dividerBelow?: boolean;
-  textColor?: string;
   href?: string;
   onClick?: () => void;
   disabled?: boolean;
 };
 
 export function AccountPopoverRow({ row, itemRole }: { row: PopoverRow; itemRole?: 'menuitem' }) {
-  const content = <><span className="account-row-icon" aria-hidden="true">{row.icon}</span><span className="account-row-label">{row.label}</span>{row.badge && <span className={`account-row-badge${row.badge.boxed ? ' boxed' : ''}`} style={{ '--badge-box-color': row.badge.boxColor, color: row.badge.textColor } as CSSProperties}>{row.badge.label}</span>}</>;
-  const style = { color: row.textColor };
-  return <div className={`account-row${row.dividerBelow ? ' account-row-divider' : ''}`}>
+  const content = <><span className="account-row-icon" aria-hidden="true">{row.icon}</span><span className="account-row-label">{row.label}</span>{row.badge && <span className={`account-row-badge${row.badge.boxed ? ' boxed' : ''}`}>{row.badge.label}</span>}</>;
+  return <div className={`account-row${row.dividerBelow ? ' account-row-divider' : ''}${row.tone && !row.badge ? ' tone-label' : ''}`} style={row.tone ? { '--row-tone': `var(--account-tone-${row.tone})`, '--row-box-tone': `var(--account-tone-${row.tone}-box)` } as CSSProperties : undefined}>
     {row.href !== undefined
-      ? <Link href={row.href} role={itemRole} style={style} onClick={row.onClick}>{content}</Link>
-      : <button type="button" role={itemRole} style={style} disabled={row.disabled} onClick={row.onClick}>{content}</button>}
+      ? <Link href={row.href} role={itemRole} onClick={row.onClick}>{content}</Link>
+      : <button type="button" role={itemRole} disabled={row.disabled} onClick={row.onClick}>{content}</button>}
   </div>;
 }
 
