@@ -1,0 +1,1 @@
+export default { title: '积分', listTitle: '积分记录', description: '发放到你账号的积分，仅展示你的记录。', balance: '可用', source: '来源', granted: '发放', remaining: '剩余', expires: '到期', sources: { signup: '欢迎积分', payment: '购买', subscription_month: '订阅', checkin: '每日签到', referral_inviter: '邀请好友奖励', referral_friend: '好友推荐奖励', adjust: '积分调整' }, otherSource: '其他积分', noExpiry: '无期限', empty: '暂无积分发放记录。' };

@@ -1,3 +1,5 @@
+import type { ThemeConfig } from '../src/lib/config';
+
 const light = {
   background: '#fafafa',
   surface: '#ffffff',
@@ -69,4 +71,4 @@ export default {
       danger: { text: '#f87171', box: '#f87171' },
     },
   },
-};
+} satisfies ThemeConfig;

@@ -11,12 +11,12 @@ import { dailyRewardState } from './account-popover-state';
 
 export type AccountCopy = (typeof en)['account'];
 export type Plan = { id: string; billing: 'once' | 'year'; credits: number; amount: string; currency: string; name: string };
-export type Network = 'Facebook' | 'X' | 'WhatsApp' | 'LinkedIn' | 'Telegram' | 'Reddit';
-export type Settings = { checkIn: { enabled: boolean; credits: number }; share: { enabled: boolean; credits: number; maxSubmissions: number }; referral: { enabled: boolean; inviterCredits: number; friendCredits: number }; contactEmail: string; feedbackEmail: string; commercialUseHref: string; shareNetworks: readonly Network[]; sharePostNetworks: readonly Network[]; icons: { checkin: string; share: string; invite: string; contact: string; feedback: string } };
+export type Network = import('@/lib/site-config-types').ShareNetworkName;
+export type Settings = import('@/lib/config').SiteConfig['account'];
 export type Activity = { balance: number; referralCode: string; checkInDays: string[]; submissions: { id: string; url: string; status: string; created_at: number }[]; referralCount: number; purchases: { source_id: string; granted: number; created_at: number }[]; leaderboard: { name: string; total: number }[] };
 export type Dialog = 'checkin' | 'share' | 'invite' | 'contact' | 'feedback' | 'plans' | 'invoices' | null;
 
-const socialIcons = { Facebook: FaFacebookF, X: FaXTwitter, WhatsApp: FaWhatsapp, LinkedIn: FaLinkedinIn, Telegram: FaTelegram, Reddit: FaRedditAlien };
+const socialIcons = { Facebook: FaFacebookF, X: FaXTwitter, WhatsApp: FaWhatsapp, LinkedIn: FaLinkedinIn, Telegram: FaTelegram, Reddit: FaRedditAlien } satisfies Record<Network, typeof FaFacebookF>;
 function SocialIcon({ name }: { name: Network }) { const Icon = socialIcons[name]; return <Icon aria-hidden="true" className={`account-social-mark ${name.toLowerCase()}`} />; }
 
 function PopupDialog({ title, closeLabel, onClose, children, wide = false, variant }: { title: string; closeLabel: string; onClose: () => void; children: ReactNode; wide?: boolean; variant: NonNullable<Dialog> }) {

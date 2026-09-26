@@ -1,0 +1,1 @@
+export default { title: '概览', navigation: '工作台导航', preview: '预览工作台', signInTitle: '登录后查看工作台', signInDescription: '点击导航中的登录，查看你的账号和积分。', backHome: '返回首页', summary: '视频生成功能开放后即可使用积分。', nextTitle: '在一处查看你的账号', nextDescription: '查看积分余额和发放记录。可在价格页购买套餐。此预览版不提供视频工具。', viewCredits: '查看积分', viewPlans: '查看套餐' };

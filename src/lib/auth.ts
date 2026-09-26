@@ -7,23 +7,14 @@ import { grant } from './ledger';
 import { hasInvite } from './invites';
 import { createEmailProvider, type EmailProvider } from './email';
 import type { Env } from './env';
-import { site, auth, messages, localeFor, allowedBrowserOrigins } from './config';
+import { site, auth, allowedBrowserOrigins } from './config';
+import { notifyVerification, notifyPasswordReset } from './notifications';
 import { authBasePath } from './auth-path';
 
 export interface AuthSettings {
   email: { enabled: boolean; requireVerification?: boolean; passwordReset?: boolean };
   google: { enabled: boolean; oneTapEnabled?: boolean };
   github: { enabled: boolean };
-}
-
-function resetMailCopy(url: string) {
-  try {
-    const callback = new URL(url).searchParams.get('callbackURL') ?? '';
-    const path = callback.startsWith('http') ? new URL(callback).pathname : callback;
-    return messages[localeFor(path.split('/').filter(Boolean)[0] ?? '')].nav;
-  } catch {
-    return messages[localeFor('')].nav;
-  }
 }
 
 export function createAuth(env: Env, requestHostname?: string, settings: AuthSettings = auth, emailProvider?: EmailProvider) {
@@ -53,14 +44,7 @@ export function createAuth(env: Env, requestHostname?: string, settings: AuthSet
       ...(settings.email.enabled && settings.email.passwordReset ? {
         resetPasswordTokenExpiresIn: 60 * 60,
         sendResetPassword: async ({ user, url }: { user: { email: string }; url: string }) => {
-          const copy = resetMailCopy(url);
-          await mailer!.sendEmail({
-            from: site.email.from,
-            to: user.email,
-            subject: copy.resetMailSubject,
-            text: `${copy.resetMailLead}\n\n${url}\n\n${copy.resetMailExpiry}`,
-            html: `<p>${copy.resetMailLead}</p><p><a href="${url.replaceAll('&', '&amp;').replaceAll('"', '&quot;')}">${copy.resetMailAction}</a></p><p>${copy.resetMailExpiry}</p>`,
-          });
+          await notifyPasswordReset(mailer!, site, user.email, url);
         },
       } : {}),
     },
@@ -71,14 +55,7 @@ export function createAuth(env: Env, requestHostname?: string, settings: AuthSet
         autoSignInAfterVerification: true,
         expiresIn: 60 * 60 * 24,
         sendVerificationEmail: async ({ user, url }: { user: { email: string }; url: string }) => {
-          const copy = `Verify your email for ${site.brand}`;
-          await mailer!.sendEmail({
-            from: site.email.from,
-            to: user.email,
-            subject: copy,
-            text: `Open this link to verify your email and sign in:\n\n${url}\n\nThis link expires in 24 hours.`,
-            html: `<p>Open the link below to verify your email and sign in.</p><p><a href="${url.replaceAll('&', '&amp;').replaceAll('"', '&quot;')}">Verify email</a></p><p>This link expires in 24 hours.</p>`,
-          });
+          await notifyVerification(mailer!, site, user.email, url);
         },
         afterEmailVerification: async (user: { id: string }) => {
           await ensureSignupCredits(env, user.id, true);

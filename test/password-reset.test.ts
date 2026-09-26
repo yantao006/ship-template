@@ -56,7 +56,7 @@ test('password reset switch on sends one link and the reset page token sets a ne
     assert.equal(mail.sent.length, 1);
     assert.equal(mail.sent[0].from, site.email.from);
     assert.equal(mail.sent[0].to, 'on@example.com');
-    assert.equal(mail.sent[0].subject, messages.zh.nav.resetMailSubject);
+    assert.equal(mail.sent[0].subject, messages.zh.mail.resetMailSubject);
     assert.match(mail.sent[0].text, /\/api\/auth\/reset-password\//);
     const link = mail.sent[0].text.match(/https?:\/\/\S+/)?.[0];
     assert.ok(link);
@@ -66,12 +66,12 @@ test('password reset switch on sends one link and the reset page token sets a ne
     const token = new URL(location, 'http://localhost:3000').searchParams.get('token');
     assert.equal(new URL(location).pathname, '/zh/reset-password');
     assert.ok(token);
-    const page = renderToStaticMarkup(createElement(ResetPassword, { locale: 'zh', token, enabled: true, copy: messages.zh.nav }));
+    const page = renderToStaticMarkup(createElement(ResetPassword, { locale: 'zh', token, enabled: true, copy: { ...messages.zh.nav, ...messages.zh.signIn } }));
     assert.match(page, /type="password"/);
-    assert.match(page, new RegExp(messages.zh.nav.updatePassword));
-    const hidden = renderToStaticMarkup(createElement(ResetPassword, { locale: 'zh', token: '', enabled: false, copy: messages.zh.nav }));
+    assert.match(page, new RegExp(messages.zh.signIn.updatePassword));
+    const hidden = renderToStaticMarkup(createElement(ResetPassword, { locale: 'zh', token: '', enabled: false, copy: { ...messages.zh.nav, ...messages.zh.signIn } }));
     assert.doesNotMatch(hidden, /type="password"/);
-    assert.match(hidden, new RegExp(messages.zh.nav.resetInvalid));
+    assert.match(hidden, new RegExp(messages.zh.signIn.resetInvalid));
     const reset = await post('reset-password', { newPassword: 'newer-password', token });
     assert.equal(reset.status, 200);
     const oldLogin = await post('sign-in/email', { email: 'on@example.com', password: 'long-password' });

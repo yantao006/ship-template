@@ -47,7 +47,7 @@ test('JSON writes preserve status handling and exact payload', async () => {
 
 test('browser nav copy excludes mail-only text in either language', () => {
   for (const locale of ['en', 'zh'] as const) {
-    const copy = browserNavCopy(messages[locale].nav);
+    const copy = browserNavCopy(messages[locale]);
     assert.equal(copy.login, messages[locale].nav.login);
     assert.equal(Object.keys(copy).some(key => key.startsWith('resetMail')), false);
   }
@@ -57,6 +57,11 @@ test('video tool binding and browser-only nav copy happen before client props', 
   const section = readFileSync('src/components/sections/VideoToolSection.tsx', 'utf8');
   assert.match(section, /bindToolSite\(videoTool, copy, locale\)/);
   assert.doesNotMatch(readFileSync('src/components/video-tool/video-tool-section.tsx', 'utf8'), /@\/lib\/config/);
-  const copy = readFileSync('src/lib/browser-nav-copy.ts', 'utf8');
-  for (const key of ['resetMailSubject', 'resetMailLead', 'resetMailAction', 'resetMailExpiry']) assert.match(copy, new RegExp(key));
+  const nav = readFileSync('site/messages/en/navigation.ts', 'utf8');
+  const signIn = readFileSync('site/messages/en/sign-in.ts', 'utf8');
+  for (const key of ['resetMailSubject', 'resetMailLead', 'resetMailAction', 'resetMailExpiry']) {
+    assert.doesNotMatch(nav, new RegExp(key));
+    assert.doesNotMatch(signIn, new RegExp(key));
+    assert.match(readFileSync('site/messages/en/mail.ts', 'utf8'), new RegExp(key));
+  }
 });

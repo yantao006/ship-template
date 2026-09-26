@@ -1,7 +1,6 @@
 import type { messages } from './config';
 
-// Mail-only strings must never cross a Server Component -> Client Component prop.
-export function browserNavCopy(nav: (typeof messages)['en']['nav']) {
-  const { resetMailSubject, resetMailLead, resetMailAction, resetMailExpiry, ...browserCopy } = nav;
-  return browserCopy;
+// Mail lives in a separate namespace and never crosses the client navigation boundary.
+export function browserNavCopy(copy: (typeof messages)[keyof typeof messages]) {
+  return { ...copy.nav, ...copy.signIn, ...copy.invites, ...copy.handoff };
 }

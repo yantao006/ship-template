@@ -1,3 +1,5 @@
+import type { SiteConfig } from '../src/lib/config';
+
 const languages = [
   { code: 'en', name: 'English', dateLocale: 'en-US' },
   { code: 'zh', name: '中文', dateLocale: 'zh-CN' },
@@ -14,7 +16,7 @@ export default {
   locales: languages.map(language => language.code),
   defaultLocale: 'en',
   deploy: { worker: 'awesomejev-test', d1: 'awesomejev-db', r2: 'awesomejev-media', queue: 'awesomejev-jobs' },
-  email: { provider: 'cloudflare' as 'cloudflare' | 'resend', from: 'noreply@awesomejev.link' },
+  email: { provider: 'cloudflare', from: 'noreply@awesomejev.link' },
   signupCredits: 30,
   account: {
     checkIn: { enabled: true, credits: 1 },
@@ -31,4 +33,4 @@ export default {
     { id: 'pack', billing: 'once' as const, credits: 100, amount: '9.90', currency: 'USD', description: 'Awesomejev credit pack' },
     { id: 'annual', billing: 'year' as const, credits: 80, amount: '79.00', currency: 'USD', description: 'Awesomejev annual plan' },
   ],
-};
+} satisfies SiteConfig;

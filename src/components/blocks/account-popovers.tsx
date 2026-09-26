@@ -13,7 +13,7 @@ import { AccountDialogs, type AccountCopy, type Activity, type Dialog, type Plan
 import './account-popovers.css';
 
 type Menu = 'account' | 'credits' | null;
-const icons = { sparkles: Sparkles, share: Share2, gift: Gift, mail: Mail, message: MessageCircle };
+const icons = { sparkles: Sparkles, share: Share2, gift: Gift, mail: Mail, message: MessageCircle } satisfies Record<import('@/lib/site-config-types').AccountIconName, typeof Sparkles>;
 function FeatureIcon({ name }: { name: string }) { const Icon = icons[name as keyof typeof icons] ?? Sparkles; return <Icon aria-hidden="true" />; }
 
 export function AccountPopovers({ user, balance, locale, dateLocale, copy, labels, settings, palette, plans, siteUrl, brand }: { user: { name: string; email: string; image?: string | null }; balance: number; locale: string; dateLocale: string; copy: AccountCopy; labels: { credits: string; logout: string; signOutFailed: string }; settings: Settings; palette: { accent: string; accentEnd: string; accentText: string }; plans: Plan[]; siteUrl: string; brand: string }) {
