@@ -1,5 +1,6 @@
-import type { ReactNode, CSSProperties } from 'react';
+import type { ReactNode } from 'react';
 import { site, theme } from '@/lib/config';
+import { themeTokenStylesheet } from '@/lib/theme-tokens';
 import './globals.css';
 
 export const metadata = {
@@ -10,6 +11,8 @@ export const metadata = {
   robots: site.previewOnly ? { index: false, follow: false } : undefined,
 };
 export default function RootLayout({ children }: { children: ReactNode }) {
-  const tokens = { '--bg': theme.background, '--surface': theme.surface, '--text': theme.foreground, '--muted': theme.muted, '--accent': theme.accent, '--line': theme.border, fontFamily: theme.font } as CSSProperties;
-  return <html lang={site.defaultLocale}><body style={tokens}>{children}</body></html>;
+  return <html lang={site.defaultLocale} data-mode="auto" data-default-mode={theme.defaultMode.other}>
+    <head><style dangerouslySetInnerHTML={{ __html: themeTokenStylesheet() }} /></head>
+    <body>{children}</body>
+  </html>;
 }

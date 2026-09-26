@@ -20,6 +20,7 @@ export function Header({ locale, userName, userEmail, userImage, credits }: { lo
       pricingHref={`/${locale}/pricing`}
       lightLabel={copy.nav.lightMode}
       darkLabel={copy.nav.darkMode}
+      defaultMode={theme.defaultMode.home}
       links={[
         { label: copy.nav.home, href: `/${locale}`, icon: <Home aria-hidden="true" /> },
         { label: copy.nav.pricing, href: `/${locale}/pricing`, icon: <Tags aria-hidden="true" /> },

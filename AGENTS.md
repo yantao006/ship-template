@@ -10,7 +10,8 @@ The current example has site-local accounts, invitation primitives, configurable
 - **Configuration decides what appears:** `site/` describes the site's identity, features, copy, and theme; the UI reflects enabled choices and the server enforces the same choices. The landing video tool is a client-only request preview, not a generation or credit operation.
 - **One language per file:** `site/messages/en.ts` and `site/messages/zh.ts` keep corresponding keys, and locale-aware pages select one message set at a time.
 - **One navigation path per purpose:** the navigation has one language control and one sign-in entry; its sign-in card lists only the methods enabled in `site/auth.config.ts`.
-- **Theme owns color:** `site/theme.config.ts` feeds variables through `src/app/layout.tsx` to `src/app/globals.css` and the components it styles.
+- **Theme owns color:** `site/theme.config.ts` defines paired light/dark palettes, default modes, account accents, and named tones; `src/lib/theme-tokens.ts` generates the stylesheet in `src/app/layout.tsx`.
+  The homepage defaults dark and other pages light, while the homepage control selects the mode on `<html>`; legacy CSS surfaces still await migration.
 - **Pages compose sections:** `src/components/sections/HomePage.tsx` orders eight homepage sections. `Header` mounts the configurable replica-style navigation; six sections remain empty scaffolds, and the video tool renders its existing implementation.
 - **Long-running work is observable:** video generation uses an asynchronous task and progress flow, while the server validates costs and records credit movements in the ledger.
 
@@ -83,7 +84,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   ├── site.config.ts                # Brand, URL, resources, email, signup and account rewards
 │   ├── auth.config.ts                # Login methods, invitations, desktop schemes, Turnstile
 │   ├── database.config.ts            # D1 binding and migration directory
-│   ├── theme.config.ts               # Colors and font used by layout CSS tokens
+│   ├── theme.config.ts               # Light/dark palettes, mode defaults, accent tones and font
 │   ├── video-tool.config.ts          # Landing tool structure, models, references, preview assets
 │   ├── video-tool-templates.config.ts # Image template ids and asset paths
 │   └── messages/                     # Locale-specific copy with matching message keys
@@ -94,7 +95,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │       └── index.ts                  # Locale-to-message map
 ├── src/                               # Application routes, presentation, and services
 │   ├── app/                          # Next.js App Router pages and API handlers
-│   │   ├── layout.tsx                # Metadata, preview indexing, and theme token injection
+│   │   ├── layout.tsx                # Metadata, preview indexing, and theme token stylesheet
 │   │   ├── globals.css               # Shared responsive layout and token-consuming styles
 │   │   ├── page.tsx                  # Default-locale homepage
 │   │   ├── robots.ts                 # Preview indexing policy and sitemap reference
@@ -139,6 +140,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │   └── desktop-handoff.tsx       # Client app-return request and redirect
 │   └── lib/                          # Business logic, config exports, and integration seams
 │       ├── config.ts                 # Exports site, auth, theme, messages, database, and video-tool choices
+│       ├── theme-tokens.ts           # Generated mode-aware CSS tokens from site theme
 │       ├── env.ts                    # Worker binding and secret types plus context accessor
 │       ├── auth-schema.ts            # Drizzle mapping for better-auth D1 tables
 │       ├── auth.ts                   # Better-auth construction, origin checks, signup grant
@@ -164,6 +166,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
     ├── credit-history.test.ts       # Signed-in and bounded account credit reads
     ├── ledger.test.ts               # Concurrent spend, refunds, and monthly grants
     ├── home-sections.test.ts        # Homepage section scaffold order and stable ids
+    ├── theme-guards.test.ts         # Palette parity, legacy literal baseline, duplicate-selector guard
     ├── payments.test.ts             # Waffo signature, one-time grant, monthly grant, and replay
     └── video-tool.test.ts           # Tool helpers and locale copy shape
 ```
@@ -188,7 +191,9 @@ A new capability can be a new `src/lib/` service called by an API endpoint, a se
 `site/site.config.ts` supplies brand, optional logo, locale, deploy, email, and signup-credit choices at build time, while `wrangler.jsonc` declares matching live resources.
 `scripts/site-check.ts` compares the Worker name, D1/R2/Queue names, auth shape, email binding, callback origin, and required secret names before publication.
 `site/messages/en.ts` and `site/messages/zh.ts` share keys under `nav`, `hero`, `videoTool`, `account`, `dashboard`, and `credits`; `src/app/[locale]/` and `src/components/language-control.tsx` select copy without duplicating business logic.
-`site/theme.config.ts` becomes CSS variables in `src/app/layout.tsx`, and `src/app/globals.css` applies them across marketing and workspace surfaces.
+`site/theme.config.ts` provides same-key light and dark palettes, mode defaults, account colors, and named tones; `src/lib/theme-tokens.ts` generates the CSS token stylesheet in `src/app/layout.tsx` instead of inline body styles.
+The homepage header marks the dark default, while `ReplicaNavigation` selects `data-mode` on `<html>` for toggling; other pages default light.
+`src/app/globals.css` applies the tokens across marketing and workspace surfaces, and `.auth-panel` sets foreground with its surface background.
 
 ### Authentication and eligibility
 
@@ -294,7 +299,7 @@ Schema changes gain a new reviewed migration and matching service/query types an
 | `desktop.schemes` | Allow-listed app URL schemes for signed-in desktop handoff. |
 | `turnstile.onSignIn` | Applies Turnstile verification to sign-in requests supplied with a client token. |
 | `site/database.config.ts`: `binding`, `migrationsDir` | Site D1 binding name and migration directory. |
-| `site/theme.config.ts`: `background`, `surface`, `foreground`, `muted`, `accent`, `border`, `font`, `account` | CSS values for page tokens and account accent colors. |
+| `site/theme.config.ts`: `light`, `dark`, `defaultMode`, `font`, `account`, `tones` | Paired semantic palettes, homepage/other-page defaults, account accents, and named tones emitted through `src/lib/theme-tokens.ts`. |
 | `site/video-tool.config.ts` | Landing tool media, workflows, models, fields, references, assets, and optional promo. |
 | `site/messages/en.ts`, `zh.ts`: `nav`, `hero`, `videoTool`, `account`, `dashboard`, `credits` | Same-shape localized strings consumed by navigation, the video tool, and content views. |
 

@@ -1,8 +1,6 @@
 /* The homepage navigation follows the reference site's compact fixed bar and anchored menus. */
-body:has(.replica-topbar) { --bg: #111113; --surface: #202024; --text: #f6f6f8; --muted: #b5b5bf; --line: #38383f; color-scheme: dark; }
 body:has(.replica-topbar) .site-shell { background: #111113; }
 body:has(.replica-topbar) main { padding-top: 56px; }
-.replica-light body:has(.replica-topbar) { --bg: #fafafa; --surface: #fff; --text: #18181b; --muted: #5b606b; --line: #e4e4e7; color-scheme: light; }
 .replica-light body:has(.replica-topbar) .site-shell { background: #fafafa; }
 .replica-topbar { --nav-bg: #0b0b0c; --nav-text: #fff; --nav-muted: #aaa; --nav-hover: #202022; --nav-line: #2b2b2e; position: fixed; top: 0; left: 0; right: 0; z-index: 100; height: 56px; padding: 0 24px; display: flex; align-items: center; gap: 22px; background: var(--nav-bg); border-bottom: 1px solid var(--nav-line); color: var(--nav-text); }
 .replica-light .replica-topbar { --nav-bg: #fff; --nav-text: #171717; --nav-muted: #555; --nav-hover: #f0f0f2; --nav-line: #dedee3; }

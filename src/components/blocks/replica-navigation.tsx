@@ -24,14 +24,15 @@ export type ReplicaNavigationProps = {
   pricingHref: string;
   lightLabel: string;
   darkLabel: string;
+  defaultMode: 'light' | 'dark';
   balance?: number;
   accountControl: ReactNode;
 };
 
-export function ReplicaNavigation({ brand, logo, brandHref, navigationLabel, links, locale, locales, languageLabel, creditsLabel, pricingLabel, pricingHref, lightLabel, darkLabel, balance, accountControl }: ReplicaNavigationProps) {
+export function ReplicaNavigation({ brand, logo, brandHref, navigationLabel, links, locale, locales, languageLabel, creditsLabel, pricingLabel, pricingHref, lightLabel, darkLabel, defaultMode, balance, accountControl }: ReplicaNavigationProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState<Menu>(null);
-  const [light, setLight] = useState(false);
+  const [light, setLight] = useState(defaultMode === 'light');
   const languageArea = useRef<HTMLDivElement>(null);
   const creditsArea = useRef<HTMLDivElement>(null);
   const languageRef = useRef<HTMLButtonElement>(null);
@@ -39,8 +40,12 @@ export function ReplicaNavigation({ brand, logo, brandHref, navigationLabel, lin
 
   useEffect(() => { setOpen(null); }, [pathname]);
   useEffect(() => {
+    document.documentElement.dataset.mode = light ? 'light' : 'dark';
     document.documentElement.classList.toggle('replica-light', light);
-    return () => document.documentElement.classList.remove('replica-light');
+    return () => {
+      document.documentElement.dataset.mode = 'auto';
+      document.documentElement.classList.remove('replica-light');
+    };
   }, [light]);
   useEffect(() => {
     if (!open) return;
@@ -64,7 +69,7 @@ export function ReplicaNavigation({ brand, logo, brandHref, navigationLabel, lin
   const toggle = (menu: Menu) => setOpen(value => value === menu ? null : menu);
 
   return <>
-    <header className="replica-topbar">
+    <header className="replica-topbar" data-default-mode={defaultMode}>
       <Link href={brandHref} className="replica-brand" aria-label={brand}>
         {logo && <img src={logo.src} alt={logo.alt} width={28} height={28} />}
         <span>{brand}</span>
