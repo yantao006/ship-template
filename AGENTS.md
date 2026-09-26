@@ -2,7 +2,7 @@
 
 This repository is a replicable AI video site template; the current reference site is one configured example.
 A new site changes `site/`, provisions its own D1 and other Worker resources, supplies its own secrets, and keeps sharing the application layers in `src/`.
-The current example has site-local accounts, invitation primitives, a credit ledger, mail adapters, and a Waffo checkout adapter; video generation remains a placeholder in `src/lib/mock-services.ts`.
+The current example has site-local accounts, invitation primitives, configurable account rewards, a credit ledger, mail adapters, and a Waffo checkout adapter; video generation remains a placeholder in `src/lib/mock-services.ts`.
 `README.md` records the reference site's live state and verification procedure.
 
 ## Design principles
@@ -29,7 +29,7 @@ The current example has site-local accounts, invitation primitives, a credit led
 | --- | --- | --- |
 | Site configuration | `site/*.config.ts`, `site/messages/`, `src/lib/config.ts` | Compiled site choices and typed localized copy shared by routes and components. |
 | Web and HTTP | `src/app/`, Next.js App Router | Pages, metadata, better-auth handler, and request/response endpoints. |
-| UI | `src/components/`, React server/client components, CSS, Motion and Lucide | Homepage and workspace composition, configurable homepage navigation, sign-in, invitation, language, and desktop interaction. |
+| UI | `src/components/`, React server/client components, CSS, Motion, Lucide and React Icons | Homepage and workspace composition, configurable homepage navigation, signed-in account cards, sign-in, invitation, language, and desktop interaction. |
 | Authentication | `src/lib/auth.ts`, `src/lib/auth-schema.ts`, better-auth, Drizzle on D1 | Sessions and accounts from this site's DB; enabled methods from `site/auth.config.ts`. |
 | Access control | `src/lib/invites.ts`, `src/lib/turnstile.ts`, `src/lib/desktop-auth.ts`, D1 and Turnstile HTTP API | Invitation eligibility, optional sign-in verification, and allow-listed app handoff. |
 | Credits | `src/lib/ledger.ts`, `src/lib/credit-history.ts`, native D1 statements and batches | Atomic grants, reservations, allocation, refund, balance, and bounded account history. |
@@ -69,7 +69,8 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 ├── wrangler.jsonc                    # Site Worker, resource bindings, route, cron, vars, secret names
 ├── migrations/                       # Versioned SQL applied to this site's D1
 │   ├── 0001_initial.sql             # Auth, credit ledger, and video task tables
-│   └── 0002_invite_codes.sql        # Invitation inventory and redemption tables
+│   ├── 0002_invite_codes.sql        # Invitation inventory and redemption tables
+│   └── 0003_account_rewards.sql     # Check-ins, shares, referral codes and claims
 ├── scripts/
 │   └── site-check.ts                 # Cross-checks site choices, bindings, auth switches, secrets
 ├── fixtures/second-site/             # Configuration-only reuse example
@@ -79,7 +80,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   └── wrangler.jsonc                # Alternate Worker binding declarations
 ├── public/video-tool/                 # Site-local model icons, preview video, and template images
 ├── site/                              # Per-site choices compiled into the application
-│   ├── site.config.ts                # Brand, URL, locales, deployment names, email, signup credits
+│   ├── site.config.ts                # Brand, URL, resources, email, signup and account rewards
 │   ├── auth.config.ts                # Login methods, invitations, desktop schemes, Turnstile
 │   ├── database.config.ts            # D1 binding and migration directory
 │   ├── theme.config.ts               # Colors and font used by layout CSS tokens
@@ -109,6 +110,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │   └── api/                      # HTTP boundary for auth and account operations
 │   │       ├── auth/[...all]/route.ts         # Better-auth handler with invite/Turnstile checks
 │   │       ├── auth/desktop-handoff/route.ts # Same-origin session-token handoff
+│   │       ├── account/activity/route.ts     # Signed-in reward state and actions
 │   │       ├── checkout/route.ts             # Signed-in checkout handoff to the Waffo adapter
 │   │       ├── webhooks/payment/route.ts     # Verified payment callback
 │   │       ├── credits/balance/route.ts      # Session-scoped balance endpoint
@@ -117,7 +119,9 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │       └── invites/redeem/route.ts       # Session-scoped redemption and signup grant
 │   ├── components/                   # UI composition and client controls
 │   │   ├── home-content.tsx          # Session-aware homepage entry, existing nav, and section composition
-│   │   ├── blocks/replica-navigation.tsx # Configurable homepage bar, menus, theme toggle, and mobile links
+│   │   ├── blocks/replica-navigation.tsx # Configurable homepage bar, language, theme and mobile links
+│   │   ├── blocks/account-popovers.tsx   # Signed-in account/credit menus and shared dialog
+│   │   ├── blocks/account-popover-state.ts # Pure seven-day streak presentation
 │   │   ├── sections/                 # Ordered homepage sections; Header mounts navigation, tool mounts workbench
 │   │   ├── video-tool/               # Bound copy, scoped presentation, interaction state, pure selectors
 │   │   ├── pricing-content.tsx       # Server-rendered plan list
@@ -140,6 +144,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │       ├── invites.ts                # Invite eligibility, validation, redemption, admin match
 │       ├── ledger.ts                 # Atomic credit lots, entries, task transitions, refunds
 │       ├── credit-history.ts         # Bounded user credit-lot query
+│       ├── account-rewards.ts        # Check-in/referral grants and pending share state
 │       ├── turnstile.ts              # Token verification and local test path
 │       ├── desktop-auth.ts           # Scheme validation and token-bearing app URL
 │       ├── email.ts                  # Cloudflare/Resend adapter and fake test provider
@@ -148,6 +153,8 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │       ├── payments.ts                # Plan checkout and idempotent payment grants
 │       └── mock-services.ts           # Local-only video placeholder
 └── test/                              # Miniflare D1, auth, mail, config, and ledger tests
+    ├── account-rewards.test.ts       # Reward persistence, concurrency and user scope
+    ├── account-popover-state.test.ts # Seven-day completion and next UTC claim
     ├── auth-integration.test.ts      # Local better-auth signup and idempotent credits
     ├── auth-options.test.ts          # Provider switches, invites, desktop handoff
     ├── password-reset.test.ts        # Reset switch, mailed link, and reset page
@@ -178,7 +185,7 @@ A new capability can be a new `src/lib/` service called by an API endpoint, a se
 
 `site/site.config.ts` supplies brand, optional logo, locale, deploy, email, and signup-credit choices at build time, while `wrangler.jsonc` declares matching live resources.
 `scripts/site-check.ts` compares the Worker name, D1/R2/Queue names, auth shape, email binding, callback origin, and required secret names before publication.
-`site/messages/en.ts` and `site/messages/zh.ts` share keys under `nav`, `hero`, `videoTool`, `dashboard`, and `credits`; `src/app/[locale]/` and `src/components/language-control.tsx` select copy without duplicating business logic.
+`site/messages/en.ts` and `site/messages/zh.ts` share keys under `nav`, `hero`, `videoTool`, `account`, `dashboard`, and `credits`; `src/app/[locale]/` and `src/components/language-control.tsx` select copy without duplicating business logic.
 `site/theme.config.ts` becomes CSS variables in `src/app/layout.tsx`, and `src/app/globals.css` applies them across marketing and workspace surfaces.
 
 ### Authentication and eligibility
@@ -198,6 +205,9 @@ Grant source IDs, entry idempotency keys, and task state transitions make retrie
 
 ### Current state and extension paths
 
+The homepage account popovers read the signed-in balance and profile and expose configured check-ins, referral sharing and a masked real-data leaderboard, pending share submissions, support links, plans and payment receipts.
+`docs/research/account-popovers/components/source-spec.md` records source-observed desktop/mobile metrics and click-state evidence; the implementation uses local site copy and capabilities rather than the reference site's product claims.
+Receipts reflect settled credit ledger grants, not tax invoices; share submissions do not award credits until reviewed.
 The existing homepage, dashboard, and credit history are a preview; `src/lib/mock-services.ts` produces no generated media.
 `src/components/home-content.tsx` passes the signed-in name to `src/components/sections/HomePage.tsx`, which orders Header, VideoHero, VideoToolSection, VideoShowcase, VideoFeatures, VideoPricing, VideoFAQ, and Footer.
 `Header` passes localized brand, optional site logo, links, language choices, real signed-in credits and account controls to `blocks/replica-navigation.tsx`; pricing and workspace still use `MarketingNav`.
@@ -236,7 +246,7 @@ Changes to these paths receive focused tests in `test/` and the verification com
 
 ## Database schema
 
-`migrations/0001_initial.sql` defines the auth and ledger foundation, while `migrations/0002_invite_codes.sql` adds optional invitation state.
+`migrations/0001_initial.sql` defines the auth and ledger foundation, `migrations/0002_invite_codes.sql` adds optional invitation state, and `migrations/0003_account_rewards.sql` stores account rewards.
 
 | Table | Core columns and relationships | Owner and use |
 | --- | --- | --- |
@@ -250,8 +260,12 @@ Changes to these paths receive focused tests in `test/` and the verification com
 | `video_task` | `user_id`, cost, status, unique consume entry | Durable reservation and processing state. |
 | `invite_code` | Code, use limit/count, expiry, soft-delete timestamp | Invitation capacity and administration. |
 | `invite_redemption` | One `user_id`, referenced code, creation time | Eligibility record for signup credits and access. |
+| `account_checkin` | `(user_id, day)` unique | UTC daily credit claims. |
+| `account_share` | User, public URL, review status | Pending public share submissions, no automatic grant. |
+| `account_referral_code`, `account_referral` | Opaque user code and one claim per referred user | Idempotent referral grants. |
 
 `src/lib/auth.ts` uses Drizzle's D1 adapter for the four auth tables, while `src/lib/ledger.ts` and `src/lib/invites.ts` use prepared native D1 statements and batches for write-side invariants.
+`src/lib/account-rewards.ts` scopes reward reads and writes by user and grants check-in/referral credits through the ledger.
 `src/lib/credit-history.ts` limits history reads to 100 lots for the signed-in user, and `src/app/api/credits/balance/route.ts` validates the session and invite gate before reading a balance.
 Schema changes gain a new reviewed migration and matching service/query types and tests; a site applies those migrations to its own D1 before depending on the new shape.
 
@@ -268,6 +282,7 @@ Schema changes gain a new reviewed migration and matching service/query types an
 | `deploy.worker`, `deploy.d1`, `deploy.r2`, `deploy.queue` | Expected per-site Worker, D1, R2, and Queue names compared with Wrangler. |
 | `email.provider`, `email.from` | Selects the email adapter and sender address. |
 | `signupCredits` | Amount granted once to an eligible new account. |
+| `account` | Reward switches/amounts, submission cap, contact addresses, commercial-use link, icon and share-network choices. |
 | `plans` | One-time and annual plan id, price, currency, and credit amount. |
 | `site/auth.config.ts`: `backend`, `basePath` | Current better-auth selection and `/api/auth` routing contract. |
 | `email.enabled`, `email.requireVerification`, `email.passwordReset`, `google.enabled`, `github.enabled` | Independently enable sign-in options; email verification delays the session and signup credits until the emailed link is opened, password reset shows one forgot-password path and sends through `EmailProvider` only when that switch is on, and OAuth options require matching Worker secrets. |
@@ -276,9 +291,9 @@ Schema changes gain a new reviewed migration and matching service/query types an
 | `desktop.schemes` | Allow-listed app URL schemes for signed-in desktop handoff. |
 | `turnstile.onSignIn` | Applies Turnstile verification to sign-in requests supplied with a client token. |
 | `site/database.config.ts`: `binding`, `migrationsDir` | Site D1 binding name and migration directory. |
-| `site/theme.config.ts`: `background`, `surface`, `foreground`, `muted`, `accent`, `border`, `font` | CSS values used for page, surface, text, accent, line, and typography tokens. |
+| `site/theme.config.ts`: `background`, `surface`, `foreground`, `muted`, `accent`, `border`, `font`, `account` | CSS values for page tokens and account accent colors. |
 | `site/video-tool.config.ts` | Landing tool media, workflows, models, fields, references, assets, and optional promo. |
-| `site/messages/en.ts`, `zh.ts`: `nav`, `hero`, `videoTool`, `dashboard`, `credits` | Same-shape localized strings consumed by navigation, the video tool, and content views. |
+| `site/messages/en.ts`, `zh.ts`: `nav`, `hero`, `videoTool`, `account`, `dashboard`, `credits` | Same-shape localized strings consumed by navigation, the video tool, and content views. |
 
 ### Worker, build, and request-time configuration
 

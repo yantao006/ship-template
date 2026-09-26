@@ -26,6 +26,16 @@ export async function check(root: string, env: Record<string, string | undefined
   if (auth.desktop?.schemes?.some((scheme: string) => !/^[a-z][a-z0-9+.-]*$/i.test(scheme) || ['http', 'https', 'file', 'javascript', 'data', 'blob', 'vbscript'].includes(scheme.toLowerCase()))) errors.push('Invalid desktop scheme');
   if (config.email.provider === 'cloudflare' && !wrangler.send_email?.some((item: {name: string}) => item.name === 'EMAIL')) errors.push('EMAIL binding missing');
   if (config.email.provider !== 'cloudflare' && config.email.provider !== 'resend') errors.push('Invalid email provider');
+  const account = config.account;
+  const positive = (value: unknown) => Number.isSafeInteger(value) && (value as number) > 0;
+  const validNetworks = (value: unknown) => Array.isArray(value) && value.length > 0 && new Set(value).size === value.length && value.every(name => ['Facebook', 'X', 'WhatsApp', 'LinkedIn', 'Telegram', 'Reddit'].includes(name));
+  if (!account || !['checkIn', 'share', 'referral'].every(key => typeof account[key]?.enabled === 'boolean') ||
+      !positive(account.checkIn?.credits) || !positive(account.share?.credits) || !positive(account.share?.maxSubmissions) ||
+      !positive(account.referral?.inviterCredits) || !positive(account.referral?.friendCredits) || !positive(account.referral?.claimWindowHours) ||
+      !['contactEmail', 'feedbackEmail'].every(key => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(account[key] ?? '')) ||
+      !/^\/(?!\/)[a-z0-9/-]+$/.test(account.commercialUseHref ?? '') ||
+      !validNetworks(account.shareNetworks) || !validNetworks(account.sharePostNetworks) ||
+      !['checkin', 'share', 'invite', 'contact', 'feedback'].every(key => ['sparkles', 'share', 'gift', 'mail', 'message'].includes(account.icons?.[key]))) errors.push('Invalid account experience settings');
   const paymentSecrets = ['WAFFO_MERCHANT_ID', 'WAFFO_PRIVATE_KEY', 'WAFFO_PRODUCT_ID', 'WAFFO_CALLBACK_PUBLIC_KEY'];
   const requiredSecrets = ['BETTER_AUTH_SECRET', ...(auth.google.enabled ? ['GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET'] : []), ...(auth.github.enabled ? ['GITHUB_CLIENT_ID', 'GITHUB_CLIENT_SECRET'] : []), ...(auth.turnstile.onSignIn ? ['TURNSTILE_SECRET'] : []), ...(config.email.provider === 'resend' ? ['RESEND_API_KEY'] : []), ...paymentSecrets];
   const plans = config.plans as { id: string; billing: string; credits: number; amount: string; currency: string; description: string }[] | undefined;

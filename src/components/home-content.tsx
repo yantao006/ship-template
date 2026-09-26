@@ -19,6 +19,6 @@ export async function HomeContent({ locale = site.defaultLocale as keyof typeof 
 
   return <div className="site-shell">
     {!session && auth.google.enabled && auth.google.oneTapEnabled && env.GOOGLE_CLIENT_ID && <GoogleOneTap clientId={env.GOOGLE_CLIENT_ID} callbackURL={`/${locale}`} />}
-    <HomePage locale={locale} userName={session?.user.name} userEmail={session?.user.email} credits={credits} />
+    <HomePage locale={locale} userName={session?.user.name} userEmail={session?.user.email} userImage={session?.user.image} credits={credits} />
   </div>;
 }

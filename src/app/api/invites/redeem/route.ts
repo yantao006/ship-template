@@ -1,11 +1,11 @@
 import { createAuth, ensureSignupCredits } from '@/lib/auth';
-import { auth, site } from '@/lib/config';
+import { auth, isAllowedBrowserOrigin } from '@/lib/config';
 import { workerEnv } from '@/lib/env';
 import { hasInvite, redeemInvite } from '@/lib/invites';
 
 export async function POST(request: Request) {
   if (!auth.invite.required) return Response.json({ error: 'Invites disabled' }, { status: 404 });
-  if (request.headers.get('origin') !== site.url) return Response.json({ error: 'Forbidden' }, { status: 403 });
+  if (!isAllowedBrowserOrigin(request.headers.get('origin'))) return Response.json({ error: 'Forbidden' }, { status: 403 });
   const env = workerEnv();
   const session = await createAuth(env, new URL(request.url).hostname).api.getSession({ headers: request.headers });
   if (!session) return Response.json({ error: 'Unauthorized' }, { status: 401 });

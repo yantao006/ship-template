@@ -30,6 +30,10 @@ export function AuthControl({ copy, methods, userName, userEmail, callbackURL, l
 
   useEffect(() => { setAccountOpen(false); }, [pathname]);
   useEffect(() => {
+    const code = new URLSearchParams(window.location.search).get('ref');
+    if (code && /^[a-f0-9]{32}$/.test(code)) sessionStorage.setItem('account-referral-code', code);
+  }, []);
+  useEffect(() => {
     if (!accountOpen) return;
     const outside = (event: MouseEvent) => { if (!accountRef.current?.contains(event.target as Node)) setAccountOpen(false); };
     const escape = (event: KeyboardEvent) => { if (event.key === 'Escape') { setAccountOpen(false); triggerRef.current?.focus(); } };

@@ -20,6 +20,9 @@ test('verification disabled: email sign-up immediately creates a session and gra
     assert.equal(auth.options.baseURL,'http://localhost:3000');
     assert.equal(createAuth({...env,SITE_URL:'http://localhost:8787'}, 'localhost', emailSettings).options.baseURL,'http://localhost:8787');
     assert.throws(() => createAuth({...env,LOCAL_AUTH_TEST:undefined,SITE_URL:'https://another.example',GOOGLE_CLIENT_ID:'test-id',GOOGLE_CLIENT_SECRET:'test-secret'}),/SITE_URL must match/);
+    const preview = createAuth({...env,LOCAL_AUTH_TEST:undefined,SITE_URL:site.url}, new URL(site.previewOrigin).hostname, {...emailSettings, google:{enabled:true}});
+    assert.equal(preview.options.baseURL, site.previewOrigin);
+    assert.ok(preview.options.trustedOrigins?.includes(site.previewOrigin));
     const result = await auth.api.signUpEmail({body:{ name:'Test User',email:'test@example.com',password:'a-long-local-test-password' }});
     assert.ok(result.user.id);
     assert.equal(await balance(db,result.user.id),30);

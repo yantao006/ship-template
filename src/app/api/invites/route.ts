@@ -1,5 +1,5 @@
 import { createAuth } from '@/lib/auth';
-import { auth, site } from '@/lib/config';
+import { auth, isAllowedBrowserOrigin } from '@/lib/config';
 import { workerEnv } from '@/lib/env';
 import { isInviteAdmin } from '@/lib/invites';
 
@@ -19,7 +19,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   if (!auth.invite.required) return Response.json({ error: 'Invites disabled' }, { status: 404 });
-  if (request.headers.get('origin') !== site.url) return Response.json({ error: 'Forbidden' }, { status: 403 });
+  if (!isAllowedBrowserOrigin(request.headers.get('origin'))) return Response.json({ error: 'Forbidden' }, { status: 403 });
   const { env, authorized } = await admin(request);
   if (!authorized) return Response.json({ error: 'Forbidden' }, { status: 403 });
   let body: { maxUses?: number; expiresAt?: number | null };
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
 
 export async function DELETE(request: Request) {
   if (!auth.invite.required) return Response.json({ error: 'Invites disabled' }, { status: 404 });
-  if (request.headers.get('origin') !== site.url) return Response.json({ error: 'Forbidden' }, { status: 403 });
+  if (!isAllowedBrowserOrigin(request.headers.get('origin'))) return Response.json({ error: 'Forbidden' }, { status: 403 });
   const { env, authorized } = await admin(request);
   if (!authorized) return Response.json({ error: 'Forbidden' }, { status: 403 });
   let body: { code?: string };
