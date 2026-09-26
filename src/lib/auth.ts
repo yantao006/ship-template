@@ -7,7 +7,7 @@ import { grant } from './ledger';
 import { hasInvite } from './invites';
 import { createEmailProvider, type EmailProvider } from './email';
 import type { Env } from './env';
-import { site, auth, messages, localeFor } from './config';
+import { site, auth, messages, localeFor, allowedBrowserOrigins } from './config';
 
 export interface AuthSettings {
   basePath: string;
@@ -28,11 +28,12 @@ function resetMailCopy(url: string) {
 
 export function createAuth(env: Env, requestHostname?: string, settings: AuthSettings = auth, emailProvider?: EmailProvider) {
   const local = env.LOCAL_AUTH_TEST === '1' && /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(env.SITE_URL ?? '') && (!requestHostname || /^(localhost|127\.0\.0\.1)$/.test(requestHostname));
+  const preview = requestHostname === new URL(site.previewOrigin).hostname;
   if (!env.BETTER_AUTH_SECRET) throw new Error('BETTER_AUTH_SECRET missing');
   if (settings.google.enabled && (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET)) throw new Error('Google credentials missing');
   if (settings.github.enabled && (!env.GITHUB_CLIENT_ID || !env.GITHUB_CLIENT_SECRET)) throw new Error('GitHub credentials missing');
-  const baseURL = env.SITE_URL;
-  if (!baseURL || (!local && baseURL !== site.url)) throw new Error('SITE_URL must match this site');
+  const baseURL = preview ? site.previewOrigin : env.SITE_URL;
+  if (!baseURL || (!local && !preview && baseURL !== site.url)) throw new Error('SITE_URL must match this site');
   const db = drizzle(env.DB, { schema: authSchema });
   const mailer = settings.email.enabled && (settings.email.requireVerification || settings.email.passwordReset) ? (emailProvider ?? createEmailProvider(site, env)) : undefined;
   return betterAuth({
@@ -40,7 +41,7 @@ export function createAuth(env: Env, requestHostname?: string, settings: AuthSet
     secret: env.BETTER_AUTH_SECRET,
     baseURL,
     basePath: settings.basePath,
-    trustedOrigins: local ? [env.SITE_URL!] : [site.url, `https://www.${site.apex}`],
+    trustedOrigins: local ? [env.SITE_URL!] : allowedBrowserOrigins(),
     socialProviders: {
       ...(settings.google.enabled ? { google: { clientId: env.GOOGLE_CLIENT_ID!, clientSecret: env.GOOGLE_CLIENT_SECRET! } } : {}),
       ...(settings.github.enabled ? { github: { clientId: env.GITHUB_CLIENT_ID!, clientSecret: env.GITHUB_CLIENT_SECRET! } } : {}),

@@ -1,11 +1,11 @@
 import { createAuth } from '@/lib/auth';
-import { site, auth } from '@/lib/config';
+import { isAllowedBrowserOrigin, site, auth } from '@/lib/config';
 import { workerEnv } from '@/lib/env';
 import { hasInvite } from '@/lib/invites';
 import { planById, startCheckout } from '@/lib/payments';
 
 export async function POST(request: Request) {
-  if (request.headers.get('origin') !== site.url) return Response.json({ error: 'Forbidden' }, { status: 403 });
+  if (!isAllowedBrowserOrigin(request.headers.get('origin'))) return Response.json({ error: 'Forbidden' }, { status: 403 });
   const env = workerEnv();
   const session = await createAuth(env, new URL(request.url).hostname).api.getSession({ headers: request.headers });
   if (!session) return Response.json({ error: 'Unauthorized' }, { status: 401 });

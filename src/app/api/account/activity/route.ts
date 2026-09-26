@@ -1,7 +1,7 @@
 import { createAuth } from '@/lib/auth';
 import { accountActivity, claimCheckIn, claimReferral, submitShare } from '@/lib/account-rewards';
 import { hasInvite } from '@/lib/invites';
-import { site } from '@/lib/config';
+import { isAllowedBrowserOrigin } from '@/lib/config';
 import { workerEnv } from '@/lib/env';
 
 async function authorized(request: Request) {
@@ -21,7 +21,7 @@ export async function POST(request: Request) {
   const env = workerEnv();
   const origin = request.headers.get('origin');
   const local = env.LOCAL_AUTH_TEST === '1' && origin === env.SITE_URL && /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
-  if ((!local && origin !== site.url) || request.headers.get('sec-fetch-site') === 'cross-site') return Response.json({ error: 'Forbidden' }, { status: 403 });
+  if ((!local && !isAllowedBrowserOrigin(origin)) || request.headers.get('sec-fetch-site') === 'cross-site') return Response.json({ error: 'Forbidden' }, { status: 403 });
   const context = await authorized(request);
   if (!context) return Response.json({ error: 'Unauthorized' }, { status: 401 });
   let body: { action?: string; url?: string; code?: string };

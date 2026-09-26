@@ -4,6 +4,7 @@ export default {
   previewOnly: true,
   apex: 'awesomejev.link',
   url: 'https://awesomejev.link',
+  previewOrigin: 'https://popovers-awesomejev-test.yantao006.workers.dev',
   locales: ['en', 'zh'] as const,
   defaultLocale: 'en',
   deploy: { worker: 'awesomejev-test', d1: 'awesomejev-db', r2: 'awesomejev-media', queue: 'awesomejev-jobs' },
