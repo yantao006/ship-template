@@ -49,7 +49,7 @@ test('homepage composes eight sections in order, using the configured navigation
   const header = section('Header');
   assert.match(header, /<section id="header">/);
   assert.match(header, /import \{ ReplicaNavigation \} from '@\/components\/blocks\/replica-navigation'/);
-  for (const field of ['brand', 'pricing', 'language', 'navigation', 'lightMode', 'darkMode', 'availableCredits']) {
+  for (const field of ['brand', 'language', 'navigation', 'lightMode', 'darkMode', 'availableCredits']) {
     assert.match(header, new RegExp(`copy\\.nav\\.${field}`));
   }
   assert.match(header, /logo=\{site\.logo\}/);
@@ -61,7 +61,7 @@ test('homepage composes eight sections in order, using the configured navigation
   assert.match(block, /href=\{link\.href\}/);
   assert.match(header, /credits !== undefined/);
   assert.match(block, /pathForLocale\(pathname, item\.code, locales\.map\(language => language\.code\)\)/);
-  assert.match(block, /href=\{pricingHref\}/);
+  assert.doesNotMatch(block, /pricingHref|replica-credits-menu|creditsArea/);
   assert.match(block, /aria-current=\{activeHref === link\.href \? 'page' : undefined\}/);
   assert.match(block, /useDismissableLayer\(\{ active: !!open/);
   assert.doesNotMatch(block, /MiniMax|Awesomejev|AI Video|Explore|href="#"/);

@@ -3,13 +3,13 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Coins, Globe2, Moon, Sun } from 'lucide-react';
+import { Globe2, Moon, Sun } from 'lucide-react';
 import { pathForLocale } from '@/components/language-control';
 import { useDismissableLayer } from '@/lib/use-dismissable-layer';
 import './replica-navigation.css';
 
 type NavLink = { label: string; href: string; icon: ReactNode };
-type Menu = 'language' | 'credits' | null;
+type Menu = 'language' | null;
 
 export type ReplicaNavigationProps = {
   brand: string;
@@ -20,24 +20,18 @@ export type ReplicaNavigationProps = {
   locale: string;
   locales: readonly { code: string; name: string }[];
   languageLabel: string;
-  creditsLabel: string;
-  pricingLabel: string;
-  pricingHref: string;
   lightLabel: string;
   darkLabel: string;
   defaultMode: 'light' | 'dark';
-  balance?: number;
   accountControl: ReactNode;
 };
 
-export function ReplicaNavigation({ brand, logo, brandHref, navigationLabel, links, locale, locales, languageLabel, creditsLabel, pricingLabel, pricingHref, lightLabel, darkLabel, defaultMode, balance, accountControl }: ReplicaNavigationProps) {
+export function ReplicaNavigation({ brand, logo, brandHref, navigationLabel, links, locale, locales, languageLabel, lightLabel, darkLabel, defaultMode, accountControl }: ReplicaNavigationProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState<Menu>(null);
   const [light, setLight] = useState(defaultMode === 'light');
   const languageArea = useRef<HTMLDivElement>(null);
-  const creditsArea = useRef<HTMLDivElement>(null);
   const languageRef = useRef<HTMLButtonElement>(null);
-  const creditsRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => { setOpen(null); }, [pathname]);
   useEffect(() => {
@@ -48,7 +42,7 @@ export function ReplicaNavigation({ brand, logo, brandHref, navigationLabel, lin
       document.documentElement.classList.remove('replica-light');
     };
   }, [light]);
-  useDismissableLayer({ active: !!open, area: open === 'language' ? languageArea : creditsArea, trigger: open === 'language' ? languageRef : creditsRef, onClose: () => setOpen(null) });
+  useDismissableLayer({ active: !!open, area: languageArea, trigger: languageRef, onClose: () => setOpen(null) });
 
   const currentPath = pathname === '/' ? brandHref : pathname;
   const activeHref = [...links].sort((a, b) => b.href.length - a.href.length).find(link => currentPath === link.href || (link.href !== brandHref && currentPath.startsWith(`${link.href}/`)))?.href;
@@ -71,13 +65,6 @@ export function ReplicaNavigation({ brand, logo, brandHref, navigationLabel, lin
             {locales.map(item => <button key={item.code} type="button" role="menuitemradio" aria-checked={locale === item.code} className={locale === item.code ? 'current' : ''} onClick={() => { setOpen(null); window.location.assign(pathForLocale(pathname, item.code, locales.map(language => language.code))); }}><span className="replica-language-dot" />{item.name}</button>)}
           </div>}
         </div>
-        {balance !== undefined && <div className="replica-action-wrap" ref={creditsArea}>
-          <button ref={creditsRef} className="replica-credits-pill" type="button" aria-label={`${balance} ${creditsLabel}`} aria-expanded={open === 'credits'} aria-haspopup="dialog" onClick={() => toggle('credits')}><Coins size={17} />{balance}</button>
-          {open === 'credits' && <div className="replica-popover replica-credits-menu" role="dialog" aria-label={creditsLabel}>
-            <div className="replica-balance"><strong><Coins size={21} />{balance}</strong><span>{creditsLabel}</span></div>
-            <div className="replica-credits-actions"><Link href={pricingHref} onClick={() => setOpen(null)}>{pricingLabel}</Link></div>
-          </div>}
-        </div>}
         {accountControl}
       </div>
     </header>

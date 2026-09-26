@@ -13,11 +13,14 @@ body:has(.replica-topbar) main { padding-top: 56px; }
 .replica-icon { width: 36px; height: 36px; border: 0; border-radius: 10px; background: none; color: var(--nav-muted); display: grid; place-items: center; cursor: pointer; }
 .replica-icon:hover, .replica-icon.selected { background: var(--nav-hover); color: var(--nav-text); }
 .replica-action-wrap, .replica-auth { position: relative; }
-.replica-credits-pill { display: flex; align-items: center; gap: 5px; background: var(--pill-bg); color: var(--nav-text); border: 0; border-radius: 20px; height: 34px; padding: 0 12px; font-weight: 700; cursor: pointer; }
+.replica-credits-pill { display: flex; align-items: center; gap: 7px; background: var(--pill-bg); color: var(--nav-text); border: 1px solid var(--pill-line); border-radius: 20px; height: 36px; padding: 0 12px; font-size: 14px; font-weight: 700; cursor: pointer; }
 .replica-credits-pill:hover { background: var(--pill-hover); }
-.replica-avatar { display: grid; place-items: center; width: 34px; height: 34px; border: 2px solid #ddd; border-radius: 50%; font-size: 12px; font-weight: 800; color: #fff; background: #292632; cursor: pointer; }
-.replica-avatar:hover { border-color: #a178ff; }
-/* The language menu and both account cards share the same anchored popover shell. */
+.replica-avatar { display: grid; place-items: center; width: 34px; height: 34px; border: 2px solid #ddd; border-radius: 50%; font-size: 12px; font-weight: 800; color: #fff; background: #292632; overflow: hidden; }
+.replica-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.replica-avatar-trigger { display: block; padding: 0; border: 0; border-radius: 50%; background: none; cursor: pointer; }
+.replica-avatar-trigger:hover .replica-avatar { border-color: #a178ff; }
+.replica-avatar-trigger[aria-expanded=true] { box-shadow: 0 0 0 3px color-mix(in srgb, var(--account-tone-account-box) 27%, transparent); }
+/* The language menu and account cards share the same anchored popover shell. */
 .account-popover, .replica-popover { position: absolute; top: calc(100% + 9px); right: 0; z-index: 120; max-width: calc(100vw - 16px); max-height: calc(100dvh - 80px); background: linear-gradient(130deg,var(--popover-bg) 55%,var(--popover-end)); border: 1px solid var(--popover-border); border-radius: 14px; color: var(--text); box-shadow: 0 18px 48px color-mix(in srgb,var(--bg) 65%,transparent); animation: replica-pop .18s ease-out both; transform-origin: top right; }
 .account-popover { width: 288px; overflow: auto; }
 .replica-popover { overflow: hidden; }
@@ -28,21 +31,7 @@ body:has(.replica-topbar) main { padding-top: 56px; }
 .replica-language-menu button.current { color: var(--text); font-weight: 600; }
 .replica-language-dot { width: 6px; height: 6px; border-radius: 50%; background: transparent; }
 .replica-language-menu .current .replica-language-dot { background: var(--language-dot); }
-.replica-credits-menu, .replica-account-menu { width: 270px; }
-.replica-balance { text-align: center; padding: 21px 12px 17px; border-bottom: 1px solid var(--popover-line); display: grid; gap: 4px; }
-.replica-balance strong { display: flex; justify-content: center; align-items: center; gap: 6px; font-size: 27px; }
-.replica-balance span, .replica-profile small { color: var(--muted); font-size: 12px; }
-.replica-credits-actions { padding: 9px; }
-.replica-credits-actions a { height: 44px; background: var(--buy-bg); color: var(--buy-text); border-radius: 9px; display: grid; place-items: center; font-size: 13px; font-weight: 700; text-decoration: none; }
-.replica-profile { min-height: 72px; padding: 12px; display: flex; gap: 11px; align-items: center; border-bottom: 1px solid var(--popover-line); }
-.replica-avatar-large { width: 40px; height: 40px; flex-shrink: 0; }
-.replica-profile div { display: grid; gap: 3px; min-width: 0; }
-.replica-profile strong, .replica-profile small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.replica-profile strong { font-size: 13px; }
-.replica-account-list { padding: 8px 10px; border-top: 1px solid var(--popover-line); }
-.replica-account-list a, .replica-account-list button { width: 100%; display: flex; align-items: center; gap: 10px; background: none; border: 0; border-radius: 7px; color: var(--text); font-size: 13px; font-weight: 600; padding: 8px 9px; min-height: 44px; text-decoration: none; cursor: pointer; }
-.replica-account-list a:hover, .replica-account-list button:hover { background: var(--row-hover); }
-.replica-account-list .replica-sign-out { color: var(--account-tone-danger); }
+.replica-avatar-large { width: 44px; height: 44px; flex-shrink: 0; }
 .replica-mobile-bottom { display: none; }
 .replica-topbar :where(a, button):focus-visible, .replica-mobile-bottom a:focus-visible { outline: 2px solid #e7c56a; outline-offset: 3px; }
 @media (max-width: 1100px) { .replica-desktop-nav { gap: 6px; } .replica-desktop-nav a { font-size: 15px; padding-inline: 8px; } }
@@ -55,7 +44,7 @@ body:has(.replica-topbar) main { padding-top: 56px; }
   .replica-actions { margin-left: auto; gap: 2px; }
   .replica-icon { width: 30px; }
   .replica-credits-pill { padding: 0 8px; }
-  .replica-avatar { width: 30px; height: 30px; }
+  .replica-avatar-trigger .replica-avatar { width: 30px; height: 30px; }
   .replica-mobile-bottom { position: fixed; bottom: 0; left: 0; right: 0; z-index: 90; background: #17171c; border-top: 1px solid #34343a; border-radius: 20px 20px 0 0; padding: 9px 5px max(9px, env(safe-area-inset-bottom)); display: flex; justify-content: space-around; }
   .replica-light .replica-mobile-bottom { background: #fff; border-color: #dedee3; }
   .replica-mobile-bottom a { color: #aaa; display: grid; justify-items: center; align-content: center; gap: 4px; font-size: 10px; width: 25%; min-height: 43px; text-decoration: none; }
