@@ -6,7 +6,7 @@ export function MarketingNav({ locale, userName, callbackURL, hideLanguage = fal
   const copy = messages[locale];
   return <header className="site-nav">
     <div className="nav-inner">
-      <a className="brand" href={`/${locale}`} aria-label={`${copy.nav.brand} home`}><span className="brand-mark" aria-hidden="true"><i/><i/><i/></span><span>{copy.nav.brand}</span></a>
+      <a className="brand" href={`/${locale}`} aria-label={`${copy.nav.brand} home`}>{site.logo && <img className="brand-logo" src={site.logo.src} alt={site.logo.alt} width={28} height={28} />}<span>{copy.nav.brand}</span></a>
       <nav className="marketing-links" aria-label={copy.nav.navigation}>
         <a href={`/${locale}`}>{copy.nav.home}</a>
         <a href={`/${locale}/pricing`}>{copy.nav.pricing}</a>

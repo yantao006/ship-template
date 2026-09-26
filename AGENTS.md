@@ -294,7 +294,7 @@ Schema changes gain a new reviewed migration and matching service/query types an
 | `routes[].pattern`, `routes[].custom_domain` | Site hostname and custom-domain routing. |
 | `triggers.crons` | Schedule sent to `worker.ts`'s `scheduled` handler. |
 | `secrets.required`, `vars.SITE_URL` | Required secret names and request-time canonical auth base URL. |
-| `next.config.ts`, `open-next.config.ts` | Next.js tracing root, local Cloudflare context for `next dev`, and OpenNext's Cloudflare build settings. |
+| `next.config.ts`, `open-next.config.ts` | Next.js tracing root, local Cloudflare context for `next dev` (optionally using an uncommitted `NEXT_DEV_WRANGLER_CONFIG`), and OpenNext's Cloudflare build settings. |
 | `tsconfig.json` | Strict compilation and `@/` and `@site/` import aliases. |
 
 `src/lib/env.ts` types the values actually available to Worker code:

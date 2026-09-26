@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
+import site from '../site/site.config';
 
 const sectionNames = [
   ['Header', 'header'],
@@ -20,6 +21,17 @@ test('unfinished sections are empty with stable ids', () => {
     assert.match(section(name), new RegExp(`return <section id="${id}" \\/>`));
     assert.deepEqual([...section(name).matchAll(/export function (\w+)/g)].map(match => match[1]), [name]);
   }
+});
+
+test('both navigation variants render the site logo asset instead of a hard-coded mark', () => {
+  assert.ok(site.logo.src.startsWith('/'));
+  assert.ok(site.logo.alt);
+  assert.match(readFileSync(new URL(`../public${site.logo.src}`, import.meta.url), 'utf8'), /<svg/);
+  const marketing = readFileSync(new URL('../src/components/marketing-nav.tsx', import.meta.url), 'utf8');
+  assert.match(marketing, /site\.logo\.src/);
+  assert.match(marketing, /site\.logo\.alt/);
+  assert.doesNotMatch(marketing, /brand-mark/);
+  assert.doesNotMatch(readFileSync(new URL('../src/app/globals.css', import.meta.url), 'utf8'), /brand-mark/);
 });
 
 test('homepage composes eight sections in order, using the configured navigation and existing video tool', () => {

@@ -31,6 +31,26 @@ test('verification disabled: email sign-up immediately creates a session and gra
   } finally { await mf.dispose(); }
 });
 
+test('Google sign-in starts with the configured local callback origin', async () => {
+  const mf = new Miniflare({ modules: true, script: 'export default { fetch() { return new Response("ok") } }', d1Databases: { DB: 'social-preview-test' } });
+  try {
+    const db = await mf.getD1Database('DB') as unknown as Env['DB'];
+    for (const sql of readFileSync('migrations/0001_initial.sql', 'utf8').split(';').map(s => s.trim()).filter(Boolean)) await db.prepare(sql).run();
+    const env: Env = { DB: db, SITE_URL: 'http://localhost:8806', LOCAL_AUTH_TEST: '1', BETTER_AUTH_SECRET: 'this-is-only-a-local-test-secret-long-enough', GOOGLE_CLIENT_ID: 'local-test-client', GOOGLE_CLIENT_SECRET: 'local-test-secret' };
+    const settings = { ...emailSettings, google: { enabled: true } };
+    const request = (origin: string) => new Request('http://localhost:8806/api/auth/sign-in/social', {
+      method: 'POST', headers: { origin, 'content-type': 'application/json' }, body: JSON.stringify({ provider: 'google', callbackURL: '/en' }),
+    });
+    const auth = createAuth(env, 'localhost', settings);
+    const started = await auth.handler(request('http://localhost:8806'));
+    assert.equal(started.status, 200);
+    const body = await started.json() as { url: string };
+    const target = new URL(body.url);
+    assert.equal(target.hostname, 'accounts.google.com');
+    assert.equal(target.searchParams.get('redirect_uri'), 'http://localhost:8806/api/auth/callback/google');
+  } finally { await mf.dispose(); }
+});
+
 test('verification required: signup and login are gated until emailed link is visited, then session and credits are issued once', async () => {
   const mf = new Miniflare({ modules: true, script: 'export default { fetch() { return new Response("ok") } }', d1Databases: { DB: 'verify-test' } });
   try {
