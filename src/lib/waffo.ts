@@ -24,6 +24,10 @@ export type SettledPayment = {
   paymentId: string;
   subscriptionId: string;
   billing: 'once' | 'year';
+  amount?: string;
+  currency?: string;
+  periodStart?: string;
+  periodEnd?: string;
 };
 
 const checkoutSecrets = ['WAFFO_MERCHANT_ID', 'WAFFO_PRIVATE_KEY', 'WAFFO_PRODUCT_ID', 'WAFFO_CALLBACK_PUBLIC_KEY'] as const;
@@ -70,8 +74,8 @@ export function readSettledPayment(body: string, signature: string | null, publi
   if (data.paymentStatus && data.paymentStatus !== 'succeeded') return 'rejected';
   if (event.eventType === 'order.completed') {
     if (data.orderStatus && data.orderStatus !== 'completed') return 'rejected';
-    return { userId, planId, paymentId, subscriptionId: data.orderId, billing: 'once' };
+    return { userId, planId, paymentId, subscriptionId: data.orderId, billing: 'once', amount: data.amount, currency: data.currency };
   }
   if (data.orderStatus && data.orderStatus !== 'active') return 'rejected';
-  return { userId, planId, paymentId, subscriptionId: data.orderId, billing: 'year' };
+  return { userId, planId, paymentId, subscriptionId: data.orderId, billing: 'year', amount: data.amount, currency: data.currency, periodStart: data.currentPeriodStart, periodEnd: data.currentPeriodEnd };
 }

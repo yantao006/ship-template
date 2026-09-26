@@ -57,5 +57,17 @@ export default {
   },
   dashboard: { title: '概览', navigation: '工作台导航', preview: '预览工作台', signInTitle: '登录后查看工作台', signInDescription: '点击导航中的登录，查看你的账号和积分。', backHome: '返回首页', summary: '视频生成功能开放后即可使用积分。', nextTitle: '在一处查看你的账号', nextDescription: '查看积分余额和发放记录。可在价格页购买套餐。此预览版不提供视频工具。', viewCredits: '查看积分', viewPlans: '查看套餐' },
   credits: { title: '积分', listTitle: '积分记录', description: '发放到你账号的积分，仅展示你的记录。', balance: '可用', source: '来源', granted: '发放', remaining: '剩余', expires: '到期', signup: '欢迎积分', payment: '购买', subscription: '订阅', noExpiry: '无期限', empty: '暂无积分发放记录。' },
+  workspace: {
+    sections: { dashboard: '总览', create: '创作', subscription: '订阅', payments: '支付记录', credits: '积分', keys: '密钥', notifications: '通知', tickets: '工单', profile: '个人资料' },
+    currentPlan: '当前套餐', available: '积分余额', keyCount: '密钥数量', currentSubscription: '当前订阅', noPlan: '暂无购买记录', noSubscription: '暂无有效订阅',
+    empty: '暂无记录。', date: '日期', status: '状态', amount: '数量', plan: '套餐', period: '周期', details: '详情', invoice: '发票', purchase: '查看套餐', cancel: '取消订阅', canceling: '正在取消', change: '更换套餐需先取消当前订阅，再通过 Waffo 重新结账',
+    task: '视频任务', cost: '消耗', previewNote: '首页工具仅为预览，目前尚未接入视频生成。',
+    search: '搜索类型或任务编号', historyDescription: '仅显示你的积分发放和消耗流水。', find: '搜索', previous: '上一页', next: '下一页', transactions: '积分流水', grants: '发放记录', kind: '类型', reference: '关联任务',
+    keyName: '密钥名称', createKey: '创建密钥', deleteKey: '删除密钥', copy: '复制密钥', secretHint: '请立即复制密钥，之后不会再次完整显示。',
+    unread: '只看未读', all: '全部', markRead: '标为已读',
+    subject: '主题', message: '内容', image: '附图（PNG、JPEG 或 WebP，最大 2 MB）', createTicket: '新建工单', reply: '回复', closeTicket: '关闭工单',
+    name: '姓名', email: '邮箱', avatar: '头像', save: '保存资料', error: '保存失败，请重试。',
+    states: { open: '打开', replied: '已回复', closed: '已关闭', active: '生效中', canceled: '已取消', canceling: '取消中', reserved: '已预留', submitted: '已提交', processing: '处理中', succeeded: '已完成', refunded: '已退还', paid: '已支付', grant: '发放', consume: '消耗', refund: '退还', reclaim: '收回', expire: '过期', adjust: '调整' },
+  },
   pricing: { title: '套餐', lead: '选择套餐并通过 Waffo 结账。可以使用优惠券。年付套餐只发放当前自然月的积分。', checkout: '结账', signInRequired: '请先登录再结账。', wait: '请稍候…', failed: '无法发起结账，请重试。', coupon: '优惠券', once: '一次性', year: '年付', credits: '积分', packName: '积分包', packDetail: '一次购买只发放一次积分。', annualName: '年付', annualDetail: '一次支付全年费用。这次结账只发放当前自然月的积分。' },
 };

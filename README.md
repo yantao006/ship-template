@@ -9,7 +9,13 @@ The Google consent app is in Testing mode; only the configured Google test users
 
 Video generation, model pages, and legal pages are not implemented.
 The mock video service cannot generate media. Checkout opens a Waffo Pancake session for the existing product and returns its payment URL.
-The landing page has a marketing navigation and hero. Pricing at `/{locale}/pricing` lists site plans and starts checkout for a signed-in user. The preview workspace at `/{locale}/dashboard` and the credit-grant table at `/{locale}/credits` show the signed-in account's D1 data.
+The landing page has a marketing navigation and hero.
+Pricing at `/{locale}/pricing` lists site plans and starts checkout for a signed-in user.
+The signed-in sidebar at `/{locale}/dashboard` includes creations, subscriptions, payments, credits, API keys, notifications, tickets, and profile.
+The credit page shows both grants and consumption, with a user-scoped searchable transaction list.
+Video tasks are still only a read-only history, not a working generator.
+Waffo callbacks persist verified payment and subscription records; cancellation calls Waffo's real subscription cancel endpoint, while switching plans requires canceling and starting a new checkout.
+No invoice is linked unless a payment record has a real invoice URL, and the Waffo callback currently supplies none.
 
 ## Re-run verification
 
@@ -25,12 +31,12 @@ pnpm cf:build
 pnpm exec wrangler deploy --dry-run --outdir /tmp/ship-template-dryrun
 ```
 
-`pnpm test` uses local Miniflare D1 to reproduce naive read-then-write overspending, verify atomic native D1 batches under concurrency, cover refund/grant idempotency, exercise better-auth signup, and test both mail adapters with fake sending.
+`pnpm test` uses local Miniflare D1 to reproduce naive read-then-write overspending, verify atomic native D1 batches under concurrency, cover refund/grant idempotency, exercise better-auth signup, user-scoped workspace queries, and test both mail adapters with fake sending.
 The second-site fixture changes only `site/`, `wrangler.jsonc` resource names and environment requirements; business modules are unchanged.
 `pnpm site-check --strict` needs `SITE_URL`, `BETTER_AUTH_SECRET`, and credentials for enabled OAuth providers in the invoking environment; it reports missing names without printing values.
 Secrets already installed on the deployed Worker are not exported into the local shell.
 
-For local-only D1 smoke checks, first run `pnpm exec wrangler d1 migrations apply awesomejev-db --local`.
+For local-only D1 smoke checks, first run `pnpm exec wrangler d1 migrations apply awesomejev-db --local`, including `0003_workspace.sql` before opening the dashboard.
 The local-only auth test path uses an explicit `LOCAL_AUTH_TEST=1` and a loopback `SITE_URL`, as exercised by `test/auth-integration.test.ts`; it cannot be used on a non-loopback request.
 For a local Next.js preview, set `NEXT_DEV_WRANGLER_CONFIG` to a local, uncommitted Wrangler config whose `vars.SITE_URL` is the exact preview origin and whose `vars.LOCAL_AUTH_TEST` is `1`.
 Google OAuth additionally needs real local credentials and that exact origin's `/api/auth/callback/google` registered on the OAuth client; fake credentials can only test the sign-in start, not complete the callback.
@@ -59,7 +65,7 @@ Apply D1 migrations before deploying a build that enables invitations.
 Credentials are never committed to `site/` or D1.
 `site-check` compares the Worker, D1, R2, Queue and email bindings with site configuration and secret declarations.
 Cloudflare Email is the default adapter; Resend is selectable through `site.email.provider` and needs `RESEND_API_KEY`.
-Notification functions use fake email in tests; they are not connected to real video or payment events.
+Email notification functions use fake email in tests; the new in-app notification inbox has user-scoped storage but is not yet populated by video or payment events.
 Turnstile verification remains implemented and locally tested, but this reference site's `site/auth.config.ts` disables the sign-in gate until a real client widget and secret are configured.
 Do not flip it on without both pieces, or Google login will be blocked.
 Annual checkout grants the current calendar month through the idempotent monthly grant. Replaying that payment does not grant the month again, and a one-time purchase grants once.

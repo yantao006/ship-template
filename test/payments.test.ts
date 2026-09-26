@@ -53,7 +53,10 @@ let mf: Miniflare, db: D1Database;
 before(async () => {
   mf = new Miniflare({ modules: true, script: 'export default { fetch() { return new Response("ok") } }', d1Databases: { DB: 'test-payments' } });
   db = await mf.getD1Database('DB') as unknown as D1Database;
-  for (const sql of readFileSync('migrations/0001_initial.sql', 'utf8').split(';').map(s => s.trim()).filter(Boolean)) await db.prepare(sql).run();
+  for (const file of ['migrations/0001_initial.sql', 'migrations/0003_workspace.sql']) {
+    for (const sql of readFileSync(file, 'utf8').split(';').map(s => s.trim()).filter(Boolean)) await db.prepare(sql).run();
+  }
+  for (const id of ['user-once', 'user-year', 'user-sign']) await db.prepare('INSERT INTO user (id,name,email,created_at,updated_at) VALUES (?,?,?,?,?)').bind(id,id,`${id}@example.com`,Date.now(),Date.now()).run();
 });
 after(async () => mf?.dispose());
 
@@ -75,6 +78,8 @@ test('one-time payment grants once and a replay does not add credits', async () 
   assert.equal((await first.json()).message, 'success');
   assert.equal((await second.json()).message, 'success');
   assert.equal(await balance(db, 'user-once'), 100);
+  const payments = await db.prepare('SELECT id,amount,currency FROM payment_record WHERE user_id=?').bind('user-once').all<{id:string;amount:string;currency:string}>();
+  assert.deepEqual(payments.results, [{id:'pay-once',amount:'9.90',currency:'USD'}]);
   const settled = readSettledPayment(body, sign(body), publicKey);
   assert.equal(settled === 'ignored' || settled === 'rejected', false);
   if (settled === 'ignored' || settled === 'rejected') return;

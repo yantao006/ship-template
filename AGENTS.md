@@ -34,7 +34,8 @@ The current example has site-local accounts, invitation primitives, a credit led
 | Access control | `src/lib/invites.ts`, `src/lib/turnstile.ts`, `src/lib/desktop-auth.ts`, D1 and Turnstile HTTP API | Invitation eligibility, optional sign-in verification, and allow-listed app handoff. |
 | Credits | `src/lib/ledger.ts`, `src/lib/credit-history.ts`, native D1 statements and batches | Atomic grants, reservations, allocation, refund, balance, and bounded account history. |
 | Email | `src/lib/email.ts`, `src/lib/notifications.ts`, Cloudflare Email or Resend | One `EmailProvider` interface for message delivery and application notification copy. |
-| Video and payments | `src/components/video-tool/`, `src/lib/mock-services.ts`, `src/lib/waffo.ts`, `src/lib/payments.ts`, `src/lib/ledger.ts`, `video_task` | The landing tool previews a create payload from site config. Checkout calls the Waffo adapter, and a verified callback grants through the ledger. |
+| Video and payments | `src/components/video-tool/`, `src/lib/mock-services.ts`, `src/lib/waffo.ts`, `src/lib/payments.ts`, `src/lib/ledger.ts`, `video_task` | The landing tool previews a create payload from site config. Checkout calls Waffo; verified callbacks grant and persist payment/subscription records. |
+| Account workspace | `src/components/workspace-*`, `src/lib/workspace.ts`, `src/app/api/workspace/`, `migrations/0003_workspace.sql` | Nine signed-in sidebar views; user-scoped reads and writes for keys, notifications, tickets, and profile, with R2 images and one-time key display. |
 | Worker infrastructure | `worker.ts`, `src/lib/env.ts`, `wrangler.jsonc`, OpenNext | HTTP dispatch and scheduled/queue entry points with typed request-time bindings. |
 
 ## Build, compile, and deploy commands
@@ -69,7 +70,8 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 ├── wrangler.jsonc                    # Site Worker, resource bindings, route, cron, vars, secret names
 ├── migrations/                       # Versioned SQL applied to this site's D1
 │   ├── 0001_initial.sql             # Auth, credit ledger, and video task tables
-│   └── 0002_invite_codes.sql        # Invitation inventory and redemption tables
+│   ├── 0002_invite_codes.sql        # Invitation inventory and redemption tables
+│   └── 0003_workspace.sql           # Payment records, subscriptions, keys, notifications, tickets
 ├── scripts/
 │   └── site-check.ts                 # Cross-checks site choices, bindings, auth switches, secrets
 ├── fixtures/second-site/             # Configuration-only reuse example
@@ -101,7 +103,8 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │   ├── [locale]/                 # Locale-aware marketing and workspace routes
 │   │   │   ├── page.tsx              # Localized homepage composition
 │   │   │   ├── dashboard/page.tsx    # Account summary route
-│   │   │   ├── credits/page.tsx      # Credit balance and grant history route
+│   │   │   ├── credits/page.tsx      # Credit balance, searchable ledger, grants
+│   │   │   ├── create,subscription,payments,keys,notifications,tickets,profile/ # Sidebar routes
 │   │   │   ├── pricing/page.tsx      # Plan list and checkout start
 │   │   │   └── reset-password/page.tsx # Password reset form for an emailed token
 │   │   ├── admin/invites/page.tsx    # Session- and allow-list-gated invite administration
@@ -112,6 +115,8 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │       ├── checkout/route.ts             # Signed-in checkout handoff to the Waffo adapter
 │   │       ├── webhooks/payment/route.ts     # Verified payment callback
 │   │       ├── credits/balance/route.ts      # Session-scoped balance endpoint
+│   │       ├── workspace/route.ts            # Session- and origin-scoped account mutations
+│   │       ├── workspace/media/route.ts      # Authorized R2 avatar/ticket media
 │   │       ├── invites/route.ts              # Invite admin list, create, revoke
 │   │       ├── invites/validate/route.ts     # Code validity check
 │   │       └── invites/redeem/route.ts       # Session-scoped redemption and signup grant
@@ -128,7 +133,9 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │   ├── google-one-tap.tsx        # Optional browser-side One Tap client
 │   │   ├── language-control.tsx      # Locale switch preserving the current route
 │   │   ├── workspace-shell.tsx       # Shared dashboard navigation and heading
-│   │   ├── workspace-content.tsx     # Session-scoped dashboard/credit data and rendering
+│   │   ├── workspace-content.tsx     # Nine session-scoped account views
+│   │   ├── workspace-shell.tsx       # Single responsive sidebar
+│   │   ├── workspace-actions.tsx     # Client action forms and one-time key disclosure
 │   │   ├── invite-gate.tsx           # Client code redemption form
 │   │   ├── invite-admin.tsx          # Client code inventory and actions
 │   │   └── desktop-handoff.tsx       # Client app-return request and redirect
@@ -140,6 +147,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │       ├── invites.ts                # Invite eligibility, validation, redemption, admin match
 │       ├── ledger.ts                 # Atomic credit lots, entries, task transitions, refunds
 │       ├── credit-history.ts         # Bounded user credit-lot query
+│       ├── workspace.ts              # Scoped account queries and bounded credit pagination
 │       ├── turnstile.ts              # Token verification and local test path
 │       ├── desktop-auth.ts           # Scheme validation and token-bearing app URL
 │       ├── email.ts                  # Cloudflare/Resend adapter and fake test provider
@@ -153,6 +161,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
     ├── password-reset.test.ts        # Reset switch, mailed link, and reset page
     ├── config-email-auth.test.ts     # Second-site wiring, mail adapters, Turnstile
     ├── credit-history.test.ts       # Signed-in and bounded account credit reads
+    ├── workspace.test.ts            # Workspace user isolation and credit pagination
     ├── ledger.test.ts               # Concurrent spend, refunds, and monthly grants
     ├── home-sections.test.ts        # Homepage section scaffold order and stable ids
     ├── payments.test.ts             # Waffo signature, one-time grant, monthly grant, and replay
@@ -198,7 +207,8 @@ Grant source IDs, entry idempotency keys, and task state transitions make retrie
 
 ### Current state and extension paths
 
-The existing homepage, dashboard, and credit history are a preview; `src/lib/mock-services.ts` produces no generated media.
+The homepage video tool remains a preview; `src/lib/mock-services.ts` produces no generated media.
+The nine-section account workspace reads real user records but video generation remains unavailable.
 `src/components/home-content.tsx` passes the signed-in name to `src/components/sections/HomePage.tsx`, which orders Header, VideoHero, VideoToolSection, VideoShowcase, VideoFeatures, VideoPricing, VideoFAQ, and Footer.
 `Header` passes localized brand, optional site logo, links, language choices, real signed-in credits and account controls to `blocks/replica-navigation.tsx`; pricing and workspace still use `MarketingNav`.
 The six non-header, non-tool sections remain empty sections with stable ids.
@@ -219,6 +229,8 @@ When generation is connected, page parameters flow from that payload to an authe
 An upstream adapter submits the work, the queue processing in `worker.ts` observes progress and updates task status, and a status endpoint lets the client follow that progress.
 On success, the service stores the result in the site's `MEDIA` binding and returns an authorized preview or download; on failure, it reconciles task state and the ledger idempotently according to the site's credit policy.
 Site plans in `site/site.config.ts` flow from the pricing page through `POST /api/checkout` to `src/lib/waffo.ts`. That route accepts a signed-in user, then the adapter opens a Waffo Pancake checkout for the existing product id with `@waffo/pancake-ts`. `POST /api/webhooks/payment` verifies `X-Waffo-Signature` with that SDK before `src/lib/payments.ts` writes a one-time grant or the current subscription month in `src/lib/ledger.ts`. A one-time purchase grants once. Replaying the same payment or the same month does not grant again. Coupons are the only promotion. The product id, merchant id, request signing key, and callback public key are Worker secrets.
+Verified callbacks also persist payment and subscription records; cancellation calls Waffo for an owned subscription before updating status.
+The SDK exposes no plan-change endpoint, so switching requires canceling and a new checkout; invoices appear only when a real URL has been stored.
 Vendor-specific request and callback formats stay in adapters, while the page, task, and ledger contracts describe this application's behavior.
 
 ## How to add new logic
@@ -236,7 +248,7 @@ Changes to these paths receive focused tests in `test/` and the verification com
 
 ## Database schema
 
-`migrations/0001_initial.sql` defines the auth and ledger foundation, while `migrations/0002_invite_codes.sql` adds optional invitation state.
+`migrations/0001_initial.sql` defines auth and ledger state, `migrations/0002_invite_codes.sql` adds optional invitations, and `migrations/0003_workspace.sql` adds account workspace records.
 
 | Table | Core columns and relationships | Owner and use |
 | --- | --- | --- |
@@ -248,11 +260,15 @@ Changes to these paths receive focused tests in `test/` and the verification com
 | `credit_entry` | `user_id`, kind, amount, requested/ref ID, unique `idem_key` | Auditable grant, consume, refund, and adjustment events. |
 | `credit_alloc` | `(entry_id, lot_id)` primary key and allocated amount | Tracks which lots fund a spend or receive a refund. |
 | `video_task` | `user_id`, cost, status, unique consume entry | Durable reservation and processing state. |
+| `payment_record`, `user_subscription` | Verified payment id, plan, amount, subscription id and status | User payment history and Waffo-backed subscription cancellation. |
+| `user_api_key`, `user_notification` | User id, key hash/prefix or notification read timestamp | Private keys and in-app inbox. |
+| `support_ticket`, `ticket_message` | User id, status, reply body and private R2 image key | User-owned support threads and image attachments. |
 | `invite_code` | Code, use limit/count, expiry, soft-delete timestamp | Invitation capacity and administration. |
 | `invite_redemption` | One `user_id`, referenced code, creation time | Eligibility record for signup credits and access. |
 
 `src/lib/auth.ts` uses Drizzle's D1 adapter for the four auth tables, while `src/lib/ledger.ts` and `src/lib/invites.ts` use prepared native D1 statements and batches for write-side invariants.
-`src/lib/credit-history.ts` limits history reads to 100 lots for the signed-in user, and `src/app/api/credits/balance/route.ts` validates the session and invite gate before reading a balance.
+`src/lib/credit-history.ts` limits lot reads to 100; `src/lib/workspace.ts` paginates scoped credit entries and serves the other account views.
+`src/app/api/workspace/route.ts` validates session and origin before user-owned mutations, and the media route requires ownership before serving private R2 images.
 Schema changes gain a new reviewed migration and matching service/query types and tests; a site applies those migrations to its own D1 before depending on the new shape.
 
 ## Configuration items
