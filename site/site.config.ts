@@ -16,6 +16,8 @@ export default {
     contactEmail: 'support@awesomejev.link',
     feedbackEmail: 'support@awesomejev.link',
     commercialUseHref: '/pricing',
+    shareNetworks: ['Facebook', 'X', 'WhatsApp', 'LinkedIn', 'Telegram'] as const,
+    sharePostNetworks: ['Reddit', 'X', 'Facebook', 'LinkedIn'] as const,
     icons: { checkin: 'sparkles', share: 'share', invite: 'gift', contact: 'mail', feedback: 'message' },
   },
   plans: [

@@ -8,14 +8,15 @@ export async function accountActivity(env: Env, userId: string, now = Date.now()
   const db = env.DB;
   const code = crypto.randomUUID().replaceAll('-', '');
   await db.prepare('INSERT OR IGNORE INTO account_referral_code (user_id,code) VALUES (?,?)').bind(userId, code).run();
-  const [referral, days, shares, count, purchases] = await Promise.all([
+  const [referral, days, shares, count, purchases, leaderboard] = await Promise.all([
     db.prepare('SELECT code FROM account_referral_code WHERE user_id=?').bind(userId).first<{code: string}>(),
     db.prepare('SELECT day FROM account_checkin WHERE user_id=? AND day>=? ORDER BY day DESC').bind(userId, utcDay(now - 6 * 86400000)).all<{day: string}>(),
     db.prepare('SELECT id,url,status,created_at FROM account_share WHERE user_id=? ORDER BY created_at DESC LIMIT 20').bind(userId).all<{id: string; url: string; status: string; created_at: number}>(),
     db.prepare('SELECT COUNT(*) AS total FROM account_referral WHERE inviter_id=?').bind(userId).first<{total: number}>(),
     db.prepare("SELECT source_id,granted,created_at FROM credit_lot WHERE user_id=? AND source IN ('payment','subscription_month') ORDER BY created_at DESC LIMIT 30").bind(userId).all<{source_id: string; granted: number; created_at: number}>(),
+    db.prepare('SELECT u.name, COUNT(*) AS total FROM account_referral r JOIN user u ON u.id=r.inviter_id GROUP BY r.inviter_id ORDER BY total DESC, r.inviter_id LIMIT 3').all<{name: string; total: number}>(),
   ]);
-  return { balance: await balance(db, userId, now), referralCode: referral!.code, checkInDays: days.results.map(row => row.day), submissions: shares.results, referralCount: count?.total ?? 0, purchases: purchases.results };
+  return { balance: await balance(db, userId, now), referralCode: referral!.code, checkInDays: days.results.map(row => row.day), submissions: shares.results, referralCount: count?.total ?? 0, purchases: purchases.results, leaderboard: leaderboard.results.map(({ name, total }) => ({ name: name.length > 2 ? `${name.slice(0, 2)}***${name.at(-1)}` : `${name.slice(0, 1)}***`, total })) };
 }
 
 export async function claimCheckIn(env: Env, userId: string, now = Date.now()) {

@@ -29,7 +29,7 @@ The current example has site-local accounts, invitation primitives, configurable
 | --- | --- | --- |
 | Site configuration | `site/*.config.ts`, `site/messages/`, `src/lib/config.ts` | Compiled site choices and typed localized copy shared by routes and components. |
 | Web and HTTP | `src/app/`, Next.js App Router | Pages, metadata, better-auth handler, and request/response endpoints. |
-| UI | `src/components/`, React server/client components, CSS, Motion and Lucide | Homepage and workspace composition, configurable homepage navigation, sign-in, invitation, language, and desktop interaction. |
+| UI | `src/components/`, React server/client components, CSS, Motion, Lucide and React Icons | Homepage and workspace composition, configurable homepage navigation, signed-in account cards, sign-in, invitation, language, and desktop interaction. |
 | Authentication | `src/lib/auth.ts`, `src/lib/auth-schema.ts`, better-auth, Drizzle on D1 | Sessions and accounts from this site's DB; enabled methods from `site/auth.config.ts`. |
 | Access control | `src/lib/invites.ts`, `src/lib/turnstile.ts`, `src/lib/desktop-auth.ts`, D1 and Turnstile HTTP API | Invitation eligibility, optional sign-in verification, and allow-listed app handoff. |
 | Credits | `src/lib/ledger.ts`, `src/lib/credit-history.ts`, native D1 statements and batches | Atomic grants, reservations, allocation, refund, balance, and bounded account history. |
@@ -121,6 +121,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │   ├── home-content.tsx          # Session-aware homepage entry, existing nav, and section composition
 │   │   ├── blocks/replica-navigation.tsx # Configurable homepage bar, language, theme and mobile links
 │   │   ├── blocks/account-popovers.tsx   # Signed-in account/credit menus and shared dialog
+│   │   ├── blocks/account-popover-state.ts # Pure seven-day streak presentation
 │   │   ├── sections/                 # Ordered homepage sections; Header mounts navigation, tool mounts workbench
 │   │   ├── video-tool/               # Bound copy, scoped presentation, interaction state, pure selectors
 │   │   ├── pricing-content.tsx       # Server-rendered plan list
@@ -153,6 +154,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │       └── mock-services.ts           # Local-only video placeholder
 └── test/                              # Miniflare D1, auth, mail, config, and ledger tests
     ├── account-rewards.test.ts       # Reward persistence, concurrency and user scope
+    ├── account-popover-state.test.ts # Seven-day completion and next UTC claim
     ├── auth-integration.test.ts      # Local better-auth signup and idempotent credits
     ├── auth-options.test.ts          # Provider switches, invites, desktop handoff
     ├── password-reset.test.ts        # Reset switch, mailed link, and reset page
@@ -203,7 +205,8 @@ Grant source IDs, entry idempotency keys, and task state transitions make retrie
 
 ### Current state and extension paths
 
-The homepage account popovers read the signed-in balance and profile and expose configured check-ins, referrals, pending share submissions, support links, plans and payment receipts.
+The homepage account popovers read the signed-in balance and profile and expose configured check-ins, referral sharing and a masked real-data leaderboard, pending share submissions, support links, plans and payment receipts.
+`docs/research/account-popovers/components/source-spec.md` records source-observed desktop/mobile metrics and click-state evidence; the implementation uses local site copy and capabilities rather than the reference site's product claims.
 Receipts reflect settled credit ledger grants, not tax invoices; share submissions do not award credits until reviewed.
 The existing homepage, dashboard, and credit history are a preview; `src/lib/mock-services.ts` produces no generated media.
 `src/components/home-content.tsx` passes the signed-in name to `src/components/sections/HomePage.tsx`, which orders Header, VideoHero, VideoToolSection, VideoShowcase, VideoFeatures, VideoPricing, VideoFAQ, and Footer.
@@ -279,7 +282,7 @@ Schema changes gain a new reviewed migration and matching service/query types an
 | `deploy.worker`, `deploy.d1`, `deploy.r2`, `deploy.queue` | Expected per-site Worker, D1, R2, and Queue names compared with Wrangler. |
 | `email.provider`, `email.from` | Selects the email adapter and sender address. |
 | `signupCredits` | Amount granted once to an eligible new account. |
-| `account` | Reward switches/amounts, submission cap, contact addresses, link and icon choices. |
+| `account` | Reward switches/amounts, submission cap, contact addresses, commercial-use link, icon and share-network choices. |
 | `plans` | One-time and annual plan id, price, currency, and credit amount. |
 | `site/auth.config.ts`: `backend`, `basePath` | Current better-auth selection and `/api/auth` routing contract. |
 | `email.enabled`, `email.requireVerification`, `email.passwordReset`, `google.enabled`, `github.enabled` | Independently enable sign-in options; email verification delays the session and signup credits until the emailed link is opened, password reset shows one forgot-password path and sends through `EmailProvider` only when that switch is on, and OAuth options require matching Worker secrets. |

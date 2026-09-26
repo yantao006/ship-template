@@ -58,6 +58,7 @@ test('referral rewards are user-scoped, once per new account, with safe retry an
   assert.equal((await accountActivity(env, 'alice', 3000)).balance, 8);
   assert.equal((await accountActivity(env, 'bob', 3000)).balance, 4);
   assert.equal((await accountActivity(env, 'alice', 3000)).referralCount, 1);
+  assert.deepEqual((await accountActivity(env, 'alice', 3000)).leaderboard, [{ name: 'al***e', total: 1 }]);
   const other = (await accountActivity(env, 'old', 3000)).referralCode;
   await assert.rejects(claimReferral(env, 'bob', other, 3000), /Already claimed/);
   await assert.rejects(claimReferral(env, 'old', code, 4 * 86400000), /Claim window expired/);

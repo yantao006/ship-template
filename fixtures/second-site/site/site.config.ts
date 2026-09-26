@@ -13,6 +13,8 @@ export default {
     share: { enabled: false, credits: 20, maxSubmissions: 3 },
     referral: { enabled: true, inviterCredits: 5, friendCredits: 3, claimWindowHours: 24 },
     contactEmail: 'support@other.example', feedbackEmail: 'support@other.example', commercialUseHref: '/pricing',
+    shareNetworks: ['Facebook', 'X', 'WhatsApp', 'LinkedIn', 'Telegram'] as const,
+    sharePostNetworks: ['Reddit', 'X', 'Facebook', 'LinkedIn'] as const,
     icons: { checkin: 'sparkles', share: 'share', invite: 'gift', contact: 'mail', feedback: 'message' },
   },
   plans: [
