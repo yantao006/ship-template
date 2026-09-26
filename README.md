@@ -32,6 +32,9 @@ Secrets already installed on the deployed Worker are not exported into the local
 
 For local-only D1 smoke checks, first run `pnpm exec wrangler d1 migrations apply awesomejev-db --local`.
 The local-only auth test path uses an explicit `LOCAL_AUTH_TEST=1` and a loopback `SITE_URL`, as exercised by `test/auth-integration.test.ts`; it cannot be used on a non-loopback request.
+For a local Next.js preview, set `NEXT_DEV_WRANGLER_CONFIG` to a local, uncommitted Wrangler config whose `vars.SITE_URL` is the exact preview origin and whose `vars.LOCAL_AUTH_TEST` is `1`.
+Google OAuth additionally needs real local credentials and that exact origin's `/api/auth/callback/google` registered on the OAuth client; fake credentials can only test the sign-in start, not complete the callback.
+Never commit that preview config or `.dev.vars`.
 Email/password signup and login use the same site's D1-backed better-auth session and account tables.
 Email verification, password reset, and account recovery are not configured; do not use a valuable password for this preview site.
 Do not use localhost as acceptance evidence for the public Google flow.
