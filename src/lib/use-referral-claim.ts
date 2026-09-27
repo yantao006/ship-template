@@ -7,12 +7,18 @@ import { requestJson } from './json-request';
 const pendingKey = 'account-referral-code';
 const validCode = (code: string | null): code is string => !!code && /^[a-f0-9]{32}$/.test(code);
 
+export function referralCodeFromUrl(url: URL): string | null {
+  const inviteCode = url.searchParams.get('invite_code');
+  const ref = url.searchParams.get('ref');
+  return validCode(inviteCode) ? inviteCode : validCode(ref) ? ref : null;
+}
+
 export function useReferralClaim(signedIn: boolean) {
   const router = useRouter();
   const inFlight = useRef<string | null>(null);
   useEffect(() => {
     const url = new URL(location.href);
-    const fromUrl = url.searchParams.get('ref');
+    const fromUrl = referralCodeFromUrl(url);
     if (validCode(fromUrl)) sessionStorage.setItem(pendingKey, fromUrl);
     const code = validCode(fromUrl) ? fromUrl : sessionStorage.getItem(pendingKey);
     if (!signedIn || !validCode(code) || sessionStorage.getItem(`referral:${code}`) || inFlight.current === code) return;
@@ -28,6 +34,7 @@ export function useReferralClaim(signedIn: boolean) {
         sessionStorage.removeItem(pendingKey);
         const current = new URL(location.href);
         current.searchParams.delete('ref');
+        current.searchParams.delete('invite_code');
         history.replaceState(null, '', current.pathname + current.search + current.hash);
       }
     }).catch(() => { /* Retain pending code for a later visit on network failure. */ }).finally(() => { inFlight.current = null; });
