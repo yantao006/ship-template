@@ -9,12 +9,19 @@ async function handle(request: Request) {
   const env = workerEnv();
   const url = new URL(request.url);
   if (request.method === 'POST' && !browserWriteAllowed(request, env, { originRequired: false, allowLocalTest: true })) return Response.json({ error: 'Forbidden' }, { status: 403 });
+  // The dialog only uses sign-in codes. Keep other email OTP plugin flows
+  // unavailable; password reset and email verification still use their links.
+  if (url.pathname.includes('/email-otp/') && !url.pathname.endsWith('/email-otp/send-verification-otp')) return Response.json({ error: 'Not found' }, { status: 404 });
+  if (request.method === 'POST' && url.pathname.endsWith('/email-otp/send-verification-otp')) {
+    const parsed = await readJson<{ type?: string }>(request.clone());
+    if (!parsed.ok || parsed.body.type !== 'sign-in') return Response.json({ error: 'Invalid OTP type' }, { status: 400 });
+  }
   if (auth.invite.required && request.method === 'POST' && url.pathname.endsWith('/sign-up/email')) {
     const parsed = await readJson<{ inviteCode?: string }>(request.clone());
     if (!parsed.ok) return Response.json({ error: 'Invalid request' }, { status: 400 });
     if (!await validateInvite(env, normalizeInviteCode(parsed.body.inviteCode))) return Response.json({ error: 'Valid invite code required' }, { status: 403 });
   }
-  if (auth.turnstile.onSignIn && request.method === 'POST' && (url.pathname.endsWith('/sign-in/social') || url.pathname.endsWith('/sign-in/email'))) {
+  if (auth.turnstile.onSignIn && request.method === 'POST' && (url.pathname.endsWith('/sign-in/social') || url.pathname.endsWith('/sign-in/email') || url.pathname.endsWith('/sign-in/email-otp'))) {
     const token = request.headers.get('x-turnstile-token');
     if (!await verifyTurnstile(env, token, url.hostname)) return Response.json({ error: 'Turnstile verification failed' }, { status: 403 });
   }

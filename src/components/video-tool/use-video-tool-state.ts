@@ -35,8 +35,8 @@ export function useVideoToolState({ config, copy, assets, status = { state: 'idl
   const [endFrame, setEndFrame] = useState(false);
   const [framePick, setFramePick] = useState<'start' | 'end'>('start');
 
-  // A modal leaves this component mounted. Only a full-page OAuth redirect
-  // needs a serializable draft; never serialize File objects or replay Create.
+  // OAuth and successful email-code sign-in both leave this page. Save only
+  // serializable editor state, never File objects or a Create operation.
   useEffect(() => {
     const save = () => {
       const saved: AuthDraft = { mediaId, modelId, workflowId, drafts, values, quantity, tabId };
@@ -44,9 +44,11 @@ export function useVideoToolState({ config, copy, assets, status = { state: 'idl
     };
     const cancel = () => sessionStorage.removeItem(authDraftKey);
     window.addEventListener('site-auth-oauth-start', save);
+    window.addEventListener('site-auth-reload-start', save);
     window.addEventListener('site-auth-oauth-cancel', cancel);
     return () => {
       window.removeEventListener('site-auth-oauth-start', save);
+      window.removeEventListener('site-auth-reload-start', save);
       window.removeEventListener('site-auth-oauth-cancel', cancel);
     };
   }, [mediaId, modelId, workflowId, drafts, values, quantity, tabId]);

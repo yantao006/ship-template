@@ -1,6 +1,7 @@
 import { betterAuth } from 'better-auth';
+import { APIError } from 'better-auth/api';
 import { drizzleAdapter } from '@better-auth/drizzle-adapter';
-import { oneTap } from 'better-auth/plugins';
+import { emailOTP, oneTap } from 'better-auth/plugins';
 import { drizzle } from 'drizzle-orm/d1';
 import { authSchema } from './auth-schema';
 import { grant } from './ledger';
@@ -8,7 +9,7 @@ import { hasInvite } from './invites';
 import { createEmailProvider, type EmailProvider } from './email';
 import type { Env } from './env';
 import { site, auth, allowedBrowserOrigins } from './config';
-import { notifyVerification, notifyPasswordReset } from './notifications';
+import { notifyVerification, notifyPasswordReset, notifySignInCode } from './notifications';
 import { authBasePath } from './auth-path';
 
 export interface AuthSettings {
@@ -26,7 +27,7 @@ export function createAuth(env: Env, requestHostname?: string, settings: AuthSet
   const baseURL = preview ? site.previewOrigin : env.SITE_URL;
   if (!baseURL || (!local && !preview && baseURL !== site.url)) throw new Error('SITE_URL must match this site');
   const db = drizzle(env.DB, { schema: authSchema });
-  const mailer = settings.email.enabled && (settings.email.requireVerification || settings.email.passwordReset) ? (emailProvider ?? createEmailProvider(site, env)) : undefined;
+  const mailer = () => emailProvider ?? createEmailProvider(site, env);
   return betterAuth({
     database: drizzleAdapter(db, { provider: 'sqlite', schema: authSchema }),
     secret: env.BETTER_AUTH_SECRET,
@@ -44,7 +45,7 @@ export function createAuth(env: Env, requestHostname?: string, settings: AuthSet
       ...(settings.email.enabled && settings.email.passwordReset ? {
         resetPasswordTokenExpiresIn: 60 * 60,
         sendResetPassword: async ({ user, url }: { user: { email: string }; url: string }) => {
-          await notifyPasswordReset(mailer!, site, user.email, url);
+          await notifyPasswordReset(mailer(), site, user.email, url);
         },
       } : {}),
     },
@@ -55,14 +56,26 @@ export function createAuth(env: Env, requestHostname?: string, settings: AuthSet
         autoSignInAfterVerification: true,
         expiresIn: 60 * 60 * 24,
         sendVerificationEmail: async ({ user, url }: { user: { email: string }; url: string }) => {
-          await notifyVerification(mailer!, site, user.email, url);
+          await notifyVerification(mailer(), site, user.email, url);
         },
         afterEmailVerification: async (user: { id: string }) => {
           await ensureSignupCredits(env, user.id, true);
         },
       },
     } : {}),
-    plugins: settings.google.enabled && settings.google.oneTapEnabled ? [oneTap()] : [],
+    plugins: [
+      ...(settings.email.enabled ? [emailOTP({
+        otpLength: 6,
+        disableSignUp: auth.invite.required,
+        async sendVerificationOTP({ email, otp, type }, ctx) {
+          if (type !== 'sign-in') throw new APIError('BAD_REQUEST', { message: 'Unsupported OTP type' });
+          const referer = ctx?.request?.headers.get('referer');
+          const locale = referer && URL.canParse(referer) ? new URL(referer).pathname.split('/').filter(Boolean)[0] : '';
+          await notifySignInCode(mailer(), site, email, otp, locale);
+        },
+      })] : []),
+      ...(settings.google.enabled && settings.google.oneTapEnabled ? [oneTap()] : []),
+    ],
     databaseHooks: { user: { create: { after: async (created) => {
       await ensureSignupCredits(env, created.id, !!settings.email.requireVerification);
     } } } },
