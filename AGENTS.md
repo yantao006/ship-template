@@ -374,7 +374,9 @@ A site-choice change is published with a new build, and a runtime-secret change 
 
 ## Critical Rules
 
-1. **Preserve the site boundary:** site-specific identity, copy, switches, theme, and resource names live in `site/`, with corresponding UI, server, and site-check behavior when the contract grows.
+1. **Preserve the site boundary and one owner per fact:** site-specific identity, copy, switches, theme, and resource names live in `site/`, with corresponding UI, server, and site-check behavior when the contract grows.
+   Ported code may look new, but must reuse each fact's existing owner or replace its old implementation and delete that copy in the same change, never duplicating the fact.
+   For example, a redesigned account card can change its layout while reusing existing color and copy sources; a new navigation style still uses the established path source.
 2. **Keep credentials on the server:** Worker bindings and secrets resolve through `src/lib/env.ts`, while committed site configuration describes choices rather than credential values.
 3. **Keep authorization at entry points:** routes and Worker handlers establish identity, user scope, and request origin before invoking account, credit, invite, or media operations.
 4. **Keep provider formats at adapter seams:** UI and ledger operations speak application task, email, or payment concepts so future providers and billing policies can change independently.
