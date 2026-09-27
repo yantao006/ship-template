@@ -33,7 +33,9 @@ test('check-in invite uses this site origin and the current user code in both la
 
 test('landing and legacy links retain only valid referral codes through the same claim flow', () => {
   assert.equal(referralCodeFromUrl(new URL(`https://example.org/invitation-landing?invite_code=${code}`)), code);
+  assert.equal(referralCodeFromUrl(new URL('https://example.org/invitation-landing?invite_code=0af4xvq7')), '0af4xvq7');
   assert.equal(referralCodeFromUrl(new URL(`https://example.org/en?ref=${code}`)), code);
+  assert.equal(referralCodeFromUrl(new URL('https://example.org/en?ref=0af4xvq7')), '0af4xvq7');
   assert.equal(referralCodeFromUrl(new URL(`https://example.org/invitation-landing?invite_code=invalid&ref=${code}`)), code);
   assert.equal(referralCodeFromUrl(new URL('https://example.org/invitation-landing?invite_code=invalid')), null);
 });

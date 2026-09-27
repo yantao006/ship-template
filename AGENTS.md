@@ -72,7 +72,8 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 ├── migrations/                       # Versioned SQL applied to this site's D1
 │   ├── 0001_initial.sql             # Auth, credit ledger, and video task tables
 │   ├── 0002_invite_codes.sql        # Invitation inventory and redemption tables
-│   └── 0003_account_rewards.sql     # Check-ins, shares, referral codes and claims
+│   ├── 0003_account_rewards.sql     # Check-ins, shares, referral codes and claims
+│   └── 0004_referral_alias.sql      # Keeps a replaced 32-hex referral code claimable
 ├── scripts/
 │   └── site-check.ts                 # Cross-checks site choices, bindings, auth switches, secrets
 ├── fixtures/second-site/             # Configuration-only reuse example
@@ -306,7 +307,7 @@ Changes to these paths receive focused tests in `test/` and the verification com
 
 ## Database schema
 
-`migrations/0001_initial.sql` defines the auth and ledger foundation, `migrations/0002_invite_codes.sql` adds optional invitation state, and `migrations/0003_account_rewards.sql` stores account rewards.
+`migrations/0001_initial.sql` defines the auth and ledger foundation, `migrations/0002_invite_codes.sql` adds optional invitation state, `migrations/0003_account_rewards.sql` stores account rewards, and `migrations/0004_referral_alias.sql` keeps a replaced 32-hex referral code claimable.
 
 | Table | Core columns and relationships | Owner and use |
 | --- | --- | --- |
@@ -322,10 +323,10 @@ Changes to these paths receive focused tests in `test/` and the verification com
 | `invite_redemption` | One `user_id`, referenced code, creation time | Eligibility record for signup credits and access. |
 | `account_checkin` | `(user_id, day)` unique | UTC daily credit claims. |
 | `account_share` | User, public URL, review status | Pending public share submissions, no automatic grant. |
-| `account_referral_code`, `account_referral` | Opaque user code and one claim per referred user | Idempotent referral grants. |
+| `account_referral_code`, `account_referral_alias`, `account_referral` | One 8-character lowercase display code per user, optional previous 32-hex alias, and one claim per referred user | Idempotent referral grants; the next activity load replaces a 32-hex display code and keeps that code claimable. |
 
 `src/lib/auth.ts` uses Drizzle's D1 adapter for the four auth tables, while `src/lib/ledger.ts` and `src/lib/invites.ts` use prepared native D1 statements and batches for write-side invariants.
-`src/lib/account-rewards.ts` scopes reward reads and writes by user, owns the referral-code format, throws coded account reward errors, and grants check-in/referral credits through the ledger.
+`src/lib/account-rewards.ts` scopes reward reads and writes by user, owns the referral-code format, throws coded account reward errors, and grants check-in/referral credits through the ledger. Display codes are 8 lowercase alphanumeric characters; claim lookup also accepts an already issued 32-hex code.
 `src/lib/credit-history.ts` limits history reads to 100 lots for the signed-in user, and `src/app/api/credits/balance/route.ts` validates the session and invite gate before reading a balance.
 Schema changes gain a new reviewed migration and matching service/query types and tests; a site applies those migrations to its own D1 before depending on the new shape.
 
