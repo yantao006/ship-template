@@ -5,8 +5,9 @@ import * as React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { safeReturnPath } from '../src/components/auth-dialog';
 import { Auth4 } from '../src/components/blocks/auth-4';
+import { MinimaxAuthCard } from '../src/components/blocks/minimax-auth-card';
 import { browserNavCopy } from '../src/lib/browser-nav-copy';
-import { messages } from '../src/lib/config';
+import { messages, site, theme } from '../src/lib/config';
 import auth from '../site/auth.config';
 
 const source = (path: string) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
@@ -36,6 +37,41 @@ test('Auth-4 renders only configured providers with real site copy', () => {
   assert.match(markup, /Send sign-in code/);
   assert.doesNotMatch(markup, /name="password"|type="password"/);
   assert.doesNotMatch(markup, /Continue with GitHub|Northstar|placeholder\.svg|SSO enforced/);
+});
+
+test('source-inspired card uses site identity, localized benefits and configured credits without changing Auth-4', () => {
+  (globalThis as typeof globalThis & { React: typeof React }).React = React;
+  const original = source('src/components/blocks/auth-4.tsx');
+  assert.match(original, /export function Auth4/);
+  assert.doesNotMatch(original, /MinimaxAuthCard|auth-card-canvas/);
+  for (const locale of ['en', 'zh'] as const) {
+    const markup = renderToStaticMarkup(React.createElement(MinimaxAuthCard, {
+      copy: browserNavCopy(messages[locale]), card: messages[locale].signIn.card,
+      brand: site.brand, logo: site.logo, signupCredits: site.signupCredits,
+      supportEmail: site.account.contactEmail,
+      methods: { email: auth.email, google: auth.google, github: auth.github },
+      inviteRequired: auth.invite.required, locale, callbackURL: '/', onAuthenticated: async () => {},
+    }));
+    assert.match(markup, new RegExp(site.brand));
+    assert.match(markup, new RegExp(`${site.signupCredits} credits|${site.signupCredits} 积分`));
+    assert.match(markup, new RegExp(`/${locale}/terms`));
+    assert.match(markup, new RegExp(`/${locale}/privacy`));
+    assert.match(markup, /professional-headshot.webp/);
+    assert.doesNotMatch(markup, /MiniMax H3 video generation|Sign-up with Google|Continue with GitHub|type="password"/);
+  }
+  const variant = source('src/components/blocks/minimax-auth-card.tsx');
+  assert.match(variant, /minimax-auth-email-group[\s\S]*minimax-auth-divider[\s\S]*minimax-auth-inline-form/);
+  const variantCss = source('src/components/blocks/minimax-auth-card.css');
+  assert.match(variantCss, /\.minimax-auth-email-group \{ display: flex; flex-direction: column/);
+  assert.match(variantCss, /\.minimax-auth-email-group\.is-expanded \{ gap: 12px/);
+  assert.doesNotMatch(variantCss, /\.minimax-auth-inline-form \{[^}]*margin-top:/);
+  assert.match(variant, /authClient\.emailOtp\.sendVerificationOtp/);
+  assert.match(variant, /authClient\.signIn\.emailOtp/);
+  assert.match(variant, /onAuthenticated\('email-code'\)/);
+  assert.match(variant, /onAuthenticated\('sign-up'\)/);
+  assert.doesNotMatch(variant, /authClient\.signIn\.email\(/);
+  assert.equal(theme.authCard.light.button, '#0a0a0a');
+  assert.equal(theme.authCard.dark.button, '#7a5bff');
 });
 
 test('Auth-4 loads Tailwind theme tokens without resetting the existing site', () => {

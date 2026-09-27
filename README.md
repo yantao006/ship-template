@@ -52,11 +52,11 @@ Apply migrations `0001` through `0003` locally for a preview with account reward
 Do not use production credentials in local preview configs.
 Google OAuth additionally needs real local credentials and that exact origin's `/api/auth/callback/google` registered on the OAuth client; fake credentials can only test the sign-in start, not complete the callback.
 Never commit that preview config or `.dev.vars`.
-Email/password signup and login use the same site's D1-backed better-auth session and account tables.
+Email/password signup and email-code sign-in use the same site's D1-backed better-auth session and account tables.
 Email verification, password reset, and account recovery are not configured; do not use a valuable password for this preview site.
 Do not use localhost as acceptance evidence for the public Google flow.
 The live verification is to open [awesomejev.link](https://awesomejev.link/), click **Sign In** in the top navigation, then choose **Continue with Google** inside the single card, select a permitted test account, consent, and confirm the navigation shows your name and the workspace shows 30 credits.
-The same card contains email/password sign-in and account creation; GitHub is absent while disabled in `site/auth.config.ts`.
+The same card contains email-code sign-in and email/password account creation; GitHub is absent while disabled in `site/auth.config.ts`.
 The single **Language** selector is in the marketing navigation on home, or at the top right of the workspace content above the Credits table. It switches between `/en` and `/zh` while preserving the current page.
 An unauthenticated request to `/api/credits/balance` returns 401.
 A successful first Google sign-in creates one user and one idempotent signup credit lot in this site's D1.
@@ -76,6 +76,16 @@ No email password was added to the Google account; email sign-in is covered by l
 Desktop and mobile captures are at [desktop](docs/verification/auth-4-desktop.png) and [mobile](docs/verification/auth-4-mobile.png).
 The remote D1 still has unapplied `0003_account_rewards.sql`, so `/api/account/activity` returns 500 and the signed-in account card reports an activity error; migrate the remote database before relying on reward actions.
 This browser run did not apply that migration, submit a payment, or deploy the preview version to the live hostname.
+
+### Source-inspired auth card preview (2026-09-27)
+
+The preview alias now serves the copied `minimax-auth-card.tsx` variant; `auth-4.tsx` is unchanged.
+The card keeps the site's brand, configured welcome credits and localized claims, and uses the existing email-code sign-in after the email action.
+The image is a site-local placeholder.
+The email-code flow, mobile bottom drawer and full-page reload are owned by the existing application; this variant changes their appearance, not their implementation.
+The measured source spec, computed-color comparison and initial plus expanded-email viewport/theme screenshot pairs live in `docs/research/auth-card/source-spec.md` and `docs/verification/auth-card/`.
+Cloudflare Worker version `2b762543-321f-4191-81d8-eabf8c426b05` was uploaded to the preview alias with the existing `WAFFO_PRODUCTS` catalog, without deploying to the live hostname.
+The expanded email input now follows the OR divider in a column flow with 12px of separation; both themes were compared at 1440 × 900 and 390 × 844 in ego-browser.
 
 ## Site and secret boundaries
 

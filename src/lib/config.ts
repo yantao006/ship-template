@@ -51,6 +51,7 @@ export type ThemeConfig = {
   tones: Record<'pink' | 'info' | 'success' | 'warning' | 'danger', string>;
   chrome: Record<'light' | 'dark', Record<string, string>>;
   dialog: Record<'light' | 'dark', Record<string, string>>;
+  authCard: Record<'light' | 'dark', Record<'canvas' | 'panel' | 'text' | 'row' | 'line' | 'muted' | 'faint' | 'icon' | 'button' | 'buttonHover' | 'onButton' | 'focus' | 'media' | 'error', string>>;
   videoTool: Record<'light' | 'dark', Record<string, string>>;
   pricing: Record<'light' | 'dark', Record<string, string>>;
   rowTones: Record<'light' | 'dark', Record<'account' | 'pink' | 'info' | 'danger', { text: string; box: string }>>;

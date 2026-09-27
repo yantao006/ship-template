@@ -4,7 +4,7 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState, ty
 import { createPortal, flushSync } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { X } from 'lucide-react';
-import { Auth4, type Auth4Props } from './blocks/auth-4';
+import { MinimaxAuthCard, type MinimaxAuthCardProps } from './blocks/minimax-auth-card';
 import { useDismissableLayer } from '@/lib/use-dismissable-layer';
 
 const storageKey = 'site-auth-return';
@@ -34,7 +34,7 @@ async function serverHasSession() {
   return !!session?.session && !!session.user;
 }
 
-export function AuthDialogProvider({ children, ...auth }: Omit<Auth4Props, 'onAuthenticated' | 'onOAuthStart'> & { children: ReactNode }) {
+export function AuthDialogProvider({ children, ...auth }: Omit<MinimaxAuthCardProps, 'onAuthenticated' | 'onOAuthStart'> & { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const [intent, setIntent] = useState<AuthIntent>({});
   const shell = useRef<HTMLDivElement>(null);
@@ -140,10 +140,10 @@ export function AuthDialogProvider({ children, ...auth }: Omit<Auth4Props, 'onAu
   const callbackURL = typeof window === 'undefined' ? auth.callbackURL : safeReturnPath(`${window.location.pathname}${window.location.search}${window.location.hash}`, window.location.origin);
   return <Context.Provider value={{ openAuth, closeAuth }}>
     <div ref={shell} className="public-shell">{children}</div>
-    {open && createPortal(<div ref={backdrop} className="auth4-overlay" aria-label={auth.copy.signIn}>
-      <div ref={dialog} role="dialog" aria-modal="true" aria-labelledby="auth4-title" className="auth4-dialog">
+    {open && createPortal(<div ref={backdrop} className="auth4-overlay minimax-auth-overlay" aria-label={auth.copy.signIn}>
+      <div ref={dialog} role="dialog" aria-modal="true" aria-labelledby="auth4-title" className="auth4-dialog minimax-auth-dialog">
         <button type="button" className="auth4-close" onClick={closeAuth} aria-label={auth.copy.close}><X size={20} /></button>
-        <Auth4 {...auth} callbackURL={callbackURL} onAuthenticated={onAuthenticated} onOAuthStart={onOAuthStart} onOAuthFailure={onOAuthFailure} />
+        <MinimaxAuthCard {...auth} callbackURL={callbackURL} onAuthenticated={onAuthenticated} onOAuthStart={onOAuthStart} onOAuthFailure={onOAuthFailure} />
       </div>
     </div>, document.body)}
   </Context.Provider>;
