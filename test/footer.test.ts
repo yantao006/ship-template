@@ -42,10 +42,12 @@ test('footer language row is driven by configured languages and preserves the ro
   const row = source('src/components/sections/FooterLanguages.tsx');
   assert.match(footer, /languages=\{site\.languages\}/);
   assert.match(row, /languages\.map\(language => <Link/);
+  assert.match(row, /language\.flag/);
   assert.match(row, /pathForLocale\(pathname, language\.code, codes\)/);
   assert.match(row, /aria-current=\{language\.code === locale \? 'page' : undefined\}/);
   const codes = site.languages.map(language => language.code);
   for (const language of site.languages) {
+    assert.ok(language.flag, `${language.code} needs a flag`);
     assert.equal(pathForLocale('/en/pricing', language.code, codes), routePath(language.code, 'pricing'));
     assert.equal(pathForLocale('/zh/privacy', language.code, codes), routePath(language.code, 'privacy'));
   }
@@ -61,6 +63,9 @@ test('rendered footer and informational pages have real per-locale destinations'
     assert.match(html, new RegExp(`href="${routePath(other, 'privacy')}"`));
     assert.match(html, new RegExp(`href="mailto:${site.account.contactEmail}"`));
     assert.match(html, new RegExp(`lang="${locale}" aria-current="page" class="current"`));
+    for (const language of site.languages) {
+      assert.ok(html.includes(`<span aria-hidden="true">${language.flag}</span> ${language.name}`));
+    }
     assert.ok(html.includes(site.brand));
     assert.ok(html.includes(messages[locale].footer.description));
     for (const id of informationIds) {

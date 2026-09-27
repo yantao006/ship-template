@@ -260,7 +260,7 @@ Receipts reflect settled credit ledger grants, not tax invoices; share submissio
 The existing homepage, dashboard, and credit history are a preview; `src/lib/mock-services.ts` produces no generated media.
 `src/components/sections/HomePage.tsx` orders VideoHero, VideoToolSection, VideoShowcase, VideoFeatures, VideoPricing, and VideoFAQ inside page content; five non-tool sections remain empty with stable ids.
 The `(site)` route layouts use `src/components/site-shell.tsx` to keep one account-aware Header and Footer mounted across home, pricing, dashboard, credits, and localized about/privacy/terms pages; the workspace sidebar stays in the workspace content, while verification, password reset, desktop callback, and invite admin routes remain outside the shell.
-The footer takes identity and contact from `site/site.config.ts`, copy from `site/messages/{en,zh}/footer.ts`, links from `src/lib/route-paths.ts`, and its language row from `site.languages` through the same locale path helper as the header.
+The footer takes identity and contact from `site/site.config.ts`, copy from `site/messages/{en,zh}/footer.ts`, links from `src/lib/route-paths.ts`, and its language row (including each configured flag) from `site.languages` through the same locale path helper as the header.
 `Header` passes localized brand, optional site logo, links, language choices, real signed-in credits and account controls to `blocks/replica-navigation.tsx`; the shell owns its account snapshot.
 `sections/VideoToolSection.tsx` binds one locale's tool copy and assets on the server and passes them to `src/components/video-tool/video-tool-section.tsx`.
 `bind-copy.ts` localizes links and assembles asset copy; the client `video-tool-section.tsx` shows the create-payload preview without importing site configuration.
@@ -335,7 +335,7 @@ Schema changes gain a new reviewed migration and matching service/query types an
 | `site/site.config.ts`: `brand`, optional `logo` | Site title and notification brand, plus optional shared navigation logo image and alt text. |
 | `previewOnly` | Controls robots metadata and `robots.txt` indexing behavior. |
 | `apex`, `url` | Canonical host and absolute base URL for authentication, callbacks, links, metadata, and site-check. |
-| `languages`, derived `locales`, `defaultLocale` | Code, native name and date locale for every language; default homepage and request-locale document language. |
+| `languages`, derived `locales`, `defaultLocale` | Code, native name, flag emoji, and date locale for every language; default homepage and request-locale document language. |
 | `deploy.worker`, `deploy.d1`, `deploy.r2`, `deploy.queue` | Expected per-site Worker, D1, R2, and Queue names compared with Wrangler. |
 | `email.provider`, `email.from` | Selects the email adapter and sender address. |
 | `signupCredits` | Amount granted once to an eligible new account. |
