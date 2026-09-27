@@ -62,6 +62,9 @@ A successful first Google sign-in creates one user and one idempotent signup cre
 
 Each site needs its own D1, Worker, Google Cloud project and OAuth web client, and account namespace.
 `wrangler.jsonc` names this site's bindings and the sole custom hostname `awesomejev.link`.
+The production workers.dev route stays disabled, while version preview URLs are enabled so unmerged code can be reviewed without deploying to the custom hostname.
+For the existing preview alias, after `pnpm cf:build` run `pnpm exec wrangler versions upload --preview-alias popovers`; if Cloudflare's Domains page shows Preview URLs disabled, enable that switch first, then upload again.
+Uploading a version does not deploy it to production traffic.
 `SITE_URL` is a Worker environment variable and `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` and `BETTER_AUTH_SECRET` are Worker secrets; better-auth reads them on every request, not from the build.
 To enable GitHub, create a real OAuth app with callback `https://awesomejev.link/api/auth/callback/github`, install `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET` as Worker secrets, add those two names to `wrangler.jsonc` `secrets.required`, and then set `github.enabled` true in `site/auth.config.ts`.
 Never invent or commit OAuth credentials.

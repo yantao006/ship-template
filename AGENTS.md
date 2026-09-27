@@ -22,7 +22,7 @@ The current example has site-local accounts, invitation primitives, configurable
 - **Deployment:** OpenNext compiles the Next.js application into one Cloudflare Worker whose HTTP, scheduled, and queue events enter through `worker.ts`.
 - **Persistence:** Cloudflare D1 stores better-auth identities, invitation records, video task state, and credit lots and entries; SQL migrations in `migrations/` define the schema.
 - **Identity:** better-auth uses the Drizzle D1 adapter for its own tables, while invitation and ledger operations use native D1 statements where atomic batches matter.
-- **Resources:** `wrangler.jsonc` declares this site's D1, R2 media bucket, Queue, email binding, hostname, cron, environment variable, and required secret names.
+- **Resources:** `wrangler.jsonc` declares this site's D1, R2 media bucket, Queue, email binding, hostname, preview URL switch, cron, environment variable, and required secret names.
 - **Tooling:** Node 22, pnpm 10, Wrangler, Miniflare-backed Node tests, and TypeScript type checking; `package.json` owns the runnable scripts.
 
 ## Tech stack of each module
@@ -350,6 +350,7 @@ Schema changes gain a new reviewed migration and matching service/query types an
 | Location and item | Role |
 | --- | --- |
 | `wrangler.jsonc`: `name`, `main` | Worker name and `worker.ts` entry point. |
+| `workers_dev`, `preview_urls` | Keep the production workers.dev route disabled while permitting versioned preview URLs for unmerged work. |
 | `compatibility_date`, `compatibility_flags` | Cloudflare runtime behavior and Node compatibility. |
 | `assets.directory`, `assets.binding` | Generated OpenNext assets and their `ASSETS` binding. |
 | `d1_databases[].binding`, `database_name`, `database_id`, `migrations_dir` | D1 binding, owned database identity, and migration location. |
