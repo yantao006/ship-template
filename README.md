@@ -83,8 +83,9 @@ The preview alias now serves the copied `minimax-auth-card.tsx` variant; `auth-4
 The card keeps the site's brand, configured welcome credits and localized claims, and uses the existing email-code sign-in after the email action.
 The image is a site-local placeholder.
 The email-code flow, mobile bottom drawer and full-page reload are owned by the existing application; this variant changes their appearance, not their implementation.
-The measured source spec, computed-color comparison and four viewport/theme screenshot pairs live in `docs/research/auth-card/source-spec.md` and `docs/verification/auth-card/`.
-Cloudflare Worker version `aa7641c9-00c2-4436-afd2-fdd39aedfa5b` was uploaded to the preview alias without deploying to the live hostname.
+The measured source spec, computed-color comparison and initial plus expanded-email viewport/theme screenshot pairs live in `docs/research/auth-card/source-spec.md` and `docs/verification/auth-card/`.
+Cloudflare Worker version `2b762543-321f-4191-81d8-eabf8c426b05` was uploaded to the preview alias with the existing `WAFFO_PRODUCTS` catalog, without deploying to the live hostname.
+The expanded email input now follows the OR divider in a column flow with 12px of separation; both themes were compared at 1440 × 900 and 390 × 844 in ego-browser.
 
 ## Site and secret boundaries
 

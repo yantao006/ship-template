@@ -13,6 +13,8 @@ The local copy and capabilities remain owned by `site/`.
 - The email action replaces the secondary `Sign in with Email` button with an email input and arrow submit in place, without navigating.
   On mobile the source form is x20 y738.25, width350, height44; the input is 298px wide, and the purple circular arrow button is 44px with an 8px gap.
   The visual variant retains the in-place presentation and uses the email-code behavior already merged into the base application.
+- At 390 × 844 in the light source, clicking Sign in with Email leaves the OR and both horizontal rules visible above the input, which begins at y738.25 and is 44px high.
+  The source input is 298px wide and its arrow is 44px wide, with an 8px gap; the screenshot was rechecked against the local expanded state before changing layout.
 - Source mobile uses a bottom drawer and hides the image.
   The base application's bottom drawer landed separately; this task retains those mechanics and adapts only the copied card's contents.
 - Clicking the source Google button on mobile closed the card and left the URL at `/`; the header then showed an account avatar and 4 available credits.
@@ -70,8 +72,9 @@ The first Cloudflare preview used a 960px-wide inherited `auth4-dialog` instead 
 The source measurements above were correct, so the component selectors were made more specific and the mobile top padding was increased to 60px before uploading again.
 A further mobile comparison found the overlay's 12px side padding made the content x32 instead of the source x20; the final preview removes that padding only on mobile, without adding the excluded bottom drawer.
 
-The original preview alias was uploaded as Worker version `efed1c75-92ea-4e04-9a5c-f713edc9f420`; after integrating current main and checking the new layout, the latest alias was uploaded as `aa7641c9-00c2-4436-afd2-fdd39aedfa5b`.
+The original preview alias was uploaded as Worker version `efed1c75-92ea-4e04-9a5c-f713edc9f420`; after integrating current main, the preceding alias was uploaded as `aa7641c9-00c2-4436-afd2-fdd39aedfa5b`.
 At desktop 1440 × 900 in both modes, source and preview modal bounds are exactly x280 y150 880 × 600, with the right panel starting x649.6, benefit rows and Google button both 430.4px wide and 63px / 56px high respectively.
+The expanded source input starts at y595.75 and the preview input at y601.45; both are 378.4 × 44px, and the preview OR divider ends at y589.45, leaving 12px before the input.
 The Google backgrounds match computed values in both modes: light `rgb(10, 10, 10)`, dark `rgb(122, 91, 255)`.
 The local brand name forces a two-line heading (64.8px versus source 32.4px), so its vertically centered benefit rows and button land 16.2px lower; shrinking or replacing this site's identity would violate the site-owned brand requirement.
 The deliberately different left image is the approved site-local placeholder.
@@ -81,8 +84,11 @@ In both modes, the preview drawer is x0 y311.94, 390 × 532.06; the source is x0
 The extra 14px of height comes from the local two-line brand heading, not a different drawer width or button size.
 The preview Google button is x20 y674.13, 350 × 56 versus source x20 y660.25, 350 × 56; both computed backgrounds match the source at `rgb(10, 10, 10)` and `rgb(122, 91, 255)`.
 The in-place email form was re-extracted after the update in both modes.
-In the final preview, the divider ends at y742.13 and the email input starts at y754.13 in both modes, leaving a 12px clear gap with both rules and the OR label fully visible.
-The source input starts at y738.25; the local longer brand makes the card taller, while the input and arrow remain 298 × 44 and 44 × 44 within the same 350px row.
+In the previous preview, the divider ended at y742.13 and the email input started at y754.13 in both modes, but review reported the expanded input covering the OR and rules in the shared alias.
+The follow-up places the divider and inline form in one explicit column-flow group with a 12px row gap, so the label and both rules cannot be overlaid by the input.
+The new preview alias was uploaded as Worker version `2b762543-321f-4191-81d8-eabf8c426b05` with the existing `WAFFO_PRODUCTS` catalog and compared in ego-browser with the source in both themes at 390 × 844 and 1440 × 900.
+In both mobile preview modes the divider is x20 y726.13, 350 × 16, and the input is x20 y754.13, 298 × 44; both rules and OR remain visible in the 12px gap above the input.
+The source mobile input starts at y738.25; the local longer brand makes the card taller, while the input and arrow remain 298 × 44 and 44 × 44 within the same 350px row.
 
 | View | Source screenshot | Final preview screenshot |
 | --- | --- | --- |
@@ -92,6 +98,8 @@ The source input starts at y738.25; the local longer brand makes the card taller
 | Dark mobile | `docs/verification/auth-card/source-dark-mobile.png` | `docs/verification/auth-card/preview-dark-mobile.png` |
 | Light mobile, email expanded | `docs/verification/auth-card/source-light-email-mobile.png` | `docs/verification/auth-card/preview-light-email-mobile.png` |
 | Dark mobile, email expanded | `docs/verification/auth-card/source-dark-email-mobile.png` | `docs/verification/auth-card/preview-dark-email-mobile.png` |
+| Light desktop, email expanded | `docs/verification/auth-card/source-light-email-desktop.png` | `docs/verification/auth-card/preview-light-email-desktop.png` |
+| Dark desktop, email expanded | `docs/verification/auth-card/source-dark-email-desktop.png` | `docs/verification/auth-card/preview-dark-email-desktop.png` |
 
 The local email action opens the already-merged email-code flow inside the same card.
 The separate flow's success reload and bottom drawer remain unchanged by this visual variant.

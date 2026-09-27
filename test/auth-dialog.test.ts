@@ -60,6 +60,11 @@ test('source-inspired card uses site identity, localized benefits and configured
     assert.doesNotMatch(markup, /MiniMax H3 video generation|Sign-up with Google|Continue with GitHub|type="password"/);
   }
   const variant = source('src/components/blocks/minimax-auth-card.tsx');
+  assert.match(variant, /minimax-auth-email-group[\s\S]*minimax-auth-divider[\s\S]*minimax-auth-inline-form/);
+  const variantCss = source('src/components/blocks/minimax-auth-card.css');
+  assert.match(variantCss, /\.minimax-auth-email-group \{ display: flex; flex-direction: column/);
+  assert.match(variantCss, /\.minimax-auth-email-group\.is-expanded \{ gap: 12px/);
+  assert.doesNotMatch(variantCss, /\.minimax-auth-inline-form \{[^}]*margin-top:/);
   assert.match(variant, /authClient\.emailOtp\.sendVerificationOtp/);
   assert.match(variant, /authClient\.signIn\.emailOtp/);
   assert.match(variant, /onAuthenticated\('email-code'\)/);

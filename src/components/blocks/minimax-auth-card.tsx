@@ -125,7 +125,7 @@ export function MinimaxAuthCard({ copy, card, signupCredits, brand, logo, method
         <div className="minimax-auth-actions">
           {methods.google.enabled && <button className="minimax-auth-primary" type="button" disabled={pending} onClick={() => void social('google')}><GoogleMark />{copy.google}</button>}
           {methods.github.enabled && <button className="minimax-auth-primary" type="button" disabled={pending} onClick={() => void social('github')}><GitHubMark />{copy.github}</button>}
-          {methods.email.enabled && <>
+          {methods.email.enabled && <div className={`minimax-auth-email-group${emailExpanded ? ' is-expanded' : ''}`}>
             {(methods.google.enabled || methods.github.enabled) && <div className="minimax-auth-divider" aria-hidden="true"><span>{card.or}</span></div>}
             {emailExpanded ? <form className="minimax-auth-inline-form" onSubmit={submit}>
               {emailStep === 'code' && <p role="status" className="minimax-auth-hint">{notice || copy.codeSent} <strong>{email}</strong></p>}
@@ -137,7 +137,7 @@ export function MinimaxAuthCard({ copy, card, signupCredits, brand, logo, method
               {emailStep === 'code' && <div className="minimax-auth-form-links"><button type="button" disabled={pending} className="minimax-auth-link" onClick={() => { setEmailStep('email'); setOtp(''); setNotice(''); setError(''); }}>{copy.changeEmail}</button><button type="button" disabled={pending} className="minimax-auth-link" onClick={async () => { setPending(true); setError(''); try { const result = await authClient.emailOtp.sendVerificationOtp({ email: email.trim(), type: 'sign-in' }); if (result.error) setError(copy.codeSendFailed); else { setOtp(''); setNotice(copy.codeResent); } } catch { setError(copy.codeSendFailed); } finally { setPending(false); } }}>{copy.resendCode}</button></div>}
               <button type="button" className="minimax-auth-link minimax-auth-sign-up" onClick={() => switchMode('sign-up')}>{copy.signUp}</button>
             </form> : <button className="minimax-auth-email-action" type="button" onClick={() => setEmailExpanded(true)}><Mail size={16} aria-hidden="true" />{card.emailAction}</button>}
-          </>}
+          </div>}
           <p className="minimax-auth-terms">{card.agreement} <a href={routePath(locale, 'terms')}>{card.terms}</a> {card.and} <a href={routePath(locale, 'privacy')}>{card.privacy}</a></p>
           {error && <p role="alert" className="minimax-auth-error">{error}</p>}
         </div>
