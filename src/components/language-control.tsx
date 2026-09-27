@@ -1,6 +1,6 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 
 export function pathForLocale(pathname: string, locale: string, locales: readonly string[]) {
@@ -12,10 +12,11 @@ export function pathForLocale(pathname: string, locale: string, locales: readonl
 
 export function LanguageControl({ locale, locales, label }: { locale: string; locales: readonly { code: string; name: string }[]; label: string }) {
   const pathname = usePathname();
+  const router = useRouter();
   return <label className="locale-control">
     <span className="sr-only">{label}</span>
     <select aria-label={label} value={locale} onChange={event => {
-      window.location.assign(pathForLocale(pathname, event.target.value, locales.map(item => item.code)));
+      if (event.target.value !== locale) router.push(pathForLocale(pathname, event.target.value, locales.map(item => item.code)));
     }}>
       {locales.map(item => <option key={item.code} value={item.code}>{item.name}</option>)}
     </select>

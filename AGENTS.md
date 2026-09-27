@@ -219,6 +219,7 @@ A new capability can be a new `src/lib/` service called by an API endpoint, a se
 `site/messages/en.ts` and `site/messages/zh.ts` compose matching per-module copy under `site/messages/{en,zh}/`, including separate mail, sign-in, invites, handoff, account, workspace, credits, pricing, and video-tool files; `src/app/[locale]/` and `src/components/language-control.tsx` select copy without duplicating business logic.
 `site/theme.config.ts` provides same-key light and dark palettes, paired top-bar/account-card/dialog/video-tool/pricing colors and row tones, mode defaults, and account colors; `src/lib/theme-tokens.ts` generates the CSS token stylesheet in `src/app/layout.tsx` instead of inline body styles.
 The shared header marks the dark default on homepage, pricing, and workspace, while `ReplicaNavigation` selects `data-mode` on `<html>` for toggling; routes without the header default light.
+Header language changes use App Router navigation to preserve the document; `ReplicaNavigation` synchronizes `<html lang>` because the root layout persists across client-side transitions.
 `src/middleware.ts` forwards the route locale so the root layout sets matching `<html lang>` and metadata, including for the default-language `/` homepage.
 `src/app/globals.css` applies the tokens across marketing and workspace surfaces, and `.auth-panel` sets foreground with its surface background.
 
