@@ -160,7 +160,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │       ├── use-dismissable-layer.ts  # Popover/dialog dismissal and focus
 │       ├── use-referral-claim.ts      # Home referral persistence and claim
 │       ├── json-request.ts           # Browser JSON write helper
-│       ├── plan-copy.ts              # Localized display copy selected by plan id
+│       ├── plan-copy.ts              # Localized plan names selected by plan id
 │       ├── theme-tokens.ts           # Generated mode-aware CSS tokens from site theme
 │       ├── env.ts                    # Worker binding and secret types plus context accessor
 │       ├── auth-schema.ts            # Drizzle mapping for better-auth D1 tables
@@ -193,7 +193,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
     ├── home-sections.test.ts        # Homepage section scaffold order and stable ids
     ├── theme-guards.test.ts         # Palette parity, legacy literal baseline, duplicate-selector guard
     ├── payments.test.ts             # Waffo signature, one-time grant, monthly grant, and replay
-    ├── pricing-port.test.ts         # Reference catalog values, disabled checkout, locale/theme guards
+    ├── pricing-port.test.ts         # Reference catalog, feature lists, disabled checkout, locale/theme guards
     └── video-tool.test.ts           # Tool helpers and locale copy shape
 ```
 
@@ -236,7 +236,8 @@ When `email.passwordReset` is on, the forgot-password link is sent through `Emai
 
 ### Credits, tasks, and provider seams
 
-`src/lib/ledger.ts` owns source IDs and paid-source membership, while `site/messages/` supplies localized names; `src/lib/plan-copy.ts` selects plan display copy by ID.
+`src/lib/ledger.ts` owns source IDs and paid-source membership, while `site/messages/` supplies localized names; `src/lib/plan-copy.ts` selects plan names by ID.
+`site/messages/{en,zh}/pricing.ts` owns tier feature lists, annual-only feature lines, and interpolated pack perks; pricing cards select those lists by tier or plan ID without reusing plan-name copy as features.
 `src/lib/ledger.ts` writes `credit_lot`, `credit_entry`, `credit_alloc`, and `video_task` with D1's own `prepare().bind()` statements and `batch()` for multi-step writes, preserving atomic reservations under concurrent requests.
 Grant source IDs, entry idempotency keys, and task state transitions make retries observable. A verified annual payment calls `grantSubscriptionMonth` for the current calendar month only. There is no separate billing scheduler.
 `src/lib/email.ts` chooses Cloudflare Email or Resend behind `EmailProvider`, and `src/lib/notifications.ts` composes and escapes localized mail, including verification and password reset links, independently of delivery.
@@ -341,7 +342,7 @@ Schema changes gain a new reviewed migration and matching service/query types an
 | `site/database.config.ts`: `binding`, `migrationsDir` | Site D1 binding name and migration directory. |
 | `site/theme.config.ts`: `light`, `dark`, `chrome`, `pricing`, `rowTones`, `defaultMode`, `font`, `account`, `tones` | Paired semantic palettes and navigation/account-card/pricing chrome, row tones, homepage/other-page defaults, and account accents emitted through `src/lib/theme-tokens.ts`. |
 | `site/video-tool.config.ts` | Landing tool media, workflows, models, fields, references, assets, and optional promo. |
-| `site/messages/en.ts`, `zh.ts`: `metadata`, `nav`, `hero`, `videoTool`, `account`, `dashboard`, `credits`, `planCopy` | Same-shape localized strings consumed by metadata, navigation, credit sources, plans, the video tool, and content views. |
+| `site/messages/en.ts`, `zh.ts`: `metadata`, `nav`, `hero`, `videoTool`, `account`, `dashboard`, `credits`, `pricing`, `planCopy` | Localized strings for metadata, navigation, credit sources, plan names and pricing features, the video tool, and content views. |
 
 ### Worker, build, and request-time configuration
 

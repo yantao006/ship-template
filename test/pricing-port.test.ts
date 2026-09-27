@@ -1,11 +1,17 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
+import React from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 import site from '../site/site.config';
 import theme from '../site/theme.config';
 import en from '../site/messages/en/pricing';
 import zh from '../site/messages/zh/pricing';
 import { planById, grantVerifiedPayment } from '../src/lib/payments';
+import { PricingCheckout, pricingFeatureLines } from '../src/components/pricing-checkout';
+import secondSite from '../fixtures/second-site/site/site.config';
+import secondEn from '../fixtures/second-site/site/messages/en/pricing';
+import secondZh from '../fixtures/second-site/site/messages/zh/pricing';
 
 const tiers = [
   ['lite', '29.90', '14.90', 600],
@@ -38,6 +44,74 @@ test('reference subscription and pack prices are sourced from one site catalog',
     assert.equal(plan.currency, 'USD');
   }
   assert.equal(site.signupCredits, 30);
+});
+
+test('subscription perks match the cloned cards in yearly and monthly views', () => {
+  const common = 'MiniMax H3 + all premium models included';
+  const discount = '30% off MiniMax models';
+  const commercial = 'Commercial Use License';
+  const expected = {
+    lite: [common, 'Up to 1 batch generation task', 'Standard generation speed', 'Standard generation success rate', 'Standard customer support', commercial],
+    standard: [common, discount, 'Up to 4 batch generation tasks', 'Priority processing speed', 'High generation success rate', 'Priority customer support', commercial],
+    pro: [common, discount, 'Up to 10 batch generation tasks', 'Fastest generation speed', 'High generation success rate', 'Dedicated account manager', commercial],
+    max: [common, discount, 'Up to 10 batch generation tasks', 'Fastest generation speed', 'High generation success rate', 'Dedicated account manager', commercial],
+  };
+  for (const [tier, yearlyFeatures] of Object.entries(expected)) {
+    const plan = planById(`${tier}-year`)!;
+    assert.deepEqual(pricingFeatureLines(plan, 'year', en), yearlyFeatures);
+    assert.deepEqual(pricingFeatureLines(plan, 'month', en), yearlyFeatures.filter(line => line !== discount));
+    const month = planById(`${tier}-month`)!;
+    assert.deepEqual(pricingFeatureLines(month, 'month', en), yearlyFeatures.filter(line => line !== discount));
+    assert.equal(pricingFeatureLines(plan, 'year', zh).length, yearlyFeatures.length);
+    assert.equal(pricingFeatureLines(plan, 'month', zh).length, yearlyFeatures.length - (tier === 'lite' ? 0 : 1));
+  }
+  assert.match(pricingFeatureLines(planById('standard-year')!, 'year', zh)[1], /MiniMax/);
+  assert.doesNotMatch(pricingFeatureLines(planById('standard-month')!, 'month', zh).join(' '), /7 折/);
+});
+
+test('every credit pack shows its configured count, one-year validity and subscription requirement', () => {
+  for (const [id, , credits] of packs) {
+    const plan = planById(id)!;
+    assert.deepEqual(pricingFeatureLines(plan, 'once', en), [
+      `${credits.toLocaleString('en-US')} credits`,
+      'Credits valid for 1 year',
+      'Unlocks all features; premium perks require an active subscription',
+    ]);
+    assert.deepEqual(pricingFeatureLines(plan, 'once', zh), [
+      `${credits.toLocaleString('en-US')} 积分`,
+      '积分有效期为 1 年',
+      '解锁所有功能；高级会员权益需订阅仍在有效期内',
+    ]);
+  }
+});
+
+test('the configured brand and full feature list render in the default yearly view', () => {
+  // Node's tsx JSX transform expects a global React binding for the client component.
+  (globalThis as typeof globalThis & { React: typeof React }).React = React;
+  const plan = planById('standard-year')!;
+  const html = renderToStaticMarkup(React.createElement(PricingCheckout, {
+    locale: 'en', plans: [{ ...plan, name: 'Standard', checkoutEnabled: false }], models: [], brand: site.brand, copy: en,
+  }));
+  assert.match(html, new RegExp(site.brand));
+  const features = html.match(/<ul class="pricing-features">([\s\S]*?)<\/ul>/)?.[1] ?? '';
+  assert.equal((features.match(/<li/g) ?? []).length, 7);
+  for (const line of pricingFeatureLines(plan, 'year', en)) assert.ok(features.includes(line), line);
+  assert.doesNotMatch(features, /Preview only|billed yearly/);
+});
+
+test('a second site owns its own pricing features rather than inheriting MiniMax claims', () => {
+  for (const [config, locales] of [[site, [en, zh]], [secondSite, [secondEn, secondZh]]] as const) {
+    for (const copy of locales) {
+      for (const plan of config.plans) {
+        assert.ok(pricingFeatureLines(plan, plan.billing, copy).every(line => line.trim()), `${plan.id}: missing feature`);
+      }
+    }
+  }
+  const annual = { id: 'annual', credits: 80 };
+  const pack = { id: 'pack', credits: 100 };
+  assert.deepEqual(pricingFeatureLines(annual, 'year', secondEn), ['Configured video models', 'Credits for the current calendar month only']);
+  assert.deepEqual(pricingFeatureLines(pack, 'once', secondZh), ['100 积分', '一次性发放积分', '预览版尚未开放视频生成']);
+  assert.throws(() => pricingFeatureLines({ id: 'unknown', credits: 1 }, 'year', secondEn), /Missing pricing features/);
 });
 
 test('unverified Waffo product cannot open checkout or grant a new catalog plan', async () => {
