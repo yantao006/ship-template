@@ -3,6 +3,7 @@ import { routePath } from '@/lib/routes';
 import { workerEnv } from '@/lib/env';
 import { hasInvite } from '@/lib/invites';
 import { planById, startCheckout } from '@/lib/payments';
+import { productForPlan } from '@/lib/waffo-products';
 import { browserWriteAllowed, readJson, readSession } from '@/lib/request-context';
 
 export async function POST(request: Request) {
@@ -11,19 +12,15 @@ export async function POST(request: Request) {
   const session = await readSession(env, request);
   if (!session) return Response.json({ error: 'Unauthorized' }, { status: 401 });
   if (auth.invite.required && !await hasInvite(env, session.user.id)) return Response.json({ error: 'Invite required' }, { status: 403 });
-  const parsed = await readJson<{ planId?: string; coupon?: string; locale?: string }>(request);
+  const parsed = await readJson<{ planId?: string; locale?: string }>(request);
   if (!parsed.ok) return Response.json({ error: 'Invalid request' }, { status: 400 });
   const body = parsed.body;
   const plan = planById(body.planId ?? '');
   const locale = body.locale && (site.locales as readonly string[]).includes(body.locale) ? body.locale : site.defaultLocale;
-  const coupon = body.coupon?.trim();
   if (!plan) return Response.json({ error: 'Unknown plan' }, { status: 400 });
-  // The single Waffo product must be explicitly matched to a verified catalog price.
-  // A client cannot unlock unverified plans by posting their IDs directly.
-  if (!site.checkoutPlanId || plan.id !== site.checkoutPlanId || plan.billing === 'month') {
-    return Response.json({ error: 'Checkout unavailable for this plan' }, { status: 409 });
-  }
-  if (coupon && !/^[A-Za-z0-9_-]{1,64}$/.test(coupon)) return Response.json({ error: 'Invalid coupon' }, { status: 400 });
+  // The plan's test product must have been provisioned at exactly the catalog price and period.
+  const product = productForPlan(env, plan);
+  if (!product) return Response.json({ error: 'Checkout unavailable for this plan' }, { status: 409 });
   if (!session.user.email) return Response.json({ error: 'Email required' }, { status: 400 });
   const returnUrl = `${site.url}${routePath(locale, 'pricing')}`;
   try {
@@ -39,8 +36,7 @@ export async function POST(request: Request) {
       successRedirectUrl: returnUrl,
       failedRedirectUrl: returnUrl,
       cancelRedirectUrl: returnUrl,
-      coupon: coupon || undefined,
-    });
+    }, product);
     return Response.json({ paymentUrl: created.paymentUrl });
   } catch {
     return Response.json({ error: 'Checkout failed' }, { status: 502 });

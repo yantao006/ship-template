@@ -29,7 +29,6 @@ export type SiteConfig = {
     sharePostNetworks: readonly ShareNetworkName[];
     icons: Record<'checkin' | 'share' | 'invite' | 'contact' | 'feedback', AccountIconName>;
   };
-  checkoutPlanId?: string | null;
   plans: readonly { id: string; tier?: string; billing: 'once' | 'month' | 'year'; credits: number; amount: string; currency: string; description: string }[];
 };
 

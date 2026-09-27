@@ -17,7 +17,7 @@ export interface Env {
   LOCAL_AUTH_TEST?: string;
   WAFFO_MERCHANT_ID?: string;
   WAFFO_PRIVATE_KEY?: string;
-  WAFFO_PRODUCT_ID?: string;
+  WAFFO_PRODUCTS?: string;
   WAFFO_CALLBACK_PUBLIC_KEY?: string;
 }
 

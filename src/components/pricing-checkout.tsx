@@ -15,7 +15,7 @@ type Copy = {
   creditsMonth: string; credits: string; oneTime: string; maxMultiplier: string; maxBase: string; maxTotal: string;
   videoModels: string; imageModels: string; modelCatalog: string; modelNote: string; fromCredits: string; previewOnly: string;
   paymentTitle: string; paymentNote: string; checkout: string; unavailable: string; unavailableNote: string;
-  signInRequired: string; wait: string; failed: string; coupon: string;
+  signInRequired: string; wait: string; failed: string;
   planFeatures: Record<string, PlanFeature[]>; packFeatures: string[];
 };
 
@@ -43,7 +43,6 @@ export function PricingCheckout({ locale, plans, models, brand, copy }: { locale
   const [mode, setMode] = useState<Mode>('year');
   const [banner, setBanner] = useState(true);
   const [multiple, setMultiple] = useState(1);
-  const [coupon, setCoupon] = useState('');
   const [error, setError] = useState('');
   const [pending, setPending] = useState('');
   const video = models.filter(model => model.kind === 'video');
@@ -56,7 +55,7 @@ export function PricingCheckout({ locale, plans, models, brand, copy }: { locale
     setPending(plan.id);
     setError('');
     try {
-      const result = await requestJson('/api/checkout', { planId: plan.id, coupon, locale });
+      const result = await requestJson('/api/checkout', { planId: plan.id, locale });
       if (result.status === 401) setError(copy.signInRequired);
       else if (!result.ok) setError(copy.failed);
       else {
@@ -79,7 +78,6 @@ export function PricingCheckout({ locale, plans, models, brand, copy }: { locale
           {(['month', 'year', 'once'] as const).map(option => <button type="button" aria-pressed={mode === option} className={mode === option ? 'selected' : ''} key={option} onClick={() => { setMode(option); setError(''); }}>{option === 'month' ? copy.monthly : option === 'year' ? copy.yearly : copy.packs}{option === 'year' && <small>{copy.save}</small>}</button>)}
         </div><p><Check size={16} />{mode === 'year' ? copy.yearlyHint : mode === 'month' ? copy.monthlyHint : copy.packHint}</p></div>
         {!actionable && <p className="pricing-availability" role="status">{copy.unavailableNote}</p>}
-        {actionable && <label className="pricing-coupon">{copy.coupon}<input value={coupon} onChange={event => setCoupon(event.target.value)} autoComplete="off" maxLength={64} /></label>}
         <div className={`pricing-card-grid ${mode === 'once' ? 'packs' : 'plans'}`} key={mode}>
           {visible.map(plan => {
             const isMax = plan.tier === 'max';

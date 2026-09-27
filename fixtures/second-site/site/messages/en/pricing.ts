@@ -11,7 +11,7 @@ export default {
   paymentTitle: 'Payment methods at checkout', paymentNote: 'Displayed methods are illustrative; available methods depend on the checkout provider and your region.',
   checkout: 'Pay now', unavailable: 'Checkout unavailable', unavailableNote: 'These prices have not been matched to the existing payment product. No payment will be started.',
   signInRequired: 'Sign in before checkout.', wait: 'Please wait…', failed: 'Checkout could not start. Please try again.',
-  coupon: 'Coupon', once: 'One-time', year: 'Annual', packName: 'Credit pack', annualName: 'Annual',
+  once: 'One-time', year: 'Annual', packName: 'Credit pack', annualName: 'Annual',
   planFeatures: { annual: ['Configured video models', 'Credits for the current calendar month only'] },
   packFeatures: ['{count} credits', 'One-time credit grant', 'Video generation is not available in this preview'],
 };

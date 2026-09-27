@@ -36,7 +36,7 @@ The current example has site-local accounts, invitation primitives, configurable
 | Access control | `src/lib/request-context.ts`, `src/lib/invites.ts`, `src/lib/turnstile.ts`, `src/lib/desktop-auth.ts`, D1 and Turnstile HTTP API | Centralized request session, browser write guard, JSON parsing and account snapshot; invitation eligibility, optional sign-in verification, and allow-listed app handoff. |
 | Credits | `src/lib/ledger.ts`, `src/lib/credit-history.ts`, native D1 statements and batches | Atomic grants, reservations, allocation, refund, balance, and bounded account history. |
 | Email | `src/lib/email.ts`, `src/lib/notifications.ts`, Cloudflare Email or Resend | One `EmailProvider` interface for message delivery and application notification copy. |
-| Video and payments | `src/components/video-tool/`, `src/lib/mock-services.ts`, `src/lib/waffo.ts`, `src/lib/payments.ts`, `src/lib/ledger.ts`, `video_task` | The landing tool previews a create payload from site config. Checkout calls the Waffo adapter only for a verified matching product configured through `site.checkoutPlanId`; the reference catalog has no matching product, so checkout and callback grants are gated off. |
+| Video and payments | `src/components/video-tool/`, `src/lib/mock-services.ts`, `src/lib/waffo.ts`, `src/lib/waffo-products.ts`, `src/lib/payments.ts`, `src/lib/ledger.ts`, `video_task` | The landing tool previews a create payload from site config. Checkout selects a price- and period-matched test product from `WAFFO_PRODUCTS`; signed test callbacks must match before granting. |
 | Worker infrastructure | `worker.ts`, `src/lib/env.ts`, `wrangler.jsonc`, OpenNext | HTTP dispatch and scheduled/queue entry points with typed request-time bindings. |
 
 ## Build, compile, and deploy commands
@@ -175,6 +175,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │       ├── email.ts                  # Cloudflare/Resend adapter and fake test provider
 │       ├── notifications.ts          # Localized mail composition and one HTML escaping boundary
 │       ├── waffo.ts                   # Waffo Pancake checkout and callback format
+│       ├── waffo-products.ts          # Worker-secret product price/period matching
 │       ├── payments.ts                # Plan checkout and idempotent payment grants
 │       └── mock-services.ts           # Local-only video placeholder
 └── test/                              # Miniflare D1, auth, mail, config, and ledger tests
@@ -274,10 +275,11 @@ When generation is connected, page parameters flow from that payload to an authe
 An upstream adapter submits the work, the queue processing in `worker.ts` observes progress and updates task status, and a status endpoint lets the client follow that progress.
 On success, the service stores the result in the site's `MEDIA` binding and returns an authorized preview or download; on failure, it reconciles task state and the ledger idempotently according to the site's credit policy.
 Site plans in `site/site.config.ts` list four monthly and annual tiers and five credit packs; annual `amount` is the full 12-month total, displayed as a monthly equivalent in the pricing UI.
-`site.checkoutPlanId` is null until the single existing Waffo product is verified to match one configured non-monthly plan, so both `POST /api/checkout` and verified payment grants reject the currently unmatched catalog.
-After explicit matching, checkout can use the existing product id with `@waffo/pancake-ts`; `POST /api/webhooks/payment` verifies `X-Waffo-Signature` before `src/lib/payments.ts` writes a one-time grant or the current subscription month in `src/lib/ledger.ts`.
-Monthly billing has no adapter or callback grant path yet.
-The product id, merchant id, request signing key, and callback public key remain Worker secrets.
+`WAFFO_PRODUCTS` is a per-site Worker secret mapping each plan to a test product ID, verified USD price and billing period; checkout stays unavailable for any unprovisioned or mismatched plan.
+`README.md` documents test-product provisioning through `scripts/provision-waffo-products.ts` in a secret-bearing environment.
+`POST /api/webhooks/payment` verifies `X-Waffo-Signature`, test mode, product metadata, amount, currency and period before `src/lib/payments.ts` grants packs once or only the paid current month of a subscription.
+No scheduler pre-grants future months.
+The product map, merchant id, request signing key, and callback public key remain Worker secrets.
 Vendor-specific request and callback formats stay in adapters, while the page, task, and ledger contracts describe this application's behavior.
 
 ## How to add new logic
@@ -332,7 +334,7 @@ Schema changes gain a new reviewed migration and matching service/query types an
 | `email.provider`, `email.from` | Selects the email adapter and sender address. |
 | `signupCredits` | Amount granted once to an eligible new account. |
 | `account` | Reward switches/amounts, submission cap, contact addresses, commercial-use link, icon and share-network choices. |
-| `plans`, `checkoutPlanId` | Monthly and annual tiers plus credit packs; the single product checkout gate is null until an exact match is verified. |
+| `plans` | Monthly and annual tiers plus credit packs; Worker `WAFFO_PRODUCTS` enables only matching test products. |
 | `site/auth.config.ts`: `backend` | Current better-auth selection. |
 | `src/lib/auth-path.ts`: `authBasePath` | Template-owned `/api/auth` route contract shared by server and browser. |
 | `email.enabled`, `email.requireVerification`, `email.passwordReset`, `google.enabled`, `github.enabled` | Independently enable sign-in options; email verification delays the session and signup credits until the emailed link is opened, password reset shows one forgot-password path and sends through `EmailProvider` only when that switch is on, and OAuth options require matching Worker secrets. |
@@ -373,7 +375,7 @@ Schema changes gain a new reviewed migration and matching service/query types an
 | `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` | GitHub login credentials when selected. |
 | `TURNSTILE_SECRET` | Server-side verification when the sign-in gate is selected. |
 | `WAFFO_MERCHANT_ID`, `WAFFO_PRIVATE_KEY` | Waffo Pancake request authentication. The private key signs checkout calls. |
-| `WAFFO_PRODUCT_ID` | Existing Pancake product id sent to authenticated checkout. |
+| `WAFFO_PRODUCTS` | JSON attestations of each site's verified test product IDs, prices, currencies and billing periods. |
 | `WAFFO_CALLBACK_PUBLIC_KEY` | PEM public key the Pancake SDK uses to verify `X-Waffo-Signature`. |
 | `RESEND_API_KEY` | Resend mail delivery when selected. |
 | `LOCAL_AUTH_TEST` | Explicit loopback-only local authentication test mode. |

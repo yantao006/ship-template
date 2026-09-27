@@ -8,6 +8,7 @@ import theme from '../site/theme.config';
 import en from '../site/messages/en/pricing';
 import zh from '../site/messages/zh/pricing';
 import { planById, grantVerifiedPayment } from '../src/lib/payments';
+import { productForPlan } from '../src/lib/waffo-products';
 import { PricingCheckout, pricingFeatureLines } from '../src/components/pricing-checkout';
 import secondSite from '../fixtures/second-site/site/site.config';
 import secondEn from '../fixtures/second-site/site/messages/en/pricing';
@@ -107,23 +108,25 @@ test('a second site owns its own pricing features rather than inheriting MiniMax
       }
     }
   }
-  const annual = { id: 'annual', credits: 80 };
-  const pack = { id: 'pack', credits: 100 };
+  const annual = { id: 'annual', credits: 240 };
+  const pack = { id: 'pack', credits: 350 };
   assert.deepEqual(pricingFeatureLines(annual, 'year', secondEn), ['Configured video models', 'Credits for the current calendar month only']);
-  assert.deepEqual(pricingFeatureLines(pack, 'once', secondZh), ['100 积分', '一次性发放积分', '预览版尚未开放视频生成']);
+  assert.deepEqual(pricingFeatureLines(pack, 'once', secondZh), ['350 积分', '一次性发放积分', '预览版尚未开放视频生成']);
   assert.throws(() => pricingFeatureLines({ id: 'unknown', credits: 1 }, 'year', secondEn), /Missing pricing features/);
 });
 
-test('unverified Waffo product cannot open checkout or grant a new catalog plan', async () => {
-  assert.equal(site.checkoutPlanId, null);
+test('unprovisioned plans stay unpaid; Max multiplier above 1 stays unpaid', async () => {
+  for (const plan of site.plans) assert.equal(productForPlan({}, plan), null);
   const route = readFileSync('src/app/api/checkout/route.ts', 'utf8');
-  assert.match(route, /!site\.checkoutPlanId \|\| plan\.id !== site\.checkoutPlanId/);
+  const page = readFileSync('src/components/pricing-content.tsx', 'utf8');
+  assert.match(route, /productForPlan\(env, plan\)/);
+  assert.match(page, /checkoutEnabled: !!productForPlan\(env, plan\)/);
   const client = readFileSync('src/components/pricing-checkout.tsx', 'utf8');
   assert.match(client, /disabled=\{!canPay \|\| !!pending\}/);
   assert.match(client, /factor === 1/);
   const webhook = readFileSync('src/lib/payments.ts', 'utf8');
-  assert.match(webhook, /!site\.checkoutPlanId \|\| settled\.planId !== site\.checkoutPlanId/);
-  const rejected = await grantVerifiedPayment({} as never, { userId: 'user', paymentId: 'payment', planId: 'lite-month', billing: 'once', subscriptionId: 'order' });
+  assert.match(webhook, /settled\.amount !== product\.amount/);
+  const rejected = await grantVerifiedPayment({} as never, { userId: 'user', paymentId: 'payment', planId: 'lite-month', billing: 'once', subscriptionId: 'order', amount: '29.90', currency: 'USD', mode: 'test' });
   assert.equal(rejected, 'rejected');
 });
 
