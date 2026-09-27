@@ -25,6 +25,11 @@ async function send(provider: EmailProvider, site: SiteConfig, to: string, subje
   return provider.sendEmail({ from: site.email.from, to, subject, text, html });
 }
 
+export function notifySignInCode(provider: EmailProvider, site: SiteConfig, to: string, code: string, locale = '') {
+  const copy = messages[localeFor(locale)].mail;
+  return send(provider, site, to, fill(copy.signInCodeSubject, { brand: site.brand }), fill(copy.signInCodeLead, { code }), undefined, undefined, copy.signInCodeExpiry);
+}
+
 export function notifyVerification(provider: EmailProvider, site: SiteConfig, to: string, url: string) {
   const copy = messages[mailLocale(url)].mail;
   return send(provider, site, to, fill(copy.verifySubject, { brand: site.brand }), copy.verifyLead, url, copy.verifyAction, copy.verifyExpiry);

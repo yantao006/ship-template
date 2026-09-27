@@ -230,13 +230,13 @@ Header language changes use App Router navigation to preserve the document; `Rep
 
 ### Authentication and eligibility
 
-`src/lib/auth.ts` constructs better-auth using request-time `SITE_URL`, the Worker D1, and the enabled email/Google/GitHub methods from `site/auth.config.ts`.
+`src/lib/auth.ts` constructs better-auth using request-time `SITE_URL`, the Worker D1, the enabled email/Google/GitHub methods from `site/auth.config.ts`, and its email OTP plugin for the shared Auth-4 sign-in.
 On each request, production login accepts the Worker `SITE_URL` only when it equals `site.url` from `site/site.config.ts`; a mismatch refuses login rather than creating a session on another origin.
-`src/app/api/auth/[...all]/route.ts` wraps signup with invite validation and optional sign-in Turnstile verification before delegating to better-auth.
+`src/app/api/auth/[...all]/route.ts` wraps signup with invite validation, limits the email OTP plugin to sign-in codes, and applies optional sign-in Turnstile verification before delegating to better-auth.
 `ensureSignupCredits` checks invitation eligibility and grants a signup lot with the user ID as its stable source ID; when email verification is enabled, it waits until the emailed link marks the account verified.
 `src/app/api/invites/redeem/route.ts` uses the shared session and browser-write guard, redeems the code through an atomic D1 batch, and grants the eligible user credits.
 `src/lib/invites.ts` owns invite code format, normalization, inventory reads, creation, and revocation.
-`src/components/site-shell.tsx` mounts one `AuthDialogProvider` for public pages; `auth-control.tsx` triggers the licensed Auth-4 adaptation. The standalone desktop callback keeps `sign-in-card.tsx` as a fallback outside that shell. `src/lib/auth-client.ts` owns the browser auth client, and `src/lib/browser-nav-copy.ts` assembles navigation and auth copy without sending mail strings to client props. Auth-4 uses Tailwind v4 theme variables and utilities without a global base reset via `postcss.config.mjs` and `src/app/globals.css`.
+`src/components/site-shell.tsx` mounts one `AuthDialogProvider` for public pages; `auth-control.tsx` triggers the licensed Auth-4 adaptation. Below 768px the same card uses a bottom drawer, while wider viewports use a dialog; its email sign-in uses a mailed six-digit code instead of a password. The standalone desktop callback keeps `sign-in-card.tsx` as a fallback outside that shell. `src/lib/auth-client.ts` owns the browser auth client, and `src/lib/browser-nav-copy.ts` assembles navigation and auth copy without sending mail strings to client props. Auth-4 uses Tailwind v4 theme variables and utilities without a global base reset via `postcss.config.mjs` and `src/app/globals.css`.
 When `email.passwordReset` is on, the forgot-password link is sent through `EmailProvider`; `src/components/verify-email.tsx` provides the verification waiting and resend page; `src/components/reset-password.tsx` accepts the new password; desktop handoff uses `src/lib/desktop-auth.ts` to validate a configured app scheme before `/api/auth/desktop-handoff` issues a session-bearing return URL.
 
 ### Credits, tasks, and provider seams
@@ -245,7 +245,7 @@ When `email.passwordReset` is on, the forgot-password link is sent through `Emai
 `site/messages/{en,zh}/pricing.ts` owns tier feature lists, annual-only feature lines, and interpolated pack perks; pricing cards select those lists by tier or plan ID without reusing plan-name copy as features.
 `src/lib/ledger.ts` writes `credit_lot`, `credit_entry`, `credit_alloc`, and `video_task` with D1's own `prepare().bind()` statements and `batch()` for multi-step writes, preserving atomic reservations under concurrent requests.
 Grant source IDs, entry idempotency keys, and task state transitions make retries observable. A verified annual payment calls `grantSubscriptionMonth` for the current calendar month only. There is no separate billing scheduler.
-`src/lib/email.ts` chooses Cloudflare Email or Resend behind `EmailProvider`, and `src/lib/notifications.ts` composes and escapes localized mail, including verification and password reset links, independently of delivery.
+`src/lib/email.ts` chooses Cloudflare Email or Resend behind `EmailProvider`, and `src/lib/notifications.ts` composes and escapes localized mail, including sign-in codes, verification and password reset links, independently of delivery.
 
 ### Current state and extension paths
 
@@ -265,7 +265,7 @@ The footer takes identity and contact from `site/site.config.ts`, copy from `sit
 `sections/VideoToolSection.tsx` binds one locale's tool copy and assets on the server and passes them to `src/components/video-tool/video-tool-section.tsx`.
 `bind-copy.ts` localizes links and assembles asset copy; the client `video-tool-section.tsx` shows the create-payload preview without importing site configuration.
 `video-generation-tool.tsx` composes the dark workbench from `composer.tsx` and `stage.tsx`.
-`use-video-tool-state.ts` owns interactive state, saves a serializable draft only before OAuth navigation, restores it after a confirmed session and calls pure selectors in `state.ts`; `model-menu.tsx` and `parameter-field.tsx` accept only their scoped presentation data.
+`use-video-tool-state.ts` owns interactive state, saves a serializable draft before OAuth navigation or the full reload after email-code sign-in, restores it after a confirmed session and calls pure selectors in `state.ts`; `model-menu.tsx` and `parameter-field.tsx` accept only their scoped presentation data.
 Media, workflows and their reference limits, grouped models and duration-specific preview costs, and media-filtered use cases come from that config.
 The image-template list lives in `site/video-tool-templates.config.ts`, localized titles in `site/messages/video-templates-*.ts`, and the referenced local media in `public/video-tool/`.
 The model menu shows only the selected workflow's compatible models, and optional workflow defaults reset fields and quantities when switching.

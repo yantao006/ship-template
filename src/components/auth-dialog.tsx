@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
-import { createPortal } from 'react-dom';
+import { createPortal, flushSync } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { X } from 'lucide-react';
 import { Auth4, type Auth4Props } from './blocks/auth-4';
@@ -105,14 +105,28 @@ export function AuthDialogProvider({ children, ...auth }: Omit<Auth4Props, 'onAu
   // Bind each form mount to its own attempt: a late response from a dismissed
   // form may refresh identity, but must not resume a newer form's action.
   const mountedAttempt = attempt.current;
-  const onAuthenticated = async () => {
+  const onAuthenticated = async (method: 'email-code' | 'sign-up') => {
     if (!(await serverHasSession())) throw new Error(auth.copy.authFailed);
     if (!active.current || mountedAttempt !== attempt.current) { router.refresh(); return; }
-    const resume = intent.onSuccess;
-    closeAuth();
-    router.refresh();
-    // Callers may restore UI state, never auto-submit a paid operation.
-    resume?.();
+    if (method === 'sign-up') {
+      const resume = intent.onSuccess;
+      closeAuth();
+      router.refresh();
+      // Callers may restore UI state, never auto-submit a paid operation.
+      resume?.();
+      return;
+    }
+    // The tool saves a serializable draft synchronously before the modal closes
+    // and before a full reload can unmount its state.
+    window.dispatchEvent(new Event('site-auth-reload-start'));
+    if (intent.intent === 'open-history' && intent.draftId) {
+      const returnTo = safeReturnPath(`${window.location.pathname}${window.location.search}${window.location.hash}`, window.location.origin);
+      sessionStorage.setItem(storageKey, JSON.stringify({ intent: intent.intent, draftId: intent.draftId, returnTo }));
+    }
+    attempt.current += 1;
+    active.current = false;
+    flushSync(() => { setOpen(false); setIntent({}); });
+    window.location.reload();
   };
   const onOAuthStart = () => {
     const returnTo = safeReturnPath(`${window.location.pathname}${window.location.search}${window.location.hash}`, window.location.origin);

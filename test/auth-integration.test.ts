@@ -34,6 +34,39 @@ test('verification disabled: email sign-up immediately creates a session and gra
   } finally { await mf.dispose(); }
 });
 
+test('email OTP signs in with a six-digit code in the form, consumes it once, and grants a new verified user', async () => {
+  const mf = new Miniflare({ modules: true, script: 'export default { fetch() { return new Response("ok") } }', d1Databases: { DB: 'otp-test' } });
+  try {
+    const db = await mf.getD1Database('DB') as unknown as Env['DB'];
+    for (const sql of readFileSync('migrations/0001_initial.sql', 'utf8').split(';').map(s => s.trim()).filter(Boolean)) await db.prepare(sql).run();
+    const env: Env = { DB: db, SITE_URL: 'http://localhost:3000', LOCAL_AUTH_TEST: '1', BETTER_AUTH_SECRET: 'this-is-only-a-local-test-secret-long-enough' };
+    const mail = new FakeEmail();
+    const auth = createAuth(env, 'localhost', { ...emailSettings, email: { enabled: true, requireVerification: true } }, mail);
+    const post = (path: string, body: object) => auth.handler(new Request(`http://localhost:3000/api/auth/${path}`, {
+      method: 'POST', headers: { origin: 'http://localhost:3000', referer: 'http://localhost:3000/zh', 'content-type': 'application/json' }, body: JSON.stringify(body),
+    }));
+    const sent = await post('email-otp/send-verification-otp', { email: 'otp@example.com', type: 'sign-in' });
+    assert.equal(sent.status, 200);
+    assert.equal(mail.sent.length, 1);
+    assert.equal(mail.sent[0].to, 'otp@example.com');
+    assert.equal(mail.sent[0].subject, `${site.brand} 登录验证码`);
+    assert.doesNotMatch(mail.sent[0].text, /https?:\/\//);
+    const code = mail.sent[0].text.match(/\b\d{6}\b/)?.[0];
+    assert.match(code ?? '', /^\d{6}$/);
+    const wrong = await post('sign-in/email-otp', { email: 'otp@example.com', otp: '000000' });
+    assert.equal(wrong.status, 400);
+    const signed = await post('sign-in/email-otp', { email: 'otp@example.com', otp: code });
+    assert.equal(signed.status, 200);
+    assert.match(signed.headers.get('set-cookie') ?? '', /better-auth\.session_token/);
+    const user = await db.prepare('SELECT id,email_verified FROM user WHERE email = ?').bind('otp@example.com').first<{ id: string; email_verified: number }>();
+    assert.ok(user?.id);
+    assert.equal(user.email_verified, 1);
+    assert.equal(await balance(db, user.id), site.signupCredits);
+    const replay = await post('sign-in/email-otp', { email: 'otp@example.com', otp: code });
+    assert.equal(replay.status, 400);
+  } finally { await mf.dispose(); }
+});
+
 test('Google sign-in starts with the configured local callback origin', async () => {
   const mf = new Miniflare({ modules: true, script: 'export default { fetch() { return new Response("ok") } }', d1Databases: { DB: 'social-preview-test' } });
   try {
