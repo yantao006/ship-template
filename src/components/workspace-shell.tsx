@@ -1,13 +1,12 @@
 import type { ReactNode } from 'react';
-import { site, messages } from '@/lib/config';
+import { messages } from '@/lib/config';
 import { navigationLinks, routePath, type NavigationId } from '@/lib/routes';
-import { LanguageControl } from './language-control';
-import { MarketingNav } from './marketing-nav';
+import { Header } from './sections/Header';
 
-export function WorkspaceShell({ locale, userName, title, currentItem, children }: { locale: keyof typeof messages; userName?: string; title: string; currentItem: NavigationId; children: ReactNode }) {
+export function WorkspaceShell({ locale, userName, userEmail, userImage, credits, title, currentItem, children }: { locale: keyof typeof messages; userName?: string; userEmail?: string; userImage?: string | null; credits?: number; title: string; currentItem: NavigationId; children: ReactNode }) {
   const copy = messages[locale];
   return <div className="workspace-page">
-    <MarketingNav locale={locale} userName={userName} callbackURL={routePath(locale, 'dashboard')} hideLanguage />
+    <Header locale={locale} userName={userName} userEmail={userEmail} userImage={userImage} credits={credits} />
     <div className="workspace-layout">
       <aside className="workspace-sidebar" aria-label={copy.dashboard.navigation}>
         <a className="sidebar-heading" href={routePath(locale, 'home')}>{copy.nav.brand}</a>
@@ -17,7 +16,7 @@ export function WorkspaceShell({ locale, userName, title, currentItem, children 
         <p className="sidebar-footnote">{copy.dashboard.preview}</p>
       </aside>
       <main className="workspace-main">
-        <div className="workspace-heading"><div><p className="workspace-breadcrumb">{copy.nav.workspace} / {title}</p><h1>{title}</h1></div><LanguageControl locale={locale} locales={site.languages} label={copy.nav.language} /></div>
+        <div className="workspace-heading"><div><p className="workspace-breadcrumb">{copy.nav.workspace} / {title}</p><h1>{title}</h1></div></div>
         {children}
       </main>
     </div>

@@ -22,7 +22,7 @@ export async function WorkspaceContent({ locale, section }: { locale: keyof type
     }
   }
   const dateLocale = site.languages.find(language => language.code === locale)!.dateLocale;
-  return <WorkspaceShell locale={locale} userName={session?.user.name} title={copy[section].title} currentItem={section}>
+  return <WorkspaceShell locale={locale} userName={session?.user.name} userEmail={session?.user.email} userImage={session?.user.image} credits={accountCredits} title={copy[section].title} currentItem={section}>
     {!session ? <div className="workspace-empty"><h2>{copy.dashboard.signInTitle}</h2><p>{copy.dashboard.signInDescription}</p><a href={routePath(locale, 'home')}>{copy.dashboard.backHome}</a></div>
       : !invited ? <InviteGate copy={browserNavCopy(copy)} />
       : section === 'dashboard' ? <>
