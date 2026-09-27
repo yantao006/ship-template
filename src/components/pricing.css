@@ -1,13 +1,10 @@
-.pricing-experience { min-height: 100dvh; background: var(--pricing-canvas); color: var(--pricing-text); }
+.pricing-experience { min-height: 100dvh; padding-top: 56px; background: var(--pricing-canvas); color: var(--pricing-text); }
 .pricing-confetti { position: fixed; inset: 0; z-index: 100; overflow: hidden; pointer-events: none; }
 .pricing-confetti i { position: absolute; top: 60%; width: 8px; height: 14px; border-radius: 2px; background: var(--pricing-accent); opacity: 0; animation: pricing-burst 1.5s ease-out both; }
 .pricing-confetti i:nth-child(3n) { background: var(--pricing-success); }
 .pricing-confetti i:nth-child(4n) { background: var(--pricing-banner-accent); }
 @keyframes pricing-burst { 0% { transform: translateY(0) translateX(0) rotate(0); opacity: 0; } 18% { opacity: .9; } 100% { transform: translateY(-46vh) translateX(var(--drift)) rotate(520deg); opacity: 0; } }
-.pricing-experience .site-nav { background: var(--pricing-canvas); border-color: var(--pricing-border); }
-.pricing-experience .site-nav .auth-button { border-color: var(--pricing-button); background: var(--pricing-button); color: var(--pricing-button-text); }
-.pricing-experience .site-nav .auth-button:hover:not(:disabled) { background: var(--pricing-accent); border-color: var(--pricing-accent); color: var(--pricing-accent-text); }
-.pricing-experience :where(a, button, input):focus-visible { outline: 2px solid var(--pricing-accent); outline-offset: 3px; }
+.pricing-experience :where(.pricing-banner, .pricing-page) :where(a, button, input):focus-visible { outline: 2px solid var(--pricing-accent); outline-offset: 3px; }
 .pricing-banner { min-height: 56px; display: flex; align-items: center; justify-content: center; gap: 20px; padding: 8px 24px; background: var(--pricing-banner); color: var(--pricing-banner-text); font-size: 16px; font-weight: 700; }
 .pricing-banner svg { color: var(--pricing-banner-accent); flex: none; }
 .pricing-banner button { border: 0; border-radius: 100px; padding: 9px 22px; background: var(--pricing-banner-text); color: var(--pricing-banner); font-size: 13px; font-weight: 700; cursor: pointer; }

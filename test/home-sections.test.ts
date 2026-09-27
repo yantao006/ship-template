@@ -23,14 +23,15 @@ test('unfinished sections are empty with stable ids', () => {
   }
 });
 
-test('both navigation variants render the site logo asset instead of a hard-coded mark', () => {
+test('shared navigation renders the site logo asset instead of a hard-coded mark', () => {
   assert.ok(site.logo.src.startsWith('/'));
   assert.ok(site.logo.alt);
   assert.match(readFileSync(new URL(`../public${site.logo.src}`, import.meta.url), 'utf8'), /<svg/);
-  const marketing = readFileSync(new URL('../src/components/marketing-nav.tsx', import.meta.url), 'utf8');
-  assert.match(marketing, /site\.logo\.src/);
-  assert.match(marketing, /site\.logo\.alt/);
-  assert.doesNotMatch(marketing, /brand-mark/);
+  assert.match(section('Header'), /logo=\{site\.logo\}/);
+  const navigation = readFileSync(new URL('../src/components/blocks/replica-navigation.tsx', import.meta.url), 'utf8');
+  assert.match(navigation, /src=\{logo\.src\}/);
+  assert.match(navigation, /alt=\{logo\.alt\}/);
+  assert.doesNotMatch(navigation, /brand-mark/);
   assert.doesNotMatch(readFileSync(new URL('../src/app/globals.css', import.meta.url), 'utf8'), /brand-mark/);
 });
 
