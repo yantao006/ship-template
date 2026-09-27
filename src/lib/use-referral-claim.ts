@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { requestJson } from './json-request';
 
 const pendingKey = 'account-referral-code';
-const validCode = (code: string | null): code is string => !!code && /^[a-f0-9]{32}$/.test(code);
+const validCode = (code: string | null): code is string => !!code && (/^[a-z0-9]{8}$/.test(code) || /^[a-f0-9]{32}$/.test(code));
 
 export function referralCodeFromUrl(url: URL): string | null {
   const inviteCode = url.searchParams.get('invite_code');
