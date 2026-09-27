@@ -1,4 +1,5 @@
 import navigation from './zh/navigation';
+import footer from './zh/footer';
 import signIn from './zh/sign-in';
 import mail from './zh/mail';
 import invites from './zh/invites';
@@ -22,5 +23,5 @@ export default {
     credits: '可用积分',
   },
   nav: navigation,
-  signIn, mail, invites, handoff, account, dashboard, credits, pricing, planCopy, videoTool,
+  footer, signIn, mail, invites, handoff, account, dashboard, credits, pricing, planCopy, videoTool,
 };

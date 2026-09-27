@@ -4,6 +4,9 @@ export const routes = {
   pricing: { suffix: '/pricing', label: 'pricing', icon: 'pricing' },
   dashboard: { suffix: '/dashboard', label: 'workspace', icon: 'dashboard' },
   credits: { suffix: '/credits', label: 'credits', icon: 'credits' },
+  about: { suffix: '/about' },
+  privacy: { suffix: '/privacy' },
+  terms: { suffix: '/terms' },
   verifyEmail: { suffix: '/verify-email' },
   resetPassword: { suffix: '/reset-password' },
 } as const;
@@ -11,6 +14,8 @@ export const routes = {
 export type RouteId = keyof typeof routes;
 export type NavigationId = 'home' | 'pricing' | 'dashboard' | 'credits';
 export const navigationIds: readonly NavigationId[] = ['home', 'pricing', 'dashboard', 'credits'];
+export const informationIds = ['about', 'privacy', 'terms'] as const;
+export type InformationId = typeof informationIds[number];
 
 export function routePath(locale: string, id: RouteId) {
   return `/${locale}${routes[id].suffix}`;

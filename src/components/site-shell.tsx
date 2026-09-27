@@ -15,6 +15,6 @@ export async function SiteShell({ locale, children }: { locale: keyof typeof mes
   return <AuthDialogProvider copy={browserNavCopy(messages[locale])} brand={site.brand} logo={site.logo} supportEmail={site.account.contactEmail} methods={{ email: auth.email, google: auth.google, github: auth.github }} inviteRequired={auth.invite.required} locale={locale} callbackURL={routePath(locale, 'home')}>
     <Header locale={locale} userName={session?.user.name} userEmail={session?.user.email} userImage={session?.user.image} credits={credits} />
     {children}
-    <Footer />
+    <Footer locale={locale} />
   </AuthDialogProvider>;
 }

@@ -48,7 +48,7 @@ test('configured language entries drive page locale, native name and date locale
   }
   assert.equal(localeFromPath('/'), site.defaultLocale);
   assert.equal(localeFromPath('/not-a-locale'), site.defaultLocale);
-  for (const [path, expected, shell] of [['/zh/credits', 'zh', true], ['/', site.defaultLocale, true], ['/en/pricing', 'en', true], ['/zh/verify-email', 'zh', false], ['/en/reset-password', 'en', false], ['/auth-callback', site.defaultLocale, false], ['/admin/invites', site.defaultLocale, false]] as const) {
+  for (const [path, expected, shell] of [['/zh/credits', 'zh', true], ['/', site.defaultLocale, true], ['/en/pricing', 'en', true], ['/en/about', 'en', true], ['/zh/privacy', 'zh', true], ['/en/terms', 'en', true], ['/zh/verify-email', 'zh', false], ['/en/reset-password', 'en', false], ['/auth-callback', site.defaultLocale, false], ['/admin/invites', site.defaultLocale, false]] as const) {
     const response = middleware(new NextRequest(`https://awesomejev.link${path}`));
     assert.equal(response.headers.get(`x-middleware-request-${requestLocaleHeader}`), expected);
     assert.equal(isSiteShellPath(path), shell);
