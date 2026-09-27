@@ -27,6 +27,8 @@ test('second site only changes site, wrangler resource names and env, not busine
 test('live Worker binds only the owned hostname, with per-site D1 and required auth secrets', () => {
   const config = JSON.parse(readFileSync('wrangler.jsonc','utf8'));
   assert.equal(config.name,'awesomejev-test');
+  assert.equal(config.workers_dev,false);
+  assert.equal(config.preview_urls,true);
   assert.deepEqual(config.routes,[{pattern:'awesomejev.link',custom_domain:true}]);
   assert.equal(config.vars.SITE_URL,'https://awesomejev.link');
   assert.equal(config.d1_databases[0].database_name,'awesomejev-db');

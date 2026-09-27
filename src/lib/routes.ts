@@ -14,3 +14,9 @@ export function localeFromPath(pathname: string) {
 }
 
 export const requestLocaleHeader = 'x-site-route-locale';
+export const requestSiteShellHeader = 'x-site-shell';
+
+/** The first document response uses the public shell's default; client navigation never recomputes it. */
+export function isSiteShellPath(pathname: string) {
+  return pathname === '/' || site.languages.some(language => navigationIds.some(id => routePath(language.code, id) === pathname));
+}

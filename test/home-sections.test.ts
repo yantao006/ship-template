@@ -4,20 +4,18 @@ import { test } from 'node:test';
 import site from '../site/site.config';
 
 const sectionNames = [
-  ['Header', 'header'],
   ['VideoHero', 'video-hero'],
   ['VideoToolSection', 'video-tool-section'],
   ['VideoShowcase', 'video-showcase'],
   ['VideoFeatures', 'video-features'],
   ['VideoPricing', 'video-pricing'],
   ['VideoFAQ', 'video-faq'],
-  ['Footer', 'footer'],
 ] as const;
 
 const section = (name: string) => readFileSync(new URL(`../src/components/sections/${name}.tsx`, import.meta.url), 'utf8');
 
 test('unfinished sections are empty with stable ids', () => {
-  for (const [name, id] of sectionNames.filter(([name]) => name !== 'VideoToolSection' && name !== 'Header')) {
+  for (const [name, id] of sectionNames.filter(([name]) => name !== 'VideoToolSection')) {
     assert.match(section(name), new RegExp(`return <section id="${id}" \\/>`));
     assert.deepEqual([...section(name).matchAll(/export function (\w+)/g)].map(match => match[1]), [name]);
   }
@@ -35,7 +33,7 @@ test('shared navigation renders the site logo asset instead of a hard-coded mark
   assert.doesNotMatch(readFileSync(new URL('../src/app/globals.css', import.meta.url), 'utf8'), /brand-mark/);
 });
 
-test('homepage composes eight sections in order, using the configured navigation and existing video tool', () => {
+test('homepage content composes six sections in order, with navigation and footer in the persistent shell', () => {
   const home = section('HomePage');
   const names = sectionNames.map(([name]) => name);
   assert.deepEqual([...home.matchAll(/<([A-Z]\w+)(?: [^>]+)? \/>/g)].map(match => match[1]), names);
@@ -43,10 +41,13 @@ test('homepage composes eight sections in order, using the configured navigation
   assert.match(section('VideoToolSection'), /<ExistingVideoToolSection copy=\{copy\} config=\{config\} assets=\{assets\} \/>/);
   const entry = readFileSync(new URL('../src/components/home-content.tsx', import.meta.url), 'utf8');
   assert.doesNotMatch(entry, /MarketingNav/);
-  assert.match(entry, /<HomePage locale=\{locale\} userName=\{session\?\.user\.name\} userEmail=\{session\?\.user\.email\} userImage=\{session\?\.user\.image\} credits=\{credits\} \/>/);
-  assert.match(entry, /const \{ session, credits \} = await accountSnapshot\(env, requestHeaders\)/);
+  assert.match(entry, /<HomePage locale=\{locale\} \/>/);
+  assert.match(entry, /const \{ session \} = await accountSnapshot\(env, requestHeaders\)/);
   assert.match(readFileSync(new URL('../src/lib/request-context.ts', import.meta.url), 'utf8'), /await ensureSignupCredits\(env, session\.user\.id\)/);
-  assert.match(home, /<Header locale=\{locale\} userName=\{userName\} userEmail=\{userEmail\} userImage=\{userImage\} credits=\{credits\} \/>/);
+  assert.doesNotMatch(home, /<Header|<Footer/);
+  const shell = readFileSync(new URL('../src/components/site-shell.tsx', import.meta.url), 'utf8');
+  assert.match(shell, /<Header locale=\{locale\} userName=\{session\?\.user\.name\} userEmail=\{session\?\.user\.email\} userImage=\{session\?\.user\.image\} credits=\{credits\} \/>/);
+  assert.match(shell, /\{children\}\s*<Footer \/>/);
   const header = section('Header');
   assert.match(header, /<section id="header">/);
   assert.match(header, /import \{ ReplicaNavigation \} from '@\/components\/blocks\/replica-navigation'/);

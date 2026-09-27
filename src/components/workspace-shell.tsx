@@ -1,15 +1,12 @@
 import type { ReactNode } from 'react';
 import { messages } from '@/lib/config';
-import { navigationLinks, routePath, type NavigationId } from '@/lib/routes';
-import { Header } from './sections/Header';
+import { navigationLinks, type NavigationId } from '@/lib/routes';
 
-export function WorkspaceShell({ locale, userName, userEmail, userImage, credits, title, currentItem, children }: { locale: keyof typeof messages; userName?: string; userEmail?: string; userImage?: string | null; credits?: number; title: string; currentItem: NavigationId; children: ReactNode }) {
+export function WorkspaceShell({ locale, title, currentItem, children }: { locale: keyof typeof messages; title: string; currentItem: NavigationId; children: ReactNode }) {
   const copy = messages[locale];
   return <div className="workspace-page">
-    <Header locale={locale} userName={userName} userEmail={userEmail} userImage={userImage} credits={credits} />
     <div className="workspace-layout">
       <aside className="workspace-sidebar" aria-label={copy.dashboard.navigation}>
-        <a className="sidebar-heading" href={routePath(locale, 'home')}>{copy.nav.brand}</a>
         <nav aria-label={copy.dashboard.navigation}>
           {navigationLinks(locale).filter(link => link.id === 'dashboard' || link.id === 'credits').map(link => <a key={link.id} className={currentItem === link.id ? 'active' : ''} aria-current={currentItem === link.id ? 'page' : undefined} href={link.href}>{link.label}</a>)}
         </nav>

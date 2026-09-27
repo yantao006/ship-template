@@ -3,22 +3,31 @@ import { existsSync, readFileSync } from 'node:fs';
 import { test } from 'node:test';
 
 const read = (path: string) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
-const sessionProps = /userName=\{session\?\.user\.name\} userEmail=\{session\?\.user\.email\} userImage=\{session\?\.user\.image\} credits=\{(?:credits|accountCredits)\}/;
 
-test('pricing and workspace render the same account-aware header as home', () => {
-  const home = read('src/components/sections/HomePage.tsx');
-  const pricing = read('src/components/pricing-content.tsx');
-  const workspace = read('src/components/workspace-content.tsx');
-  const shell = read('src/components/workspace-shell.tsx');
-
-  assert.match(home, /<Header locale=\{locale\}/);
-  assert.match(pricing, /accountSnapshot\(env, requestHeaders\)/);
-  assert.match(pricing, new RegExp(`<Header locale=\\{locale\\} ${sessionProps.source}`));
-  assert.match(workspace, /accountSnapshot\(env, requestHeaders\)/);
-  assert.match(workspace, sessionProps);
-  assert.match(shell, /<Header locale=\{locale\} userName=\{userName\} userEmail=\{userEmail\} userImage=\{userImage\} credits=\{credits\} \/>/);
+test('marketing and workspace routes share persistent chrome while auth panels stay outside it', () => {
+  const shell = read('src/components/site-shell.tsx');
+  assert.match(shell, /accountSnapshot\(workerEnv\(\), await headers\(\)\)/);
+  assert.match(shell, /<Header locale=\{locale\} userName=\{session\?\.user\.name\} userEmail=\{session\?\.user\.email\} userImage=\{session\?\.user\.image\} credits=\{credits\} \/>/);
+  assert.match(shell, /\{children\}\s*<Footer \/>/);
+  assert.match(read('src/app/(site)/layout.tsx'), /<SiteShell/);
+  assert.match(read('src/app/[locale]/(site)/layout.tsx'), /<SiteShell/);
+  for (const route of ['page.tsx', 'pricing/page.tsx', 'dashboard/page.tsx', 'credits/page.tsx']) {
+    assert.ok(existsSync(new URL(`../src/app/[locale]/(site)/${route}`, import.meta.url)));
+  }
+  for (const route of ['verify-email', 'reset-password']) {
+    assert.ok(existsSync(new URL(`../src/app/[locale]/${route}/page.tsx`, import.meta.url)));
+    assert.ok(!existsSync(new URL(`../src/app/[locale]/(site)/${route}`, import.meta.url)));
+  }
+  assert.ok(existsSync(new URL('../src/app/auth-callback/page.tsx', import.meta.url)));
+  assert.ok(existsSync(new URL('../src/app/admin/invites/page.tsx', import.meta.url)));
   assert.ok(!existsSync(new URL('../src/components/marketing-nav.tsx', import.meta.url)));
-  assert.doesNotMatch(shell, /LanguageControl/);
+
+  for (const path of ['src/components/sections/HomePage.tsx', 'src/components/pricing-content.tsx', 'src/components/workspace-shell.tsx']) {
+    assert.doesNotMatch(read(path), /<Header|<Footer/);
+  }
+  const workspace = read('src/components/workspace-shell.tsx');
+  assert.match(workspace, /link\.id === 'dashboard' \|\| link\.id === 'credits'/);
+  assert.doesNotMatch(workspace, /LanguageControl/);
   const pricingCss = read('src/components/pricing.css');
   assert.doesNotMatch(pricingCss, /\.site-nav|\.replica-topbar/);
   assert.match(pricingCss, /\.pricing-experience \{[^}]*padding-top: 56px/);
