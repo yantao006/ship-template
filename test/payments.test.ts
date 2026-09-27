@@ -35,18 +35,18 @@ function event(eventType: string, planId: string, paymentId: string, userId = 'u
     mode: 'test',
     data: {
       orderId,
-      orderStatus: billing === 'once' ? 'completed' : 'active',
+      ...(billing === 'once' ? { orderStatus: 'completed' } : {}),
       buyerEmail: 'user@example.com',
       merchantProvidedBuyerIdentity: userId,
       currency: 'USD',
       amount: plan.amount,
+      chargedAmount: plan.amount,
+      listPrice: { total: plan.amount, subtotal: plan.amount, taxAmount: '0.00' },
       taxAmount: '0.00',
       productName: plan.description,
-      productMetadata: { planId },
-      ...(billing !== 'once' ? { billingPeriod: billing === 'month' ? 'monthly' : 'yearly' } : {}),
       paymentId,
       paymentStatus: 'succeeded',
-      orderMetadata: { userId, planId },
+      orderMetadata: { userId, planId, billing },
     },
   });
 }
@@ -89,7 +89,7 @@ test('one-time grant is idempotent and unmatched products cannot grant through t
 test('annual payment grants the current month only and the same month does not grant again', async () => {
   const now = Date.UTC(2026, 8, 15);
   const body = event('subscription.payment_succeeded', 'lite-year', 'pay-year', 'user-year', 'order-year');
-  const renewed = event('subscription.activated', 'lite-year', 'pay-year-2', 'user-year', 'order-year');
+  const renewed = event('subscription.payment_succeeded', 'lite-year', 'pay-year-2', 'user-year', 'order-year');
   const settled = readSettledPayment(body, sign(body), publicKey);
   const again = readSettledPayment(renewed, sign(renewed), publicKey);
   if (settled === 'ignored' || settled === 'rejected' || again === 'ignored' || again === 'rejected') throw new Error('subscription event rejected');
@@ -101,6 +101,13 @@ test('annual payment grants the current month only and the same month does not g
   const lots = await db.prepare("SELECT granted FROM credit_lot WHERE source='subscription_month' AND user_id='user-year'").all<{ granted: number }>();
   assert.equal(lots.results.length, 1);
   assert.equal(lots.results[0].granted, site.plans.find(plan => plan.id === 'lite-year')!.credits);
+});
+
+test('subscription activation alone cannot grant without its separate settled payment', async () => {
+  const body = event('subscription.activated', 'lite-month', 'pay-activation-only', 'user-activation');
+  assert.equal(readSettledPayment(body, sign(body), publicKey), 'ignored');
+  assert.equal((await (await handlePaymentWebhook({ ...env, DB: db }, webhook(body))).json()).message, 'success');
+  assert.equal(await balance(db, 'user-activation'), 0);
 });
 
 test('a paid monthly renewal grants the next month once, not extra credits in the previous month', async () => {
@@ -128,7 +135,7 @@ test('test catalog matches every displayed price, period and unique product', ()
   assert.equal(productForPlan({ WAFFO_PRODUCTS: JSON.stringify(duplicate) }, site.plans.find(plan => plan.id === 'starter')!), null);
 });
 
-test('signed test webhooks grant configured packs and subscription months, not wrong amounts, periods, modes or metadata', async () => {
+test('signed test webhooks accept dashboard products without metadata but reject wrong amounts, periods, modes or conflicting metadata', async () => {
   for (const [planId, kind, userId] of [
     ['starter', 'order.completed', 'user-real-pack'],
     ['lite-year', 'subscription.payment_succeeded', 'user-real-year'],
@@ -137,12 +144,14 @@ test('signed test webhooks grant configured packs and subscription months, not w
     const plan = site.plans.find(item => item.id === planId)!;
     const original = event(kind, planId, `pay-${planId}`, userId);
     const attempts = [
-      original.replace(`"amount":"${plan.amount}"`, '"amount":"0.01"'),
-      original.replace(`"amount":"${plan.amount}"`, `"amount":"${plan.amount}","total":"9999.00"`),
+      original.replace(`"chargedAmount":"${plan.amount}"`, '"chargedAmount":"0.01"'),
+      original.replace(`"total":"${plan.amount}"`, '"total":"9999.00"'),
       original.replace('"currency":"USD"', '"currency":"EUR"'),
       original.replace('"mode":"test"', '"mode":"prod"'),
-      original.replace(`"productMetadata":{"planId":"${planId}"}`, '"productMetadata":{"planId":"other"}'),
-      ...(plan.billing === 'once' ? [] : [original.replace(`"billingPeriod":"${plan.billing === 'month' ? 'monthly' : 'yearly'}"`, '"billingPeriod":"weekly"')]),
+      original.replace(`"productName":"${plan.description}"`, `"productName":"${plan.description}","productMetadata":{"planId":"other"}`),
+      original.replace(`"billing":"${plan.billing}"`, '"billing":"wrong"'),
+      original.replace(`"chargedAmount":"${plan.amount}",`, ''),
+      ...(plan.billing === 'once' ? [] : [original.replace(`"billing":"${plan.billing}"`, '"billing":"once"')]),
     ];
     for (const body of attempts) {
       assert.equal((await (await handlePaymentWebhook({ ...env, DB: db }, webhook(body))).json()).message, 'failed');
@@ -182,7 +191,7 @@ test('create order calls Pancake checkout for the matching test product and retu
   assert.equal(payload.currency, 'USD');
   assert.equal(payload.buyerEmail, 'user@example.com');
   assert.equal(payload.withTrial, false);
-  assert.deepEqual(payload.metadata, { userId: 'user-1', planId: 'starter' });
+  assert.deepEqual(payload.metadata, { userId: 'user-1', planId: 'starter', billing: 'once' });
   assert.equal('referral' in payload, false);
 });
 

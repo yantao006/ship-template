@@ -276,8 +276,10 @@ An upstream adapter submits the work, the queue processing in `worker.ts` observ
 On success, the service stores the result in the site's `MEDIA` binding and returns an authorized preview or download; on failure, it reconciles task state and the ledger idempotently according to the site's credit policy.
 Site plans in `site/site.config.ts` list four monthly and annual tiers and five credit packs; annual `amount` is the full 12-month total, displayed as a monthly equivalent in the pricing UI.
 `WAFFO_PRODUCTS` is a per-site Worker secret mapping each plan to a test product ID, verified USD price and billing period; checkout stays unavailable for any unprovisioned or mismatched plan.
+The reference site's 13 test products were created in the existing Kanvora test store through its dashboard; its ignored `.waffo-products.json` is the local provisioning record, not source configuration.
 `README.md` documents test-product provisioning through `scripts/provision-waffo-products.ts` in a secret-bearing environment.
-`POST /api/webhooks/payment` verifies `X-Waffo-Signature`, test mode, product metadata, amount, currency and period before `src/lib/payments.ts` grants packs once or only the paid current month of a subscription.
+`POST /api/webhooks/payment` verifies `X-Waffo-Signature`, test mode, checkout-bound plan and period, actual charged amount, listed total and currency before `src/lib/payments.ts` grants packs once or only the paid current month of a subscription; dashboard products may omit product metadata, but supplied metadata must agree.
+Subscription credits follow `subscription.payment_succeeded` (including first and renewal charges), not the separate `subscription.activated` state event, whose payment fields are absent.
 No scheduler pre-grants future months.
 The product map, merchant id, request signing key, and callback public key remain Worker secrets.
 Vendor-specific request and callback formats stay in adapters, while the page, task, and ledger contracts describe this application's behavior.

@@ -45,7 +45,9 @@ export async function handlePaymentWebhook(env: Env, request: Request, now = Dat
   if (settled === 'rejected') return Response.json({ message: 'failed' });
   const plan = planById(settled.planId);
   const product = plan && productForPlan(env, plan);
-  if (!plan || !product || settled.mode !== 'test' || settled.productPlanId !== plan.id ||
+  // Dashboard-created products do not expose product metadata. Checkout binds the plan in
+  // signed order metadata; if product metadata is supplied, it must agree with that plan.
+  if (!plan || !product || settled.mode !== 'test' || (settled.productPlanId && settled.productPlanId !== plan.id) ||
       settled.billing !== plan.billing || settled.amount !== product.amount || (settled.total && settled.total !== product.amount) ||
       settled.currency !== product.currency ||
       (settled.billing !== 'once' && settled.billingPeriod !== product.billingPeriod)) return Response.json({ message: 'failed' });

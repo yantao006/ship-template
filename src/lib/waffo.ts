@@ -50,7 +50,7 @@ export async function createWaffoOrder(env: Env, order: CheckoutOrder, product: 
     privateKey: env.WAFFO_PRIVATE_KEY!,
     fetch: fetchImpl,
   });
-  const metadata: Record<string, string> = { userId: order.userId, planId: order.planId };
+  const metadata: Record<string, string> = { userId: order.userId, planId: order.planId, billing: order.billing };
   const params: AuthenticatedCheckoutParams & { productType: 'onetime' | 'subscription' } = {
     productId: product.id,
     productType: order.billing === 'once' ? 'onetime' : 'subscription',
@@ -68,20 +68,28 @@ export async function createWaffoOrder(env: Env, order: CheckoutOrder, product: 
 
 export function readSettledPayment(body: string, signature: string | null, publicKey: string): SettledPayment | 'ignored' | 'rejected' {
   const event = verifyWebhook<WebhookEventData>(body, signature, { publicKey });
-  if (event.eventType !== 'order.completed' && event.eventType !== 'subscription.activated' && event.eventType !== 'subscription.payment_succeeded') return 'ignored';
-  const data = event.data;
+  // Activated is a subscription state event, not the payment event. Waffo sends a
+  // separate payment_succeeded for both the first charge and each renewal.
+  if (event.eventType !== 'order.completed' && event.eventType !== 'subscription.payment_succeeded') return 'ignored';
+  const data = event.data as WebhookEventData & { chargedAmount?: string; listPrice?: { total?: string } };
   const userId = data.orderMetadata?.userId;
   const planId = data.orderMetadata?.planId;
+  const billing = data.orderMetadata?.billing;
   const echoed = data.merchantProvidedBuyerIdentity;
-  if (!userId || !planId || (echoed && echoed !== userId)) return 'rejected';
-  const paymentId = data.paymentId || event.eventId;
-  if (!paymentId || !data.orderId) return 'rejected';
-  if (data.paymentStatus !== 'succeeded') return 'rejected';
+  if (!userId || !planId || !data.paymentId || !data.orderId || !data.chargedAmount ||
+      data.paymentStatus !== 'succeeded' || (echoed && echoed !== userId) ||
+      (data.amount && data.amount !== data.chargedAmount)) return 'rejected';
   if (event.eventType === 'order.completed') {
-    if (data.orderStatus !== 'completed') return 'rejected';
-    return { userId, planId, paymentId, subscriptionId: data.orderId, billing: 'once', amount: data.amount, currency: data.currency, total: data.total, productPlanId: data.productMetadata?.planId, mode: event.mode };
+    if (billing !== 'once' || data.orderStatus !== 'completed') return 'rejected';
+    return { userId, planId, paymentId: data.paymentId, subscriptionId: data.orderId, billing, amount: data.chargedAmount,
+      currency: data.currency, total: data.listPrice?.total ?? data.total, productPlanId: data.productMetadata?.planId, mode: event.mode };
   }
-  if (data.orderStatus !== 'active') return 'rejected';
-  if (data.billingPeriod !== 'monthly' && data.billingPeriod !== 'yearly') return 'rejected';
-  return { userId, planId, paymentId, subscriptionId: data.orderId, billing: data.billingPeriod === 'monthly' ? 'month' : 'year', amount: data.amount, currency: data.currency, total: data.total, billingPeriod: data.billingPeriod, productPlanId: data.productMetadata?.planId, mode: event.mode };
+  // A subscription.payment_succeeded event is payment-only: Waffo deliberately omits
+  // orderStatus and billingPeriod. The checkout's signed order metadata binds the period.
+  if (billing !== 'month' && billing !== 'year') return 'rejected';
+  const period = billing === 'month' ? 'monthly' : 'yearly';
+  if (data.billingPeriod && data.billingPeriod !== period) return 'rejected';
+  return { userId, planId, paymentId: data.paymentId, subscriptionId: data.orderId, billing, amount: data.chargedAmount,
+    currency: data.currency, total: data.listPrice?.total ?? data.total, billingPeriod: period,
+    productPlanId: data.productMetadata?.planId, mode: event.mode };
 }
