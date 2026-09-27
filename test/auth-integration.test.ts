@@ -94,6 +94,13 @@ test('verification required: signup and login are gated until emailed link is vi
     assert.equal(verified.status, 302);
     assert.equal(verified.headers.get('location'), '/zh/dashboard?from=email&tab=credits');
     assert.match(verified.headers.get('set-cookie') ?? '', /better-auth\.session_token/);
+    const sessionCookie = verified.headers.get('set-cookie')?.split(';')[0];
+    assert.ok(sessionCookie);
+    const confirmed = await auth.handler(new Request('http://localhost:3000/api/auth/get-session', { headers: { cookie: sessionCookie } }));
+    assert.equal(confirmed.status, 200);
+    const identity = await confirmed.json() as { session?: { id: string }; user?: { id: string } };
+    assert.ok(identity.session?.id);
+    assert.equal(identity.user?.id, user.id);
     assert.equal((await db.prepare('SELECT email_verified FROM user WHERE id = ?').bind(user.id).first<{email_verified:number}>())?.email_verified, 1);
     assert.equal(await balance(db, user.id), site.signupCredits);
     assert.equal(await ensureSignupCredits(env, user.id), false);

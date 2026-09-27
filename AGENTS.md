@@ -13,7 +13,7 @@ The current example has site-local accounts, invitation primitives, configurable
 - **One navigation path per purpose:** the navigation has one language control and one sign-in entry; its sign-in card lists only the methods enabled in `site/auth.config.ts`.
 - **Theme owns color:** `site/theme.config.ts` defines paired light/dark palettes, top-bar and account-card chrome, dialog, video-tool and pricing surfaces, row tones, default modes, and account accents; `src/lib/theme-tokens.ts` generates the stylesheet in `src/app/layout.tsx`.
   `src/lib/theme-mode.ts` owns the root mode transitions; the layout freezes the first page's default and the shared header toggles the root mode without resetting it on client navigation, while legacy CSS surfaces still await migration.
-- **Pages compose sections:** `src/components/sections/HomePage.tsx` orders six content sections; five remain empty scaffolds, and the video tool renders its existing implementation. `src/components/site-shell.tsx` owns one persistent header and footer for home, pricing, dashboard, and credits.
+- **Pages compose sections:** `src/components/sections/HomePage.tsx` orders six content sections; five remain empty scaffolds, and the video tool renders its existing implementation. `src/components/site-shell.tsx` owns one persistent header, footer, and shared Auth-4 login dialog for home, pricing, dashboard, and credits.
 - **Long-running work is observable:** video generation uses an asynchronous task and progress flow, while the server validates costs and records credit movements in the ledger.
 
 ## Overall tech stack
@@ -123,6 +123,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   ├── components/                   # UI composition and client controls
 │   │   ├── home-content.tsx          # Session-aware homepage entry, existing nav, and section composition
 │   │   ├── blocks/replica-navigation.tsx # Shared bar, language, theme and mobile links
+│   │   ├── blocks/auth-4.tsx         # Licensed Auth-4 card wired to better-auth
 │   │   ├── blocks/account-popovers.tsx   # Signed-in account/credit menu data and actions
 │   │   ├── blocks/account-dialogs.tsx    # Seven account dialog bodies and shared dialog hero
 │   │   ├── blocks/account-profile.tsx    # Shared avatar trigger and profile header
@@ -136,7 +137,8 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │   ├── pricing-checkout.tsx      # Monthly/yearly/pack cards and gated checkout interaction
 │   │   ├── pricing-confetti.tsx      # Brief decorative entry effect
 │   │   ├── pricing.css               # Tokenized responsive pricing surface
-│   │   ├── auth-control.tsx          # Client signed-in controls and sign-in card entry
+│   │   ├── auth-dialog.tsx           # Shared modal, server-session-confirmed return intent, and OAuth draft event
+│   │   ├── auth-control.tsx          # Client signed-in controls and public sign-in trigger
 │   │   ├── sign-in-card.tsx          # Client email/social sign-in dialog
 │   │   ├── referral-capture.tsx      # Always-mounted home referral hook host
 │   │   ├── reset-password.tsx        # Client form that submits a new password for a reset token
@@ -233,7 +235,7 @@ On each request, production login accepts the Worker `SITE_URL` only when it equ
 `ensureSignupCredits` checks invitation eligibility and grants a signup lot with the user ID as its stable source ID; when email verification is enabled, it waits until the emailed link marks the account verified.
 `src/app/api/invites/redeem/route.ts` uses the shared session and browser-write guard, redeems the code through an atomic D1 batch, and grants the eligible user credits.
 `src/lib/invites.ts` owns invite code format, normalization, inventory reads, creation, and revocation.
-`src/components/auth-control.tsx` handles signed-in controls and mounts `src/components/sign-in-card.tsx` for configured sign-in methods; `src/lib/auth-client.ts` owns the browser auth client, and `src/lib/browser-nav-copy.ts` assembles navigation and auth copy without sending mail strings to client props.
+`src/components/site-shell.tsx` mounts one `AuthDialogProvider` for public pages; `auth-control.tsx` triggers the licensed Auth-4 adaptation. The standalone desktop callback keeps `sign-in-card.tsx` as a fallback outside that shell. `src/lib/auth-client.ts` owns the browser auth client, and `src/lib/browser-nav-copy.ts` assembles navigation and auth copy without sending mail strings to client props. Auth-4 uses Tailwind v4 theme variables and utilities without a global base reset via `postcss.config.mjs` and `src/app/globals.css`.
 When `email.passwordReset` is on, the forgot-password link is sent through `EmailProvider`; `src/components/verify-email.tsx` provides the verification waiting and resend page; `src/components/reset-password.tsx` accepts the new password; desktop handoff uses `src/lib/desktop-auth.ts` to validate a configured app scheme before `/api/auth/desktop-handoff` issues a session-bearing return URL.
 
 ### Credits, tasks, and provider seams
@@ -261,7 +263,7 @@ The `(site)` route layouts use `src/components/site-shell.tsx` to keep one accou
 `sections/VideoToolSection.tsx` binds one locale's tool copy and assets on the server and passes them to `src/components/video-tool/video-tool-section.tsx`.
 `bind-copy.ts` localizes links and assembles asset copy; the client `video-tool-section.tsx` shows the create-payload preview without importing site configuration.
 `video-generation-tool.tsx` composes the dark workbench from `composer.tsx` and `stage.tsx`.
-`use-video-tool-state.ts` owns interactive state and calls pure selectors in `state.ts`; `model-menu.tsx` and `parameter-field.tsx` accept only their scoped presentation data.
+`use-video-tool-state.ts` owns interactive state, saves a serializable draft only before OAuth navigation, restores it after a confirmed session and calls pure selectors in `state.ts`; `model-menu.tsx` and `parameter-field.tsx` accept only their scoped presentation data.
 Media, workflows and their reference limits, grouped models and duration-specific preview costs, and media-filtered use cases come from that config.
 The image-template list lives in `site/video-tool-templates.config.ts`, localized titles in `site/messages/video-templates-*.ts`, and the referenced local media in `public/video-tool/`.
 The model menu shows only the selected workflow's compatible models, and optional workflow defaults reset fields and quantities when switching.
@@ -290,7 +292,7 @@ Vendor-specific request and callback formats stay in adapters, while the page, t
 | --- | --- |
 | Change copy or switches | Edit `site/messages/en.ts` and `site/messages/zh.ts` together for text, or `site/site.config.ts` and `site/auth.config.ts` for site choices; connect new switches to their `src/components/` view, `src/lib/` or `src/app/api/` server gate, and `scripts/site-check.ts` when bindings change. |
 | Add a page section | Implement or extend a section in `src/components/sections/` and compose it from `HomePage.tsx`; supply localized content from `site/messages/` and tokens from `site/theme.config.ts` and `src/app/globals.css`. Public page routes belong under the `(site)` layouts and must join the initial shell route classification in `src/lib/routes.ts`; the shared chrome is in `site-shell.tsx`. |
-| Add a sign-in method | Extend `site/auth.config.ts`, the method selection in `src/lib/auth.ts`, the card in `src/components/sign-in-card.tsx`, and the callback or guard in `src/app/api/auth/[...all]/route.ts`; declare credentials in `src/lib/env.ts`, `wrangler.jsonc`, and `scripts/site-check.ts`, with auth tests under `test/`. |
+| Add a sign-in method | Extend `site/auth.config.ts`, the method selection in `src/lib/auth.ts`, the public card in `src/components/blocks/auth-4.tsx` and desktop fallback in `src/components/sign-in-card.tsx`, and the callback or guard in `src/app/api/auth/[...all]/route.ts`; declare credentials in `src/lib/env.ts`, `wrangler.jsonc`, and `scripts/site-check.ts`, with auth tests under `test/`. |
 | Add a table | Add the next SQL file in `migrations/`, then update `src/lib/auth-schema.ts` for better-auth tables or native D1 queries and types in the owning `src/lib/` service; expose user-scoped reads through `src/app/` and test the migration and operation. |
 | Add an upstream | Put provider-specific calls and response mapping behind an adapter in `src/lib/`; connect it through a validated `src/app/api/` endpoint and, for long-running work, `worker.ts`, `src/lib/ledger.ts`, and a progress-aware component; add its Worker secret names to `src/lib/env.ts`, `wrangler.jsonc`, and `scripts/site-check.ts`. |
 | Replicate a site | Use `fixtures/second-site/` as the shape example, then create the new `site/` choices and matching `wrangler.jsonc`, provision that site's D1, R2, Queue, hostname, and secrets, apply `migrations/` to its D1, and run `pnpm site-check` against the new site. |

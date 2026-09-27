@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Check, ChevronDown, Image as ImageIcon, ShieldCheck, Sparkles, Video, X } from 'lucide-react';
 import { requestJson } from '@/lib/json-request';
 import { PricingConfetti } from './pricing-confetti';
+import { useOptionalAuthDialog } from './auth-dialog';
 
 type Plan = { id: string; tier?: string; billing: 'month' | 'year' | 'once'; credits: number; amount: string; currency: string; name: string; checkoutEnabled: boolean };
 type Mode = Plan['billing'];
@@ -40,7 +41,9 @@ function ModelDropdown({ title, models }: { title: string; models: Model[] }) {
 }
 
 export function PricingCheckout({ locale, plans, models, brand, copy }: { locale: string; plans: Plan[]; models: Model[]; brand: string; copy: Copy }) {
+  const authDialog = useOptionalAuthDialog();
   const [mode, setMode] = useState<Mode>('year');
+  const [selectedPlan, setSelectedPlan] = useState('');
   const [banner, setBanner] = useState(true);
   const [multiple, setMultiple] = useState(1);
   const [error, setError] = useState('');
@@ -48,6 +51,18 @@ export function PricingCheckout({ locale, plans, models, brand, copy }: { locale
   const video = models.filter(model => model.kind === 'video');
   const image = models.filter(model => model.kind === 'image');
   const visible = plans.filter(plan => plan.billing === mode);
+  // Only the plan selection is serialized across OAuth, never a payment request.
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem('pricing-auth-selection');
+      if (!saved) return;
+      sessionStorage.removeItem('pricing-auth-selection');
+      const selection = JSON.parse(saved) as { id: string; mode: Mode; multiple: number };
+      if (plans.some(plan => plan.id === selection.id && plan.billing === selection.mode)) {
+        setMode(selection.mode); setSelectedPlan(selection.id); setMultiple(selection.multiple);
+      }
+    } catch { sessionStorage.removeItem('pricing-auth-selection'); }
+  }, [plans]);
   const actionable = visible.some(plan => plan.checkoutEnabled && (!plan.tier || plan.tier !== 'max' || multiple === 1));
 
   async function checkout(plan: Plan) {
@@ -56,7 +71,12 @@ export function PricingCheckout({ locale, plans, models, brand, copy }: { locale
     setError('');
     try {
       const result = await requestJson('/api/checkout', { planId: plan.id, locale });
-      if (result.status === 401) setError(copy.signInRequired);
+      if (result.status === 401) {
+        setSelectedPlan(plan.id);
+        sessionStorage.setItem('pricing-auth-selection', JSON.stringify({ id: plan.id, mode, multiple }));
+        setError(copy.signInRequired);
+        void authDialog?.openAuth({ source: 'pricing', intent: 'resume-checkout', draftId: plan.id, onSuccess: () => setError('') });
+      }
       else if (!result.ok) setError(copy.failed);
       else {
         const data = await result.json() as { paymentUrl?: string };
@@ -87,7 +107,7 @@ export function PricingCheckout({ locale, plans, models, brand, copy }: { locale
             const monthlyPlan = plans.find(item => item.tier === plan.tier && item.billing === 'month');
             const savings = yearly && monthlyPlan ? 1 - price / (Number(monthlyPlan.amount) * factor) : 0;
             const canPay = plan.checkoutEnabled && factor === 1;
-            return <article className={`pricing-card ${plan.tier === 'standard' ? 'featured' : ''}`} key={plan.id}>
+            return <article className={`pricing-card ${plan.tier === 'standard' ? 'featured' : ''}${selectedPlan === plan.id ? ' selected-auth-plan' : ''}`} key={plan.id}>
               {plan.tier === 'standard' && <span className="pricing-popular"><Sparkles size={13} />{copy.popular}</span>}
               <div className="pricing-card-title"><h2>{plan.name}</h2>{yearly && <span className="pricing-discount">{Math.round(savings * 100)}% {copy.off}</span>}</div>
               <p className="pricing-rate">{money(price / (plan.credits * factor))} {copy.perCredit}</p>

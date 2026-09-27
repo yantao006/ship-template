@@ -1,12 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { buildCreatePayload, fieldStops, modelForMedia, previewCost, reconcileFieldValues, summaryFields, visibleWorkflows } from './state';
 import type { ComposerProps } from './composer';
 import type { ModelMenuItem } from './model-menu';
 import type { ParameterFieldProps } from './parameter-field';
 import type { StageProps } from './stage';
 import type { FieldValue, ToolModel, VideoGenerationToolProps } from './types';
+
+const authDraftKey = 'site-video-tool-auth-draft';
+type AuthDraft = {
+  mediaId: string; modelId: string; workflowId: string; drafts: Record<string, string>;
+  values: Record<string, FieldValue>; quantity: number; tabId: string;
+};
 
 export function useVideoToolState({ config, copy, assets, status = { state: 'idle' }, onCreate }: VideoGenerationToolProps): { composer: ComposerProps; stage: StageProps } {
   const initialMedia = config.media[0]?.id ?? '';
@@ -28,6 +34,47 @@ export function useVideoToolState({ config, copy, assets, status = { state: 'idl
   const [promoVisible, setPromoVisible] = useState(true);
   const [endFrame, setEndFrame] = useState(false);
   const [framePick, setFramePick] = useState<'start' | 'end'>('start');
+
+  // A modal leaves this component mounted. Only a full-page OAuth redirect
+  // needs a serializable draft; never serialize File objects or replay Create.
+  useEffect(() => {
+    const save = () => {
+      const saved: AuthDraft = { mediaId, modelId, workflowId, drafts, values, quantity, tabId };
+      sessionStorage.setItem(authDraftKey, JSON.stringify(saved));
+    };
+    const cancel = () => sessionStorage.removeItem(authDraftKey);
+    window.addEventListener('site-auth-oauth-start', save);
+    window.addEventListener('site-auth-oauth-cancel', cancel);
+    return () => {
+      window.removeEventListener('site-auth-oauth-start', save);
+      window.removeEventListener('site-auth-oauth-cancel', cancel);
+    };
+  }, [mediaId, modelId, workflowId, drafts, values, quantity, tabId]);
+
+  useEffect(() => {
+    const raw = sessionStorage.getItem(authDraftKey);
+    if (!raw) return;
+    sessionStorage.removeItem(authDraftKey);
+    void fetch('/api/auth/get-session', { credentials: 'same-origin', cache: 'no-store' })
+      .then(response => response.ok ? response.json() : null)
+      .then(session => {
+        if (!session?.session || !session.user) return;
+        try {
+          const saved = JSON.parse(raw) as AuthDraft;
+          const media = config.media.find(item => item.id === saved.mediaId);
+          const model = config.models.find(item => item.id === saved.modelId);
+          if (media) setMediaId(media.id);
+          if (model) setModelId(model.id);
+          if (typeof saved.workflowId === 'string' && config.workflows.some(item => item.id === saved.workflowId)) setWorkflowId(saved.workflowId);
+          if (saved.drafts && typeof saved.drafts === 'object') setDrafts(saved.drafts);
+          if (saved.values && typeof saved.values === 'object') setValues(saved.values);
+          if (Number.isInteger(saved.quantity) && saved.quantity >= config.quantity.min && saved.quantity <= config.quantity.max) setQuantity(saved.quantity);
+          if (config.tabs.some(item => item.id === saved.tabId)) setTabId(saved.tabId);
+        } catch { /* Ignore stale or invalid browser data. */ }
+      }).catch(() => {});
+    // The compiled catalog is fixed for this page mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const draft = drafts[mediaId] ?? '';
   const model = config.models.find(item => item.id === modelId);

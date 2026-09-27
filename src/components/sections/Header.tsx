@@ -24,8 +24,9 @@ export function Header({ locale, userName, userEmail, userImage, credits }: { lo
       defaultMode={theme.defaultMode.home}
       links={navigationLinks(locale).map(link => {
         const Icon = { home: Home, pricing: Tags, dashboard: LayoutDashboard, credits: Coins }[link.icon];
-        return { label: link.label, href: link.href, icon: <Icon aria-hidden="true" /> };
+        return { label: link.label, href: link.href, icon: <Icon aria-hidden="true" />, requiresAuth: link.id === 'dashboard' || link.id === 'credits' };
       })}
+      signedIn={!!userName && !!userEmail}
       accountControl={userName && userEmail && credits !== undefined ? <AccountPopovers user={{ name: userName, email: userEmail, image: userImage }} balance={credits} locale={locale} dateLocale={site.languages.find(language => language.code === locale)?.dateLocale ?? site.languages[0].dateLocale} copy={copy.account} labels={{ credits: copy.nav.availableCredits, logout: copy.nav.logout, signOutFailed: copy.nav.signOutFailed }} settings={site.account} palette={theme.account} plans={site.plans.map(plan => ({ ...plan, name: planCopy(locale, plan.id).name }))} siteUrl={site.url} brand={site.brand} /> : <AuthControl variant="avatar" copy={browserNavCopy(copy)} locale={locale} methods={{ email: auth.email, google: auth.google, github: auth.github }} userName={userName} userEmail={userEmail} callbackURL={routePath(locale, 'home')} inviteRequired={auth.invite.required} accountLinks={Object.fromEntries(navigationLinks(locale).filter(link => link.id !== 'home').map(link => [link.id === 'dashboard' ? 'workspace' : link.id, { label: link.label, href: link.href }])) as AccountLinks} />}
     />
   </section>;
