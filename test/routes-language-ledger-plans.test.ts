@@ -75,13 +75,12 @@ test('all ledger sources have translated copy, and the receipt query uses the pa
   assert.match(readFileSync('src/lib/account-rewards.ts', 'utf8'), /paidLedgerSources\.map/);
 });
 
-test('every configured plan has id-based names and descriptions in every language', () => {
+test('every configured plan has an id-based name in every language', () => {
   for (const language of site.languages) {
     assert.deepEqual(Object.keys(messages[language.code].planCopy).sort(), site.plans.map(plan => plan.id).sort());
     for (const plan of site.plans) {
       const copy = planCopy(language.code, plan.id);
       assert.ok(copy.name.trim());
-      assert.ok(copy.detail.trim());
     }
   }
   assert.throws(() => planCopy('en', 'unknown'), /Missing plan copy/);

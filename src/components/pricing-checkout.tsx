@@ -5,7 +5,9 @@ import { Check, ChevronDown, Image as ImageIcon, ShieldCheck, Sparkles, Video, X
 import { requestJson } from '@/lib/json-request';
 import { PricingConfetti } from './pricing-confetti';
 
-type Plan = { id: string; tier?: string; billing: 'month' | 'year' | 'once'; credits: number; amount: string; currency: string; name: string; detail: string; checkoutEnabled: boolean };
+type Plan = { id: string; tier?: string; billing: 'month' | 'year' | 'once'; credits: number; amount: string; currency: string; name: string; checkoutEnabled: boolean };
+type Mode = Plan['billing'];
+type PlanFeature = string | { yearly: string };
 type Model = { id: string; name: string; icon: string; kind: 'video' | 'image'; cost: number | null };
 type Copy = {
   title: string; lead: string; monthly: string; yearly: string; packs: string; save: string;
@@ -14,12 +16,20 @@ type Copy = {
   videoModels: string; imageModels: string; modelCatalog: string; modelNote: string; fromCredits: string; previewOnly: string;
   paymentTitle: string; paymentNote: string; checkout: string; unavailable: string; unavailableNote: string;
   signInRequired: string; wait: string; failed: string; coupon: string;
+  planFeatures: Record<string, PlanFeature[]>; packFeatures: string[];
 };
 
 const methods = ['mastercard', 'visa', 'amex', 'apple-pay', 'google-pay', 'discover', 'jcb'] as const;
 const methodNames = ['Mastercard', 'Visa', 'American Express', 'Apple Pay', 'Google Pay', 'Discover', 'JCB'];
 const money = (value: number) => `$${value.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}`;
 const count = (value: number) => value.toLocaleString('en-US');
+
+export function pricingFeatureLines(plan: Pick<Plan, 'id' | 'tier' | 'credits'>, mode: Mode, copy: Pick<Copy, 'planFeatures' | 'packFeatures'>) {
+  if (mode === 'once') return copy.packFeatures.map(line => line.replace('{count}', count(plan.credits)));
+  const features = copy.planFeatures[plan.tier ?? plan.id];
+  if (!features) throw new Error(`Missing pricing features for ${plan.id}`);
+  return features.flatMap(feature => typeof feature === 'string' ? [feature] : mode === 'year' ? [feature.yearly] : []);
+}
 
 function ModelDropdown({ title, models }: { title: string; models: Model[] }) {
   const [open, setOpen] = useState(false);
@@ -30,7 +40,7 @@ function ModelDropdown({ title, models }: { title: string; models: Model[] }) {
 }
 
 export function PricingCheckout({ locale, plans, models, brand, copy }: { locale: string; plans: Plan[]; models: Model[]; brand: string; copy: Copy }) {
-  const [mode, setMode] = useState<'month' | 'year' | 'once'>('year');
+  const [mode, setMode] = useState<Mode>('year');
   const [banner, setBanner] = useState(true);
   const [multiple, setMultiple] = useState(1);
   const [coupon, setCoupon] = useState('');
@@ -90,7 +100,7 @@ export function PricingCheckout({ locale, plans, models, brand, copy }: { locale
               <button type="button" className="pricing-pay" disabled={!canPay || !!pending} onClick={() => checkout(plan)}>{pending === plan.id ? copy.wait : canPay ? copy.checkout : copy.unavailable}</button>
               <div className="pricing-credits"><Sparkles size={18} /><strong>{count(plan.credits * factor)} {mode === 'once' ? copy.credits : copy.creditsMonth}</strong></div>
               {mode !== 'once' && <div className="pricing-models"><ModelDropdown title={copy.videoModels} models={video} /><ModelDropdown title={copy.imageModels} models={image} /></div>}
-              <ul className="pricing-features"><li><Check size={16} />{plan.detail}</li><li><Check size={16} />{copy.previewOnly}</li></ul>
+              <ul className="pricing-features">{pricingFeatureLines(plan, mode, copy).map(line => <li key={line}><Check size={16} />{line}</li>)}</ul>
             </article>;
           })}
         </div>
