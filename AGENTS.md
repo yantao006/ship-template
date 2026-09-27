@@ -101,7 +101,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   ├── app/                          # Next.js App Router pages and API handlers
 │   │   ├── layout.tsx                # Request-locale html lang/metadata, preview indexing and theme tokens
 │   │   ├── globals.css               # Shared responsive layout and token-consuming styles
-│   │   ├── (site)/                   # Default-locale homepage and shared-shell layout
+│   │   ├── (site)/                   # Default-locale homepage, invite landing and shared-shell layout
 │   │   ├── robots.ts                 # Preview indexing policy and sitemap reference
 │   │   ├── sitemap.ts                # Locale-aware homepage URLs and alternates
 │   │   ├── [locale]/                 # Locale-aware marketing, workspace, and auth pages
@@ -156,6 +156,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │       ├── config.ts                 # Typed site/auth/theme/database contracts and compiled choices
 │       ├── routes.ts                 # Server navigation, request-locale and initial shell mode lookup
 │       ├── route-paths.ts            # Client-safe localized route primitives
+│       ├── checkin-invite.ts         # Check-in invite URL, copy payload and social share targets
 │       ├── auth-path.ts              # Template auth route prefix
 │       ├── auth-client.ts            # Singleton browser auth client and One Tap
 │       ├── browser-nav-copy.ts       # Assembles client navigation/auth copy without mail
@@ -187,6 +188,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
     ├── account-popover-state.test.ts # Seven-day completion and next UTC claim
     ├── account-popover-card.test.ts  # Row badges, dividers, shared profile and invite-gate destinations
     ├── account-dialogs.test.ts       # Seven dialog bodies, shared hero and route destinations
+    ├── checkin-invite.test.ts        # Check-in invite payload, networks, and separate invite card
     ├── client-boundary.test.ts       # Client imports, singleton auth, localized props guards
     ├── auth-integration.test.ts      # Local better-auth signup and idempotent credits
     ├── auth-options.test.ts          # Provider switches, invites, desktop handoff
@@ -250,7 +252,8 @@ Grant source IDs, entry idempotency keys, and task state transitions make retrie
 ### Current state and extension paths
 
 The homepage account popovers read the signed-in balance and profile and expose configured check-ins, referral sharing and a masked real-data leaderboard, pending share submissions, support links, plans and payment receipts.
-`src/lib/use-dismissable-layer.ts` centralizes client dismissal, Escape and focus handling; `src/lib/use-referral-claim.ts` owns home referral capture and redemption, and `src/lib/json-request.ts` owns JSON writes.
+`src/lib/use-dismissable-layer.ts` centralizes client dismissal, Escape and focus handling; `src/lib/use-referral-claim.ts` captures `ref` on home or `invite_code` on `/invitation-landing` through sign-in and redeems eligible claims, and `src/lib/json-request.ts` owns JSON writes.
+`src/lib/checkin-invite.ts` builds the check-in card's share payload from the site origin and current user's referral code; `/invitation-landing` renders the branded homepage with the existing referral capture, while the separate invite dialog retains its existing `ref` link.
 `src/components/blocks/account-popover-card.tsx` renders account menus from ordered rows with optional badges, one named tone, and per-row dividers.
 `account-profile.tsx` shares avatar and profile presentation across the full and invite-gated menus; `account-gate-rows.tsx` maps existing route-table links into shared rows, while `account-popovers.tsx` owns account actions and `account-dialogs.tsx` owns seven dialog bodies and their shared hero.
 `src/components/blocks/tags.css` shares semantic tag tones between row badges and video-model labels, while `src/components/video-tool/video-tool.css` owns the themed workbench.
