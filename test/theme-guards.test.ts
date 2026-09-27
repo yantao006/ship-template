@@ -22,6 +22,7 @@ const literalAllowlist = new Set([
   ...Object.keys(legacyColors),
   'src/components/blocks/account-popovers.tsx', // Unmigrated row colors.
   'public/brand/logo.svg',
+  ...['amex', 'apple-pay', 'discover', 'google-pay', 'jcb', 'mastercard', 'visa'].map(name => `public/pricing/${name}.svg`), // Third-party payment marks retain their trademark colors.
   'public/video-tool/grok-logo.svg',
   'public/video-tool/openai-logo.svg',
   'public/video-tool/seedance-logo.svg', // Third-party brand marks.

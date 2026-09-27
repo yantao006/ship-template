@@ -1,1 +1,15 @@
-export default { title: 'Plans', lead: 'Choose a plan and check out with Waffo. A coupon can be applied. An annual plan grants credits for the current month only.', checkout: 'Checkout', signInRequired: 'Sign in before checkout.', wait: 'Please wait…', failed: 'Checkout could not start. Please try again.', coupon: 'Coupon', once: 'One-time', year: 'Annual', credits: 'credits', packName: 'Credit pack', packDetail: 'One purchase adds credits once.', annualName: 'Annual', annualDetail: 'One yearly payment. This checkout grants the current calendar month only.' };
+export default {
+  title: 'Choose your plan', lead: 'Flexible credits for the way you create.',
+  monthly: 'Monthly', yearly: 'Yearly', packs: 'Credit Packs', save: 'Save up to 50%',
+  monthlyHint: 'Monthly price and credits', yearlyHint: 'Yearly total shown below each monthly rate', packHint: 'One-time credit purchase',
+  popular: 'MOST POPULAR', off: 'Annual savings', perMonth: '/ month', perCredit: '/ credit', billedYearly: 'billed yearly',
+  creditsMonth: 'credits / month', credits: 'credits', oneTime: 'one-time',
+  maxMultiplier: 'Max plan multiplier', maxBase: 'Base', maxTotal: 'Total',
+  videoModels: 'Video Models', imageModels: 'Image Models', modelCatalog: 'Explore the model catalog',
+  modelNote: 'These are request-preview credit estimates from the configured video tool. Generation and credit charges are not active yet.',
+  fromCredits: 'from {count} credits / video', previewOnly: 'Preview only',
+  paymentTitle: 'Payment methods at checkout', paymentNote: 'Displayed methods are illustrative; available methods depend on the checkout provider and your region.',
+  checkout: 'Pay now', unavailable: 'Checkout unavailable', unavailableNote: 'These prices have not been matched to the existing payment product. No payment will be started.',
+  signInRequired: 'Sign in before checkout.', wait: 'Please wait…', failed: 'Checkout could not start. Please try again.',
+  coupon: 'Coupon', once: 'One-time', year: 'Annual', packName: 'Credit pack', packDetail: 'One purchase adds credits once.', annualName: 'Annual', annualDetail: 'One yearly payment grants credits for the current calendar month only.',
+};

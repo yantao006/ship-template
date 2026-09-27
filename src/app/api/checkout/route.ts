@@ -18,6 +18,11 @@ export async function POST(request: Request) {
   const locale = body.locale && (site.locales as readonly string[]).includes(body.locale) ? body.locale : site.defaultLocale;
   const coupon = body.coupon?.trim();
   if (!plan) return Response.json({ error: 'Unknown plan' }, { status: 400 });
+  // The single Waffo product must be explicitly matched to a verified catalog price.
+  // A client cannot unlock unverified plans by posting their IDs directly.
+  if (!site.checkoutPlanId || plan.id !== site.checkoutPlanId || plan.billing === 'month') {
+    return Response.json({ error: 'Checkout unavailable for this plan' }, { status: 409 });
+  }
   if (coupon && !/^[A-Za-z0-9_-]{1,64}$/.test(coupon)) return Response.json({ error: 'Invalid coupon' }, { status: 400 });
   if (!session.user.email) return Response.json({ error: 'Email required' }, { status: 400 });
   const returnUrl = `${site.url}${routePath(locale, 'pricing')}`;

@@ -11,7 +11,7 @@ The current example has site-local accounts, invitation primitives, configurable
 - **One language per file:** `site/messages/en.ts` and `site/messages/zh.ts` compose matching per-module message files in `site/messages/en/` and `site/messages/zh/`; locale-aware pages select one set at a time.
   `site/site.config.ts` owns language entries; `src/lib/routes.ts` owns server navigation metadata, while `src/lib/route-paths.ts` holds client-safe route paths.
 - **One navigation path per purpose:** the navigation has one language control and one sign-in entry; its sign-in card lists only the methods enabled in `site/auth.config.ts`.
-- **Theme owns color:** `site/theme.config.ts` defines paired light/dark palettes, top-bar and account-card chrome, dialog and video-tool surfaces, row tones, default modes, and account accents; `src/lib/theme-tokens.ts` generates the stylesheet in `src/app/layout.tsx`.
+- **Theme owns color:** `site/theme.config.ts` defines paired light/dark palettes, top-bar and account-card chrome, dialog, video-tool and pricing surfaces, row tones, default modes, and account accents; `src/lib/theme-tokens.ts` generates the stylesheet in `src/app/layout.tsx`.
   The homepage defaults dark and other pages light, while the homepage control selects the mode on `<html>`; legacy CSS surfaces still await migration.
 - **Pages compose sections:** `src/components/sections/HomePage.tsx` orders eight homepage sections. `Header` mounts the configurable replica-style navigation; six sections remain empty scaffolds, and the video tool renders its existing implementation.
 - **Long-running work is observable:** video generation uses an asynchronous task and progress flow, while the server validates costs and records credit movements in the ledger.
@@ -36,7 +36,7 @@ The current example has site-local accounts, invitation primitives, configurable
 | Access control | `src/lib/request-context.ts`, `src/lib/invites.ts`, `src/lib/turnstile.ts`, `src/lib/desktop-auth.ts`, D1 and Turnstile HTTP API | Centralized request session, browser write guard, JSON parsing and account snapshot; invitation eligibility, optional sign-in verification, and allow-listed app handoff. |
 | Credits | `src/lib/ledger.ts`, `src/lib/credit-history.ts`, native D1 statements and batches | Atomic grants, reservations, allocation, refund, balance, and bounded account history. |
 | Email | `src/lib/email.ts`, `src/lib/notifications.ts`, Cloudflare Email or Resend | One `EmailProvider` interface for message delivery and application notification copy. |
-| Video and payments | `src/components/video-tool/`, `src/lib/mock-services.ts`, `src/lib/waffo.ts`, `src/lib/payments.ts`, `src/lib/ledger.ts`, `video_task` | The landing tool previews a create payload from site config. Checkout calls the Waffo adapter, and a verified callback grants through the ledger. |
+| Video and payments | `src/components/video-tool/`, `src/lib/mock-services.ts`, `src/lib/waffo.ts`, `src/lib/payments.ts`, `src/lib/ledger.ts`, `video_task` | The landing tool previews a create payload from site config. Checkout calls the Waffo adapter only for a verified matching product configured through `site.checkoutPlanId`; the reference catalog has no matching product, so checkout and callback grants are gated off. |
 | Worker infrastructure | `worker.ts`, `src/lib/env.ts`, `wrangler.jsonc`, OpenNext | HTTP dispatch and scheduled/queue entry points with typed request-time bindings. |
 
 ## Build, compile, and deploy commands
@@ -134,8 +134,10 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │   ├── blocks/account-popover-state.ts # Pure seven-day streak presentation
 │   │   ├── sections/                 # Ordered homepage sections; Header mounts navigation, tool mounts workbench
 │   │   ├── video-tool/               # Bound copy, scoped themed video-tool.css, interaction state, pure selectors
-│   │   ├── pricing-content.tsx       # Server-rendered plan list
-│   │   ├── pricing-checkout.tsx      # Client checkout request for a selected plan
+│   │   ├── pricing-content.tsx       # Server-bound pricing catalog and video-tool models
+│   │   ├── pricing-checkout.tsx      # Monthly/yearly/pack cards and gated checkout interaction
+│   │   ├── pricing-confetti.tsx      # Brief decorative entry effect
+│   │   ├── pricing.css               # Tokenized responsive pricing surface
 │   │   ├── marketing-nav.tsx         # Navigation assembled from locale and auth choices
 │   │   ├── auth-control.tsx          # Client signed-in controls and sign-in card entry
 │   │   ├── sign-in-card.tsx          # Client email/social sign-in dialog
@@ -191,6 +193,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
     ├── home-sections.test.ts        # Homepage section scaffold order and stable ids
     ├── theme-guards.test.ts         # Palette parity, legacy literal baseline, duplicate-selector guard
     ├── payments.test.ts             # Waffo signature, one-time grant, monthly grant, and replay
+    ├── pricing-port.test.ts         # Reference catalog values, disabled checkout, locale/theme guards
     └── video-tool.test.ts           # Tool helpers and locale copy shape
 ```
 
@@ -215,7 +218,7 @@ A new capability can be a new `src/lib/` service called by an API endpoint, a se
 `src/lib/config.ts` declares the site, auth, and database config contracts; site files use `satisfies` to check build-time choices, while `wrangler.jsonc` declares matching live resources.
 `scripts/site-check.ts` compares the Worker name, D1/R2/Queue names, auth shape, email binding, callback origin, and required secret names before publication.
 `site/messages/en.ts` and `site/messages/zh.ts` compose matching per-module copy under `site/messages/{en,zh}/`, including separate mail, sign-in, invites, handoff, account, workspace, credits, pricing, and video-tool files; `src/app/[locale]/` and `src/components/language-control.tsx` select copy without duplicating business logic.
-`site/theme.config.ts` provides same-key light and dark palettes, paired top-bar/account-card/dialog/video-tool colors and row tones, mode defaults, and account colors; `src/lib/theme-tokens.ts` generates the CSS token stylesheet in `src/app/layout.tsx` instead of inline body styles.
+`site/theme.config.ts` provides same-key light and dark palettes, paired top-bar/account-card/dialog/video-tool/pricing colors and row tones, mode defaults, and account colors; `src/lib/theme-tokens.ts` generates the CSS token stylesheet in `src/app/layout.tsx` instead of inline body styles.
 The homepage header marks the dark default, while `ReplicaNavigation` selects `data-mode` on `<html>` for toggling; other pages default light.
 `src/middleware.ts` forwards the route locale so the root layout sets matching `<html lang>` and metadata, including for the default-language `/` homepage.
 `src/app/globals.css` applies the tokens across marketing and workspace surfaces, and `.auth-panel` sets foreground with its surface background.
@@ -268,7 +271,11 @@ The workbench chrome stays with the component, so a shorter second-site catalog 
 When generation is connected, page parameters flow from that payload to an authenticated API that checks identity, input, options, and credit cost before `src/lib/ledger.ts` reserves the task and credits.
 An upstream adapter submits the work, the queue processing in `worker.ts` observes progress and updates task status, and a status endpoint lets the client follow that progress.
 On success, the service stores the result in the site's `MEDIA` binding and returns an authorized preview or download; on failure, it reconciles task state and the ledger idempotently according to the site's credit policy.
-Site plans in `site/site.config.ts` flow from the pricing page through `POST /api/checkout` to `src/lib/waffo.ts`. That route accepts a signed-in user, then the adapter opens a Waffo Pancake checkout for the existing product id with `@waffo/pancake-ts`. `POST /api/webhooks/payment` verifies `X-Waffo-Signature` with that SDK before `src/lib/payments.ts` writes a one-time grant or the current subscription month in `src/lib/ledger.ts`. A one-time purchase grants once. Replaying the same payment or the same month does not grant again. Coupons are the only promotion. The product id, merchant id, request signing key, and callback public key are Worker secrets.
+Site plans in `site/site.config.ts` list four monthly and annual tiers and five credit packs; annual `amount` is the full 12-month total, displayed as a monthly equivalent in the pricing UI.
+`site.checkoutPlanId` is null until the single existing Waffo product is verified to match one configured non-monthly plan, so both `POST /api/checkout` and verified payment grants reject the currently unmatched catalog.
+After explicit matching, checkout can use the existing product id with `@waffo/pancake-ts`; `POST /api/webhooks/payment` verifies `X-Waffo-Signature` before `src/lib/payments.ts` writes a one-time grant or the current subscription month in `src/lib/ledger.ts`.
+Monthly billing has no adapter or callback grant path yet.
+The product id, merchant id, request signing key, and callback public key remain Worker secrets.
 Vendor-specific request and callback formats stay in adapters, while the page, task, and ledger contracts describe this application's behavior.
 
 ## How to add new logic
@@ -323,7 +330,7 @@ Schema changes gain a new reviewed migration and matching service/query types an
 | `email.provider`, `email.from` | Selects the email adapter and sender address. |
 | `signupCredits` | Amount granted once to an eligible new account. |
 | `account` | Reward switches/amounts, submission cap, contact addresses, commercial-use link, icon and share-network choices. |
-| `plans` | One-time and annual plan id, price, currency, and credit amount. |
+| `plans`, `checkoutPlanId` | Monthly and annual tiers plus credit packs; the single product checkout gate is null until an exact match is verified. |
 | `site/auth.config.ts`: `backend` | Current better-auth selection. |
 | `src/lib/auth-path.ts`: `authBasePath` | Template-owned `/api/auth` route contract shared by server and browser. |
 | `email.enabled`, `email.requireVerification`, `email.passwordReset`, `google.enabled`, `github.enabled` | Independently enable sign-in options; email verification delays the session and signup credits until the emailed link is opened, password reset shows one forgot-password path and sends through `EmailProvider` only when that switch is on, and OAuth options require matching Worker secrets. |
@@ -332,7 +339,7 @@ Schema changes gain a new reviewed migration and matching service/query types an
 | `desktop.schemes` | Allow-listed app URL schemes for signed-in desktop handoff. |
 | `turnstile.onSignIn` | Applies Turnstile verification to sign-in requests supplied with a client token. |
 | `site/database.config.ts`: `binding`, `migrationsDir` | Site D1 binding name and migration directory. |
-| `site/theme.config.ts`: `light`, `dark`, `chrome`, `rowTones`, `defaultMode`, `font`, `account`, `tones` | Paired semantic palettes and navigation/account-card chrome, row tones, homepage/other-page defaults, and account accents emitted through `src/lib/theme-tokens.ts`. |
+| `site/theme.config.ts`: `light`, `dark`, `chrome`, `pricing`, `rowTones`, `defaultMode`, `font`, `account`, `tones` | Paired semantic palettes and navigation/account-card/pricing chrome, row tones, homepage/other-page defaults, and account accents emitted through `src/lib/theme-tokens.ts`. |
 | `site/video-tool.config.ts` | Landing tool media, workflows, models, fields, references, assets, and optional promo. |
 | `site/messages/en.ts`, `zh.ts`: `metadata`, `nav`, `hero`, `videoTool`, `account`, `dashboard`, `credits`, `planCopy` | Same-shape localized strings consumed by metadata, navigation, credit sources, plans, the video tool, and content views. |
 

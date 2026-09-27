@@ -1,1 +1,15 @@
-export default { pack: { name: '积分包', detail: '一次购买只发放一次积分。' }, annual: { name: '年付', detail: '一次支付全年费用。这次结账只发放当前自然月的积分。' } };
+export default {
+  'lite-month': { name: 'Lite', detail: '每月 600 积分。' },
+  'lite-year': { name: 'Lite', detail: '每月 600 积分，按年付款。' },
+  'standard-month': { name: 'Standard', detail: '每月 1,500 积分。' },
+  'standard-year': { name: 'Standard', detail: '每月 1,500 积分，按年付款。' },
+  'pro-month': { name: 'Pro', detail: '每月 3,600 积分。' },
+  'pro-year': { name: 'Pro', detail: '每月 3,600 积分，按年付款。' },
+  'max-month': { name: 'Max', detail: '1 倍时每月 8,000 积分。' },
+  'max-year': { name: 'Max', detail: '1 倍时每月 8,000 积分，按年付款。' },
+  starter: { name: 'Starter 积分包', detail: '一次购买 800 积分。' },
+  value: { name: 'Value 积分包', detail: '一次购买 2,000 积分。' },
+  'pro-pack': { name: 'Pro 积分包', detail: '一次购买 7,500 积分。' },
+  bulk: { name: 'Bulk 积分包', detail: '一次购买 50,000 积分。' },
+  mega: { name: 'Mega 积分包', detail: '一次购买 160,000 积分。' },
+};

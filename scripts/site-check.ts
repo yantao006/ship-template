@@ -51,9 +51,10 @@ export async function check(root: string, env: Record<string, string | undefined
   const planIds = new Set<string>();
   if (!plans?.length) errors.push('Site plans missing');
   for (const plan of plans ?? []) {
-    if (!plan.id || planIds.has(plan.id) || (plan.billing !== 'once' && plan.billing !== 'year') || !Number.isSafeInteger(plan.credits) || plan.credits <= 0 || !/^\d+\.\d{2}$/.test(plan.amount) || !/^[A-Z]{3}$/.test(plan.currency) || !plan.description) errors.push('Invalid site plan');
+    if (!plan.id || planIds.has(plan.id) || (plan.billing !== 'once' && plan.billing !== 'month' && plan.billing !== 'year') || !Number.isSafeInteger(plan.credits) || plan.credits <= 0 || !/^\d+\.\d{2}$/.test(plan.amount) || !/^[A-Z]{3}$/.test(plan.currency) || !plan.description) errors.push('Invalid site plan');
     planIds.add(plan.id);
   }
+  if (config.checkoutPlanId != null && !plans?.some(plan => plan.id === config.checkoutPlanId && plan.billing !== 'month')) errors.push('Checkout plan must match a non-monthly configured plan');
   if (JSON.stringify([...wrangler.secrets?.required ?? []].sort()) !== JSON.stringify(requiredSecrets.sort())) errors.push('Required secrets declaration mismatch');
   if (strict) {
     for (const name of requiredSecrets) requireValue(name);

@@ -1,0 +1,117 @@
+.pricing-experience { min-height: 100dvh; background: var(--pricing-canvas); color: var(--pricing-text); }
+.pricing-confetti { position: fixed; inset: 0; z-index: 100; overflow: hidden; pointer-events: none; }
+.pricing-confetti i { position: absolute; top: 60%; width: 8px; height: 14px; border-radius: 2px; background: var(--pricing-accent); opacity: 0; animation: pricing-burst 1.5s ease-out both; }
+.pricing-confetti i:nth-child(3n) { background: var(--pricing-success); }
+.pricing-confetti i:nth-child(4n) { background: var(--pricing-banner-accent); }
+@keyframes pricing-burst { 0% { transform: translateY(0) translateX(0) rotate(0); opacity: 0; } 18% { opacity: .9; } 100% { transform: translateY(-46vh) translateX(var(--drift)) rotate(520deg); opacity: 0; } }
+.pricing-experience .site-nav { background: var(--pricing-canvas); border-color: var(--pricing-border); }
+.pricing-experience .site-nav .auth-button { border-color: var(--pricing-button); background: var(--pricing-button); color: var(--pricing-button-text); }
+.pricing-experience .site-nav .auth-button:hover:not(:disabled) { background: var(--pricing-accent); border-color: var(--pricing-accent); color: var(--pricing-accent-text); }
+.pricing-experience :where(a, button, input):focus-visible { outline: 2px solid var(--pricing-accent); outline-offset: 3px; }
+.pricing-banner { min-height: 56px; display: flex; align-items: center; justify-content: center; gap: 20px; padding: 8px 24px; background: var(--pricing-banner); color: var(--pricing-banner-text); font-size: 16px; font-weight: 700; }
+.pricing-banner svg { color: var(--pricing-banner-accent); flex: none; }
+.pricing-banner button { border: 0; border-radius: 100px; padding: 9px 22px; background: var(--pricing-banner-text); color: var(--pricing-banner); font-size: 13px; font-weight: 700; cursor: pointer; }
+.pricing-banner .pricing-banner-close { padding: 6px; display: grid; place-items: center; background: transparent; color: var(--pricing-banner-text); }
+.pricing-page { padding: 72px 24px 96px; background: radial-gradient(ellipse 38% 10% at 50% 0%, color-mix(in srgb, var(--pricing-accent) 16%, transparent), transparent 100%), var(--pricing-canvas); }
+.pricing-inner { max-width: 1432px; margin: 0 auto; }
+.pricing-launch { min-height: 102px; display: flex; align-items: center; justify-content: space-between; gap: 24px; border: 1px solid var(--pricing-banner-accent); border-radius: 24px; padding: 22px 48px; background: linear-gradient(110deg, color-mix(in srgb, var(--pricing-banner-accent) 30%, var(--pricing-panel)), var(--pricing-featured)); }
+.pricing-launch strong { color: var(--pricing-banner-accent); font-size: clamp(32px, 4vw, 52px); line-height: 1; white-space: nowrap; letter-spacing: -.04em; }
+.pricing-launch span { font-size: 15px; font-weight: 700; }
+.pricing-page h1 { margin: 55px 0 12px; font-size: clamp(38px, 5vw, 60px); text-align: center; letter-spacing: -.04em; line-height: 1.12; }
+.pricing-lead { margin: 0 auto 36px; color: var(--pricing-muted); text-align: center; line-height: 1.5; }
+.pricing-tabs-wrap { text-align: center; scroll-margin-top: 80px; }
+.pricing-tabs { display: inline-flex; align-items: center; padding: 4px; border: 1px solid var(--pricing-border); border-radius: 50px; background: var(--pricing-panel); }
+.pricing-tabs button { min-height: 50px; padding: 10px 27px; border: 0; border-radius: 40px; background: transparent; color: var(--pricing-muted); font-size: 17px; font-weight: 700; cursor: pointer; }
+.pricing-tabs button.selected { background: var(--pricing-accent); color: var(--pricing-accent-text); }
+.pricing-tabs small { font-size: 11px; margin-left: 7px; }
+.pricing-tabs-wrap > p { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 17px 0 28px; color: var(--pricing-muted); font-size: 14px; }
+.pricing-tabs-wrap > p svg { color: var(--pricing-success); }
+.pricing-availability { max-width: 730px; margin: 0 auto 32px; padding: 12px 18px; border: 1px solid var(--pricing-border); border-radius: 12px; background: var(--pricing-inset); color: var(--pricing-muted); font-size: 13px; text-align: center; line-height: 1.5; }
+.pricing-coupon { display: grid; gap: 8px; max-width: 300px; margin: 0 auto 25px; font-size: 13px; }
+.pricing-coupon input { min-height: 43px; padding: 9px; border: 1px solid var(--pricing-border); border-radius: 8px; background: var(--pricing-panel); color: var(--pricing-text); }
+.pricing-card-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; align-items: stretch; animation: pricing-enter .36s ease-out both; }
+.pricing-card-grid.packs { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.pricing-card { position: relative; min-width: 0; padding: 36px 27px; border: 1px solid var(--pricing-border); border-radius: 24px; background: var(--pricing-panel); transition: transform .25s ease, border-color .25s ease; }
+.pricing-card:hover { transform: translateY(-3px); border-color: var(--pricing-accent); }
+.pricing-card.featured { border: 2px solid var(--pricing-accent); background: var(--pricing-featured); padding: 35px 26px; box-shadow: 0 18px 38px color-mix(in srgb, var(--pricing-accent) 16%, transparent); }
+.pricing-popular { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; padding: 8px 16px; border-radius: 30px; background: var(--pricing-accent); color: var(--pricing-accent-text); font-size: 11px; font-weight: 800; letter-spacing: .07em; }
+.pricing-card-title { min-height: 44px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.pricing-card-title h2 { margin: 0; font-size: 32px; letter-spacing: -.04em; line-height: 1.1; }
+.pricing-discount { padding: 6px 9px; border-radius: 30px; background: var(--pricing-banner-accent); color: var(--pricing-banner); font-size: 11px; font-weight: 700; text-align: center; }
+.pricing-rate { margin: 18px 0 5px; color: var(--pricing-success); font-size: 13px; font-weight: 650; }
+.pricing-amount { min-height: 58px; display: flex; align-items: baseline; flex-wrap: wrap; gap: 7px; }
+.pricing-amount del { color: var(--pricing-muted); font-size: 19px; }
+.pricing-amount strong { font-size: clamp(30px, 3vw, 46px); letter-spacing: -.04em; white-space: nowrap; }
+.pricing-amount span { color: var(--pricing-muted); font-size: 13px; }
+.pricing-billed { min-height: 21px; margin: 4px 0 19px; color: var(--pricing-muted); font-size: 13px; }
+.pricing-pay { width: 100%; min-height: 48px; border: 0; border-radius: 50px; background: var(--pricing-button); color: var(--pricing-button-text); font-weight: 750; cursor: pointer; }
+.pricing-pay:disabled { cursor: not-allowed; opacity: .55; }
+.pricing-card.featured .pricing-pay:not(:disabled) { background: var(--pricing-accent); color: var(--pricing-accent-text); }
+.pricing-credits { display: flex; align-items: center; gap: 11px; min-height: 58px; margin: 18px 0 16px; padding: 12px; border: 1px solid var(--pricing-accent); border-radius: 15px; background: var(--pricing-featured); font-size: 14px; }
+.pricing-credits svg { flex: none; color: var(--pricing-accent); }
+.pricing-models { margin: 0 0 15px; }
+.pricing-model-dropdown { border-bottom: 1px solid var(--pricing-border); }
+.pricing-model-dropdown > button { display: flex; align-items: center; gap: 8px; width: 100%; padding: 12px 0; border: 0; background: transparent; color: var(--pricing-text); text-align: left; cursor: pointer; font-size: 13px; }
+.pricing-model-dropdown > button strong { flex: 1; }
+.pricing-model-dropdown > button svg:first-child { color: var(--pricing-accent); }
+.pricing-model-dropdown > button svg.open { transform: rotate(180deg); }
+.pricing-model-chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 3px 0 12px; }
+.pricing-model-chips span { display: inline-flex; align-items: center; gap: 6px; padding: 5px 7px; border: 1px solid var(--pricing-border); border-radius: 9px; background: var(--pricing-inset); font-size: 11px; }
+.pricing-model-chips img, .pricing-catalog-row img { object-fit: contain; flex: none; }
+.pricing-features { list-style: none; margin: 18px 0 0; padding: 0; font-size: 13px; line-height: 1.5; }
+.pricing-features li { display: flex; align-items: flex-start; gap: 9px; margin: 11px 0; }
+.pricing-features svg { flex: none; margin-top: 2px; color: var(--pricing-success); }
+.pricing-multiplier { margin: 0 0 18px; padding: 13px; border: 1px solid var(--pricing-border); border-radius: 15px; background: var(--pricing-inset); }
+.pricing-multiplier label { display: flex; justify-content: space-between; font-size: 12px; }
+.pricing-multiplier input { width: 100%; margin: 17px 0; accent-color: var(--pricing-accent); }
+.pricing-multiplier-labels { display: flex; justify-content: space-between; }
+.pricing-multiplier-labels button { padding: 3px; border: 0; background: transparent; color: var(--pricing-muted); font-size: 12px; cursor: pointer; }
+.pricing-multiplier-labels button[aria-pressed="true"] { color: var(--pricing-accent); font-weight: 800; }
+.pricing-multiplier p { margin: 10px 0 0; color: var(--pricing-muted); font-size: 11px; line-height: 1.5; }
+.pricing-catalog { margin: 80px 0 48px; padding: 40px; border: 1px solid var(--pricing-accent); border-radius: 28px; text-align: center; }
+.pricing-catalog h2 { margin: 0 0 34px; font-size: clamp(27px, 3vw, 42px); letter-spacing: -.04em; }
+.pricing-catalog-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; text-align: left; }
+.pricing-catalog-grid > div { min-width: 0; padding: 24px; border: 1px solid var(--pricing-border); border-radius: 17px; background: var(--pricing-panel); }
+.pricing-catalog-grid h3 { display: flex; align-items: center; gap: 10px; margin: 0 0 18px; font-size: 14px; letter-spacing: .08em; }
+.pricing-catalog-grid h3 svg { color: var(--pricing-accent); }
+.pricing-catalog-list { display: grid; gap: 8px; }
+.pricing-catalog-row { min-height: 51px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 14px; border: 1px solid var(--pricing-border); border-radius: 12px; background: var(--pricing-inset); color: var(--pricing-muted); font-size: 12px; }
+.pricing-catalog-row > span:first-child { display: flex; align-items: center; gap: 8px; color: var(--pricing-text); text-align: left; font-weight: 650; }
+.pricing-catalog-row > span:last-child { text-align: right; }
+.pricing-catalog > p { max-width: 780px; margin: 25px auto 0; color: var(--pricing-muted); font-size: 13px; line-height: 1.65; }
+.pricing-payment { padding: 30px; border: 1px solid var(--pricing-border); border-radius: 24px; background: var(--pricing-inset); text-align: center; }
+.pricing-payment h2 { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 0; font-size: 17px; }
+.pricing-payment h2 svg { color: var(--pricing-success); }
+.pricing-payment ul { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; list-style: none; padding: 0; margin: 25px 0 15px; }
+.pricing-payment li { width: 126px; height: 64px; display: grid; place-items: center; border: 1px solid var(--pricing-border); border-radius: 16px; background: var(--pricing-panel); }
+.pricing-payment li:nth-child(4), .pricing-payment li:nth-child(5) { background: var(--pricing-payment-badge); }
+.pricing-payment img { max-width: 75%; object-fit: contain; }
+.pricing-link-mark { font-size: 22px; font-weight: 850; }
+.pricing-payment p { margin: 0; color: var(--pricing-muted); font-size: 12px; }
+.pricing-error { margin: 20px 0 0; color: var(--pricing-banner-accent); }
+@keyframes pricing-enter { from { opacity: .7; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 1200px) {
+  .pricing-experience .pricing-card-grid, .pricing-experience .pricing-card-grid.packs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 767px) {
+  .pricing-experience:is(.site-shell) .pricing-banner { gap: 9px; font-size: 12px; padding: 7px 12px; }
+  .pricing-experience:is(.site-shell) .pricing-banner button { padding: 8px 12px; }
+  .pricing-experience:is(.site-shell) .pricing-page { padding: 45px 16px 65px; }
+  .pricing-experience:is(.site-shell) .pricing-launch { min-height: 145px; flex-direction: column; justify-content: center; gap: 12px; padding: 18px; text-align: center; }
+  .pricing-experience:is(.site-shell) .pricing-page h1 { margin-top: 42px; font-size: 34px; }
+  .pricing-experience:is(.site-shell) .pricing-tabs { width: 100%; }
+  .pricing-experience:is(.site-shell) .pricing-tabs button { flex: 1; padding: 9px 5px; font-size: 13px; }
+  .pricing-experience:is(.site-shell) .pricing-tabs small { display: block; margin: 0; }
+  .pricing-experience:is(.site-shell) .pricing-card-grid, .pricing-experience:is(.site-shell) .pricing-card-grid.packs { grid-template-columns: 1fr; gap: 24px; }
+  .pricing-experience:is(.site-shell) .pricing-card.featured { order: -1; }
+  .pricing-experience:is(.site-shell) .pricing-catalog { margin: 60px 0 35px; padding: 30px 16px; }
+  .pricing-experience:is(.site-shell) .pricing-catalog-grid { grid-template-columns: 1fr; gap: 16px; }
+  .pricing-experience:is(.site-shell) .pricing-catalog-grid > div { padding: 16px; }
+  .pricing-experience:is(.site-shell) .pricing-payment { padding: 24px 14px; }
+  .pricing-experience:is(.site-shell) .pricing-payment li { width: calc(25% - 9px); min-width: 60px; height: 52px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pricing-experience:where(.site-shell) .pricing-card-grid { animation: none; }
+  .pricing-experience:where(.site-shell) .pricing-card { transition: none; }
+  .pricing-experience:where(.site-shell) .pricing-confetti i { animation: none; }
+}

@@ -1,30 +1,29 @@
 import { headers } from 'next/headers';
 import { readSession } from '@/lib/request-context';
-import { site, messages } from '@/lib/config';
+import { site, messages, videoTool } from '@/lib/config';
 import { workerEnv } from '@/lib/env';
 import { planCopy } from '@/lib/plan-copy';
 import { MarketingNav } from './marketing-nav';
 import { PricingCheckout } from './pricing-checkout';
+import './pricing.css';
 
 export async function PricingContent({ locale = site.defaultLocale as keyof typeof messages }: { locale?: keyof typeof messages }) {
-  const env = workerEnv();
-  const requestHeaders = await headers();
-  const session = await readSession(env, requestHeaders);
+  const session = await readSession(workerEnv(), await headers());
   const copy = messages[locale];
-  const cards = site.plans.map(plan => ({
-    id: plan.id,
-    billing: plan.billing,
-    credits: plan.credits,
-    amount: plan.amount,
-    currency: plan.currency,
+  const plans = site.plans.map(plan => ({
+    ...plan,
     ...planCopy(locale, plan.id),
+    checkoutEnabled: !!site.checkoutPlanId && site.checkoutPlanId === plan.id && plan.billing !== 'month',
   }));
-  return <div className="site-shell">
+  const models = videoTool.models.map(model => ({
+    id: model.id,
+    name: (copy.videoTool.models as Record<string, string>)[model.id] ?? model.id,
+    icon: model.icon,
+    kind: model.workflowIds.includes('text-video') ? 'video' as const : 'image' as const,
+    cost: 'costByDuration' in model && model.costByDuration ? Math.min(...Object.values(model.costByDuration)) : null,
+  }));
+  return <div className="site-shell pricing-experience" data-default-mode="dark">
     <MarketingNav locale={locale} userName={session?.user.name} />
-    <section className="pricing" aria-labelledby="pricing-title">
-      <h1 id="pricing-title">{copy.pricing.title}</h1>
-      <p className="pricing-lead">{copy.pricing.lead}</p>
-      <PricingCheckout locale={locale} plans={cards} copy={copy.pricing} />
-    </section>
+    <PricingCheckout locale={locale} plans={plans} models={models} brand={site.brand} copy={copy.pricing} />
   </div>;
 }

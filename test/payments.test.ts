@@ -68,17 +68,17 @@ test('rejects a missing or tampered Pancake signature', async () => {
   assert.equal(typeof settled === 'object' && settled.userId, 'user-sign');
 });
 
-test('one-time payment grants once and a replay does not add credits', async () => {
+test('one-time grant is idempotent and unmatched products cannot grant through the live webhook', async () => {
   const body = event('order.completed', 'pack', 'pay-once', 'user-once');
-  const first = await handlePaymentWebhook({ ...env, DB: db }, webhook(body));
-  const second = await handlePaymentWebhook({ ...env, DB: db }, webhook(body));
-  assert.equal((await first.json()).message, 'success');
-  assert.equal((await second.json()).message, 'success');
-  assert.equal(await balance(db, 'user-once'), 100);
+  const rejected = await handlePaymentWebhook({ ...env, DB: db }, webhook(body));
+  assert.equal((await rejected.json()).message, 'failed');
+  assert.equal(await balance(db, 'user-once'), 0);
   const settled = readSettledPayment(body, sign(body), publicKey);
   assert.equal(settled === 'ignored' || settled === 'rejected', false);
   if (settled === 'ignored' || settled === 'rejected') return;
+  assert.equal(await grantVerifiedPayment(db, settled, plans), 'granted');
   assert.equal(await grantVerifiedPayment(db, settled, plans), 'replay');
+  assert.equal(await balance(db, 'user-once'), 100);
 });
 
 test('annual payment grants the current month only and the same month does not grant again', async () => {

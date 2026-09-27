@@ -57,6 +57,10 @@ export default {
       canvas: '#0c0c0f', panel: '#1d1d20', inset: '#111113', control: '#141416', raised: '#29292b', selected: '#414145', selectionText: '#e7c56a', text: '#f4f4f5', secondary: '#d4d4d8', muted: '#a1a1aa', faint: '#aeb0ba', border: '#39393f', accent: '#c4b5fd', accentSoft: '#3b2f63', accentText: '#ddd6fe', focus: '#e4e4e7', scrollbar: '#797981', disabled: '#38383e', disabledText: '#d4d4d8', promoBg: '#f6ead8', promoText: '#8a5a32', onMedia: '#ffffff', mediaScrim: '#000b', tabSelectedBg: '#ffffff', tabSelectedText: '#18181b', infoBg: '#1e3a4c', infoText: '#bae6fd', successBg: '#c2f0ce', successText: '#245237', crownBg: '#f6ead8', crownText: '#8a5a32', neutralBg: '#33333a', neutralText: '#e4e4e7', shadow: '#00000088', rangeTrack: '#66666c',
     },
   },
+  pricing: {
+    light: { canvas: '#fafafa', panel: '#ffffff', inset: '#f0f0f2', text: '#18181b', muted: '#5b606b', border: '#dedee3', accent: '#0d9488', accentText: '#ffffff', success: '#166534', successSoft: '#dcfce7', banner: '#f6ead8', bannerText: '#18181b', bannerAccent: '#8a5a32', featured: '#e0f2f1', button: '#18181b', buttonText: '#ffffff', paymentBadge: '#18181b' },
+    dark: { canvas: '#111113', panel: '#202024', inset: '#1b1b1f', text: '#f6f6f8', muted: '#b5b5bf', border: '#38383f', accent: '#14b8a6', accentText: '#18181b', success: '#99f6e4', successSoft: '#1b302a', banner: '#f6ead8', bannerText: '#18181b', bannerAccent: '#8a5a32', featured: '#1b302a', button: '#f6f6f8', buttonText: '#18181b', paymentBadge: '#18181b' },
+  },
   rowTones: {
     light: {
       account: { text: '#6d28d9', box: '#8b5cf6' },

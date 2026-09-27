@@ -11,7 +11,8 @@ function chromeRules(mode: 'light' | 'dark') {
   const tones = Object.entries(theme.rowTones[mode]).map(([name, value]) => `--account-tone-${name}:${value.text};--account-tone-${name}-box:${value.box};`).join('');
   const dialogs = Object.entries(theme.dialog[mode]).map(([key, value]) => `--dialog-${key.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)}:${value};`).join('');
   const video = Object.entries(theme.videoTool[mode]).map(([key, value]) => `--video-${key.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)}:${value};`).join('');
-  return chrome + tones + dialogs + video;
+  const pricing = Object.entries(theme.pricing[mode]).map(([key, value]) => `--pricing-${key.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)}:${value};`).join('');
+  return chrome + tones + dialogs + video + pricing;
 }
 
 /** One token stylesheet per site; the homepage's data marker selects its default without client-side flash. */
