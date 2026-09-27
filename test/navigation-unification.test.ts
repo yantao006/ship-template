@@ -8,7 +8,7 @@ test('marketing and workspace routes share persistent chrome while auth panels s
   const shell = read('src/components/site-shell.tsx');
   assert.match(shell, /accountSnapshot\(workerEnv\(\), await headers\(\)\)/);
   assert.match(shell, /<Header locale=\{locale\} userName=\{session\?\.user\.name\} userEmail=\{session\?\.user\.email\} userImage=\{session\?\.user\.image\} credits=\{credits\} \/>/);
-  assert.match(shell, /\{children\}\s*<Footer \/>/);
+  assert.match(shell, /\{children\}\s*<Footer locale=\{locale\} \/>/);
   assert.match(read('src/app/(site)/layout.tsx'), /<SiteShell/);
   assert.match(read('src/app/[locale]/(site)/layout.tsx'), /<SiteShell/);
   for (const route of ['page.tsx', 'pricing/page.tsx', 'dashboard/page.tsx', 'credits/page.tsx']) {

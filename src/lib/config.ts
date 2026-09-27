@@ -14,7 +14,7 @@ export type SiteConfig = {
   apex: string;
   url: string;
   previewOrigin: string;
-  languages: readonly { code: string; name: string; dateLocale: string }[];
+  languages: readonly { code: string; name: string; flag: string; dateLocale: string }[];
   locales: readonly string[];
   defaultLocale: string;
   deploy: { worker: string; d1: string; r2: string; queue: string };

@@ -1,4 +1,5 @@
 import navigation from './en/navigation';
+import footer from './en/footer';
 import signIn from './en/sign-in';
 import mail from './en/mail';
 import invites from './en/invites';
@@ -22,5 +23,5 @@ export default {
     credits: 'Available credits',
   },
   nav: navigation,
-  signIn, mail, invites, handoff, account, dashboard, credits, pricing, planCopy, videoTool,
+  footer, signIn, mail, invites, handoff, account, dashboard, credits, pricing, planCopy, videoTool,
 };
