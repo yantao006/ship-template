@@ -61,6 +61,22 @@ The single **Language** selector is in the marketing navigation on home, or at t
 An unauthenticated request to `/api/credits/balance` returns 401.
 A successful first Google sign-in creates one user and one idempotent signup credit lot in this site's D1.
 
+### Auth-4 preview browser verification (2026-09-27)
+
+Preview alias:
+
+https://popovers-awesomejev-test.yantao006.workers.dev/en
+
+With ego-browser, Sign In opened one intact Auth-4 card without changing `/en`, and closing it preserved the prompt text.
+The card displayed Google and email but not disabled GitHub, with non-overlapping 44px controls and an opaque brand panel.
+On `/en/pricing`, Sign In and an unauthenticated plan selection both opened that same dialog without changing the URL or starting payment.
+Google login returned to `/en/pricing`, updated the header, and `/api/auth/get-session` returned a real session and the permitted test user.
+A second Google login from `/en` restored the entered prompt and History tab; its saved draft was consumed once after the server session check.
+No email password was added to the Google account; email sign-in is covered by local D1-backed integration tests, not this browser run.
+Desktop and mobile captures are at [desktop](docs/verification/auth-4-desktop.png) and [mobile](docs/verification/auth-4-mobile.png).
+The remote D1 still has unapplied `0003_account_rewards.sql`, so `/api/account/activity` returns 500 and the signed-in account card reports an activity error; migrate the remote database before relying on reward actions.
+This browser run did not apply that migration, submit a payment, or deploy the preview version to the live hostname.
+
 ## Site and secret boundaries
 
 Each site needs its own D1, Worker, Google Cloud project and OAuth web client, and account namespace.

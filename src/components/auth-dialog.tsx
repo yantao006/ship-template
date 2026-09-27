@@ -117,8 +117,12 @@ export function AuthDialogProvider({ children, ...auth }: Omit<Auth4Props, 'onAu
   const onOAuthStart = () => {
     const returnTo = safeReturnPath(`${window.location.pathname}${window.location.search}${window.location.hash}`, window.location.origin);
     sessionStorage.setItem(storageKey, JSON.stringify({ source: intent.source, intent: intent.intent, draftId: intent.draftId, returnTo }));
+    window.dispatchEvent(new Event('site-auth-oauth-start'));
   };
-  const onOAuthFailure = () => sessionStorage.removeItem(storageKey);
+  const onOAuthFailure = () => {
+    sessionStorage.removeItem(storageKey);
+    window.dispatchEvent(new Event('site-auth-oauth-cancel'));
+  };
   const callbackURL = typeof window === 'undefined' ? auth.callbackURL : safeReturnPath(`${window.location.pathname}${window.location.search}${window.location.hash}`, window.location.origin);
   return <Context.Provider value={{ openAuth, closeAuth }}>
     <div ref={shell} className="public-shell">{children}</div>

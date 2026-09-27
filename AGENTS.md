@@ -137,7 +137,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │   ├── pricing-checkout.tsx      # Monthly/yearly/pack cards and gated checkout interaction
 │   │   ├── pricing-confetti.tsx      # Brief decorative entry effect
 │   │   ├── pricing.css               # Tokenized responsive pricing surface
-│   │   ├── auth-dialog.tsx           # Shared modal and server-session-confirmed return intent
+│   │   ├── auth-dialog.tsx           # Shared modal, server-session-confirmed return intent, and OAuth draft event
 │   │   ├── auth-control.tsx          # Client signed-in controls and public sign-in trigger
 │   │   ├── sign-in-card.tsx          # Client email/social sign-in dialog
 │   │   ├── referral-capture.tsx      # Always-mounted home referral hook host
@@ -235,7 +235,7 @@ On each request, production login accepts the Worker `SITE_URL` only when it equ
 `ensureSignupCredits` checks invitation eligibility and grants a signup lot with the user ID as its stable source ID; when email verification is enabled, it waits until the emailed link marks the account verified.
 `src/app/api/invites/redeem/route.ts` uses the shared session and browser-write guard, redeems the code through an atomic D1 batch, and grants the eligible user credits.
 `src/lib/invites.ts` owns invite code format, normalization, inventory reads, creation, and revocation.
-`src/components/site-shell.tsx` mounts one `AuthDialogProvider` for public pages; `auth-control.tsx` triggers the licensed Auth-4 adaptation. The standalone desktop callback keeps `sign-in-card.tsx` as a fallback outside that shell. `src/lib/auth-client.ts` owns the browser auth client, and `src/lib/browser-nav-copy.ts` assembles navigation and auth copy without sending mail strings to client props. Auth-4 uses Tailwind v4 utilities without a global base reset via `postcss.config.mjs` and `src/app/globals.css`.
+`src/components/site-shell.tsx` mounts one `AuthDialogProvider` for public pages; `auth-control.tsx` triggers the licensed Auth-4 adaptation. The standalone desktop callback keeps `sign-in-card.tsx` as a fallback outside that shell. `src/lib/auth-client.ts` owns the browser auth client, and `src/lib/browser-nav-copy.ts` assembles navigation and auth copy without sending mail strings to client props. Auth-4 uses Tailwind v4 theme variables and utilities without a global base reset via `postcss.config.mjs` and `src/app/globals.css`.
 When `email.passwordReset` is on, the forgot-password link is sent through `EmailProvider`; `src/components/verify-email.tsx` provides the verification waiting and resend page; `src/components/reset-password.tsx` accepts the new password; desktop handoff uses `src/lib/desktop-auth.ts` to validate a configured app scheme before `/api/auth/desktop-handoff` issues a session-bearing return URL.
 
 ### Credits, tasks, and provider seams
@@ -263,7 +263,7 @@ The `(site)` route layouts use `src/components/site-shell.tsx` to keep one accou
 `sections/VideoToolSection.tsx` binds one locale's tool copy and assets on the server and passes them to `src/components/video-tool/video-tool-section.tsx`.
 `bind-copy.ts` localizes links and assembles asset copy; the client `video-tool-section.tsx` shows the create-payload preview without importing site configuration.
 `video-generation-tool.tsx` composes the dark workbench from `composer.tsx` and `stage.tsx`.
-`use-video-tool-state.ts` owns interactive state and calls pure selectors in `state.ts`; `model-menu.tsx` and `parameter-field.tsx` accept only their scoped presentation data.
+`use-video-tool-state.ts` owns interactive state, saves a serializable draft only before OAuth navigation, restores it after a confirmed session and calls pure selectors in `state.ts`; `model-menu.tsx` and `parameter-field.tsx` accept only their scoped presentation data.
 Media, workflows and their reference limits, grouped models and duration-specific preview costs, and media-filtered use cases come from that config.
 The image-template list lives in `site/video-tool-templates.config.ts`, localized titles in `site/messages/video-templates-*.ts`, and the referenced local media in `public/video-tool/`.
 The model menu shows only the selected workflow's compatible models, and optional workflow defaults reset fields and quantities when switching.

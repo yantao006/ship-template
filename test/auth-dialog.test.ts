@@ -24,14 +24,22 @@ test('Auth-4 renders only configured providers with real site copy', () => {
   // the automatic runtime. Supply React for this server-rendered markup check.
   (globalThis as typeof globalThis & { React: typeof React }).React = React;
   const markup = renderToStaticMarkup(React.createElement(Auth4, {
-    copy: browserNavCopy(messages.en), brand: 'AwesomeJev', description: 'Create video previews',
+    copy: browserNavCopy(messages.en), brand: 'AwesomeJev',
     supportEmail: 'support@example.com', methods: { email: auth.email, google: auth.google, github: auth.github },
     inviteRequired: false, locale: 'en', callbackURL: '/', onAuthenticated: async () => {},
   }));
   assert.match(markup, /Continue with Google/);
   assert.match(markup, /AwesomeJev/);
+  assert.match(markup, /Sign in to access your workspace and credits/);
+  assert.doesNotMatch(markup, /Preview the request/);
   assert.match(markup, /type="email"/);
   assert.doesNotMatch(markup, /Continue with GitHub|Northstar|placeholder\.svg|SSO enforced/);
+});
+
+test('Auth-4 loads Tailwind theme tokens without resetting the existing site', () => {
+  const css = source('src/app/globals.css');
+  assert.match(css, /@import "tailwindcss\/theme" layer\(theme\);[\s\S]*@import "tailwindcss\/utilities"/);
+  assert.doesNotMatch(css, /@import "tailwindcss";|@import "tailwindcss\/preflight"/);
 });
 
 test('one shared Auth-4 dialog uses server session confirmation and does not replay checkout', () => {
@@ -48,4 +56,10 @@ test('one shared Auth-4 dialog uses server session confirmation and does not rep
   assert.doesNotMatch(auth4, /console\.log|placeholder\.svg|SSO enforced/);
   assert.match(pricing, /result\.status === 401[\s\S]*openAuth/);
   assert.doesNotMatch(provider, /requestJson\('\/api\/checkout'/);
+  const tool = source('src/components/video-tool/use-video-tool-state.ts');
+  assert.match(provider, /site-auth-oauth-start/);
+  assert.match(tool, /sessionStorage\.setItem\(authDraftKey/);
+  assert.match(tool, /sessionStorage\.removeItem\(authDraftKey/);
+  assert.match(tool, /\/api\/auth\/get-session/);
+  assert.doesNotMatch(tool, /sessionStorage\.setItem\(authDraftKey, JSON\.stringify\(buildCreatePayload/);
 });

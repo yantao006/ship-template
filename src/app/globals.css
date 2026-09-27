@@ -1,3 +1,6 @@
+/* Auth-4 utilities depend on Tailwind's theme variables. Keep preflight out so
+   the existing site CSS retains ownership of base element styles. */
+@import "tailwindcss/theme" layer(theme);
 @import "tailwindcss/utilities";
 @custom-variant dark (&:where(html[data-mode="dark"] *, html[data-mode="auto"][data-default-mode="dark"] *));
 

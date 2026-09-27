@@ -17,13 +17,12 @@ const GitHubMark = () => <svg className="h-4 w-4" viewBox="0 0 24 24" fill="curr
 const rings = ["h-40 w-40", "h-[280px] w-[280px]", "h-[400px] w-[400px]", "h-[520px] w-[520px]"];
 const inputClasses = "h-11 w-full rounded-xl border border-neutral-300 bg-white px-3.5 text-base text-neutral-900 outline-none transition-colors placeholder:text-neutral-400 hover:border-neutral-400 focus:border-neutral-900 focus:ring-4 focus:ring-neutral-900/10 dark:border-neutral-700 dark:bg-neutral-950 dark:text-white dark:placeholder:text-neutral-500 dark:hover:border-neutral-600 dark:focus:border-white dark:focus:ring-white/10 sm:text-sm";
 const oauthClasses = "flex h-11 cursor-pointer items-center justify-center gap-2.5 rounded-xl border border-neutral-300 bg-white px-4 text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:hover:bg-neutral-800 dark:focus-visible:ring-white disabled:cursor-wait disabled:opacity-60";
-const linkClasses = "rounded-lg font-medium text-neutral-900 hover:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 dark:text-white dark:hover:text-neutral-300";
+const linkClasses = "rounded-lg border-0 bg-transparent p-0 font-medium text-neutral-900 hover:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 dark:text-white dark:hover:text-neutral-300";
 
 export type Auth4Props = {
   copy: Copy;
   brand: string;
   logo?: { src: string; alt: string };
-  description: string;
   supportEmail: string;
   methods: Pick<AuthSettings, "email" | "google" | "github">;
   inviteRequired: boolean;
@@ -34,7 +33,7 @@ export type Auth4Props = {
   onOAuthFailure?: () => void;
 };
 
-export function Auth4({ copy, brand, logo, description, supportEmail, methods, inviteRequired, locale, callbackURL, onAuthenticated, onOAuthStart, onOAuthFailure }: Auth4Props) {
+export function Auth4({ copy, brand, logo, supportEmail, methods, inviteRequired, locale, callbackURL, onAuthenticated, onOAuthStart, onOAuthFailure }: Auth4Props) {
   const [mode, setMode] = useState<"sign-in" | "sign-up" | "forgot" | "verify">("sign-in");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -118,7 +117,7 @@ export function Auth4({ copy, brand, logo, description, supportEmail, methods, i
         <div className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center">
           <motion.div variants={item} className="mb-6">
             <h2 id="auth4-title" className="text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h2>
-            <p className="mt-2 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">{description}</p>
+            <p className="mt-2 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">{copy.intro}</p>
           </motion.div>
           {mode === "verify" ? <motion.div variants={item} className="space-y-4 text-sm">
             <p role="status">{notice} {email}</p><p>{copy.verifyHint}</p>
@@ -135,7 +134,7 @@ export function Auth4({ copy, brand, logo, description, supportEmail, methods, i
               {mode === "forgot" && <p className="text-sm text-neutral-600 dark:text-neutral-400">{copy.forgotHint}</p>}
               {mode === "sign-up" && <label className="block text-sm font-medium">{copy.name}<input name="name" value={name} onChange={event => setName(event.target.value)} required autoComplete="name" className={inputClasses} /></label>}
               <label className="block text-sm font-medium">{copy.emailLabel}<input name="email" type="email" value={email} onChange={event => setEmail(event.target.value)} required autoComplete="email" className={inputClasses} /></label>
-              {mode !== "forgot" && <div><div className="flex items-baseline justify-between gap-3"><label htmlFor="auth4-password" className="text-sm font-medium">{copy.password}</label>{mode === "sign-in" && canReset && <button type="button" className="text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-white" onClick={() => switchMode("forgot")}>{copy.forgotPassword}</button>}</div><div className="relative"><input id="auth4-password" name="password" type={showPassword ? "text" : "password"} value={password} onChange={event => setPassword(event.target.value)} required minLength={8} autoComplete={mode === "sign-up" ? "new-password" : "current-password"} className={`${inputClasses} pr-11`} /><button type="button" aria-label={showPassword ? copy.hidePassword : copy.showPassword} onClick={() => setShowPassword(current => !current)} className="absolute right-1.5 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-neutral-500">{showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button></div></div>}
+              {mode !== "forgot" && <div><div className="flex items-baseline justify-between gap-3"><label htmlFor="auth4-password" className="text-sm font-medium">{copy.password}</label>{mode === "sign-in" && canReset && <button type="button" className="border-0 bg-transparent p-0 text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-white" onClick={() => switchMode("forgot")}>{copy.forgotPassword}</button>}</div><div className="relative"><input id="auth4-password" name="password" type={showPassword ? "text" : "password"} value={password} onChange={event => setPassword(event.target.value)} required minLength={8} autoComplete={mode === "sign-up" ? "new-password" : "current-password"} className={`${inputClasses} pr-11`} /><button type="button" aria-label={showPassword ? copy.hidePassword : copy.showPassword} onClick={() => setShowPassword(current => !current)} className="absolute right-1.5 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg border-0 bg-transparent text-neutral-500">{showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button></div></div>}
               {mode === "sign-up" && needsVerification && <p className="text-xs text-neutral-500">{copy.verifyHint}</p>}
               {mode === "sign-up" && inviteRequired && <label className="block text-sm font-medium">{copy.invite}<input name="inviteCode" value={inviteCode} onChange={event => setInviteCode(event.target.value)} required maxLength={32} className={inputClasses} /></label>}
               <motion.button type="submit" disabled={pending} whileHover="hover" className="group flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-neutral-900 text-sm font-medium text-white hover:bg-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 disabled:cursor-wait disabled:opacity-60 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200">{pending ? copy.wait : mode === "forgot" ? copy.forgotPassword : mode === "sign-up" ? copy.signUp : copy.signIn}<motion.span variants={{ hover: { x: reduce ? 0 : 3 } }} transition={{ duration: 0.2, ease: EASE }}><ArrowRight className="h-4 w-4" aria-hidden="true" /></motion.span></motion.button>
@@ -146,11 +145,11 @@ export function Auth4({ copy, brand, logo, description, supportEmail, methods, i
           {notice && mode === "forgot" && <p role="status" className="mt-4 text-sm">{notice}</p>}
           {error && <p role="alert" className="mt-4 text-sm text-red-700 dark:text-red-400">{error}</p>}
         </div>
-        <motion.p variants={item} className="flex items-center gap-1.5 text-xs text-neutral-500"><ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />{description}</motion.p>
+        <motion.p variants={item} className="flex items-center gap-1.5 text-xs text-neutral-500"><ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />{copy.assurance}</motion.p>
       </motion.div>
       <motion.aside initial={reduce ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: reduce ? 0 : 0.8, delay: reduce ? 0 : 0.15, ease: EASE }} className="relative hidden min-h-[580px] flex-col overflow-hidden border-l border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-950/50 min-[850px]:flex">
         <div className="relative flex flex-1 items-center justify-center overflow-hidden"><div className="relative h-[520px] w-[520px] shrink-0">{rings.map(size => <div key={size} className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-neutral-200 dark:border-neutral-800 ${size}`} />)}<div className="absolute left-1/2 top-1/2 h-[340px] w-[340px] -translate-x-1/2 -translate-y-1/2"><motion.div animate={reduce ? undefined : { rotate: 360 }} transition={{ duration: 90, repeat: Infinity, ease: "linear" }} className="h-full w-full rounded-full border border-dashed border-neutral-300 dark:border-neutral-700" /></div><div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"><span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-neutral-900 text-white shadow-lg dark:bg-white dark:text-neutral-900">{logo ? <img src={logo.src} alt="" className="h-8 w-8 object-contain" /> : <ShieldCheck className="h-6 w-6" aria-hidden="true" />}</span></div></div></div>
-        <div className="px-8 py-8 text-center text-lg font-medium text-neutral-900 dark:text-neutral-100">{brand}<p className="mt-3 text-sm font-normal text-neutral-500">{description}</p></div>
+        <div className="px-8 py-8 text-center text-lg font-medium text-neutral-900 dark:text-neutral-100">{brand}<p className="mt-3 text-sm font-normal text-neutral-500">{copy.brandDescription}</p></div>
       </motion.aside>
     </div>
   );
