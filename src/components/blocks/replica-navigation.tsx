@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Globe2, Moon, Sun } from 'lucide-react';
 import { pathForLocale } from '@/components/language-control';
 import { useDismissableLayer } from '@/lib/use-dismissable-layer';
@@ -28,12 +28,15 @@ export type ReplicaNavigationProps = {
 
 export function ReplicaNavigation({ brand, logo, brandHref, navigationLabel, links, locale, locales, languageLabel, lightLabel, darkLabel, defaultMode, accountControl }: ReplicaNavigationProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const [open, setOpen] = useState<Menu>(null);
   const [light, setLight] = useState(defaultMode === 'light');
   const languageArea = useRef<HTMLDivElement>(null);
   const languageRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => { setOpen(null); }, [pathname]);
+  // The root layout persists across client-side locale navigation.
+  useEffect(() => { document.documentElement.lang = locale; }, [locale]);
   useEffect(() => {
     document.documentElement.dataset.mode = light ? 'light' : 'dark';
     document.documentElement.classList.toggle('replica-light', light);
@@ -62,7 +65,7 @@ export function ReplicaNavigation({ brand, logo, brandHref, navigationLabel, lin
         <div className="replica-action-wrap" ref={languageArea}>
           <button ref={languageRef} className={`replica-icon ${open === 'language' ? 'selected' : ''}`} type="button" aria-label={languageLabel} aria-expanded={open === 'language'} aria-haspopup="menu" onClick={() => toggle('language')}><Globe2 size={19} /></button>
           {open === 'language' && <div className="replica-popover replica-language-menu" role="menu" aria-label={languageLabel}>
-            {locales.map(item => <button key={item.code} type="button" role="menuitemradio" aria-checked={locale === item.code} className={locale === item.code ? 'current' : ''} onClick={() => { setOpen(null); window.location.assign(pathForLocale(pathname, item.code, locales.map(language => language.code))); }}><span className="replica-language-dot" />{item.name}</button>)}
+            {locales.map(item => <button key={item.code} type="button" role="menuitemradio" aria-checked={locale === item.code} className={locale === item.code ? 'current' : ''} onClick={() => { setOpen(null); if (item.code !== locale) router.push(pathForLocale(pathname, item.code, locales.map(language => language.code))); }}><span className="replica-language-dot" />{item.name}</button>)}
           </div>}
         </div>
         {accountControl}
