@@ -29,7 +29,8 @@ export type SiteConfig = {
     sharePostNetworks: readonly ShareNetworkName[];
     icons: Record<'checkin' | 'share' | 'invite' | 'contact' | 'feedback', AccountIconName>;
   };
-  plans: readonly { id: string; billing: 'once' | 'year'; credits: number; amount: string; currency: string; description: string }[];
+  checkoutPlanId?: string | null;
+  plans: readonly { id: string; tier?: string; billing: 'once' | 'month' | 'year'; credits: number; amount: string; currency: string; description: string }[];
 };
 
 export type AuthConfig = {
@@ -52,6 +53,7 @@ export type ThemeConfig = {
   chrome: Record<'light' | 'dark', Record<string, string>>;
   dialog: Record<'light' | 'dark', Record<string, string>>;
   videoTool: Record<'light' | 'dark', Record<string, string>>;
+  pricing: Record<'light' | 'dark', Record<string, string>>;
   rowTones: Record<'light' | 'dark', Record<'account' | 'pink' | 'info' | 'danger', { text: string; box: string }>>;
 };
 

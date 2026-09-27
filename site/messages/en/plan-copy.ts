@@ -1,1 +1,15 @@
-export default { pack: { name: 'Credit pack', detail: 'One purchase adds credits once.' }, annual: { name: 'Annual', detail: 'One yearly payment. This checkout grants the current calendar month only.' } };
+export default {
+  'lite-month': { name: 'Lite', detail: '600 credits each month.' },
+  'lite-year': { name: 'Lite', detail: '600 credits per month, billed yearly.' },
+  'standard-month': { name: 'Standard', detail: '1,500 credits each month.' },
+  'standard-year': { name: 'Standard', detail: '1,500 credits per month, billed yearly.' },
+  'pro-month': { name: 'Pro', detail: '3,600 credits each month.' },
+  'pro-year': { name: 'Pro', detail: '3,600 credits per month, billed yearly.' },
+  'max-month': { name: 'Max', detail: '8,000 credits each month at 1×.' },
+  'max-year': { name: 'Max', detail: '8,000 credits per month at 1×, billed yearly.' },
+  starter: { name: 'Starter Pack', detail: '800 credits in a one-time pack.' },
+  value: { name: 'Value Pack', detail: '2,000 credits in a one-time pack.' },
+  'pro-pack': { name: 'Pro Pack', detail: '7,500 credits in a one-time pack.' },
+  bulk: { name: 'Bulk Pack', detail: '50,000 credits in a one-time pack.' },
+  mega: { name: 'Mega Pack', detail: '160,000 credits in a one-time pack.' },
+};

@@ -8,14 +8,20 @@ Google login uses the existing dedicated Google Cloud project and exact callback
 The Google consent app is in Testing mode; only the configured Google test users can finish sign-in until its branding and audience are published.
 
 Video generation, model pages, and legal pages are not implemented.
-The mock video service cannot generate media. Checkout opens a Waffo Pancake session for the existing product and returns its payment URL.
+The mock video service cannot generate media.
+The pricing catalog now displays four monthly and annual tiers plus five credit packs at the reference prices, but none is verified against the single existing Waffo product.
+`site.checkoutPlanId` is therefore `null`, and both the UI and server refuse checkout; no live payment can be initiated at these prices.
+Only after verifying a matching product price and billing externally should the site operator set one matching non-monthly plan ID, without changing the product ID or restoring secrets.
 The homepage navigation has signed-in account and credit popovers with shared accessible dialogs for daily credit claims, referral links, share submissions, contact, feedback, payment receipts and plans.
 `site/site.config.ts` configures rewards, limits, contact addresses, link and icon choices; `site/messages/en.ts` and `zh.ts` provide all account copy.
 Migration `0003_account_rewards.sql` stores check-ins, pending share submissions and referral claims in this site's D1.
 Check-in and eligible referral credits use the existing idempotent ledger; share submissions remain pending and do not award credits without review.
 The payment receipts card reads settled credit grants, not tax invoices; the request-invoice link contacts support.
 Apply the migration before using the signed-in homepage on an existing D1.
-The landing page has a marketing navigation and hero. Pricing at `/{locale}/pricing` lists site plans and starts checkout for a signed-in user. The preview workspace at `/{locale}/dashboard` and the credit-grant table at `/{locale}/credits` show the signed-in account's D1 data.
+The landing page has a marketing navigation and hero.
+Pricing at `/{locale}/pricing` renders the localized monthly/yearly/credit-pack catalog, Max 1-5× preview, model list sourced from the video-tool config, and illustrative payment marks.
+Yearly amounts in `site.plans` are the total for 12 months, while the pricing card displays the equivalent monthly rate.
+The preview workspace at `/{locale}/dashboard` and the credit-grant table at `/{locale}/credits` show the signed-in account's D1 data.
 
 ## Re-run verification
 

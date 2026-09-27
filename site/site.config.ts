@@ -29,8 +29,22 @@ export default {
     sharePostNetworks: ['Reddit', 'X', 'Facebook', 'LinkedIn'] as const,
     icons: { checkin: 'sparkles', share: 'share', invite: 'gift', contact: 'mail', feedback: 'message' },
   },
+  // No catalog price is confirmed to match the single existing Waffo product.
+  // Keep checkout disabled until the product's actual price and billing are verified.
+  checkoutPlanId: null,
   plans: [
-    { id: 'pack', billing: 'once' as const, credits: 100, amount: '9.90', currency: 'USD', description: 'Awesomejev credit pack' },
-    { id: 'annual', billing: 'year' as const, credits: 80, amount: '79.00', currency: 'USD', description: 'Awesomejev annual plan' },
+    { id: 'lite-month', tier: 'lite', billing: 'month', credits: 600, amount: '29.90', currency: 'USD', description: 'Lite monthly' },
+    { id: 'lite-year', tier: 'lite', billing: 'year', credits: 600, amount: '178.80', currency: 'USD', description: 'Lite annual' },
+    { id: 'standard-month', tier: 'standard', billing: 'month', credits: 1500, amount: '49.90', currency: 'USD', description: 'Standard monthly' },
+    { id: 'standard-year', tier: 'standard', billing: 'year', credits: 1500, amount: '298.80', currency: 'USD', description: 'Standard annual' },
+    { id: 'pro-month', tier: 'pro', billing: 'month', credits: 3600, amount: '99.90', currency: 'USD', description: 'Pro monthly' },
+    { id: 'pro-year', tier: 'pro', billing: 'year', credits: 3600, amount: '598.80', currency: 'USD', description: 'Pro annual' },
+    { id: 'max-month', tier: 'max', billing: 'month', credits: 8000, amount: '199.90', currency: 'USD', description: 'Max monthly' },
+    { id: 'max-year', tier: 'max', billing: 'year', credits: 8000, amount: '1198.80', currency: 'USD', description: 'Max annual' },
+    { id: 'starter', billing: 'once', credits: 800, amount: '39.90', currency: 'USD', description: 'Starter credit pack' },
+    { id: 'value', billing: 'once', credits: 2000, amount: '79.90', currency: 'USD', description: 'Value credit pack' },
+    { id: 'pro-pack', billing: 'once', credits: 7500, amount: '199.90', currency: 'USD', description: 'Pro credit pack' },
+    { id: 'bulk', billing: 'once', credits: 50000, amount: '999.90', currency: 'USD', description: 'Bulk credit pack' },
+    { id: 'mega', billing: 'once', credits: 160000, amount: '2599.00', currency: 'USD', description: 'Mega credit pack' },
   ],
 } satisfies SiteConfig;

@@ -1,1 +1,15 @@
-export default { title: '套餐', lead: '选择套餐并通过 Waffo 结账。可以使用优惠券。年付套餐只发放当前自然月的积分。', checkout: '结账', signInRequired: '请先登录再结账。', wait: '请稍候…', failed: '无法发起结账，请重试。', coupon: '优惠券', once: '一次性', year: '年付', credits: '积分', packName: '积分包', packDetail: '一次购买只发放一次积分。', annualName: '年付', annualDetail: '一次支付全年费用。这次结账只发放当前自然月的积分。' };
+export default {
+  title: '选择适合你的套餐', lead: '按你的创作节奏选购积分。',
+  monthly: '月付', yearly: '年付', packs: '积分包', save: '最高省 50%',
+  monthlyHint: '按月计价及发放积分', yearlyHint: '月均价格，下方显示全年总价', packHint: '一次性购买积分',
+  popular: '最受欢迎', off: '年付优惠', perMonth: '/ 月', perCredit: '/ 积分', billedYearly: '全年付款',
+  creditsMonth: '积分 / 月', credits: '积分', oneTime: '一次性',
+  maxMultiplier: 'Max 套餐倍数', maxBase: '基础', maxTotal: '合计',
+  videoModels: '视频模型', imageModels: '图像模型', modelCatalog: '探索模型目录',
+  modelNote: '这里展示站点配置的视频工具请求预览积分估算。生成和积分扣减尚未开放。',
+  fromCredits: '视频最低 {count} 积分', previewOnly: '仅供预览',
+  paymentTitle: '结账时可选的付款方式', paymentNote: '展示的付款标识仅供参考；实际可用方式取决于结账服务和地区。',
+  checkout: '立即付款', unavailable: '暂不可结账', unavailableNote: '当前价格尚未与现有支付商品核对，不会发起付款。',
+  signInRequired: '请先登录再结账。', wait: '请稍候…', failed: '无法发起结账，请重试。',
+  coupon: '优惠券', once: '一次性', year: '年付', packName: '积分包', packDetail: '一次购买只发放一次积分。', annualName: '年付', annualDetail: '一次支付全年费用。这次结账只发放当前自然月的积分。',
+};
