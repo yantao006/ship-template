@@ -52,11 +52,11 @@ Apply migrations `0001` through `0003` locally for a preview with account reward
 Do not use production credentials in local preview configs.
 Google OAuth additionally needs real local credentials and that exact origin's `/api/auth/callback/google` registered on the OAuth client; fake credentials can only test the sign-in start, not complete the callback.
 Never commit that preview config or `.dev.vars`.
-Email/password signup and login use the same site's D1-backed better-auth session and account tables.
+Email/password signup and email-code sign-in use the same site's D1-backed better-auth session and account tables.
 Email verification, password reset, and account recovery are not configured; do not use a valuable password for this preview site.
 Do not use localhost as acceptance evidence for the public Google flow.
 The live verification is to open [awesomejev.link](https://awesomejev.link/), click **Sign In** in the top navigation, then choose **Continue with Google** inside the single card, select a permitted test account, consent, and confirm the navigation shows your name and the workspace shows 30 credits.
-The same card contains email/password sign-in and account creation; GitHub is absent while disabled in `site/auth.config.ts`.
+The same card contains email-code sign-in and email/password account creation; GitHub is absent while disabled in `site/auth.config.ts`.
 The single **Language** selector is in the marketing navigation on home, or at the top right of the workspace content above the Credits table. It switches between `/en` and `/zh` while preserving the current page.
 An unauthenticated request to `/api/credits/balance` returns 401.
 A successful first Google sign-in creates one user and one idempotent signup credit lot in this site's D1.
@@ -80,11 +80,11 @@ This browser run did not apply that migration, submit a payment, or deploy the p
 ### Source-inspired auth card preview (2026-09-27)
 
 The preview alias now serves the copied `minimax-auth-card.tsx` variant; `auth-4.tsx` is unchanged.
-The card keeps the site's brand, configured welcome credits and localized claims, and retains the existing email/password form after the email action.
+The card keeps the site's brand, configured welcome credits and localized claims, and uses the existing email-code sign-in after the email action.
 The image is a site-local placeholder.
-The source's email-code flow, mobile bottom drawer and full-page refresh are not implemented here.
+The email-code flow, mobile bottom drawer and full-page reload are owned by the existing application; this variant changes their appearance, not their implementation.
 The measured source spec, computed-color comparison and four viewport/theme screenshot pairs live in `docs/research/auth-card/source-spec.md` and `docs/verification/auth-card/`.
-Cloudflare Worker version `efed1c75-92ea-4e04-9a5c-f713edc9f420` was uploaded to the preview alias without deploying to the live hostname.
+Cloudflare Worker version `aa7641c9-00c2-4436-afd2-fdd39aedfa5b` was uploaded to the preview alias without deploying to the live hostname.
 
 ## Site and secret boundaries
 

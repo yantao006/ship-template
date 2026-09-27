@@ -28,7 +28,7 @@ export type Auth4Props = {
   inviteRequired: boolean;
   locale: string;
   callbackURL: string;
-  onAuthenticated: () => Promise<void>;
+  onAuthenticated: (method: 'email-code' | 'sign-up') => Promise<void>;
   onOAuthStart?: () => void;
   onOAuthFailure?: () => void;
 };
@@ -36,6 +36,8 @@ export type Auth4Props = {
 export function Auth4({ copy, brand, logo, supportEmail, methods, inviteRequired, locale, callbackURL, onAuthenticated, onOAuthStart, onOAuthFailure }: Auth4Props) {
   const [mode, setMode] = useState<"sign-in" | "sign-up" | "forgot" | "verify">("sign-in");
   const [email, setEmail] = useState("");
+  const [emailStep, setEmailStep] = useState<"email" | "code">("email");
+  const [otp, setOtp] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [inviteCode, setInviteCode] = useState("");
@@ -49,7 +51,7 @@ export function Auth4({ copy, brand, logo, supportEmail, methods, inviteRequired
   const container: Variants = { hidden: {}, visible: { transition: { staggerChildren: 0.07, delayChildren: 0.05 } } };
   const item: Variants = { hidden: { opacity: 0, y: reduce ? 0 : 14 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE } } };
   const title = mode === "verify" ? copy.verifyTitle : mode === "forgot" ? copy.forgotTitle : mode === "sign-up" ? copy.signUp : copy.signIn;
-  const switchMode = (next: typeof mode) => { setMode(next); setError(""); setNotice(""); };
+  const switchMode = (next: typeof mode) => { setMode(next); setEmailStep("email"); setOtp(""); setError(""); setNotice(""); };
 
   async function social(provider: "google" | "github") {
     if (!methods[provider].enabled || pending) return;
@@ -77,27 +79,33 @@ export function Auth4({ copy, brand, logo, supportEmail, methods, inviteRequired
         const result = await authClient.sendVerificationEmail({ email: email.trim(), callbackURL });
         if (result.error) setError(copy.resendFailed);
         else setNotice(copy.verificationSent);
+      } else if (mode === "sign-in") {
+        if (emailStep === "email") {
+          const sent = await authClient.emailOtp.sendVerificationOtp({ email: email.trim(), type: "sign-in" });
+          if (sent.error) setError(copy.codeSendFailed);
+          else { setOtp(""); setEmailStep("code"); setNotice(copy.codeSent); }
+        } else {
+          if (!/^\d{6}$/.test(otp)) { setError(copy.codeInvalid); return; }
+          const result = await authClient.signIn.emailOtp({ email: email.trim(), otp });
+          if (result.error) setError(copy.codeInvalid);
+          else await onAuthenticated('email-code');
+        }
       } else {
         const code = inviteCode.trim().toUpperCase();
         if (mode === "sign-up" && inviteRequired) {
           const validation = await requestJson("/api/invites/validate", { code });
           if (!validation.ok || !(await validation.json() as { valid: boolean }).valid) { setError(copy.inviteInvalid); return; }
         }
-        const result = mode === "sign-up"
-          ? await authClient.signUp.email({ email: email.trim(), password, name: name.trim(), ...(needsVerification ? { callbackURL } : {}), ...(inviteRequired ? { inviteCode: code } : {}) } as Parameters<typeof authClient.signUp.email>[0])
-          : await authClient.signIn.email({ email: email.trim(), password });
-        if (result.error) {
-          if (needsVerification && mode === "sign-in" && (result.error.code === "EMAIL_NOT_VERIFIED" || (result.error.status === 403 && /not verified/i.test(result.error.message ?? "")))) {
-            switchMode("verify"); setNotice(copy.emailNotVerified);
-          } else setError(result.error.message ?? copy.authFailed);
-        } else if (mode === "sign-up" && needsVerification) {
+        const result = await authClient.signUp.email({ email: email.trim(), password, name: name.trim(), ...(needsVerification ? { callbackURL } : {}), ...(inviteRequired ? { inviteCode: code } : {}) } as Parameters<typeof authClient.signUp.email>[0]);
+        if (result.error) setError(result.error.message ?? copy.authFailed);
+        else if (needsVerification) {
           switchMode("verify"); setNotice(copy.verificationSent);
         } else {
-          if (mode === "sign-up" && inviteRequired) {
+          if (inviteRequired) {
             const redeemed = await requestJson("/api/invites/redeem", { code });
             if (!redeemed.ok) { setError(copy.createdButInviteFailed); return; }
           }
-          await onAuthenticated();
+          await onAuthenticated('sign-up');
         }
       }
     } catch { setError(copy.authFailed); }
@@ -125,21 +133,25 @@ export function Auth4({ copy, brand, logo, supportEmail, methods, inviteRequired
             <a href={`${routePath(locale, "verifyEmail")}?email=${encodeURIComponent(email)}`} className={linkClasses}>{copy.verifyLink}</a>
             <button type="button" className={linkClasses} onClick={() => switchMode("sign-in")}>{copy.signIn}</button>
           </motion.div> : <>
-            {mode === "sign-in" && (methods.google.enabled || methods.github.enabled) && <motion.div variants={item} className="grid grid-cols-1 gap-3">
+            {mode === "sign-in" && emailStep === "email" && (methods.google.enabled || methods.github.enabled) && <motion.div variants={item} className="grid grid-cols-1 gap-3">
               {methods.google.enabled && <button type="button" disabled={pending} className={oauthClasses} onClick={() => void social("google")}><GoogleMark />{copy.google}</button>}
               {methods.github.enabled && <button type="button" disabled={pending} className={oauthClasses} onClick={() => void social("github")}><GitHubMark />{copy.github}</button>}
             </motion.div>}
-            {mode === "sign-in" && methods.email.enabled && (methods.google.enabled || methods.github.enabled) && <motion.div variants={item} className="my-5 flex items-center gap-3" aria-hidden="true"><span className="h-px flex-1 bg-neutral-200 dark:bg-neutral-800" /><span className="text-xs font-medium uppercase tracking-widest text-neutral-400">{copy.orEmail}</span><span className="h-px flex-1 bg-neutral-200 dark:bg-neutral-800" /></motion.div>}
+            {mode === "sign-in" && emailStep === "email" && methods.email.enabled && (methods.google.enabled || methods.github.enabled) && <motion.div variants={item} className="my-5 flex items-center gap-3" aria-hidden="true"><span className="h-px flex-1 bg-neutral-200 dark:bg-neutral-800" /><span className="text-xs font-medium uppercase tracking-widest text-neutral-400">{copy.orEmail}</span><span className="h-px flex-1 bg-neutral-200 dark:bg-neutral-800" /></motion.div>}
             {methods.email.enabled && <motion.form variants={item} onSubmit={submit} className="space-y-4">
               {mode === "forgot" && <p className="text-sm text-neutral-600 dark:text-neutral-400">{copy.forgotHint}</p>}
               {mode === "sign-up" && <label className="block text-sm font-medium">{copy.name}<input name="name" value={name} onChange={event => setName(event.target.value)} required autoComplete="name" className={inputClasses} /></label>}
-              <label className="block text-sm font-medium">{copy.emailLabel}<input name="email" type="email" value={email} onChange={event => setEmail(event.target.value)} required autoComplete="email" className={inputClasses} /></label>
-              {mode !== "forgot" && <div><div className="flex items-baseline justify-between gap-3"><label htmlFor="auth4-password" className="text-sm font-medium">{copy.password}</label>{mode === "sign-in" && canReset && <button type="button" className="border-0 bg-transparent p-0 text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-white" onClick={() => switchMode("forgot")}>{copy.forgotPassword}</button>}</div><div className="relative"><input id="auth4-password" name="password" type={showPassword ? "text" : "password"} value={password} onChange={event => setPassword(event.target.value)} required minLength={8} autoComplete={mode === "sign-up" ? "new-password" : "current-password"} className={`${inputClasses} pr-11`} /><button type="button" aria-label={showPassword ? copy.hidePassword : copy.showPassword} onClick={() => setShowPassword(current => !current)} className="absolute right-1.5 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg border-0 bg-transparent text-neutral-500">{showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button></div></div>}
+              {mode === "sign-in" && emailStep === "code" ? <>
+                <p className="text-sm text-neutral-600 dark:text-neutral-400">{notice || copy.codeSent} <strong className="break-all text-neutral-900 dark:text-white">{email}</strong></p>
+                <label className="block text-sm font-medium">{copy.codeLabel}<input name="otp" type="text" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" minLength={6} maxLength={6} value={otp} onChange={event => setOtp(event.target.value.replace(/\D/g, "").slice(0, 6))} required className={inputClasses} /></label>
+                <div className="flex items-center justify-between gap-3 text-sm"><button type="button" disabled={pending} className={linkClasses} onClick={() => { setEmailStep("email"); setOtp(""); setNotice(""); setError(""); }}>{copy.changeEmail}</button><button type="button" disabled={pending} className={linkClasses} onClick={async () => { setPending(true); setError(""); try { const result = await authClient.emailOtp.sendVerificationOtp({ email: email.trim(), type: "sign-in" }); if (result.error) setError(copy.codeSendFailed); else { setOtp(""); setNotice(copy.codeResent); } } catch { setError(copy.codeSendFailed); } finally { setPending(false); } }}>{copy.resendCode}</button></div>
+              </> : <label className="block text-sm font-medium">{copy.emailLabel}<input name="email" type="email" value={email} onChange={event => setEmail(event.target.value)} required autoComplete="email" className={inputClasses} /></label>}
+              {mode === "sign-up" && <div><label htmlFor="auth4-password" className="text-sm font-medium">{copy.password}</label><div className="relative"><input id="auth4-password" name="password" type={showPassword ? "text" : "password"} value={password} onChange={event => setPassword(event.target.value)} required minLength={8} autoComplete="new-password" className={`${inputClasses} pr-11`} /><button type="button" aria-label={showPassword ? copy.hidePassword : copy.showPassword} onClick={() => setShowPassword(current => !current)} className="absolute right-1.5 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg border-0 bg-transparent text-neutral-500">{showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button></div></div>}
               {mode === "sign-up" && needsVerification && <p className="text-xs text-neutral-500">{copy.verifyHint}</p>}
               {mode === "sign-up" && inviteRequired && <label className="block text-sm font-medium">{copy.invite}<input name="inviteCode" value={inviteCode} onChange={event => setInviteCode(event.target.value)} required maxLength={32} className={inputClasses} /></label>}
-              <motion.button type="submit" disabled={pending} whileHover="hover" className="group flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-neutral-900 text-sm font-medium text-white hover:bg-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 disabled:cursor-wait disabled:opacity-60 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200">{pending ? copy.wait : mode === "forgot" ? copy.forgotPassword : mode === "sign-up" ? copy.signUp : copy.signIn}<motion.span variants={{ hover: { x: reduce ? 0 : 3 } }} transition={{ duration: 0.2, ease: EASE }}><ArrowRight className="h-4 w-4" aria-hidden="true" /></motion.span></motion.button>
+              <motion.button type="submit" disabled={pending} whileHover="hover" className="group flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-neutral-900 text-sm font-medium text-white hover:bg-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 disabled:cursor-wait disabled:opacity-60 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200">{pending ? copy.wait : mode === "forgot" ? copy.forgotPassword : mode === "sign-up" ? copy.signUp : emailStep === "email" ? copy.sendCode : copy.signIn}<motion.span variants={{ hover: { x: reduce ? 0 : 3 } }} transition={{ duration: 0.2, ease: EASE }}><ArrowRight className="h-4 w-4" aria-hidden="true" /></motion.span></motion.button>
             </motion.form>}
-            {mode === "sign-in" && methods.email.enabled && <motion.p variants={item} className="mt-6 text-sm text-neutral-600 dark:text-neutral-400"><button type="button" className={linkClasses} onClick={() => switchMode("sign-up")}>{copy.signUp}</button></motion.p>}
+            {mode === "sign-in" && emailStep === "email" && methods.email.enabled && <motion.p variants={item} className="mt-6 flex gap-4 text-sm text-neutral-600 dark:text-neutral-400"><button type="button" className={linkClasses} onClick={() => switchMode("sign-up")}>{copy.signUp}</button>{canReset && <button type="button" className={linkClasses} onClick={() => switchMode("forgot")}>{copy.forgotPassword}</button>}</motion.p>}
             {(mode === "sign-up" || mode === "forgot") && <button type="button" className={`mt-5 text-sm ${linkClasses}`} onClick={() => switchMode("sign-in")}>{copy.signIn}</button>}
           </>}
           {notice && mode === "forgot" && <p role="status" className="mt-4 text-sm">{notice}</p>}

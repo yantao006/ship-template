@@ -34,6 +34,8 @@ test('Auth-4 renders only configured providers with real site copy', () => {
   assert.match(markup, /Sign in to access your workspace and credits/);
   assert.doesNotMatch(markup, /Preview the request/);
   assert.match(markup, /type="email"/);
+  assert.match(markup, /Send sign-in code/);
+  assert.doesNotMatch(markup, /name="password"|type="password"/);
   assert.doesNotMatch(markup, /Continue with GitHub|Northstar|placeholder\.svg|SSO enforced/);
 });
 
@@ -57,6 +59,12 @@ test('source-inspired card uses site identity, localized benefits and configured
     assert.match(markup, /professional-headshot.webp/);
     assert.doesNotMatch(markup, /MiniMax H3 video generation|Sign-up with Google|Continue with GitHub|type="password"/);
   }
+  const variant = source('src/components/blocks/minimax-auth-card.tsx');
+  assert.match(variant, /authClient\.emailOtp\.sendVerificationOtp/);
+  assert.match(variant, /authClient\.signIn\.emailOtp/);
+  assert.match(variant, /onAuthenticated\('email-code'\)/);
+  assert.match(variant, /onAuthenticated\('sign-up'\)/);
+  assert.doesNotMatch(variant, /authClient\.signIn\.email\(/);
   assert.equal(theme.authCard.light.button, '#0a0a0a');
   assert.equal(theme.authCard.dark.button, '#7a5bff');
 });
@@ -76,13 +84,21 @@ test('one shared Auth-4 dialog uses server session confirmation and does not rep
   assert.match(provider, /createPortal\(/);
   assert.match(provider, /\/api\/auth\/get-session/);
   assert.match(provider, /if \(!\(await serverHasSession\(\)\)\)/);
-  assert.match(auth4, /authClient\.signIn\.email/);
+  assert.match(auth4, /authClient\.emailOtp\.sendVerificationOtp/);
+  assert.match(auth4, /authClient\.signIn\.emailOtp/);
+  assert.match(source('src/app/api/auth/[...all]/route.ts'), /parsed\.body\.type !== 'sign-in'/);
+  assert.doesNotMatch(auth4, /authClient\.signIn\.email\(/);
   assert.match(auth4, /authClient\.signIn\.social/);
   assert.doesNotMatch(auth4, /console\.log|placeholder\.svg|SSO enforced/);
   assert.match(pricing, /result\.status === 401[\s\S]*openAuth/);
   assert.doesNotMatch(provider, /requestJson\('\/api\/checkout'/);
   const tool = source('src/components/video-tool/use-video-tool-state.ts');
   assert.match(provider, /site-auth-oauth-start/);
+  assert.match(provider, /method === 'sign-up'[\s\S]*closeAuth\(\)[\s\S]*router\.refresh\(\)/);
+  assert.match(provider, /site-auth-reload-start[\s\S]*setOpen\(false\)[\s\S]*window\.location\.reload\(\)/);
+  assert.match(auth4, /onAuthenticated\('email-code'\)/);
+  assert.match(source('src/app/globals.css'), /@media \(max-width: 767px\)[\s\S]*auth4-overlay \{ display: flex; align-items: flex-end/);
+  assert.match(tool, /site-auth-reload-start/);
   assert.match(tool, /sessionStorage\.setItem\(authDraftKey/);
   assert.match(tool, /sessionStorage\.removeItem\(authDraftKey/);
   assert.match(tool, /\/api\/auth\/get-session/);

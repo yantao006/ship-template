@@ -24,6 +24,8 @@ export function MinimaxAuthCard({ copy, card, signupCredits, brand, logo, method
   const [mode, setMode] = useState<'sign-in' | 'sign-up' | 'forgot' | 'verify'>('sign-in');
   const [emailExpanded, setEmailExpanded] = useState(false);
   const [email, setEmail] = useState('');
+  const [emailStep, setEmailStep] = useState<'email' | 'code'>('email');
+  const [otp, setOtp] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [inviteCode, setInviteCode] = useState('');
@@ -33,7 +35,7 @@ export function MinimaxAuthCard({ copy, card, signupCredits, brand, logo, method
   const [notice, setNotice] = useState('');
   const needsVerification = methods.email.requireVerification;
   const canReset = methods.email.passwordReset;
-  const switchMode = (next: typeof mode) => { setMode(next); setEmailExpanded(true); setError(''); setNotice(''); };
+  const switchMode = (next: typeof mode) => { setMode(next); setEmailExpanded(true); setEmailStep('email'); setOtp(''); setError(''); setNotice(''); };
 
   async function social(provider: 'google' | 'github') {
     if (!methods[provider].enabled || pending) return;
@@ -61,27 +63,33 @@ export function MinimaxAuthCard({ copy, card, signupCredits, brand, logo, method
         const result = await authClient.sendVerificationEmail({ email: email.trim(), callbackURL });
         if (result.error) setError(copy.resendFailed);
         else setNotice(copy.verificationSent);
+      } else if (mode === 'sign-in') {
+        if (emailStep === 'email') {
+          const sent = await authClient.emailOtp.sendVerificationOtp({ email: email.trim(), type: 'sign-in' });
+          if (sent.error) setError(copy.codeSendFailed);
+          else { setOtp(''); setEmailStep('code'); setNotice(copy.codeSent); }
+        } else {
+          if (!/^\d{6}$/.test(otp)) { setError(copy.codeInvalid); return; }
+          const result = await authClient.signIn.emailOtp({ email: email.trim(), otp });
+          if (result.error) setError(copy.codeInvalid);
+          else await onAuthenticated('email-code');
+        }
       } else {
         const code = inviteCode.trim().toUpperCase();
-        if (mode === 'sign-up' && inviteRequired) {
+        if (inviteRequired) {
           const validation = await requestJson('/api/invites/validate', { code });
           if (!validation.ok || !(await validation.json() as { valid: boolean }).valid) { setError(copy.inviteInvalid); return; }
         }
-        const result = mode === 'sign-up'
-          ? await authClient.signUp.email({ email: email.trim(), password, name: name.trim(), ...(needsVerification ? { callbackURL } : {}), ...(inviteRequired ? { inviteCode: code } : {}) } as Parameters<typeof authClient.signUp.email>[0])
-          : await authClient.signIn.email({ email: email.trim(), password });
-        if (result.error) {
-          if (needsVerification && mode === 'sign-in' && (result.error.code === 'EMAIL_NOT_VERIFIED' || (result.error.status === 403 && /not verified/i.test(result.error.message ?? '')))) {
-            switchMode('verify'); setNotice(copy.emailNotVerified);
-          } else setError(result.error.message ?? copy.authFailed);
-        } else if (mode === 'sign-up' && needsVerification) {
+        const result = await authClient.signUp.email({ email: email.trim(), password, name: name.trim(), ...(needsVerification ? { callbackURL } : {}), ...(inviteRequired ? { inviteCode: code } : {}) } as Parameters<typeof authClient.signUp.email>[0]);
+        if (result.error) setError(result.error.message ?? copy.authFailed);
+        else if (needsVerification) {
           switchMode('verify'); setNotice(copy.verificationSent);
         } else {
-          if (mode === 'sign-up' && inviteRequired) {
+          if (inviteRequired) {
             const redeemed = await requestJson('/api/invites/redeem', { code });
             if (!redeemed.ok) { setError(copy.createdButInviteFailed); return; }
           }
-          await onAuthenticated();
+          await onAuthenticated('sign-up');
         }
       }
     } catch { setError(copy.authFailed); }
@@ -89,7 +97,7 @@ export function MinimaxAuthCard({ copy, card, signupCredits, brand, logo, method
   }
 
   const title = mode === 'verify' ? copy.verifyTitle : mode === 'forgot' ? copy.forgotTitle : mode === 'sign-up' ? copy.signUp : copy.signIn;
-  const initial = mode === 'sign-in' && !emailExpanded;
+  const initial = mode === 'sign-in';
   const benefits = [
     [card.welcomeCredits, card.welcomeCreditsDetail.replace('{credits}', String(signupCredits))],
     [card.workflows, card.workflowsDetail],
@@ -103,6 +111,7 @@ export function MinimaxAuthCard({ copy, card, signupCredits, brand, logo, method
       <p className="minimax-auth-media-bottom">{card.mediaLines.map((line, index) => <span key={index}>{line}</span>)}</p>
     </aside>
     <div className="minimax-auth-content">
+      {initial && emailExpanded && <button type="button" className="minimax-auth-link minimax-auth-mobile-sign-up" onClick={() => switchMode('sign-up')}>{copy.signUp}</button>}
       {initial ? <>
         <div className="minimax-auth-intro">
           <h2 id="auth4-title">{card.welcome} {brand}</h2>
@@ -118,7 +127,16 @@ export function MinimaxAuthCard({ copy, card, signupCredits, brand, logo, method
           {methods.github.enabled && <button className="minimax-auth-primary" type="button" disabled={pending} onClick={() => void social('github')}><GitHubMark />{copy.github}</button>}
           {methods.email.enabled && <>
             {(methods.google.enabled || methods.github.enabled) && <div className="minimax-auth-divider" aria-hidden="true"><span>{card.or}</span></div>}
-            <button className="minimax-auth-email-action" type="button" onClick={() => setEmailExpanded(true)}><Mail size={16} aria-hidden="true" />{card.emailAction}</button>
+            {emailExpanded ? <form className="minimax-auth-inline-form" onSubmit={submit}>
+              {emailStep === 'code' && <p role="status" className="minimax-auth-hint">{notice || copy.codeSent} <strong>{email}</strong></p>}
+              <div className="minimax-auth-inline-fields">
+                {emailStep === 'email' && <Mail className="minimax-auth-inline-icon" size={16} aria-hidden="true" />}
+                {emailStep === 'email' ? <input name="email" type="email" value={email} onChange={event => setEmail(event.target.value)} placeholder={copy.emailLabel} aria-label={copy.emailLabel} required autoComplete="email" /> : <input name="otp" type="text" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" minLength={6} maxLength={6} value={otp} onChange={event => setOtp(event.target.value.replace(/\D/g, '').slice(0, 6))} placeholder={copy.codeLabel} aria-label={copy.codeLabel} required />}
+                <button type="submit" disabled={pending} aria-label={pending ? copy.wait : emailStep === 'email' ? copy.sendCode : copy.signIn}><ArrowRight size={18} aria-hidden="true" /></button>
+              </div>
+              {emailStep === 'code' && <div className="minimax-auth-form-links"><button type="button" disabled={pending} className="minimax-auth-link" onClick={() => { setEmailStep('email'); setOtp(''); setNotice(''); setError(''); }}>{copy.changeEmail}</button><button type="button" disabled={pending} className="minimax-auth-link" onClick={async () => { setPending(true); setError(''); try { const result = await authClient.emailOtp.sendVerificationOtp({ email: email.trim(), type: 'sign-in' }); if (result.error) setError(copy.codeSendFailed); else { setOtp(''); setNotice(copy.codeResent); } } catch { setError(copy.codeSendFailed); } finally { setPending(false); } }}>{copy.resendCode}</button></div>}
+              <button type="button" className="minimax-auth-link minimax-auth-sign-up" onClick={() => switchMode('sign-up')}>{copy.signUp}</button>
+            </form> : <button className="minimax-auth-email-action" type="button" onClick={() => setEmailExpanded(true)}><Mail size={16} aria-hidden="true" />{card.emailAction}</button>}
           </>}
           <p className="minimax-auth-terms">{card.agreement} <a href={routePath(locale, 'terms')}>{card.terms}</a> {card.and} <a href={routePath(locale, 'privacy')}>{card.privacy}</a></p>
           {error && <p role="alert" className="minimax-auth-error">{error}</p>}
@@ -134,16 +152,15 @@ export function MinimaxAuthCard({ copy, card, signupCredits, brand, logo, method
           {mode === 'forgot' && <p className="minimax-auth-hint">{copy.forgotHint}</p>}
           <form className="minimax-auth-form" onSubmit={submit}>
             {mode === 'sign-up' && <label>{copy.name}<input name="name" value={name} onChange={event => setName(event.target.value)} required autoComplete="name" /></label>}
-            {methods.email.enabled && <label>{copy.emailLabel}<input name="email" type="email" value={email} onChange={event => setEmail(event.target.value)} required autoComplete="email" /></label>}
-            {mode !== 'forgot' && <label>{copy.password}<span className="minimax-auth-password"><input name="password" type={showPassword ? 'text' : 'password'} value={password} onChange={event => setPassword(event.target.value)} required minLength={8} autoComplete={mode === 'sign-up' ? 'new-password' : 'current-password'} /><button type="button" aria-label={showPassword ? copy.hidePassword : copy.showPassword} onClick={() => setShowPassword(current => !current)}>{showPassword ? <EyeOff size={16} /> : <Eye size={16} />}</button></span></label>}
+            <label>{copy.emailLabel}<input name="email" type="email" value={email} onChange={event => setEmail(event.target.value)} required autoComplete="email" /></label>
+            {mode === 'sign-up' && <label>{copy.password}<span className="minimax-auth-password"><input name="password" type={showPassword ? 'text' : 'password'} value={password} onChange={event => setPassword(event.target.value)} required minLength={8} autoComplete="new-password" /><button type="button" aria-label={showPassword ? copy.hidePassword : copy.showPassword} onClick={() => setShowPassword(current => !current)}>{showPassword ? <EyeOff size={16} /> : <Eye size={16} />}</button></span></label>}
             {mode === 'sign-up' && needsVerification && <p className="minimax-auth-hint">{copy.verifyHint}</p>}
             {mode === 'sign-up' && inviteRequired && <label>{copy.invite}<input name="inviteCode" value={inviteCode} onChange={event => setInviteCode(event.target.value)} required maxLength={32} /></label>}
-            <button type="submit" disabled={pending} className="minimax-auth-primary">{pending ? copy.wait : mode === 'forgot' ? copy.forgotPassword : mode === 'sign-up' ? copy.signUp : copy.signIn}<ArrowRight size={18} aria-hidden="true" /></button>
+            <button type="submit" disabled={pending} className="minimax-auth-primary">{pending ? copy.wait : mode === 'forgot' ? copy.forgotPassword : copy.signUp}<ArrowRight size={18} aria-hidden="true" /></button>
           </form>
           <div className="minimax-auth-form-links">
-            {mode === 'sign-in' && canReset && <button type="button" className="minimax-auth-link" onClick={() => switchMode('forgot')}>{copy.forgotPassword}</button>}
-            {mode === 'sign-in' && <button type="button" className="minimax-auth-link" onClick={() => switchMode('sign-up')}>{copy.signUp}</button>}
-            {(mode === 'sign-up' || mode === 'forgot') && <button type="button" className="minimax-auth-link" onClick={() => switchMode('sign-in')}>{copy.signIn}</button>}
+            {mode === 'sign-up' && canReset && <button type="button" className="minimax-auth-link" onClick={() => switchMode('forgot')}>{copy.forgotPassword}</button>}
+            <button type="button" className="minimax-auth-link" onClick={() => switchMode('sign-in')}>{copy.signIn}</button>
           </div>
         </>}
         {notice && mode === 'forgot' && <p role="status" className="minimax-auth-hint">{notice}</p>}

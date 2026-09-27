@@ -10,10 +10,11 @@ The local copy and capabilities remain owned by `site/`.
 
 - The initial source homepage is dark and the header's `Get Started` opens a centered card at desktop.
 - The source switches to light through its header theme button; opening the card in light preserves that theme.
-- Desktop email action replaces the secondary `Sign in with Email` button with an email input and arrow submit in place, without navigating.
-  This task deliberately keeps the existing password-based email form instead of adding an email-code flow.
+- The email action replaces the secondary `Sign in with Email` button with an email input and arrow submit in place, without navigating.
+  On mobile the source form is x20 y738.25, width350, height44; the input is 298px wide, and the purple circular arrow button is 44px with an 8px gap.
+  The visual variant retains the in-place presentation and uses the email-code behavior already merged into the base application.
 - Source mobile uses a bottom drawer and hides the image.
-  The drawer mechanics belong to a separate task; this implementation only adapts the card contents to the existing modal on mobile.
+  The base application's bottom drawer landed separately; this task retains those mechanics and adapts only the copied card's contents.
 - Clicking the source Google button on mobile closed the card and left the URL at `/`; the header then showed an account avatar and 4 available credits.
   No consent or password wall appeared in this browser session, so no external auth interaction is copied into the visual variant.
 - No consent or password wall was encountered before these states.
@@ -55,7 +56,7 @@ Desktop modal enters via fade and zoom from 95% to 100% over 200ms; no looping a
 - Heading x 20 y 386, width 350, 26px / 28.6px.
 - Rows are stacked with 8px gaps and retain 15px titles, 13px descriptions and 32px icons.
 - Google x 20 y 660, width 350, height 56, font 18px; email x 20 y 746, height 36; terms x 20 y 792, width 350, wraps to two lines.
-- The source drawer has a 500ms `cubic-bezier(.32,.72,0,1)` translation; excluded here per task scope.
+- The source drawer has a 500ms `cubic-bezier(.32,.72,0,1)` translation; drawer behavior is owned by the separately landed application flow, not this variant.
 
 ## Local adaptation
 
@@ -69,12 +70,19 @@ The first Cloudflare preview used a 960px-wide inherited `auth4-dialog` instead 
 The source measurements above were correct, so the component selectors were made more specific and the mobile top padding was increased to 60px before uploading again.
 A further mobile comparison found the overlay's 12px side padding made the content x32 instead of the source x20; the final preview removes that padding only on mobile, without adding the excluded bottom drawer.
 
-The final preview alias was uploaded as Worker version `efed1c75-92ea-4e04-9a5c-f713edc9f420`.
+The original preview alias was uploaded as Worker version `efed1c75-92ea-4e04-9a5c-f713edc9f420`; after integrating current main and checking the new layout, the latest alias was uploaded as `aa7641c9-00c2-4436-afd2-fdd39aedfa5b`.
 At desktop 1440 × 900 in both modes, source and preview modal bounds are exactly x280 y150 880 × 600, with the right panel starting x649.6, benefit rows and Google button both 430.4px wide and 63px / 56px high respectively.
 The Google backgrounds match computed values in both modes: light `rgb(10, 10, 10)`, dark `rgb(122, 91, 255)`.
 The local brand name forces a two-line heading (64.8px versus source 32.4px), so its vertically centered benefit rows and button land 16.2px lower; shrinking or replacing this site's identity would violate the site-owned brand requirement.
 The deliberately different left image is the approved site-local placeholder.
-At mobile 390 × 844, source and preview Google buttons are both x20, width350, height56 with matching mode colors; the vertical coordinates differ because the source uses an excluded bottom drawer while this task retains the existing centered modal.
+At mobile 390 × 844, the first preview had source-matching button width and colors but different vertical coordinates because it predated the separately landed bottom drawer.
+After updating onto main, the 390 × 844 preview uses the separately landed bottom drawer and hides the image.
+In both modes, the preview drawer is x0 y311.94, 390 × 532.06; the source is x0 y325.66, 390 × 518.34.
+The extra 14px of height comes from the local two-line brand heading, not a different drawer width or button size.
+The preview Google button is x20 y674.13, 350 × 56 versus source x20 y660.25, 350 × 56; both computed backgrounds match the source at `rgb(10, 10, 10)` and `rgb(122, 91, 255)`.
+The in-place email form was re-extracted after the update in both modes.
+In the final preview, the divider ends at y742.13 and the email input starts at y754.13 in both modes, leaving a 12px clear gap with both rules and the OR label fully visible.
+The source input starts at y738.25; the local longer brand makes the card taller, while the input and arrow remain 298 × 44 and 44 × 44 within the same 350px row.
 
 | View | Source screenshot | Final preview screenshot |
 | --- | --- | --- |
@@ -82,6 +90,9 @@ At mobile 390 × 844, source and preview Google buttons are both x20, width350, 
 | Dark desktop | `docs/verification/auth-card/source-dark-desktop.png` | `docs/verification/auth-card/preview-dark-desktop.png` |
 | Light mobile | `docs/verification/auth-card/source-light-mobile.png` | `docs/verification/auth-card/preview-light-mobile.png` |
 | Dark mobile | `docs/verification/auth-card/source-dark-mobile.png` | `docs/verification/auth-card/preview-dark-mobile.png` |
+| Light mobile, email expanded | `docs/verification/auth-card/source-light-email-mobile.png` | `docs/verification/auth-card/preview-light-email-mobile.png` |
+| Dark mobile, email expanded | `docs/verification/auth-card/source-dark-email-mobile.png` | `docs/verification/auth-card/preview-dark-email-mobile.png` |
 
-The local email action opens the existing email/password flow inside the same card, not the source email-code flow.
+The local email action opens the already-merged email-code flow inside the same card.
+The separate flow's success reload and bottom drawer remain unchanged by this visual variant.
 No production hostname was deployed.
