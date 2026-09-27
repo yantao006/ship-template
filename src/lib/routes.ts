@@ -1,7 +1,7 @@
 import { messages, site } from './config';
-import { navigationIds, routePath, routes } from './route-paths';
-export { navigationIds, routePath, routes, sitePath } from './route-paths';
-export type { NavigationId, RouteId } from './route-paths';
+import { informationIds, navigationIds, routePath, routes } from './route-paths';
+export { informationIds, navigationIds, routePath, routes, sitePath } from './route-paths';
+export type { InformationId, NavigationId, RouteId } from './route-paths';
 
 export function navigationLinks(locale: keyof typeof messages) {
   const copy = messages[locale].nav;
@@ -18,5 +18,5 @@ export const requestSiteShellHeader = 'x-site-shell';
 
 /** The first document response uses the public shell's default; client navigation never recomputes it. */
 export function isSiteShellPath(pathname: string) {
-  return pathname === '/' || site.languages.some(language => navigationIds.some(id => routePath(language.code, id) === pathname));
+  return pathname === '/' || site.languages.some(language => [...navigationIds, ...informationIds].some(id => routePath(language.code, id) === pathname));
 }

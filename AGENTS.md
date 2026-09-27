@@ -105,7 +105,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │   ├── robots.ts                 # Preview indexing policy and sitemap reference
 │   │   ├── sitemap.ts                # Locale-aware homepage URLs and alternates
 │   │   ├── [locale]/                 # Locale-aware marketing, workspace, and auth pages
-│   │   │   ├── (site)/               # Shared-shell layout; home, pricing, dashboard, credits pages
+│   │   │   ├── (site)/               # Shared-shell layout; home, pricing, dashboard, credits and info pages
 │   │   │   ├── verify-email/page.tsx # Centered verification panel outside shared shell
 │   │   │   └── reset-password/page.tsx # Centered reset panel outside shared shell
 │   │   ├── admin/invites/page.tsx    # Session- and allow-list-gated invite administration
@@ -131,7 +131,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │   ├── blocks/account-popover-card.tsx # Shared ordered-row popover shell and row presentation
 │   │   ├── blocks/tags.css               # Shared semantic tag tones for badges and model labels
 │   │   ├── blocks/account-popover-state.ts # Pure seven-day streak presentation
-│   │   ├── sections/                 # Ordered homepage content sections; Header and Footer belong to site-shell
+│   │   ├── sections/                 # Ordered homepage content sections; Header and localized Footer belong to site-shell
 │   │   ├── video-tool/               # Bound copy, scoped themed video-tool.css, interaction state, pure selectors
 │   │   ├── pricing-content.tsx       # Server-bound pricing catalog and video-tool models
 │   │   ├── pricing-checkout.tsx      # Monthly/yearly/pack cards and gated checkout interaction
@@ -147,6 +147,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │   ├── theme-mode-initializer.tsx # Freezes first document theme before client navigation
 │   │   ├── site-shell.tsx            # Persistent account-aware header and one footer for public pages
 │   │   ├── workspace-shell.tsx       # Workspace content layout with account sidebar and heading
+│   │   ├── information-page.tsx      # Shared localized about, privacy and terms content
 │   │   ├── workspace-content.tsx     # Session-scoped dashboard/credit data and rendering
 │   │   ├── invite-gate.tsx           # Client code redemption form
 │   │   ├── invite-admin.tsx          # Client code inventory and actions
@@ -220,7 +221,7 @@ A new capability can be a new `src/lib/` service called by an API endpoint, a se
 
 `src/lib/config.ts` declares the site, auth, and database config contracts; site files use `satisfies` to check build-time choices, while `wrangler.jsonc` declares matching live resources.
 `scripts/site-check.ts` compares the Worker name, D1/R2/Queue names, auth shape, email binding, callback origin, and required secret names before publication.
-`site/messages/en.ts` and `site/messages/zh.ts` compose matching per-module copy under `site/messages/{en,zh}/`, including separate mail, sign-in, invites, handoff, account, workspace, credits, pricing, and video-tool files; `src/app/[locale]/` and `src/components/language-control.tsx` select copy without duplicating business logic.
+`site/messages/en.ts` and `site/messages/zh.ts` compose matching per-module copy under `site/messages/{en,zh}/`, including separate mail, sign-in, invites, handoff, account, workspace, credits, pricing, footer, and video-tool files; `src/app/[locale]/` and `src/components/language-control.tsx` select copy without duplicating business logic.
 `site/theme.config.ts` provides same-key light and dark palettes, paired top-bar/account-card/dialog/video-tool/pricing colors and row tones, mode defaults, and account colors; `src/lib/theme-tokens.ts` generates the CSS token stylesheet in `src/app/layout.tsx` instead of inline body styles.
 The middleware marks whether the first route uses the public shell; the root layout applies that route's default through `data-mode="auto"`, and `ThemeModeInitializer` freezes it on `<html>` before client navigation. `ReplicaNavigation` reads the document mode and toggles it through `src/lib/theme-mode.ts`, preserving the selected mode across page changes.
 Header language changes use App Router navigation to preserve the document; `ReplicaNavigation` synchronizes `<html lang>` because the root layout persists across client-side transitions.
@@ -258,7 +259,8 @@ The homepage account popovers read the signed-in balance and profile and expose 
 Receipts reflect settled credit ledger grants, not tax invoices; share submissions do not award credits until reviewed.
 The existing homepage, dashboard, and credit history are a preview; `src/lib/mock-services.ts` produces no generated media.
 `src/components/sections/HomePage.tsx` orders VideoHero, VideoToolSection, VideoShowcase, VideoFeatures, VideoPricing, and VideoFAQ inside page content; five non-tool sections remain empty with stable ids.
-The `(site)` route layouts use `src/components/site-shell.tsx` to keep one account-aware Header and Footer mounted across home, pricing, dashboard, and credits within a locale; the workspace sidebar stays in the workspace content, while verification, password reset, desktop callback, and invite admin routes remain outside the shell.
+The `(site)` route layouts use `src/components/site-shell.tsx` to keep one account-aware Header and Footer mounted across home, pricing, dashboard, credits, and localized about/privacy/terms pages; the workspace sidebar stays in the workspace content, while verification, password reset, desktop callback, and invite admin routes remain outside the shell.
+The footer takes identity and contact from `site/site.config.ts`, copy from `site/messages/{en,zh}/footer.ts`, links from `src/lib/route-paths.ts`, and its language row from `site.languages` through the same locale path helper as the header.
 `Header` passes localized brand, optional site logo, links, language choices, real signed-in credits and account controls to `blocks/replica-navigation.tsx`; the shell owns its account snapshot.
 `sections/VideoToolSection.tsx` binds one locale's tool copy and assets on the server and passes them to `src/components/video-tool/video-tool-section.tsx`.
 `bind-copy.ts` localizes links and assembles asset copy; the client `video-tool-section.tsx` shows the create-payload preview without importing site configuration.
