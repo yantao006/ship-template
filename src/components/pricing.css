@@ -24,8 +24,6 @@
 .pricing-tabs-wrap > p { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 17px 0 28px; color: var(--pricing-muted); font-size: 14px; }
 .pricing-tabs-wrap > p svg { color: var(--pricing-success); }
 .pricing-availability { max-width: 730px; margin: 0 auto 32px; padding: 12px 18px; border: 1px solid var(--pricing-border); border-radius: 12px; background: var(--pricing-inset); color: var(--pricing-muted); font-size: 13px; text-align: center; line-height: 1.5; }
-.pricing-coupon { display: grid; gap: 8px; max-width: 300px; margin: 0 auto 25px; font-size: 13px; }
-.pricing-coupon input { min-height: 43px; padding: 9px; border: 1px solid var(--pricing-border); border-radius: 8px; background: var(--pricing-panel); color: var(--pricing-text); }
 .pricing-card-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; align-items: stretch; animation: pricing-enter .36s ease-out both; }
 .pricing-card-grid.packs { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .pricing-card { position: relative; min-width: 0; padding: 36px 27px; border: 1px solid var(--pricing-border); border-radius: 24px; background: var(--pricing-panel); transition: transform .25s ease, border-color .25s ease; }

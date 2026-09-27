@@ -11,7 +11,7 @@ export default {
   paymentTitle: '结账时可选的付款方式', paymentNote: '展示的付款标识仅供参考；实际可用方式取决于结账服务和地区。',
   checkout: '立即付款', unavailable: '暂不可结账', unavailableNote: '当前价格尚未与现有支付商品核对，不会发起付款。',
   signInRequired: '请先登录再结账。', wait: '请稍候…', failed: '无法发起结账，请重试。',
-  coupon: '优惠券', once: '一次性', year: '年付', packName: '积分包', annualName: '年付',
+  once: '一次性', year: '年付', packName: '积分包', annualName: '年付',
   planFeatures: {
     lite: [
       '包含 MiniMax H3 及所有高级模型',

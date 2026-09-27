@@ -1,14 +1,17 @@
 import { site, messages, videoTool } from '@/lib/config';
+import { workerEnv } from '@/lib/env';
 import { planCopy } from '@/lib/plan-copy';
+import { productForPlan } from '@/lib/waffo-products';
 import { PricingCheckout } from './pricing-checkout';
 import './pricing.css';
 
 export async function PricingContent({ locale = site.defaultLocale as keyof typeof messages }: { locale?: keyof typeof messages }) {
+  const env = workerEnv();
   const copy = messages[locale];
   const plans = site.plans.map(plan => ({
     ...plan,
     ...planCopy(locale, plan.id),
-    checkoutEnabled: !!site.checkoutPlanId && site.checkoutPlanId === plan.id && plan.billing !== 'month',
+    checkoutEnabled: !!productForPlan(env, plan),
   }));
   const models = videoTool.models.map(model => ({
     id: model.id,

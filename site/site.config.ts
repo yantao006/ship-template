@@ -29,9 +29,7 @@ export default {
     sharePostNetworks: ['Reddit', 'X', 'Facebook', 'LinkedIn'] as const,
     icons: { checkin: 'sparkles', share: 'share', invite: 'gift', contact: 'mail', feedback: 'message' },
   },
-  // No catalog price is confirmed to match the single existing Waffo product.
-  // Keep checkout disabled until the product's actual price and billing are verified.
-  checkoutPlanId: null,
+  // Product IDs and verified prices are supplied separately by WAFFO_PRODUCTS on this site's Worker.
   plans: [
     { id: 'lite-month', tier: 'lite', billing: 'month', credits: 600, amount: '29.90', currency: 'USD', description: 'Lite monthly' },
     { id: 'lite-year', tier: 'lite', billing: 'year', credits: 600, amount: '178.80', currency: 'USD', description: 'Lite annual' },

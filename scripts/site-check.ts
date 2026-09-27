@@ -45,7 +45,7 @@ export async function check(root: string, env: Record<string, string | undefined
       !/^\/(?!\/)[a-z0-9/-]+$/.test(account.commercialUseHref ?? '') ||
       !validNetworks(account.shareNetworks) || !validNetworks(account.sharePostNetworks) ||
       !['checkin', 'share', 'invite', 'contact', 'feedback'].every(key => accountIconNames.some(icon => icon === account.icons?.[key]))) errors.push('Invalid account experience settings');
-  const paymentSecrets = ['WAFFO_MERCHANT_ID', 'WAFFO_PRIVATE_KEY', 'WAFFO_PRODUCT_ID', 'WAFFO_CALLBACK_PUBLIC_KEY'];
+  const paymentSecrets = ['WAFFO_MERCHANT_ID', 'WAFFO_PRIVATE_KEY', 'WAFFO_PRODUCTS', 'WAFFO_CALLBACK_PUBLIC_KEY'];
   const requiredSecrets = ['BETTER_AUTH_SECRET', ...(auth.google.enabled ? ['GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET'] : []), ...(auth.github.enabled ? ['GITHUB_CLIENT_ID', 'GITHUB_CLIENT_SECRET'] : []), ...(auth.turnstile.onSignIn ? ['TURNSTILE_SECRET'] : []), ...(config.email.provider === 'resend' ? ['RESEND_API_KEY'] : []), ...paymentSecrets];
   const plans = config.plans as { id: string; billing: string; credits: number; amount: string; currency: string; description: string }[] | undefined;
   const planIds = new Set<string>();
@@ -54,7 +54,6 @@ export async function check(root: string, env: Record<string, string | undefined
     if (!plan.id || planIds.has(plan.id) || (plan.billing !== 'once' && plan.billing !== 'month' && plan.billing !== 'year') || !Number.isSafeInteger(plan.credits) || plan.credits <= 0 || !/^\d+\.\d{2}$/.test(plan.amount) || !/^[A-Z]{3}$/.test(plan.currency) || !plan.description) errors.push('Invalid site plan');
     planIds.add(plan.id);
   }
-  if (config.checkoutPlanId != null && !plans?.some(plan => plan.id === config.checkoutPlanId && plan.billing !== 'month')) errors.push('Checkout plan must match a non-monthly configured plan');
   if (JSON.stringify([...wrangler.secrets?.required ?? []].sort()) !== JSON.stringify(requiredSecrets.sort())) errors.push('Required secrets declaration mismatch');
   if (strict) {
     for (const name of requiredSecrets) requireValue(name);

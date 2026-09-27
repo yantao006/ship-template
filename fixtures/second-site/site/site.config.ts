@@ -27,7 +27,7 @@ export default {
     icons: { checkin: 'sparkles', share: 'share', invite: 'gift', contact: 'mail', feedback: 'message' },
   },
   plans: [
-    { id: 'pack', billing: 'once' as const, credits: 100, amount: '9.90', currency: 'USD', description: 'Second credit pack' },
-    { id: 'annual', billing: 'year' as const, credits: 80, amount: '79.00', currency: 'USD', description: 'Second annual plan' },
+    { id: 'pack', billing: 'once' as const, credits: 350, amount: '24.00', currency: 'USD', description: 'Second credit pack' },
+    { id: 'annual', billing: 'year' as const, credits: 240, amount: '144.00', currency: 'USD', description: 'Second annual plan' },
   ],
 } satisfies SiteConfig;

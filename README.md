@@ -9,9 +9,12 @@ The Google consent app is in Testing mode; only the configured Google test users
 
 Video generation, model pages, and legal pages are not implemented.
 The mock video service cannot generate media.
-The pricing catalog now displays four monthly and annual tiers plus five credit packs at the reference prices, but none is verified against the single existing Waffo product.
-`site.checkoutPlanId` is therefore `null`, and both the UI and server refuse checkout; no live payment can be initiated at these prices.
-Only after verifying a matching product price and billing externally should the site operator set one matching non-monthly plan ID, without changing the product ID or restoring secrets.
+The pricing catalog displays four monthly and annual tiers plus five credit packs at the reference prices.
+Each card requires its own verified Waffo **test** product with the same USD amount and billing period, selected from the `WAFFO_PRODUCTS` Worker secret.
+The old single `WAFFO_PRODUCT_ID` is not used and must not be mapped to a differently priced plan.
+The thirteen current prices were created and verified in the existing Kanvora merchant's test mode; the per-Worker catalog is installed separately as `WAFFO_PRODUCTS`.
+A missing or mismatched entry leaves its pay button disabled and its server checkout unavailable.
+Max above 1× remains a non-payable preview.
 The homepage navigation has signed-in account and credit popovers with shared accessible dialogs for daily credit claims, referral links, share submissions, contact, feedback, payment receipts and plans.
 `site/site.config.ts` configures rewards, limits, contact addresses, link and icon choices; `site/messages/en.ts` and `zh.ts` provide all account copy.
 Migration `0003_account_rewards.sql` stores check-ins, pending share submissions and referral claims in this site's D1.
@@ -79,5 +82,40 @@ Cloudflare Email is the default adapter; Resend is selectable through `site.emai
 Notification functions use fake email in tests; they are not connected to real video or payment events.
 Turnstile verification remains implemented and locally tested, but this reference site's `site/auth.config.ts` disables the sign-in gate until a real client widget and secret are configured.
 Do not flip it on without both pieces, or Google login will be blocked.
-Annual checkout grants the current calendar month through the idempotent monthly grant. Replaying that payment does not grant the month again, and a one-time purchase grants once.
+A verified test payment grants a pack once or a subscription's current calendar month once.
+Annual checkout charges the configured 12-month total, not the monthly equivalent displayed prominently on the card; the annual payment grants only the current month.
+Monthly checkout uses a Waffo monthly product at the displayed monthly rate, never the annual product.
+The signed webhook requires test mode, checkout-bound plan metadata, matching currency, amount, any reported total and subscription period before granting credits.
+Dashboard-created products have no product metadata; any product metadata supplied by Waffo must agree with the checkout plan.
+No scheduler grants future subscription months without a new verified payment event.
 Failures/timeouts refund reserved credits once; submitted user cancellations do not refund.
+
+## Provision test checkout products
+
+The thirteen matching products were created in the existing Kanvora test store through the merchant dashboard, with exact USD prices and monthly/yearly periods verified there.
+Do not substitute an older Kanvora product whose price differs, or switch to production mode.
+The ignored `.waffo-products.json` records the mapping locally; it must not be committed or printed.
+For a new site's test merchant, the optional SDK script creates products only when test credentials and store ID are already available securely:
+
+```bash
+WAFFO_TEST_MODE_CONFIRMED=1 pnpm exec tsx scripts/provision-waffo-products.ts
+```
+
+The optional script creates five one-time and eight subscription products, verifies each returned price and period against `site/site.config.ts`, and saves the attestations to ignored `.waffo-products.json`.
+It reuses entries from that file on a retry but refuses stale or duplicate mappings.
+Do not run it against this already-provisioned catalog.
+Install the verified catalog as the site's Worker secret without echoing it:
+
+```bash
+pnpm exec wrangler secret put WAFFO_PRODUCTS < .waffo-products.json
+```
+
+`wrangler secret put` can publish a new Worker version; verify the catalog and checkout code are deployed together before enabling cards.
+Do not change merchant or callback keys.
+Keep the old `WAFFO_PRODUCT_ID` out of the new map.
+The Kanvora test store already has an `awesomejev.link` test webhook; confirm payment events arrive signed with the configured test `WAFFO_CALLBACK_PUBLIC_KEY`.
+In the deployed test site, sign in and open each card at 1×, verify Waffo checkout shows the exact USD charge from the pricing card (yearly uses its **billed yearly** total), finish a sandbox payment, and verify one ledger grant.
+If Waffo adds tax beyond that amount for a buyer's market, do not enable that market until the charged total matches the advertised total; the server rejects callbacks whose reported total differs, but cannot undo a tax-increased checkout charge.
+Confirm replay does not grant twice, incorrect amount or period is rejected, and Max above 1× cannot start checkout.
+On 2026-09-27, a $39.90 Waffo test payment completed through the live site and the account balance changed from 30 to 830 credits.
+The reference site is still a preview: video generation is not connected to credits.
