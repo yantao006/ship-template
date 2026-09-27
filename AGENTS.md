@@ -276,12 +276,17 @@ Vendor-specific request and callback formats stay in adapters, while the page, t
 | Change | Start here, then connect |
 | --- | --- |
 | Change copy or switches | Edit `site/messages/en.ts` and `site/messages/zh.ts` together for text, or `site/site.config.ts` and `site/auth.config.ts` for site choices; connect new switches to their `src/components/` view, `src/lib/` or `src/app/api/` server gate, and `scripts/site-check.ts` when bindings change. |
-| Add a page section | Implement or extend a section in `src/components/sections/` and compose it from `HomePage.tsx`; supply localized content from `site/messages/`, tokens from `site/theme.config.ts` and `src/app/globals.css`, and a route under `src/app/` when it needs its own page. The homepage navigation is in `Header.tsx` and `src/components/blocks/replica-navigation.tsx`. |
+| Port or add a page section | Implement or extend a section in `src/components/sections/` and compose it from `HomePage.tsx`, using the corresponding module in `site/messages/`, named tokens from `site/theme.config.ts` and `src/app/globals.css`, and a route under `src/app/` only when needed; homepage navigation lives in `Header.tsx` and `src/components/blocks/replica-navigation.tsx`. |
 | Add a sign-in method | Extend `site/auth.config.ts`, the method selection in `src/lib/auth.ts`, the card in `src/components/sign-in-card.tsx`, and the callback or guard in `src/app/api/auth/[...all]/route.ts`; declare credentials in `src/lib/env.ts`, `wrangler.jsonc`, and `scripts/site-check.ts`, with auth tests under `test/`. |
 | Add a table | Add the next SQL file in `migrations/`, then update `src/lib/auth-schema.ts` for better-auth tables or native D1 queries and types in the owning `src/lib/` service; expose user-scoped reads through `src/app/` and test the migration and operation. |
 | Add an upstream | Put provider-specific calls and response mapping behind an adapter in `src/lib/`; connect it through a validated `src/app/api/` endpoint and, for long-running work, `worker.ts`, `src/lib/ledger.ts`, and a progress-aware component; add its Worker secret names to `src/lib/env.ts`, `wrangler.jsonc`, and `scripts/site-check.ts`. |
 | Replicate a site | Use `fixtures/second-site/` as the shape example, then create the new `site/` choices and matching `wrangler.jsonc`, provision that site's D1, R2, Queue, hostname, and secrets, apply `migrations/` to its D1, and run `pnpm site-check` against the new site. |
 
+Before porting code or components, classify each incoming fact as already owned or genuinely new; remove owned copies in the same change and reference `src/lib/routes.ts` and `src/lib/route-paths.ts` for navigation and paths, the corresponding `site/messages/` module for copy, and `site/theme.config.ts` for named colors.
+Reuse `src/lib/request-context.ts` for request sessions and write guards, `src/lib/auth-client.ts` for browser authentication, `src/lib/use-dismissable-layer.ts` for dismissal and focus, and `src/lib/json-request.ts` for JSON writes.
+Reuse the existing sign-in and account cards and rows; row appearance is limited to icon, label, badge, box, tone, and divider.
+Give genuinely new facts one owner, add a new file only when it replaces at least two copies, avoid parameter-only forwarding wrappers, and delete any implementation it replaces in the same change.
+Keep existing clickable sign-in, purchase, check-in, invite, language, and theme behavior unchanged, and document any new click actions separately.
 Changes to these paths receive focused tests in `test/` and the verification commands documented in `README.md`.
 
 ## Database schema
@@ -374,14 +379,16 @@ A site-choice change is published with a new build, and a runtime-secret change 
 
 ## Critical Rules
 
-1. **Preserve the site boundary:** site-specific identity, copy, switches, theme, and resource names live in `site/`, with corresponding UI, server, and site-check behavior when the contract grows.
+1. **Preserve the site boundary:** site-specific identity, copy, switches, theme, and resource names live in `site/`, with corresponding UI, server, and site-check behavior when the contract grows; a port connects to their existing owners rather than copying those facts.
 2. **Keep credentials on the server:** Worker bindings and secrets resolve through `src/lib/env.ts`, while committed site configuration describes choices rather than credential values.
 3. **Keep authorization at entry points:** routes and Worker handlers establish identity, user scope, and request origin before invoking account, credit, invite, or media operations.
 4. **Keep provider formats at adapter seams:** UI and ledger operations speak application task, email, or payment concepts so future providers and billing policies can change independently.
 5. **Protect credit invariants:** use native D1 prepared statements and atomic batches for multi-statement ledger effects, stable event keys for retries, and concurrent tests for spend and refunds.
 6. **Evolve storage coherently:** migrations, auth mappings or native D1 queries, API contracts, and tests describe the same schema for each site.
-7. **Represent capability honestly:** mocks remain preview stand-ins; live video or checkout work includes actual endpoints, adapters, processing, and end-to-end checks.
-8. **Verify before handoff:** run `pnpm test`, `pnpm typecheck`, `pnpm cf:build`, and `pnpm site-check`, then follow `README.md` for any relevant live flow. The landing tool also needs `pnpm site-check fixtures/second-site`.
+7. **Represent capability honestly:** mocks remain preview stand-ins, live video or checkout work includes actual endpoints, adapters, processing, and end-to-end checks, and a replica supplies only dimensions, states, and visual feel rather than its prices, links, fake balances, or separate navigation data.
+8. **Verify before handoff:** run `pnpm test`, `pnpm typecheck`, `pnpm cf:build`, and `pnpm site-check` for code changes (documentation-only changes need the same checks except `pnpm cf:build`), then follow `README.md` for relevant live flows and run `pnpm site-check fixtures/second-site` for landing-tool changes.
+   Before merging a port, compare against the main branch: hard-coded color values, handwritten paths, session reads, auth clients, outside-click and Escape handlers must not increase; use `test/theme-guards.test.ts` for color literals and duplicate selectors, `test/routes-language-ledger-plans.test.ts` for route tables, and `test/client-boundary.test.ts` for auth clients, and do not add dismissal, focus, or session-reading copies where guards do not yet exist.
+   Put any additional strings only in the existing `site/messages/` module namespace.
 9. **Keep this guide synchronized:** whenever the stack, module roles, commands, architecture, patterns, extension flow, schema, configuration, or these working rules change, update this file in the same change.
 
 ## Maintaining this file
