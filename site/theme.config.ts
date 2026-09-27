@@ -41,6 +41,10 @@ export default {
       buyBg: '#fafafa', buyText: '#111111', buyHover: '#dedee2',
     },
   },
+  authCard: {
+    light: { canvas: '#f4f2ee', panel: '#ffffff', text: '#0a0a0a', row: '#ece8e0', line: '#e8e5df', muted: '#6b7280', faint: '#9ca3af', icon: '#0a0a0a', button: '#0a0a0a', buttonHover: '#000000', onButton: '#ffffff', focus: '#7a5bff', media: '#333333', error: '#b91c1c' },
+    dark: { canvas: '#111113', panel: '#202024', text: '#fafafa', row: '#19191d', line: '#323238', muted: '#a1a1aa', faint: '#71717a', icon: '#a78bfa', button: '#7a5bff', buttonHover: '#000000', onButton: '#ffffff', focus: '#7a5bff', media: '#333333', error: '#fca5a5' },
+  },
   dialog: {
     light: {
       canvas: '#ffffff', panel: '#f8f7fa', inset: '#f1eff5', elevated: '#edeaf2', text: '#18181b', muted: '#57545f', subtle: '#696575', border: '#ded8e7', accent: '#6d28d9', accentSoft: '#eee7fa', disabled: '#e4e4e7', disabledText: '#64616b', overlay: '#1118279c', shadow: '#11182738', grid: '#18181b0d', heroGlow: '#8b5cf61a', titleGlow: '#eee7fa', inviteStart: '#f7f2fc', inviteMiddle: '#f5effb', inviteEnd: '#fcf1fa', infoPanel: '#e0f2fe', infoValue: '#075985', accentValue: '#6d28d9', messageBg: '#dcfce7', messageText: '#166534', errorBg: '#fee2e2', errorText: '#991b1b', heroIconBg: '#ffffff23', heroMuted: '#57545f', socialBg: '#f1eff5', socialHover: '#e9e1f2', shareBg: '#f8f7fa',

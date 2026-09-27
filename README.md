@@ -77,6 +77,15 @@ Desktop and mobile captures are at [desktop](docs/verification/auth-4-desktop.pn
 The remote D1 still has unapplied `0003_account_rewards.sql`, so `/api/account/activity` returns 500 and the signed-in account card reports an activity error; migrate the remote database before relying on reward actions.
 This browser run did not apply that migration, submit a payment, or deploy the preview version to the live hostname.
 
+### Source-inspired auth card preview (2026-09-27)
+
+The preview alias now serves the copied `minimax-auth-card.tsx` variant; `auth-4.tsx` is unchanged.
+The card keeps the site's brand, configured welcome credits and localized claims, and retains the existing email/password form after the email action.
+The image is a site-local placeholder.
+The source's email-code flow, mobile bottom drawer and full-page refresh are not implemented here.
+The measured source spec, computed-color comparison and four viewport/theme screenshot pairs live in `docs/research/auth-card/source-spec.md` and `docs/verification/auth-card/`.
+Cloudflare Worker version `efed1c75-92ea-4e04-9a5c-f713edc9f420` was uploaded to the preview alias without deploying to the live hostname.
+
 ## Site and secret boundaries
 
 Each site needs its own D1, Worker, Google Cloud project and OAuth web client, and account namespace.
