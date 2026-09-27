@@ -2,8 +2,9 @@ import type { ReactNode } from 'react';
 import type { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { site, theme, messages, localeFor } from '@/lib/config';
-import { requestLocaleHeader } from '@/lib/routes';
+import { requestLocaleHeader, requestSiteShellHeader } from '@/lib/routes';
 import { themeTokenStylesheet } from '@/lib/theme-tokens';
+import { ThemeModeInitializer } from '@/components/theme-mode-initializer';
 import './globals.css';
 import '@/components/blocks/tags.css';
 
@@ -23,8 +24,9 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const locale = await requestLocale();
-  return <html lang={locale} data-mode="auto" data-default-mode={theme.defaultMode.other}>
+  const defaultMode = (await headers()).get(requestSiteShellHeader) === '1' ? theme.defaultMode.home : theme.defaultMode.other;
+  return <html lang={locale} data-mode="auto" data-default-mode={defaultMode}>
     <head><style dangerouslySetInnerHTML={{ __html: themeTokenStylesheet() }} /></head>
-    <body>{children}</body>
+    <body><ThemeModeInitializer defaultMode={defaultMode} />{children}</body>
   </html>;
 }

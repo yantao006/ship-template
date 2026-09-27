@@ -12,8 +12,8 @@ The current example has site-local accounts, invitation primitives, configurable
   `site/site.config.ts` owns language entries; `src/lib/routes.ts` owns server navigation metadata, while `src/lib/route-paths.ts` holds client-safe route paths.
 - **One navigation path per purpose:** the navigation has one language control and one sign-in entry; its sign-in card lists only the methods enabled in `site/auth.config.ts`.
 - **Theme owns color:** `site/theme.config.ts` defines paired light/dark palettes, top-bar and account-card chrome, dialog, video-tool and pricing surfaces, row tones, default modes, and account accents; `src/lib/theme-tokens.ts` generates the stylesheet in `src/app/layout.tsx`.
-  The shared header uses the homepage's dark default and selects the mode on `<html>`; pages without it retain the light default, while legacy CSS surfaces still await migration.
-- **Pages compose sections:** `src/components/sections/HomePage.tsx` orders eight homepage sections. `Header` mounts the configurable replica-style navigation; six sections remain empty scaffolds, and the video tool renders its existing implementation.
+  `src/lib/theme-mode.ts` owns the root mode transitions; the layout freezes the first page's default and the shared header toggles the root mode without resetting it on client navigation, while legacy CSS surfaces still await migration.
+- **Pages compose sections:** `src/components/sections/HomePage.tsx` orders six content sections; five remain empty scaffolds, and the video tool renders its existing implementation. `src/components/site-shell.tsx` owns one persistent header and footer for home, pricing, dashboard, and credits.
 - **Long-running work is observable:** video generation uses an asynchronous task and progress flow, while the server validates costs and records credit movements in the ledger.
 
 ## Overall tech stack
@@ -101,15 +101,13 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   ├── app/                          # Next.js App Router pages and API handlers
 │   │   ├── layout.tsx                # Request-locale html lang/metadata, preview indexing and theme tokens
 │   │   ├── globals.css               # Shared responsive layout and token-consuming styles
-│   │   ├── page.tsx                  # Default-locale homepage
+│   │   ├── (site)/                   # Default-locale homepage and shared-shell layout
 │   │   ├── robots.ts                 # Preview indexing policy and sitemap reference
 │   │   ├── sitemap.ts                # Locale-aware homepage URLs and alternates
-│   │   ├── [locale]/                 # Locale-aware marketing and workspace routes
-│   │   │   ├── page.tsx              # Localized homepage composition
-│   │   │   ├── dashboard/page.tsx    # Account summary route
-│   │   │   ├── credits/page.tsx      # Credit balance and grant history route
-│   │   │   ├── pricing/page.tsx      # Plan list and checkout start
-│   │   │   └── reset-password/page.tsx # Password reset form for an emailed token
+│   │   ├── [locale]/                 # Locale-aware marketing, workspace, and auth pages
+│   │   │   ├── (site)/               # Shared-shell layout; home, pricing, dashboard, credits pages
+│   │   │   ├── verify-email/page.tsx # Centered verification panel outside shared shell
+│   │   │   └── reset-password/page.tsx # Centered reset panel outside shared shell
 │   │   ├── admin/invites/page.tsx    # Session- and allow-list-gated invite administration
 │   │   ├── auth-callback/page.tsx    # Signed-in desktop return page
 │   │   └── api/                      # HTTP boundary for auth and account operations
@@ -132,7 +130,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │   ├── blocks/account-popover-card.tsx # Shared ordered-row popover shell and row presentation
 │   │   ├── blocks/tags.css               # Shared semantic tag tones for badges and model labels
 │   │   ├── blocks/account-popover-state.ts # Pure seven-day streak presentation
-│   │   ├── sections/                 # Ordered homepage sections; Header mounts navigation, tool mounts workbench
+│   │   ├── sections/                 # Ordered homepage content sections; Header and Footer belong to site-shell
 │   │   ├── video-tool/               # Bound copy, scoped themed video-tool.css, interaction state, pure selectors
 │   │   ├── pricing-content.tsx       # Server-bound pricing catalog and video-tool models
 │   │   ├── pricing-checkout.tsx      # Monthly/yearly/pack cards and gated checkout interaction
@@ -144,14 +142,16 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │   ├── reset-password.tsx        # Client form that submits a new password for a reset token
 │   │   ├── google-one-tap.tsx        # Optional browser-side One Tap client
 │   │   ├── language-control.tsx      # Locale switch preserving the current route
-│   │   ├── workspace-shell.tsx       # Workspace layout with shared header and heading
+│   │   ├── theme-mode-initializer.tsx # Freezes first document theme before client navigation
+│   │   ├── site-shell.tsx            # Persistent account-aware header and one footer for public pages
+│   │   ├── workspace-shell.tsx       # Workspace content layout with account sidebar and heading
 │   │   ├── workspace-content.tsx     # Session-scoped dashboard/credit data and rendering
 │   │   ├── invite-gate.tsx           # Client code redemption form
 │   │   ├── invite-admin.tsx          # Client code inventory and actions
 │   │   └── desktop-handoff.tsx       # Client app-return request and redirect
 │   └── lib/                          # Business logic, config exports, and integration seams
 │       ├── config.ts                 # Typed site/auth/theme/database contracts and compiled choices
-│       ├── routes.ts                 # Server navigation entries and request-locale lookup
+│       ├── routes.ts                 # Server navigation, request-locale and initial shell mode lookup
 │       ├── route-paths.ts            # Client-safe localized route primitives
 │       ├── auth-path.ts              # Template auth route prefix
 │       ├── auth-client.ts            # Singleton browser auth client and One Tap
@@ -161,6 +161,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │       ├── json-request.ts           # Browser JSON write helper
 │       ├── plan-copy.ts              # Localized plan names selected by plan id
 │       ├── theme-tokens.ts           # Generated mode-aware CSS tokens from site theme
+│       ├── theme-mode.ts             # Root theme initialization and control transitions
 │       ├── env.ts                    # Worker binding and secret types plus context accessor
 │       ├── auth-schema.ts            # Drizzle mapping for better-auth D1 tables
 │       ├── auth.ts                   # Better-auth construction, origin checks, signup grant
@@ -218,7 +219,7 @@ A new capability can be a new `src/lib/` service called by an API endpoint, a se
 `scripts/site-check.ts` compares the Worker name, D1/R2/Queue names, auth shape, email binding, callback origin, and required secret names before publication.
 `site/messages/en.ts` and `site/messages/zh.ts` compose matching per-module copy under `site/messages/{en,zh}/`, including separate mail, sign-in, invites, handoff, account, workspace, credits, pricing, and video-tool files; `src/app/[locale]/` and `src/components/language-control.tsx` select copy without duplicating business logic.
 `site/theme.config.ts` provides same-key light and dark palettes, paired top-bar/account-card/dialog/video-tool/pricing colors and row tones, mode defaults, and account colors; `src/lib/theme-tokens.ts` generates the CSS token stylesheet in `src/app/layout.tsx` instead of inline body styles.
-The shared header marks the dark default on homepage, pricing, and workspace, while `ReplicaNavigation` selects `data-mode` on `<html>` for toggling; routes without the header default light.
+The middleware marks whether the first route uses the public shell; the root layout applies that route's default through `data-mode="auto"`, and `ThemeModeInitializer` freezes it on `<html>` before client navigation. `ReplicaNavigation` reads the document mode and toggles it through `src/lib/theme-mode.ts`, preserving the selected mode across page changes.
 Header language changes use App Router navigation to preserve the document; `ReplicaNavigation` synchronizes `<html lang>` because the root layout persists across client-side transitions.
 `src/middleware.ts` forwards the route locale so the root layout sets matching `<html lang>` and metadata, including for the default-language `/` homepage.
 `src/app/globals.css` applies the tokens across marketing and workspace surfaces, and `.auth-panel` sets foreground with its surface background.
@@ -253,9 +254,9 @@ The homepage account popovers read the signed-in balance and profile and expose 
 `docs/research/account-popovers/components/source-spec.md` records source-observed desktop/mobile metrics and click-state evidence; the implementation uses local site copy and capabilities rather than the reference site's product claims.
 Receipts reflect settled credit ledger grants, not tax invoices; share submissions do not award credits until reviewed.
 The existing homepage, dashboard, and credit history are a preview; `src/lib/mock-services.ts` produces no generated media.
-`src/components/home-content.tsx` passes the account snapshot to `src/components/sections/HomePage.tsx`, which orders Header, VideoHero, VideoToolSection, VideoShowcase, VideoFeatures, VideoPricing, VideoFAQ, and Footer.
-`Header` passes localized brand, optional site logo, links, language choices, real signed-in credits and account controls to `blocks/replica-navigation.tsx`; homepage, pricing, and workspace render this same header from their account snapshots.
-The six non-header, non-tool sections remain empty sections with stable ids.
+`src/components/sections/HomePage.tsx` orders VideoHero, VideoToolSection, VideoShowcase, VideoFeatures, VideoPricing, and VideoFAQ inside page content; five non-tool sections remain empty with stable ids.
+The `(site)` route layouts use `src/components/site-shell.tsx` to keep one account-aware Header and Footer mounted across home, pricing, dashboard, and credits within a locale; the workspace sidebar stays in the workspace content, while verification, password reset, desktop callback, and invite admin routes remain outside the shell.
+`Header` passes localized brand, optional site logo, links, language choices, real signed-in credits and account controls to `blocks/replica-navigation.tsx`; the shell owns its account snapshot.
 `sections/VideoToolSection.tsx` binds one locale's tool copy and assets on the server and passes them to `src/components/video-tool/video-tool-section.tsx`.
 `bind-copy.ts` localizes links and assembles asset copy; the client `video-tool-section.tsx` shows the create-payload preview without importing site configuration.
 `video-generation-tool.tsx` composes the dark workbench from `composer.tsx` and `stage.tsx`.
@@ -284,7 +285,7 @@ Vendor-specific request and callback formats stay in adapters, while the page, t
 | Change | Start here, then connect |
 | --- | --- |
 | Change copy or switches | Edit `site/messages/en.ts` and `site/messages/zh.ts` together for text, or `site/site.config.ts` and `site/auth.config.ts` for site choices; connect new switches to their `src/components/` view, `src/lib/` or `src/app/api/` server gate, and `scripts/site-check.ts` when bindings change. |
-| Add a page section | Implement or extend a section in `src/components/sections/` and compose it from `HomePage.tsx`; supply localized content from `site/messages/`, tokens from `site/theme.config.ts` and `src/app/globals.css`, and a route under `src/app/` when it needs its own page. The shared navigation is in `Header.tsx` and `src/components/blocks/replica-navigation.tsx`. |
+| Add a page section | Implement or extend a section in `src/components/sections/` and compose it from `HomePage.tsx`; supply localized content from `site/messages/` and tokens from `site/theme.config.ts` and `src/app/globals.css`. Public page routes belong under the `(site)` layouts and must join the initial shell route classification in `src/lib/routes.ts`; the shared chrome is in `site-shell.tsx`. |
 | Add a sign-in method | Extend `site/auth.config.ts`, the method selection in `src/lib/auth.ts`, the card in `src/components/sign-in-card.tsx`, and the callback or guard in `src/app/api/auth/[...all]/route.ts`; declare credentials in `src/lib/env.ts`, `wrangler.jsonc`, and `scripts/site-check.ts`, with auth tests under `test/`. |
 | Add a table | Add the next SQL file in `migrations/`, then update `src/lib/auth-schema.ts` for better-auth tables or native D1 queries and types in the owning `src/lib/` service; expose user-scoped reads through `src/app/` and test the migration and operation. |
 | Add an upstream | Put provider-specific calls and response mapping behind an adapter in `src/lib/`; connect it through a validated `src/app/api/` endpoint and, for long-running work, `worker.ts`, `src/lib/ledger.ts`, and a progress-aware component; add its Worker secret names to `src/lib/env.ts`, `wrangler.jsonc`, and `scripts/site-check.ts`. |

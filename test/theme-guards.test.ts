@@ -4,6 +4,7 @@ import { test } from 'node:test';
 import { join } from 'node:path';
 import theme from '../site/theme.config';
 import { themeTokenStylesheet } from '../src/lib/theme-tokens';
+import { ensureThemeMode, toggleThemeMode } from '../src/lib/theme-mode';
 
 const read = (path: string) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
 const colors = (source: string) => new Set((source.match(/#[\da-fA-F]{3,8}\b/g) ?? []).map(value => value.toLowerCase()));
@@ -46,17 +47,23 @@ test('light and dark palettes have the same six semantic keys', () => {
   assert.notEqual(theme.light.foreground, theme.dark.foreground);
   const sheet = themeTokenStylesheet();
   assert.match(sheet, /html\[data-mode="dark"\]/);
-  assert.match(sheet, /html\[data-mode="auto"\]:has\(\[data-default-mode="dark"\]\)/);
+  assert.match(sheet, /html\[data-mode="auto"\]\[data-default-mode="dark"\]/);
+  assert.doesNotMatch(sheet, /:has\(/);
   for (const name of ['bg', 'surface', 'text', 'muted', 'accent', 'line', 'surface-raised', 'surface-sunken', 'hover', 'scrim', 'account-accent', 'account-accent-end', 'account-accent-text', 'tone-pink', 'tone-info', 'tone-success', 'tone-warning', 'tone-danger']) {
     assert.match(sheet, new RegExp(`--${name}:`));
   }
   const layout = read('src/app/layout.tsx');
-  assert.match(layout, /data-mode="auto" data-default-mode=\{theme\.defaultMode\.other\}/);
+  assert.match(layout, /data-mode="auto" data-default-mode=\{defaultMode\}/);
+  assert.match(layout, /get\(requestSiteShellHeader\) === '1'/);
   assert.match(layout, /themeTokenStylesheet\(\)/);
   assert.doesNotMatch(layout, /<body style=/);
   const navigation = read('src/components/blocks/replica-navigation.tsx');
-  assert.match(navigation, /data-default-mode=\{defaultMode\}/);
-  assert.match(navigation, /document\.documentElement\.dataset\.mode = light \? 'light' : 'dark'/);
+  assert.doesNotMatch(navigation, /data-default-mode=/);
+  assert.match(navigation, /ensureThemeMode\(document\.documentElement, defaultMode\)/);
+  assert.match(navigation, /toggleThemeMode\(document\.documentElement, defaultMode\)/);
+  assert.doesNotMatch(navigation, /dataset\.mode = 'auto'/);
+  assert.match(layout, /<ThemeModeInitializer defaultMode=\{defaultMode\}/);
+  assert.doesNotMatch(read('src/components/theme-mode-initializer.tsx'), /querySelector|:has/);
   const authPanel = read('src/app/globals.css').match(/\.auth-panel\s*\{([^}]+)\}/)?.[1];
   assert.ok(authPanel);
   assert.match(authPanel, /background:\s*var\(--surface\)/);
@@ -64,6 +71,37 @@ test('light and dark palettes have the same six semantic keys', () => {
   const css = read('src/app/globals.css');
   assert.match(css, /html:is\(\[data-mode="dark"\],[^}]+\.auth-panel \.auth-button \{ color: var\(--bg\); \}/);
   assert.match(css, /body \{[^}]*background: var\(--bg\); color: var\(--text\)/);
+});
+
+test('client navigation preserves the chosen mode and only the control switches it', () => {
+  for (const locale of ['en', 'zh']) {
+    const classes = new Set<string>();
+    const changes: string[] = [];
+    const root = {
+      dataset: { mode: 'auto' },
+      classList: { toggle: (name: string, enabled: boolean) => enabled ? classes.add(name) : classes.delete(name) },
+      dispatchEvent: (event: Event) => { changes.push(event.type); return true; },
+    } as unknown as HTMLElement;
+
+    // A first load on the homepage uses its dark default.
+    assert.equal(ensureThemeMode(root, theme.defaultMode.home), 'dark', locale);
+    assert.equal(toggleThemeMode(root, theme.defaultMode.home), 'light', locale);
+    assert.equal(root.dataset.mode, 'light', locale);
+    assert.ok(classes.has('replica-light'), locale);
+    // Unmount/remount of the header on pricing must not reapply its dark default.
+    assert.equal(ensureThemeMode(root, theme.defaultMode.home), 'light', locale);
+    assert.deepEqual(changes, ['site-theme-change', 'site-theme-change'], locale);
+    assert.equal(root.dataset.mode, 'light', locale);
+    assert.equal(toggleThemeMode(root, theme.defaultMode.home), 'dark', locale);
+    assert.equal(ensureThemeMode(root, theme.defaultMode.home), 'dark', locale);
+    assert.ok(!classes.has('replica-light'), locale);
+
+    // The persistent layout freezes a first light page before it links to a dark-default page.
+    root.dataset.mode = 'auto';
+    assert.equal(ensureThemeMode(root, theme.defaultMode.other), 'light', locale);
+    assert.equal(ensureThemeMode(root, theme.defaultMode.home), 'light', locale);
+    assert.equal(toggleThemeMode(root, theme.defaultMode.home), 'dark', locale);
+  }
 });
 
 test('navigation, menu, credit pill and account cards use paired theme colors and one shared shell', () => {

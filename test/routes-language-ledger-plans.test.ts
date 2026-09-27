@@ -8,7 +8,7 @@ import messages from '../site/messages';
 import { languageFor, localeFor } from '../src/lib/config';
 import { ledgerSourceLabel, ledgerSources, paidLedgerSources } from '../src/lib/ledger';
 import { planCopy } from '../src/lib/plan-copy';
-import { localeFromPath, navigationLinks, requestLocaleHeader, routePath, routes } from '../src/lib/routes';
+import { isSiteShellPath, localeFromPath, navigationLinks, requestLocaleHeader, requestSiteShellHeader, routePath, routes } from '../src/lib/routes';
 import { middleware } from '../src/middleware';
 
 function* sourceFiles(dir: string): Generator<string> {
@@ -48,15 +48,17 @@ test('configured language entries drive page locale, native name and date locale
   }
   assert.equal(localeFromPath('/'), site.defaultLocale);
   assert.equal(localeFromPath('/not-a-locale'), site.defaultLocale);
-  for (const [path, expected] of [['/zh/credits', 'zh'], ['/', site.defaultLocale], ['/en/pricing', 'en']] as const) {
+  for (const [path, expected, shell] of [['/zh/credits', 'zh', true], ['/', site.defaultLocale, true], ['/en/pricing', 'en', true], ['/zh/verify-email', 'zh', false], ['/en/reset-password', 'en', false], ['/auth-callback', site.defaultLocale, false], ['/admin/invites', site.defaultLocale, false]] as const) {
     const response = middleware(new NextRequest(`https://awesomejev.link${path}`));
     assert.equal(response.headers.get(`x-middleware-request-${requestLocaleHeader}`), expected);
+    assert.equal(isSiteShellPath(path), shell);
+    assert.equal(response.headers.get(`x-middleware-request-${requestSiteShellHeader}`), shell ? '1' : '0');
   }
   const layout = readFileSync('src/app/layout.tsx', 'utf8');
   assert.match(layout, /<html lang=\{locale\}/);
   assert.match(layout, /description: messages\[locale\]\.metadata\.description/);
   assert.match(readFileSync('src/middleware.ts', 'utf8'), /headers\.set\(requestLocaleHeader, localeFromPath\(request\.nextUrl\.pathname\)\)/);
-  assert.match(readFileSync('src/app/page.tsx', 'utf8'), /HomeContent/);
+  assert.match(readFileSync('src/app/(site)/page.tsx', 'utf8'), /HomeContent/);
 });
 
 test('all ledger sources have translated copy, and the receipt query uses the paid registry', () => {
