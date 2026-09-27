@@ -117,4 +117,5 @@ The Kanvora test store already has an `awesomejev.link` test webhook; confirm pa
 In the deployed test site, sign in and open each card at 1×, verify Waffo checkout shows the exact USD charge from the pricing card (yearly uses its **billed yearly** total), finish a sandbox payment, and verify one ledger grant.
 If Waffo adds tax beyond that amount for a buyer's market, do not enable that market until the charged total matches the advertised total; the server rejects callbacks whose reported total differs, but cannot undo a tax-increased checkout charge.
 Confirm replay does not grant twice, incorrect amount or period is rejected, and Max above 1× cannot start checkout.
+On 2026-09-27, a $39.90 Waffo test payment completed through the live site and the account balance changed from 30 to 830 credits.
 The reference site is still a preview: video generation is not connected to credits.

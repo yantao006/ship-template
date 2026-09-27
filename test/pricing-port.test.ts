@@ -121,6 +121,7 @@ test('unprovisioned plans stay unpaid; Max multiplier above 1 stays unpaid', asy
   const page = readFileSync('src/components/pricing-content.tsx', 'utf8');
   assert.match(route, /productForPlan\(env, plan\)/);
   assert.match(page, /checkoutEnabled: !!productForPlan\(env, plan\)/);
+  assert.doesNotMatch(page, /<Header\b|accountSnapshot\(/, 'the shared site shell owns the header and account snapshot');
   const client = readFileSync('src/components/pricing-checkout.tsx', 'utf8');
   assert.match(client, /disabled=\{!canPay \|\| !!pending\}/);
   assert.match(client, /factor === 1/);
