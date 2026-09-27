@@ -7,6 +7,8 @@ export default {
   signUp: '注册账号',
   name: '姓名',
   password: '密码',
+  showPassword: '显示密码',
+  hidePassword: '隐藏密码',
   noMethods: '暂未开放登录',
   emailLabel: '邮箱',
   authFailed: '登录失败，请重试。',

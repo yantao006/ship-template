@@ -1,15 +1,16 @@
 'use client';
 
-import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type ReactNode, type MouseEvent } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Globe2, Moon, Sun } from 'lucide-react';
 import { pathForLocale } from '@/components/language-control';
 import { useDismissableLayer } from '@/lib/use-dismissable-layer';
 import { ensureThemeMode, toggleThemeMode } from '@/lib/theme-mode';
+import { useOptionalAuthDialog } from '@/components/auth-dialog';
 import './replica-navigation.css';
 
-type NavLink = { label: string; href: string; icon: ReactNode };
+type NavLink = { label: string; href: string; icon: ReactNode; requiresAuth?: boolean };
 type Menu = 'language' | null;
 
 export type ReplicaNavigationProps = {
@@ -25,11 +26,13 @@ export type ReplicaNavigationProps = {
   darkLabel: string;
   defaultMode: 'light' | 'dark';
   accountControl: ReactNode;
+  signedIn: boolean;
 };
 
-export function ReplicaNavigation({ brand, logo, brandHref, navigationLabel, links, locale, locales, languageLabel, lightLabel, darkLabel, defaultMode, accountControl }: ReplicaNavigationProps) {
+export function ReplicaNavigation({ brand, logo, brandHref, navigationLabel, links, locale, locales, languageLabel, lightLabel, darkLabel, defaultMode, accountControl, signedIn }: ReplicaNavigationProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const authDialog = useOptionalAuthDialog();
   const [open, setOpen] = useState<Menu>(null);
   const light = useSyncExternalStore(
     (notify) => { document.documentElement.addEventListener('site-theme-change', notify); return () => document.documentElement.removeEventListener('site-theme-change', notify); },
@@ -51,6 +54,12 @@ export function ReplicaNavigation({ brand, logo, brandHref, navigationLabel, lin
   const activeHref = [...links].sort((a, b) => b.href.length - a.href.length).find(link => currentPath === link.href || (link.href !== brandHref && currentPath.startsWith(`${link.href}/`)))?.href;
   const toggle = (menu: Menu) => setOpen(value => value === menu ? null : menu);
   const toggleMode = () => toggleThemeMode(document.documentElement, defaultMode);
+  const gatedLink = (event: MouseEvent<HTMLAnchorElement>, link: NavLink) => {
+    if (signedIn || !authDialog || !link.requiresAuth || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    const { href } = link;
+    event.preventDefault();
+    void authDialog.openAuth({ source: 'navigation-link', intent: 'open-history', draftId: href, onSuccess: () => router.push(href) });
+  };
 
   return <>
     <header className="replica-topbar">
@@ -59,7 +68,7 @@ export function ReplicaNavigation({ brand, logo, brandHref, navigationLabel, lin
         <span>{brand}</span>
       </Link>
       <nav className="replica-desktop-nav" aria-label={navigationLabel}>
-        {links.map(link => <Link key={link.href} href={link.href} className={activeHref === link.href ? 'active' : undefined} aria-current={activeHref === link.href ? 'page' : undefined}>{link.label}</Link>)}
+        {links.map(link => <Link key={link.href} href={link.href} onClick={event => gatedLink(event, link)} className={activeHref === link.href ? 'active' : undefined} aria-current={activeHref === link.href ? 'page' : undefined}>{link.label}</Link>)}
       </nav>
       <div className="replica-actions">
         <button className="replica-icon" type="button" aria-label={light ? darkLabel : lightLabel} onClick={toggleMode}>{light ? <Moon size={19} /> : <Sun size={19} />}</button>
@@ -73,7 +82,7 @@ export function ReplicaNavigation({ brand, logo, brandHref, navigationLabel, lin
       </div>
     </header>
     <nav className="replica-mobile-bottom" aria-label={navigationLabel}>
-      {links.map(link => <Link key={link.href} href={link.href} className={activeHref === link.href ? 'active' : undefined} aria-current={activeHref === link.href ? 'page' : undefined}>{link.icon}{link.label}</Link>)}
+      {links.map(link => <Link key={link.href} href={link.href} onClick={event => gatedLink(event, link)} className={activeHref === link.href ? 'active' : undefined} aria-current={activeHref === link.href ? 'page' : undefined}>{link.icon}{link.label}</Link>)}
     </nav>
   </>;
 }

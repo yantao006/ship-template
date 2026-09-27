@@ -7,6 +7,8 @@ export default {
   signUp: 'Create account',
   name: 'Name',
   password: 'Password',
+  showPassword: 'Show password',
+  hidePassword: 'Hide password',
   noMethods: 'Sign-in unavailable',
   emailLabel: 'Email',
   authFailed: 'Authentication failed. Please try again.',
