@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import * as React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
@@ -81,6 +81,24 @@ test('source-inspired card uses site identity, localized benefits and configured
   assert.doesNotMatch(variant, /authClient\.signIn\.email\(/);
   assert.equal(theme.authCard.light.button, '#0a0a0a');
   assert.equal(theme.authCard.dark.button, '#7a5bff');
+});
+
+test('standalone desktop handoff opens the live email-code card and preserves its callback', () => {
+  const control = source('src/components/auth/auth-control.tsx');
+  const callback = source('src/app/auth-callback/page.tsx');
+  const liveCard = source('src/components/auth/minimax-auth-card.tsx');
+  assert.equal(existsSync(new URL('../src/components/auth/sign-in-card.tsx', import.meta.url)), false);
+  assert.match(liveCard, /export type Copy =/);
+  assert.match(control, /standaloneOpen && createPortal\(/);
+  assert.match(control, /<MinimaxAuthCard \{\.\.\.standaloneCard\} copy=\{copy\} methods=\{methods\} locale=\{locale\} callbackURL=\{callbackURL\}/);
+  assert.match(control, /onCodeOpenChange=\{setCodeOpen\} onCloseAuth=\{closeStandalone\}/);
+  assert.match(control, /serverHasSession\(\)/);
+  assert.match(control, /window\.location\.assign\(callbackURL\)/);
+  assert.match(callback, /<AuthControl[^>]+standaloneCard=\{\{ brand: site\.brand/);
+  assert.match(callback, /callbackURL=\{returnURL\}/);
+  assert.doesNotMatch(control, /SignInCard|signIn\.email\(|type="password"/);
+  assert.doesNotMatch(liveCard, /signIn\.email\(/);
+  assert.match(liveCard, /<Auth6 email=\{sentEmail\}/);
 });
 
 test('a positive session probe cannot dismiss a guest avatar dialog before the account menu renders', () => {
