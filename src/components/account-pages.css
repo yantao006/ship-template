@@ -1,11 +1,11 @@
-.account-pages { min-height: 450px; padding-top: 56px; background: var(--bg); color: var(--text); }
-.account-pages + .site-footer { border-top: 0; background: var(--bg); }
+.account-pages { background: var(--bg); color: var(--text); }
+.site-main:has(> .account-pages) + .site-footer { border-top: 0; background: var(--bg); }
 .account-pages-layout { display: grid; grid-template-columns: 224px minmax(0, 744px); gap: 24px; width: min(100% - 48px, 992px); margin: 0 auto; padding: 32px 0 64px; }
 .account-pages-sidebar nav { display: grid; gap: 4px; }
 .account-pages-sidebar a { display: flex; align-items: center; gap: 9px; min-height: 36px; padding: 8px 12px; border-radius: 7px; color: var(--muted); text-decoration: none; font-size: 14px; line-height: 20px; }
 .account-pages-sidebar a:hover, .account-pages-sidebar a.active { background: var(--hover); color: var(--text); }
 .account-pages-sidebar a.active { font-weight: 700; }
-.site-shell .account-pages main.account-pages-main { min-width: 0; padding-top: 0; }
+.account-pages .account-pages-main { min-width: 0; padding-top: 0; }
 .account-pages-heading { margin: 0 0 26px; }
 .account-pages-heading h1 { margin: 0 0 5px; font-size: 25px; letter-spacing: -.025em; line-height: 1.25; }
 .account-pages-heading p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.5; }

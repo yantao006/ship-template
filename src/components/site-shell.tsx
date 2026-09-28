@@ -17,7 +17,7 @@ export async function SiteShell({ locale, children }: { locale: keyof typeof mes
   const displayName = session ? session.user.name.trim() || session.user.email : undefined;
   return <AuthDialogProvider accountMenuReady={Boolean(session)} copy={browserNavCopy(messages[locale])} card={messages[locale].signIn.card} signupCredits={site.signupCredits} brand={site.brand} logo={site.logo} supportEmail={site.account.contactEmail} methods={{ email: auth.email, google: auth.google, github: auth.github }} inviteRequired={auth.invite.required} locale={locale} callbackURL={routePath(locale, 'home')}>
     <Header locale={locale} userName={displayName} userEmail={session?.user.email} userImage={session?.user.image} credits={credits} />
-    {children}
+    <main className="site-main">{children}</main>
     <Footer locale={locale} />
   </AuthDialogProvider>;
 }

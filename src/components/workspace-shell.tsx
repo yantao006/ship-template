@@ -11,7 +11,7 @@ export function WorkspaceShell({ locale, children }: { locale: keyof typeof mess
         <WorkspaceSectionNav links={navigationLinks(locale).filter(link => link.id === 'dashboard' || link.id === 'credits')} label={copy.dashboard.navigation} />
         <p className="sidebar-footnote">{copy.dashboard.preview}</p>
       </aside>
-      <main className="workspace-main">{children}</main>
+      <div className="workspace-main">{children}</div>
     </div>
   </div>;
 }

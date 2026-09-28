@@ -47,7 +47,7 @@ test('homepage content composes six sections in order, with navigation and foote
   assert.doesNotMatch(home, /<Header|<Footer/);
   const shell = readFileSync(new URL('../src/components/site-shell.tsx', import.meta.url), 'utf8');
   assert.match(shell, /<Header locale=\{locale\} userName=\{displayName\} userEmail=\{session\?\.user\.email\} userImage=\{session\?\.user\.image\} credits=\{credits\} \/>/);
-  assert.match(shell, /\{children\}\s*<Footer locale=\{locale\} \/>/);
+  assert.match(shell, /<main className="site-main">\{children\}<\/main>\s*<Footer locale=\{locale\} \/>/);
   const header = section('Header');
   assert.match(header, /<section id="header">/);
   assert.match(header, /import \{ ReplicaNavigation \} from '@\/components\/blocks\/replica-navigation'/);

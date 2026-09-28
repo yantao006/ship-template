@@ -7,12 +7,12 @@ import { VideoPricing } from './VideoPricing';
 import { VideoFAQ } from './VideoFAQ';
 
 export function HomePage({ locale }: { locale: keyof typeof messages }) {
-  return <main>
+  return <div>
     <VideoHero />
     <VideoToolSection locale={locale} />
     <VideoShowcase />
     <VideoFeatures />
     <VideoPricing />
     <VideoFAQ />
-  </main>;
+  </div>;
 }

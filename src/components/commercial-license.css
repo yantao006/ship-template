@@ -1,5 +1,5 @@
-.commercial-license-page{min-height:790px;padding:159px 24px 110px;background:var(--bg);color:var(--text)}
-.commercial-license-page + .site-footer{border-top:0;background:var(--bg)}
+.commercial-license-page{padding:103px 24px 110px;background:var(--bg);color:var(--text)}
+.site-main:has(> .commercial-license-page) + .site-footer{border-top:0;background:var(--bg)}
 .commercial-license-page>header{text-align:center;margin:0 auto 24px}
 .commercial-license-page h1{font-size:36px;font-weight:800;letter-spacing:-.035em;color:var(--account-accent);margin:0 0 4px}
 .commercial-license-page>header p{color:var(--muted);font-size:16px;margin:0}
@@ -11,4 +11,4 @@
 .commercial-license-panel button:focus-visible{outline:2px solid var(--account-accent);outline-offset:4px}
 :root[data-mode="light"] .commercial-license-page{--license-start:color-mix(in srgb,var(--purchase-pink) 9%,var(--surface));--license-end:color-mix(in srgb,var(--account-accent) 8%,var(--surface))}
 :root[data-mode="dark"] .commercial-license-page{--license-start:color-mix(in srgb,var(--purchase-pink) 12%,var(--surface));--license-end:color-mix(in srgb,var(--account-tone-info-box) 10%,var(--surface))}
-@media(max-width:600px){main.commercial-license-page{padding:112px 16px 80px;min-height:630px}.commercial-license-page header h1{font-size:30px}.commercial-license-page section.commercial-license-panel{min-height:350px}.commercial-license-page section.commercial-license-panel p{font-size:16px}}
+@media(max-width:600px){.commercial-license-page{padding:56px 16px 80px}.commercial-license-page header h1{font-size:30px}.commercial-license-page section.commercial-license-panel{min-height:350px}.commercial-license-page section.commercial-license-panel p{font-size:16px}}

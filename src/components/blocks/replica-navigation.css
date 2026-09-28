@@ -1,6 +1,5 @@
 /* Shared navigation follows the reference site's compact fixed bar and anchored menus. */
 body:has(.replica-topbar) .site-shell:not(.pricing-experience) { background: #111113; }
-body:has(.replica-topbar) .site-shell:not(.pricing-experience) main { padding-top: 56px; }
 .replica-light body:has(.replica-topbar) .site-shell:not(.pricing-experience) { background: #fafafa; }
 .replica-topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 100; height: 56px; padding: 0 24px; display: flex; align-items: center; gap: 22px; background: var(--nav-bg); border-bottom: 1px solid var(--nav-line); color: var(--nav-text); }
 .replica-brand { display: inline-flex; align-items: center; gap: 9px; flex-shrink: 0; color: var(--nav-text); font-size: 24px; font-weight: 750; letter-spacing: -.7px; white-space: nowrap; text-decoration: none; }
@@ -36,7 +35,6 @@ body:has(.replica-topbar) .site-shell:not(.pricing-experience) main { padding-to
 .replica-topbar :where(a, button):focus-visible, .replica-mobile-bottom a:focus-visible { outline: 2px solid #e7c56a; outline-offset: 3px; }
 @media (max-width: 1100px) { .replica-desktop-nav { gap: 6px; } .replica-desktop-nav a { font-size: 15px; padding-inline: 8px; } }
 @media (max-width: 767px) {
-  body:has(.replica-topbar) main { padding-bottom: 75px; }
   .replica-topbar { padding: 0 14px; gap: 8px; }
   .replica-brand { font-size: 20px; min-width: 0; overflow: hidden; }
   .replica-brand span { overflow: hidden; text-overflow: ellipsis; }
