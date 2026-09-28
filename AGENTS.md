@@ -108,7 +108,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │   ├── robots.ts                 # Preview indexing policy and sitemap reference
 │   │   ├── sitemap.ts                # Locale-aware homepage URLs and alternates
 │   │   ├── [locale]/                 # Locale-aware marketing, workspace, and auth pages
-│   │   │   ├── (site)/               # Shared-shell layout; home, pricing, account pages, legacy workspace and info pages
+│   │   │   ├── (site)/               # Shared-shell layout; home, pricing, account layout, legacy workspace and info pages
 │   │   │   ├── verify-email/page.tsx # Centered verification panel outside shared shell
 │   │   │   └── reset-password/page.tsx # Centered reset panel outside shared shell
 │   │   ├── admin/invites/page.tsx    # Session- and allow-list-gated invite administration
@@ -157,7 +157,8 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │   ├── workspace-shell.tsx       # Workspace content layout with account sidebar and heading
 │   │   ├── information-page.tsx      # Shared localized about, privacy and terms content
 │   │   ├── workspace-content.tsx     # Legacy session-scoped dashboard/credit data and rendering
-│   │   ├── account-pages-content.tsx # Account, subscription grants, receipts and credit center in one shared layout
+│   │   ├── account-section-nav.tsx  # Client account-section links; current item follows the path
+│   │   ├── account-pages-content.tsx # Account section heading plus streamed subscription, invoice and credit bodies
 │   │   ├── account-pages-controls.tsx # Sign-out, confirmed deletion and credit-record filter
 │   │   ├── commercial-license.tsx    # Preview-only commercial-use information and plan entry
 │   │   ├── invite-gate.tsx           # Client code redemption form
@@ -296,7 +297,10 @@ The existing homepage, dashboard, and credit history are a preview; `src/lib/moc
 `src/components/sections/HomePage.tsx` orders VideoHero, VideoToolSection, VideoShowcase, VideoFeatures, VideoPricing, and VideoFAQ inside page content; five non-tool sections remain empty with stable ids.
 The `(site)` route layouts use `src/components/site-shell.tsx` to keep one account-aware Header and Footer mounted across home, pricing, account pages, legacy dashboard/credits, and localized about/privacy/terms pages; verification, password reset, desktop callback, and invite admin routes remain outside the shell.
 The avatar menu links Account, My Subscription, Invoices and Credit Center to localized `/account` routes rather than opening an invoice modal.
-`account-pages-content.tsx` scopes reads to the signed-in user and renders settled subscription grants and purchase receipts without claiming they are live subscription state or downloadable tax invoices; `account-page-history.ts` joins ledger entries to their grants so credit activity includes spending and refunds.
+`src/app/[locale]/(site)/account/layout.tsx` keeps that sidebar mounted and `account-section-nav.tsx` renders the four entries with `next/link`, so switching sections reuses the locale shell.
+The heading renders before `creditMovements`.
+The list streams in underneath.
+`account-pages-content.tsx` scopes those reads to the signed-in user and renders settled subscription grants and purchase receipts without claiming they are live subscription state or downloadable tax invoices; `account-page-history.ts` joins ledger entries to their grants so credit activity includes spending and refunds.
 The Account page has a confirmed delete action: `/api/account/delete` validates same-origin session and exact account email, then `delete-account.ts` batches ledger cleanup with user deletion; auth FK cascades remove sessions and account rewards. A delayed signed payment callback for a deleted user is acknowledged without granting credits. The legacy `/dashboard` and `/credits` previews remain for their existing navigation links.
 The footer takes identity and contact from `site/site.config.ts`, copy from `site/messages/{en,zh}/footer.ts`, links from `src/lib/route-paths.ts`, and its language row (including each configured flag) from `site.languages` through the same locale path helper as the header.
 `Header` passes localized brand, optional site logo, links, language choices, real signed-in credits and account controls to `blocks/replica-navigation.tsx`; the shell owns its account snapshot.

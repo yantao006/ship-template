@@ -18,6 +18,25 @@ test('account page routes retain the public shell for both locales', () => {
   }
 });
 
+test('account section entries are in-app links and the ledger does not gate the shell', () => {
+  const nav = readFileSync('src/components/account-section-nav.tsx', 'utf8');
+  const layout = readFileSync('src/app/[locale]/(site)/account/layout.tsx', 'utf8');
+  const content = readFileSync('src/components/account-pages-content.tsx', 'utf8');
+  assert.match(nav, /from 'next\/link'/);
+  assert.match(nav, /<Link/);
+  assert.doesNotMatch(nav, /<a[\s/>]/);
+  assert.match(layout, /AccountSectionNav/);
+  assert.match(layout, /routePath\(locale, id\)/);
+  for (const id of ['account', 'subscription', 'invoices', 'creditCenter']) assert.match(layout, new RegExp(`'${id}'`));
+  assert.doesNotMatch(content, /account-pages-sidebar/);
+  const heading = content.slice(content.indexOf('function AccountSectionHeading'), content.indexOf('async function AccountSectionBody'));
+  assert.doesNotMatch(heading, /creditMovements|accountSnapshot/);
+  assert.match(content.slice(content.indexOf('async function AccountSectionBody')), /await creditMovements/);
+  assert.match(content, /<Suspense fallback=\{null\}><AccountSectionBody/);
+  assert.match(content, /mailto:/);
+  assert.match(content, /<a href=\{routePath\(locale, 'pricing'\)\}/);
+});
+
 test('account credit records include real grants, spends and refunds, scoped to the signed-in user', async () => {
   const mf = new Miniflare({ modules: true, script: 'export default { fetch() { return new Response("ok") } }', d1Databases: { DB: 'account-pages-test' } });
   try {
