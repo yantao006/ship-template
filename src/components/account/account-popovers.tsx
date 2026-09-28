@@ -11,7 +11,7 @@ import { AccountPopoverCard, type PopoverRow } from './account-popover-card';
 import { AvatarTrigger, ProfileHeader } from './account-profile';
 import { AccountDialogs, type AccountCopy, type Activity, type Dialog, type Plan, type Settings } from './account-dialogs';
 import type { PricingCopy } from './buy-credits-dialog';
-import './account-popovers';
+import './account-popovers.css';
 import './buy-credits-dialog.css';
 
 type Menu = 'account' | 'credits' | null;
