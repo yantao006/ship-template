@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, type FormEvent } from 'react';
+import Link from 'next/link';
 import { authClient } from '@/lib/auth-client';
 import { routePath } from '@/lib/route-paths';
 
@@ -38,6 +39,6 @@ export function ResetPassword({ locale, token, enabled, copy }: {
     </form>}
     {notice && <p role="status">{notice}</p>}
     {error && <p className="form-error" role="alert">{error}</p>}
-    <a className="auth-switch" href={routePath(locale, 'home')}>{copy.signIn}</a>
+    <Link className="auth-switch" href={routePath(locale, 'home')}>{copy.signIn}</Link>
   </section></main>;
 }

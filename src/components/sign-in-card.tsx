@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { UserRound } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
 import { requestJson } from '@/lib/json-request';
@@ -121,7 +122,7 @@ export function SignInCard({ copy, methods, callbackURL, locale, inviteRequired 
           <p role="status">{verificationNotice} {verificationEmail}</p>
           <p>{copy.verifyHint}</p>
           <button className="auth-button" type="button" disabled={pending} onClick={resendVerification}>{pending ? copy.wait : copy.resendVerification}</button>
-          <a className="auth-switch" href={`${verifyPath}?email=${encodeURIComponent(verificationEmail)}`}>{copy.verifyLink}</a>
+          <Link className="auth-switch" href={`${verifyPath}?email=${encodeURIComponent(verificationEmail)}`}>{copy.verifyLink}</Link>
           <button className="auth-switch" type="button" onClick={() => { setVerificationEmail(''); setRegister(false); setError(''); }}>{copy.signIn}</button>
         </div> : forgot ? <div className="verification-actions">
           <p>{copy.forgotHint}</p>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, type FormEvent } from 'react';
+import Link from 'next/link';
 import { authClient } from '@/lib/auth-client';
 import { routePath } from '@/lib/route-paths';
 
@@ -41,6 +42,6 @@ export function VerifyEmail({ locale, email: initialEmail, enabled, copy }: {
     {notice && <p role="status">{notice}</p>}
     {error && <p className="form-error" role="alert">{error}</p>}
     <button className="auth-switch" type="button" onClick={continueToSite}>{copy.verifyContinue}</button>
-    <a className="auth-switch" href={routePath(locale, 'home')}>{copy.signIn}</a>
+    <Link className="auth-switch" href={routePath(locale, 'home')}>{copy.signIn}</Link>
   </section></main>;
 }

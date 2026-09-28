@@ -3,6 +3,7 @@
 // Adapted from the supplied licensed @reactbits-pro/auth-4 source. Its layout,
 // animated brand panel and form hierarchy remain; identity stays with better-auth.
 import { useState, type FormEvent } from "react";
+import Link from "next/link";
 import { ArrowRight, Eye, EyeOff, ShieldCheck } from "lucide-react";
 import { motion, useReducedMotion, type Variants } from "motion/react";
 import { authClient } from "@/lib/auth-client";
@@ -130,7 +131,7 @@ export function Auth4({ copy, brand, logo, supportEmail, methods, inviteRequired
           {mode === "verify" ? <motion.div variants={item} className="space-y-4 text-sm">
             <p role="status">{notice} {email}</p><p>{copy.verifyHint}</p>
             <button type="button" disabled={pending} className={oauthClasses} onClick={async () => { if (pending) return; setPending(true); try { const result = await authClient.sendVerificationEmail({ email: email.trim(), callbackURL }); if (result.error) setError(copy.resendFailed); else setNotice(copy.verificationSent); } catch { setError(copy.resendFailed); } finally { setPending(false); } }}>{pending ? copy.wait : copy.resendVerification}</button>
-            <a href={`${routePath(locale, "verifyEmail")}?email=${encodeURIComponent(email)}`} className={linkClasses}>{copy.verifyLink}</a>
+            <Link href={`${routePath(locale, "verifyEmail")}?email=${encodeURIComponent(email)}`} className={linkClasses}>{copy.verifyLink}</Link>
             <button type="button" className={linkClasses} onClick={() => switchMode("sign-in")}>{copy.signIn}</button>
           </motion.div> : <>
             {mode === "sign-in" && emailStep === "email" && (methods.google.enabled || methods.github.enabled) && <motion.div variants={item} className="grid grid-cols-1 gap-3">

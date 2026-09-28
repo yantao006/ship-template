@@ -13,7 +13,7 @@ The current example has site-local accounts, invitation primitives, configurable
 - **One navigation path per purpose:** the navigation has one language control and one sign-in entry; its sign-in card lists only the methods enabled in `site/auth.config.ts`.
 - **Theme owns color:** `site/theme.config.ts` defines paired light/dark palettes, top-bar and account-card chrome, auth-card, dialog, video-tool and pricing surfaces, row tones, default modes, and account accents; `src/lib/theme-tokens.ts` generates the stylesheet in `src/app/layout.tsx`.
   `src/lib/theme-mode.ts` owns the root mode transitions; the layout freezes the first page's default and the shared header toggles the root mode without resetting it on client navigation, while legacy CSS surfaces still await migration.
-- **Pages compose sections:** `src/components/sections/HomePage.tsx` orders six content sections; five remain empty scaffolds, and the video tool renders its existing implementation. `src/components/site-shell.tsx` owns one persistent header, footer, and shared source-inspired login dialog for home, pricing, dashboard, and credits; the licensed Auth-4 original remains unchanged.
+- **Pages compose sections:** `src/components/sections/HomePage.tsx` orders six content sections; five remain empty scaffolds, and the video tool renders its existing implementation. `src/components/site-shell.tsx` owns one persistent header, footer, and shared source-inspired login dialog for home, pricing, dashboard, and credits; the licensed Auth-4 fallback retains its original layout while its internal verification link uses client navigation.
 - **Long-running work is observable:** video generation uses an asynchronous task and progress flow, while the server validates costs and records credit movements in the ledger.
 
 ## Overall tech stack
@@ -108,7 +108,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │   ├── robots.ts                 # Preview indexing policy and sitemap reference
 │   │   ├── sitemap.ts                # Locale-aware homepage URLs and alternates
 │   │   ├── [locale]/                 # Locale-aware marketing, workspace, and auth pages
-│   │   │   ├── (site)/               # Shared-shell layout; home, pricing, account layout, legacy workspace and info pages
+│   │   │   ├── (site)/               # Shared-shell layout; home, pricing, account layout, workspace route group and info pages
 │   │   │   ├── verify-email/page.tsx # Centered verification panel outside shared shell
 │   │   │   └── reset-password/page.tsx # Centered reset panel outside shared shell
 │   │   ├── admin/invites/page.tsx    # Session- and allow-list-gated invite administration
@@ -127,7 +127,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   ├── components/                   # UI composition and client controls
 │   │   ├── home-content.tsx          # Session-aware homepage entry, existing nav, and section composition
 │   │   ├── blocks/replica-navigation.tsx # Shared bar, language, theme and mobile links
-│   │   ├── blocks/auth-4.tsx         # Preserved licensed Auth-4 original
+│   │   ├── blocks/auth-4.tsx         # Licensed Auth-4 layout with client-side verification link
 │   │   ├── blocks/minimax-auth-card.tsx # Source-inspired copy wired to better-auth
 │   │   ├── blocks/minimax-auth-card.css # Measured card styles and responsive layout
 │   │   ├── blocks/auth-6.tsx, auth-6.css # Scoped email OTP dialog adapted from licensed React Bits Pro block
@@ -154,7 +154,8 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │   ├── language-control.tsx      # Locale switch preserving the current route
 │   │   ├── theme-mode-initializer.tsx # Freezes first document theme before client navigation
 │   │   ├── site-shell.tsx            # Persistent account-aware header and one footer for public pages
-│   │   ├── workspace-shell.tsx       # Workspace content layout with account sidebar and heading
+│   │   ├── workspace-shell.tsx       # Persistent dashboard/credits sidebar and workspace layout
+│   │   ├── workspace-section-nav.tsx # Pathname-aware client navigation in the shared sidebar
 │   │   ├── information-page.tsx      # Shared localized about, privacy and terms content
 │   │   ├── workspace-content.tsx     # Legacy session-scoped dashboard/credit data and rendering
 │   │   ├── account-section-nav.tsx  # Client account-section links; current item follows the path
@@ -211,6 +212,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
     ├── config-email-auth.test.ts     # Second-site wiring, mail adapters, Turnstile
     ├── credit-history.test.ts       # Signed-in and bounded account credit reads
     ├── account-pages.test.ts        # Account route shell and ledger timeline user scope
+    ├── internal-navigation.test.ts  # Workspace shared layout and internal link guards
     ├── buy-credits-license.test.ts  # Configured plan chooser and preview-only license content
     ├── delete-account.test.ts       # Local one-time account, confirmation, data purge and old login
     ├── ledger.test.ts               # Concurrent spend, refunds, and monthly grants
@@ -258,7 +260,7 @@ On each request, production login accepts the Worker `SITE_URL` only when it equ
 `ensureSignupCredits` checks invitation eligibility and grants a signup lot with the user ID as its stable source ID; when email verification is enabled, it waits until the emailed link marks the account verified.
 `src/app/api/invites/redeem/route.ts` uses the shared session and browser-write guard, redeems the code through an atomic D1 batch, and grants the eligible user credits.
 `src/lib/invites.ts` owns invite code format, normalization, inventory reads, creation, and revocation.
-`src/components/site-shell.tsx` mounts one `AuthDialogProvider` for public pages; `auth-control.tsx` triggers the source-inspired copy in `blocks/minimax-auth-card.tsx` while licensed `blocks/auth-4.tsx` stays untouched.
+`src/components/site-shell.tsx` mounts one `AuthDialogProvider` for public pages; `auth-control.tsx` triggers the source-inspired copy in `blocks/minimax-auth-card.tsx` while licensed `blocks/auth-4.tsx` keeps its original layout.
 Below 768px the shared card uses the existing bottom drawer; email sign-in sends a mailed six-digit code and replaces the visible card with a wide Auth-6 dialog only after a successful send; the back action restores the card while close exits sign-in, and successful code sign-in follows the existing full-page reload.
 The standalone desktop callback keeps `sign-in-card.tsx` as a fallback outside that shell.
 `src/lib/auth-client.ts` owns the browser auth client, and `src/lib/browser-nav-copy.ts` assembles navigation and auth copy without sending mail strings to client props.
@@ -301,7 +303,7 @@ The avatar menu links Account, My Subscription, Invoices and Credit Center to lo
 The heading renders before `creditMovements`.
 The list streams in underneath.
 `account-pages-content.tsx` scopes those reads to the signed-in user and renders settled subscription grants and purchase receipts without claiming they are live subscription state or downloadable tax invoices; `account-page-history.ts` joins ledger entries to their grants so credit activity includes spending and refunds.
-The Account page has a confirmed delete action: `/api/account/delete` validates same-origin session and exact account email, then `delete-account.ts` batches ledger cleanup with user deletion; auth FK cascades remove sessions and account rewards. A delayed signed payment callback for a deleted user is acknowledged without granting credits. The legacy `/dashboard` and `/credits` previews remain for their existing navigation links.
+The Account page has a confirmed delete action: `/api/account/delete` validates same-origin session and exact account email, then `delete-account.ts` batches ledger cleanup with user deletion; auth FK cascades remove sessions and account rewards. A delayed signed payment callback for a deleted user is acknowledged without granting credits. The legacy `/dashboard` and `/credits` previews share a `(workspace)` layout with a persistent sidebar and client-side section navigation while retaining their existing paths.
 The footer takes identity and contact from `site/site.config.ts`, copy from `site/messages/{en,zh}/footer.ts`, links from `src/lib/route-paths.ts`, and its language row (including each configured flag) from `site.languages` through the same locale path helper as the header.
 `Header` passes localized brand, optional site logo, links, language choices, real signed-in credits and account controls to `blocks/replica-navigation.tsx`; the shell owns its account snapshot.
 `sections/VideoToolSection.tsx` binds one locale's tool copy and assets on the server and passes them to `src/components/video-tool/video-tool-section.tsx`.
