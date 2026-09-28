@@ -133,14 +133,14 @@ export function MinimaxAuthCard({ copy, card, signupCredits, brand, logo, authMa
           </div>
         </div>
         <div className="minimax-auth-actions">
-          {methods.google.enabled && <button className="minimax-auth-primary" type="button" disabled={pending} onClick={() => void social('google')}><GoogleMark />{copy.google}</button>}
-          {methods.github.enabled && <button className="minimax-auth-primary" type="button" disabled={pending} onClick={() => void social('github')}><GitHubMark />{copy.github}</button>}
+          {methods.google.enabled && <button className="ui-button-solid minimax-auth-primary" type="button" disabled={pending} onClick={() => void social('google')}><GoogleMark />{copy.google}</button>}
+          {methods.github.enabled && <button className="ui-button-solid minimax-auth-primary" type="button" disabled={pending} onClick={() => void social('github')}><GitHubMark />{copy.github}</button>}
           {methods.email.enabled && <div className={`minimax-auth-email-group${emailExpanded ? ' is-expanded' : ''}`}>
             {(methods.google.enabled || methods.github.enabled) && <div className="minimax-auth-divider" aria-hidden="true"><span>{card.or}</span></div>}
             {emailExpanded ? <form className="minimax-auth-inline-form" onSubmit={submit}>
               <div className="minimax-auth-inline-fields">
                 <Mail className="minimax-auth-inline-icon" size={16} aria-hidden="true" />
-                <input ref={emailInput} name="email" type="email" value={email} onChange={event => setEmail(event.target.value)} placeholder={copy.emailLabel} aria-label={copy.emailLabel} required autoComplete="email" />
+                <input className="ui-input" ref={emailInput} name="email" type="email" value={email} onChange={event => setEmail(event.target.value)} placeholder={copy.emailLabel} aria-label={copy.emailLabel} required autoComplete="email" />
                 <button type="submit" disabled={pending} aria-label={pending ? copy.wait : copy.sendCode}><ArrowRight size={18} aria-hidden="true" /></button>
               </div>
               <button type="button" className="minimax-auth-link minimax-auth-sign-up" onClick={() => switchMode('sign-up')}>{copy.signUp}</button>
@@ -153,18 +153,18 @@ export function MinimaxAuthCard({ copy, card, signupCredits, brand, logo, authMa
         <h2 id="auth4-title">{title}</h2>
         {mode === 'verify' ? <div className="minimax-auth-form">
           <p role="status">{notice} {email}</p><p>{copy.verifyHint}</p>
-          <button type="button" disabled={pending} className="minimax-auth-primary" onClick={async () => { if (pending) return; setPending(true); try { const sent = await sendVerification(email, callbackURL); if (!sent) setError(copy.resendFailed); else setNotice(copy.verificationSent); } catch { setError(copy.resendFailed); } finally { setPending(false); } }}>{pending ? copy.wait : copy.resendVerification}</button>
+          <button type="button" disabled={pending} className="ui-button-solid minimax-auth-primary" onClick={async () => { if (pending) return; setPending(true); try { const sent = await sendVerification(email, callbackURL); if (!sent) setError(copy.resendFailed); else setNotice(copy.verificationSent); } catch { setError(copy.resendFailed); } finally { setPending(false); } }}>{pending ? copy.wait : copy.resendVerification}</button>
           <Link href={`${routePath(locale, 'verifyEmail')}?email=${encodeURIComponent(email)}`}>{copy.verifyLink}</Link>
           <button type="button" className="minimax-auth-link" onClick={() => switchMode('sign-in')}>{copy.signIn}</button>
         </div> : <>
           {mode === 'forgot' && <p className="minimax-auth-hint">{copy.forgotHint}</p>}
           <form className="minimax-auth-form" onSubmit={submit}>
-            {mode === 'sign-up' && <label>{copy.name}<input name="name" value={name} onChange={event => setName(event.target.value)} required autoComplete="name" /></label>}
-            <label>{copy.emailLabel}<input name="email" type="email" value={email} onChange={event => setEmail(event.target.value)} required autoComplete="email" /></label>
-            {mode === 'sign-up' && <label>{copy.password}<span className="minimax-auth-password"><input name="password" type={showPassword ? 'text' : 'password'} value={password} onChange={event => setPassword(event.target.value)} required minLength={8} autoComplete="new-password" /><button type="button" aria-label={showPassword ? copy.hidePassword : copy.showPassword} onClick={() => setShowPassword(current => !current)}>{showPassword ? <EyeOff size={16} /> : <Eye size={16} />}</button></span></label>}
+            {mode === 'sign-up' && <label>{copy.name}<input className="ui-input" name="name" value={name} onChange={event => setName(event.target.value)} required autoComplete="name" /></label>}
+            <label>{copy.emailLabel}<input className="ui-input" name="email" type="email" value={email} onChange={event => setEmail(event.target.value)} required autoComplete="email" /></label>
+            {mode === 'sign-up' && <label>{copy.password}<span className="minimax-auth-password"><input className="ui-input" name="password" type={showPassword ? 'text' : 'password'} value={password} onChange={event => setPassword(event.target.value)} required minLength={8} autoComplete="new-password" /><button type="button" aria-label={showPassword ? copy.hidePassword : copy.showPassword} onClick={() => setShowPassword(current => !current)}>{showPassword ? <EyeOff size={16} /> : <Eye size={16} />}</button></span></label>}
             {mode === 'sign-up' && needsVerification && <p className="minimax-auth-hint">{copy.verifyHint}</p>}
-            {mode === 'sign-up' && inviteRequired && <label>{copy.invite}<input name="inviteCode" value={inviteCode} onChange={event => setInviteCode(event.target.value)} required maxLength={32} /></label>}
-            <button type="submit" disabled={pending} className="minimax-auth-primary">{pending ? copy.wait : mode === 'forgot' ? copy.forgotPassword : copy.signUp}<ArrowRight size={18} aria-hidden="true" /></button>
+            {mode === 'sign-up' && inviteRequired && <label>{copy.invite}<input className="ui-input" name="inviteCode" value={inviteCode} onChange={event => setInviteCode(event.target.value)} required maxLength={32} /></label>}
+            <button type="submit" disabled={pending} className="ui-button-solid minimax-auth-primary">{pending ? copy.wait : mode === 'forgot' ? copy.forgotPassword : copy.signUp}<ArrowRight size={18} aria-hidden="true" /></button>
           </form>
           <div className="minimax-auth-form-links">
             {mode === 'sign-up' && canReset && <button type="button" className="minimax-auth-link" onClick={() => switchMode('forgot')}>{copy.forgotPassword}</button>}

@@ -11,5 +11,5 @@
 .tone-tag.tone-danger{--tag-text:var(--account-tone-danger);--tag-box:var(--account-tone-danger-box)}
 .account-row-badge.tone-info{--tag-text:var(--account-tone-info)}
 .account-row-badge.tone-neutral{--tag-text:var(--text)}
-.account-row-badge{flex:none;color:var(--tag-text);font-size:12px;font-weight:700;white-space:nowrap}
-.account-row-badge.boxed{border:1px solid color-mix(in srgb,var(--tag-box) 42%,transparent);background:color-mix(in srgb,var(--tag-box) 17%,transparent);border-radius:999px;padding:3px 8px}
+.account-row-badge{flex:none;color:var(--tag-text);font-size:var(--text-12);font-weight:var(--weight-bold);white-space:nowrap}
+.account-row-badge.boxed{border:1px solid color-mix(in srgb,var(--tag-box) 42%,transparent);background:color-mix(in srgb,var(--tag-box) 17%,transparent);border-radius:var(--radius-pill);padding:3px var(--space-2)}

@@ -107,7 +107,7 @@ export function Auth6({ email, copy, onClose, onDifferentEmail, onAuthenticated,
     onPaste={handlePaste}
     onFocus={handleFocus}
     aria-label={`Digit ${index + 1} of ${CODE_LENGTH}`}
-    className={code[index] ? 'auth6-digit is-filled' : 'auth6-digit'}
+    className={`ui-input auth6-digit${code[index] ? ' is-filled' : ''}`}
   />;
 
   return createPortal(<div ref={backdrop} className="auth6-overlay">
@@ -133,7 +133,7 @@ export function Auth6({ email, copy, onClose, onDifferentEmail, onAuthenticated,
               <div className="auth6-group">{[3, 4, 5].map(renderInput)}</div>
             </div>
           </fieldset>
-          <button type="submit" disabled={!isComplete || pending} className="auth6-submit">{copy.verifyCode}</button>
+          <button type="submit" disabled={!isComplete || pending} className="ui-button-solid auth6-submit">{copy.verifyCode}</button>
         </motion.form>
         <motion.p variants={item} className="auth6-resend" aria-live="polite">
           {copy.didNotReceive}{' '}{cooldown > 0 ? <span className="auth6-countdown">{copy.resendIn.replace('{seconds}', String(cooldown))}</span> :

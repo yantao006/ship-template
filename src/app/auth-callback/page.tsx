@@ -16,8 +16,8 @@ export default async function AuthCallback({ searchParams }: { searchParams: Pro
   const requestHeaders = await headers();
   const session = await readSession(workerEnv(), requestHeaders);
   const returnURL = `/auth-callback?redirect=${encodeURIComponent(target)}&locale=${locale}`;
-  return <main className="handoff-page">
-    <h1>{session ? messages[locale].handoff.desktopWaiting : messages[locale].handoff.desktopSignIn}</h1>
+  return <main className="grid min-h-dvh content-center justify-items-center gap-[22px] bg-[var(--bg)] p-5 text-center [&_.auth-actions]:flex-wrap [&_.auth-actions]:justify-center">
+    <h1 className="m-0 text-[clamp(28px,5vw,44px)]">{session ? messages[locale].handoff.desktopWaiting : messages[locale].handoff.desktopSignIn}</h1>
     {session ? <DesktopHandoff target={target} copy={browserNavCopy(messages[locale])} /> : <AuthControl copy={browserNavCopy(messages[locale])} locale={locale} methods={{ email: auth.email, google: auth.google, github: auth.github }} callbackURL={returnURL} inviteRequired={auth.invite.required} />}
   </main>;
 }

@@ -78,7 +78,7 @@ export function Composer({ title, workflowLabel, media, workflows, modelMenu, re
           {quantity.open && <div className="vt-quantity-menu" role="listbox" aria-label={quantity.label}>{quantity.values.map(count => <button key={count} type="button" role="option" aria-selected={count === quantity.value} onClick={() => actions.onQuantity(count)}>{quantity.prefix}{count}</button>)}</div>}
         </div>
       </div>
-      <button className="vt-create" type="button" disabled={create.disabled} onClick={actions.onCreate}>{create.label}</button>
+      <button className="ui-button-solid vt-create" type="button" disabled={create.disabled} onClick={actions.onCreate}>{create.label}</button>
       {promo && <div className="vt-promo">{promo.href.startsWith('/') && !promo.href.includes('{locale}') ? <Link href={promo.href}><Mark icon={promo.icon} />{promo.label}<ArrowRight aria-hidden="true" size={16} strokeWidth={2} /></Link> : <a href={promo.href}><Mark icon={promo.icon} />{promo.label}<ArrowRight aria-hidden="true" size={16} strokeWidth={2} /></a>}{promo.dismissLabel && <button type="button" aria-label={promo.dismissLabel} onClick={actions.onPromoDismiss}><X aria-hidden="true" size={18} strokeWidth={2} /></button>}</div>}
     </div>
   </div>;

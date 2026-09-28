@@ -3,9 +3,9 @@
 import { useEffect, useId, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { X } from 'lucide-react';
+import { OutlineButton, SolidButton } from '@/components/ui/controls';
 import { pathForLocale } from './language-control';
 import { suggestedLanguage, suggestionCopy, suggestionDecisionKey, suggestionLanguageName, type SuggestionLanguage } from '@/lib/language-suggestion';
-import './language-suggestion.css';
 
 type Copy = { title: string; description: string; keep: string; switch: string; close: string };
 type Props = {
@@ -49,13 +49,13 @@ export function LanguageSuggestion({ locale, languages, copy }: Props) {
     router.push(pathForLocale(pathname, language.code, languages.map(item => item.code)));
   };
 
-  return <section className="language-suggestion" aria-labelledby={titleId} data-testid="language-suggestion" lang={language.code}>
-    <button className="language-suggestion-close" type="button" aria-label={text.close} onClick={remember}><X size={18} aria-hidden="true" /></button>
-    <h2 id={titleId}>{suggestionCopy(text.title, suggestedName)}</h2>
-    <p>{text.description}</p>
-    <div className="language-suggestion-actions">
-      <button type="button" className="language-suggestion-keep" onClick={remember}>{suggestionCopy(text.keep, currentName)}</button>
-      <button type="button" className="language-suggestion-switch" onClick={switchLanguage}>{suggestionCopy(text.switch, suggestedName)}</button>
+  return <section className="language-suggestion fixed top-[68px] right-4 z-[99] max-h-[calc(100dvh-84px)] w-[min(360px,calc(100vw-32px))] overflow-y-auto border border-[var(--suggestion-border)] bg-[var(--suggestion-bg)] p-[22px] text-[var(--suggestion-text)] shadow-[0_16px_42px_color-mix(in_srgb,var(--suggestion-bg)_45%,transparent)] [border-radius:var(--radius-card-xl)] max-[400px]:right-2 max-[400px]:w-[calc(100vw-16px)] max-[400px]:p-[18px]" aria-labelledby={titleId} data-testid="language-suggestion" lang={language.code}>
+    <button className="absolute top-[13px] right-[13px] grid h-8 w-8 cursor-pointer place-items-center rounded-[var(--radius-control-md)] border-0 bg-transparent p-0 text-[var(--suggestion-muted)] hover:bg-[color-mix(in_srgb,var(--suggestion-text)_12%,transparent)] hover:text-[var(--suggestion-text)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--suggestion-text)]" type="button" aria-label={text.close} onClick={remember}><X size={18} aria-hidden="true" /></button>
+    <h2 className="mt-0 mr-7 mb-2 text-[length:var(--text-17)] leading-[1.4] font-[var(--weight-bold)] tracking-[-.02em]" id={titleId}>{suggestionCopy(text.title, suggestedName)}</h2>
+    <p className="m-0 text-[length:var(--text-13)] leading-[1.5] text-[var(--suggestion-muted)]">{text.description}</p>
+    <div className="mt-[22px] flex items-center justify-between gap-[10px] max-[400px]:flex-wrap">
+      <OutlineButton type="button" className="min-h-[38px] px-[10px] py-2 text-left text-[length:var(--text-13)] [--control-border-width:0px] [--control-bg:transparent] [--control-text:var(--suggestion-muted)] [--control-hover-bg:color-mix(in_srgb,var(--suggestion-text)_12%,transparent)] [--control-hover-opacity:1] [--control-focus:var(--suggestion-text)]" onClick={remember}>{suggestionCopy(text.keep, currentName)}</OutlineButton>
+      <SolidButton type="button" className="min-h-[38px] whitespace-nowrap px-[14px] py-2 text-[length:var(--text-13)] [--control-border:var(--suggestion-button-bg)] [--control-bg:var(--suggestion-button-bg)] [--control-text:var(--suggestion-button-text)] [--control-focus:var(--suggestion-text)]" onClick={switchLanguage}>{suggestionCopy(text.switch, suggestedName)}</SolidButton>
     </div>
   </section>;
 }

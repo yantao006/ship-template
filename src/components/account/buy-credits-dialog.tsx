@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Check, ChevronDown, Image as ImageIcon, Sparkles, Video } from 'lucide-react';
 import { requestJson } from '@/lib/json-request';
+import { SolidButton } from '@/components/ui/controls';
 import type { Copy as PricingCopy } from '../pricing/pricing-checkout';
 export type { Copy as PricingCopy } from '../pricing/pricing-checkout';
 import type { Plan, AccountCopy } from './account-dialogs';
@@ -65,7 +66,7 @@ export function BuyCreditsContent({ plans, copy, pricing, brand, locale }: { pla
           return <div key={plan.id} className={`buy-credits-card${isPicked ? ' selected' : ''}`}><button type="button" className="buy-credits-plan-choice" aria-pressed={isPicked} onClick={() => { setSelected(plan.id); setError(''); }}><span><b>{plan.name}</b>{period === 'year' && <small>{money(total, plan.currency, locale)} {pricing.billedYearly}</small>}</span><span>{period === 'year' && previousPrice && <del>{money(previousPrice, plan.currency, locale)}</del>}<strong>{money(price, plan.currency, locale)}</strong>{period !== 'once' && <small>{pricing.perMonth}</small>}</span></button>{discount > 0 && <span className="buy-credits-discount">{discount}% OFF</span>}{plan.tier === 'standard' && <span className="buy-credits-popular"><Sparkles size={12}/>{pricing.popular}</span>}
             {plan.tier === 'max' && <div className="buy-credits-multiplier"><input type="range" min="1" max="5" value={multiple} aria-label={pricing.maxMultiplier} onChange={event => { setMultiple(Number(event.target.value)); setSelected(plan.id); setError(''); }} /><div>{[1,2,3,4,5].map(n => <button type="button" key={n} className={multiple === n ? 'selected' : ''} onClick={() => { setMultiple(n); setSelected(plan.id); setError(''); }}>{n}x</button>)}</div></div>}
           </div> })}</div>
-        <button type="button" className="buy-credits-start" disabled={pending || !picked} onClick={() => void checkout()}>{pending ? pricing.wait : copy.getStarted}</button>
+        <SolidButton type="button" className="buy-credits-start" disabled={pending || !picked} onClick={() => void checkout()}>{pending ? pricing.wait : copy.getStarted}</SolidButton>
         {error && <p className="buy-credits-error" role="alert">{error}</p>}
         {picked && !picked.checkoutEnabled && <p className="buy-credits-unavailable">{pricing.unavailableNote}</p>}
       </section>

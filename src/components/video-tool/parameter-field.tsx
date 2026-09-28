@@ -21,5 +21,5 @@ export function ParameterField({ id: fieldId, type, label, value, presentation, 
   }
   if (type === 'option') return <div className="vt-field-card" role="group" aria-label={label}><span className="vt-field-label">{label}</span><div className={`vt-choices${presentation === 'ratio' ? ' vt-ratio-choices' : ''}`}>{options.map(option => <button key={option.value} type="button" aria-pressed={value === option.value} onClick={() => onChange(option.value)}>{presentation === 'ratio' && <span className="vt-ratio-icon" style={ratioDimensions(option.value)} aria-hidden="true" />}{option.label}</button>)}</div></div>;
   if (type === 'upload') return <label className="vt-field-card vt-field" htmlFor={id}><span>{label}</span><select id={id} value={String(value)} onChange={event => onChange(event.target.value)}><option value="">{uploadHint}</option>{options.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>;
-  return <label className="vt-field-card vt-field" htmlFor={id}><span>{label}</span><input id={id} type="text" value={String(value)} onChange={event => onChange(event.target.value)} /></label>;
+  return <label className="vt-field-card vt-field" htmlFor={id}><span>{label}</span><input className="ui-input" id={id} type="text" value={String(value)} onChange={event => onChange(event.target.value)} /></label>;
 }

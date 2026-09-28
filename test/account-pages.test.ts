@@ -22,8 +22,8 @@ test('account section entries are in-app links and the ledger does not gate the 
   const nav = readFileSync('src/components/account/account-section-nav.tsx', 'utf8');
   const layout = readFileSync('src/app/[locale]/(site)/account/layout.tsx', 'utf8');
   const content = readFileSync('src/components/account/account-pages-content.tsx', 'utf8');
-  assert.match(nav, /from 'next\/link'/);
-  assert.match(nav, /<Link/);
+  assert.match(nav, /SidebarItem/);
+  assert.match(readFileSync('src/components/ui/controls.tsx', 'utf8'), /from 'next\/link'/);
   assert.doesNotMatch(nav, /<a[\s/>]/);
   assert.match(layout, /AccountSectionNav/);
   assert.match(layout, /routePath\(locale, id\)/);

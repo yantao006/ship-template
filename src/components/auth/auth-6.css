@@ -19,14 +19,12 @@
 .auth6-form fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
 .auth6-digits { display: flex; align-items: center; justify-content: center; gap: 9px; }
 .auth6-group { display: flex; gap: 7px; }
-.auth6-digit { width: 45px; height: 54px; padding: 0; border: 1px solid var(--auth-card-line); border-radius:var(--radius-card-md); outline: 0; background: var(--auth-card-row); color: var(--auth-card-text); font-size: 20px !important; font-weight:var(--weight-medium) !important; text-align: center; font-variant-numeric: tabular-nums; transition: border-color var(--duration-enter), box-shadow var(--duration-enter); }
+.auth6-digit { width: 45px; height: 54px; padding: 0; --input-border: var(--auth-card-line); --input-radius: var(--radius-card-md); --input-bg: var(--auth-card-row); --input-text: var(--auth-card-text); outline: 0; font-size: 20px !important; font-weight:var(--weight-medium) !important; text-align: center; font-variant-numeric: tabular-nums; transition: border-color var(--duration-enter), box-shadow var(--duration-enter); }
 .auth6-digit:hover { border-color: var(--auth-card-muted); }
 .auth6-digit:focus { border-color: var(--auth-card-focus); box-shadow: 0 0 0 3px rgba(122,91,255,.18); }
 .auth6-digit.is-filled { border-color: var(--auth-card-focus); }
 .auth6-separator { width: 12px; height: 1px; flex: 0 0 12px; background: var(--auth-card-muted); }
-.auth6-submit { display: flex; width: 100%; height: 48px; align-items: center; justify-content: center; margin-top: 22px; border: 0; border-radius:var(--radius-pill); background: var(--auth-card-button); color: var(--auth-card-on-button); font-size:var(--text-16) !important; font-weight:var(--weight-medium) !important; transition: background var(--duration-enter); }
-.auth6-submit:hover:not(:disabled) { background: var(--auth-card-button-hover); }
-.auth6-submit:disabled { opacity: .55; cursor: not-allowed; }
+.auth6-submit { display: flex; width: 100%; height: 48px; align-items: center; justify-content: center; margin-top: 22px; --control-border-width: 0px; --control-radius: var(--radius-pill); --control-bg: var(--auth-card-button); --control-hover-bg: var(--auth-card-button-hover); --control-hover-opacity: 1; --control-text: var(--auth-card-on-button); --control-weight: var(--weight-medium); --control-focus: var(--auth-card-focus); font-size:var(--text-16) !important; }
 .auth6-resend { margin: 18px 0 0; color: var(--auth-card-muted); }
 .auth6-resend button { padding: 0; border: 0; background: transparent; color: var(--auth-card-text); font-weight:var(--weight-medium); }
 .auth6-resend button:hover { text-decoration: underline; }
