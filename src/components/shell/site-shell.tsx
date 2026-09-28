@@ -8,6 +8,7 @@ import { workerEnv } from '@/lib/env';
 import { accountSnapshot } from '@/lib/request-context';
 import { Header } from './Header';
 import { Footer } from './Footer';
+import { LanguageSuggestion } from './language-suggestion';
 
 /** Persistent chrome for marketing and workspace routes in the same locale. */
 export async function SiteShell({ locale, children }: { locale: keyof typeof messages; children: ReactNode }) {
@@ -19,5 +20,6 @@ export async function SiteShell({ locale, children }: { locale: keyof typeof mes
     <Header locale={locale} userName={displayName} userEmail={session?.user.email} userImage={session?.user.image} credits={credits} />
     <main className="site-main">{children}</main>
     <Footer locale={locale} />
+    <LanguageSuggestion locale={locale} languages={site.languages} copy={Object.fromEntries(Object.entries(messages).map(([code, message]) => [code, message.nav.languageSuggestion]))} />
   </AuthDialogProvider>;
 }
