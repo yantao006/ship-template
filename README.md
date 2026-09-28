@@ -79,13 +79,28 @@ This browser run did not apply that migration, submit a payment, or deploy the p
 
 ### Source-inspired auth card preview (2026-09-27)
 
-The preview alias now serves the copied `minimax-auth-card.tsx` variant; `auth-4.tsx` is unchanged.
+At the time of this browser run, the preview alias served the copied `minimax-auth-card.tsx` variant; `auth-4.tsx` is unchanged.
 The card keeps the site's brand, configured welcome credits and localized claims, and uses the existing email-code sign-in after the email action.
 The image is a site-local placeholder.
-The email-code flow, mobile bottom drawer and full-page reload are owned by the existing application; this variant changes their appearance, not their implementation.
+At the time of this run, the email-code flow still used the card's inline code field, mobile bottom drawer and full-page reload.
 The measured source spec, computed-color comparison and initial plus expanded-email viewport/theme screenshot pairs live in `docs/research/auth-card/source-spec.md` and `docs/verification/auth-card/`.
 Cloudflare Worker version `2b762543-321f-4191-81d8-eabf8c426b05` was uploaded to the preview alias with the existing `WAFFO_PRODUCTS` catalog, without deploying to the live hostname.
-The expanded email input now follows the OR divider in a column flow with 12px of separation; both themes were compared at 1440 × 900 and 390 × 844 in ego-browser.
+The expanded email input follows the OR divider in a column flow with 12px of separation; both themes were compared at 1440 × 900 and 390 × 844 in ego-browser.
+
+### Email OTP dialog preview (2026-09-28)
+
+The preview alias now serves `minimax-auth-card.tsx` for the email entry and the licensed Auth-6 adaptation in `src/components/blocks/auth-6.tsx` for the six-digit code.
+The Auth-4 original and Google sign-in remain unchanged.
+A successful send hides the email card and opens the independent wide dialog; Use a different email restores the card, while closing the code dialog exits sign-in entirely.
+Verification and resend call the existing better-auth email OTP methods.
+An ego-browser unsigned desktop and 390px mobile run confirmed the wide dialog without the login card behind it, copy, grouping, paste/auto-advance/backspace, resend cooldown, email-change return, and full sign-in close.
+A subsequent browser run submitted the authorized `yantao006@agent.qq.com` inbox, confirmed the redesigned message really arrived, entered its received code, and established a server-confirmed session.
+That run also found that the prior five-minute OTP lifetime contradicted the dialog's 15-minute claim; the plugin, mail copy, and dialog now agree on 15 minutes.
+Desktop and mobile captures, a safe sample of the redesigned email, and the delivery/login evidence are in [email OTP dialog verification](docs/verification/email-otp-dialog/README.md).
+Worker version `3b50f1ce-1e3a-4be1-a78b-2352b637b474` was uploaded to the existing preview alias after the delivery fix, without deploying to the live hostname.
+This alias is shared with another workstream and can be overwritten by its next upload; use the immutable version URL in the verification record to identify this build.
+Cloudflare Email Sending for `awesomejev.link` is now onboarded: the prior Email Routing-only binding could send to verified destination addresses but not reliably to other users.
+The auth route now waits for Cloudflare's send acknowledgement before opening the OTP dialog; Cloudflare's activity log reports the Gmail and 126 test messages as Delivered, while only the `agent.qq.com` inbox was independently read.
 
 ## Site and secret boundaries
 
@@ -104,7 +119,10 @@ When required, new accounts cannot use their credits until a valid invite is red
 Apply D1 migrations before deploying a build that enables invitations.
 Credentials are never committed to `site/` or D1.
 `site-check` compares the Worker, D1, R2, Queue and email bindings with site configuration and secret declarations.
-Cloudflare Email is the default adapter; Resend is selectable through `site.email.provider` and needs `RESEND_API_KEY`.
+Cloudflare Email is the default adapter; sending to unverified recipient addresses requires onboarding this site's sender domain to Email Sending on a Workers Paid account, in addition to the `EMAIL` binding.
+The `EMAIL` binding has no recipient allowlist and forwards any valid email address to Email Sending; the provider may still reject invalid or suppressed recipients.
+The Cloudflare adapter requires an acknowledgement ID, and the OTP send route returns an error if sending fails instead of reporting a false success.
+Resend is selectable through `site.email.provider` and needs `RESEND_API_KEY`.
 Notification functions use fake email in tests; they are not connected to real video or payment events.
 Turnstile verification remains implemented and locally tested, but this reference site's `site/auth.config.ts` disables the sign-in gate until a real client widget and secret are configured.
 Do not flip it on without both pieces, or Google login will be blocked.

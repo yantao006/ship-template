@@ -16,7 +16,7 @@ export default {
   locales: languages.map(language => language.code),
   defaultLocale: 'en',
   deploy: { worker: 'awesomejev-test', d1: 'awesomejev-db', r2: 'awesomejev-media', queue: 'awesomejev-jobs' },
-  email: { provider: 'cloudflare', from: 'noreply@awesomejev.link' },
+  email: { provider: 'cloudflare', from: 'noreply@awesomejev.link', brand: 'Awesomejev' },
   signupCredits: 30,
   account: {
     checkIn: { enabled: true, credits: 1 },

@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 import { check } from '../scripts/site-check';
 import { site, googleCallback, githubCallback } from '../src/lib/config';
 import { FakeEmail, createEmailProvider } from '../src/lib/email';
-import { notifyGenerationComplete, notifyCreditsExpiring, notifyRenewalFailed, notifyVerification } from '../src/lib/notifications';
+import { notifyGenerationComplete, notifyCreditsExpiring, notifyRenewalFailed, notifySignInCode, notifyVerification } from '../src/lib/notifications';
 import { verifyTurnstile } from '../src/lib/turnstile';
 
 test('second site only changes site, wrangler resource names and env, not business code', async () => {
@@ -57,8 +57,32 @@ test('verification mail selects callback language and escapes dynamic HTML once'
   assert.doesNotMatch(email.sent[0].html, /<Video & Co>/);
 });
 
-test('provider selection fails closed and Resend propagates failure', async () => {
+test('OTP mail uses the site email brand, 15-minute copy and escaped centered code card', async () => {
+  const email = new FakeEmail();
+  await notifySignInCode(email, site, 'user@example.com', '012345', 'en');
+  const message = email.sent[0];
+  assert.equal(message.from, site.email.from);
+  assert.equal(message.subject, 'Your Awesomejev verification code: 012345 - Awesomejev');
+  assert.match(message.text, /Sign in to Awesomejev[\s\S]*valid for 15 minutes:[\s\S]*012345[\s\S]*please ignore this email/);
+  assert.match(message.html, /linear-gradient\(90deg,#7863f2,#d45a9b,#56b3eb\)/);
+  assert.match(message.html, /Sign in to Awesomejev[\s\S]*border:1px dashed[\s\S]*letter-spacing:\.25em;color:#7161ed">012345/);
+  assert.doesNotMatch(message.html, /MiniMax|mail\.minimaxh3\.ai|\b5 minutes/);
+  await notifySignInCode(email, { ...site, email: { ...site.email, brand: '<Video & Co>' } }, 'user@example.com', '987654', 'en');
+  assert.match(email.sent[1].html, /Sign in to &lt;Video &amp; Co&gt;/);
+  assert.doesNotMatch(email.sent[1].html, /<Video & Co>/);
+  const secondSite = (await check(resolve('fixtures/second-site'))).config;
+  await notifySignInCode(email, secondSite, 'user@example.com', '456789', 'en');
+  assert.match(email.sent[2].subject, new RegExp(secondSite.brand));
+});
+
+test('Cloudflare binding has no recipient allowlist, and provider propagates acknowledgement', async () => {
+  const config = JSON.parse(readFileSync('wrangler.jsonc', 'utf8')) as { send_email: unknown };
+  assert.deepEqual(config.send_email, [{ name: 'EMAIL' }]);
   assert.throws(() => createEmailProvider(site,{DB:null as never}),/EMAIL binding missing/);
+  const unacknowledged = createEmailProvider(site, { DB: null as never, EMAIL: { async send() { return {}; } } });
+  await assert.rejects(() => notifySignInCode(unacknowledged, site, 'user@example.com', '012345'), /did not acknowledge/);
+  const acknowledged = createEmailProvider(site, { DB: null as never, EMAIL: { async send() { return { messageId: 'cf-id' }; } } });
+  assert.equal((await notifySignInCode(acknowledged, site, 'user@example.com', '012345')).id, 'cf-id');
   const other = (await check(resolve('fixtures/second-site'))).config;
   assert.throws(() => createEmailProvider(other,{DB:null as never}),/RESEND_API_KEY missing/);
   const provider = createEmailProvider(other,{DB:null as never, RESEND_API_KEY:'local-not-real'},async () => new Response(JSON.stringify({id:'mock-id'}),{status:200}));

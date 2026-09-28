@@ -128,6 +128,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │   ├── blocks/auth-4.tsx         # Preserved licensed Auth-4 original
 │   │   ├── blocks/minimax-auth-card.tsx # Source-inspired copy wired to better-auth
 │   │   ├── blocks/minimax-auth-card.css # Measured card styles and responsive layout
+│   │   ├── blocks/auth-6.tsx, auth-6.css # Scoped email OTP dialog adapted from licensed React Bits Pro block
 │   │   ├── blocks/account-popovers.tsx   # Signed-in account/credit menu data and actions
 │   │   ├── blocks/account-dialogs.tsx    # Seven account dialog bodies and shared dialog hero
 │   │   ├── blocks/account-profile.tsx    # Shared avatar trigger and profile header
@@ -228,7 +229,7 @@ A new capability can be a new `src/lib/` service called by an API endpoint, a se
 `src/lib/config.ts` declares the site, auth, and database config contracts; site files use `satisfies` to check build-time choices, while `wrangler.jsonc` declares matching live resources.
 `scripts/site-check.ts` compares the Worker name, D1/R2/Queue names, auth shape, email binding, callback origin, and required secret names before publication.
 `site/messages/en.ts` and `site/messages/zh.ts` compose matching per-module copy under `site/messages/{en,zh}/`, including separate mail, sign-in, invites, handoff, account, workspace, credits, pricing, footer, and video-tool files; `src/app/[locale]/` and `src/components/language-control.tsx` select copy without duplicating business logic.
-`site/theme.config.ts` provides same-key light and dark palettes, paired top-bar/account-card/auth-card/dialog/video-tool/pricing colors and row tones, mode defaults, and account colors; `src/lib/theme-tokens.ts` generates the CSS token stylesheet in `src/app/layout.tsx` instead of inline body styles.
+`site/theme.config.ts` provides same-key light and dark palettes, paired top-bar/account-card/auth-card/dialog/video-tool/pricing colors, an email-only palette, row tones, mode defaults, and account colors; `src/lib/theme-tokens.ts` generates the CSS token stylesheet in `src/app/layout.tsx` instead of inline body styles.
 The middleware marks whether the first route uses the public shell; the root layout applies that route's default through `data-mode="auto"`, and `ThemeModeInitializer` freezes it on `<html>` before client navigation. `ReplicaNavigation` reads the document mode and toggles it through `src/lib/theme-mode.ts`, preserving the selected mode across page changes.
 Header language changes use App Router navigation to preserve the document; `ReplicaNavigation` synchronizes `<html lang>` because the root layout persists across client-side transitions.
 `src/middleware.ts` forwards the route locale so the root layout sets matching `<html lang>` and metadata, including for the default-language `/` homepage.
@@ -236,14 +237,15 @@ Header language changes use App Router navigation to preserve the document; `Rep
 
 ### Authentication and eligibility
 
-`src/lib/auth.ts` constructs better-auth using request-time `SITE_URL`, the Worker D1, the enabled email/Google/GitHub methods from `site/auth.config.ts`, and its email OTP plugin for the shared Auth-4 sign-in.
+`src/lib/auth.ts` constructs better-auth using request-time `SITE_URL`, the Worker D1, the enabled email/Google/GitHub methods from `site/auth.config.ts`, and its email OTP plugin for the shared sign-in.
+The plugin swallows email-send failures, so `handleAuthWithCodeDelivery` observes that same send promise and returns a failed response rather than opening the code dialog without a send acknowledgement.
 On each request, production login accepts the Worker `SITE_URL` only when it equals `site.url` from `site/site.config.ts`; a mismatch refuses login rather than creating a session on another origin.
 `src/app/api/auth/[...all]/route.ts` wraps signup with invite validation, limits the email OTP plugin to sign-in codes, and applies optional sign-in Turnstile verification before delegating to better-auth.
 `ensureSignupCredits` checks invitation eligibility and grants a signup lot with the user ID as its stable source ID; when email verification is enabled, it waits until the emailed link marks the account verified.
 `src/app/api/invites/redeem/route.ts` uses the shared session and browser-write guard, redeems the code through an atomic D1 batch, and grants the eligible user credits.
 `src/lib/invites.ts` owns invite code format, normalization, inventory reads, creation, and revocation.
 `src/components/site-shell.tsx` mounts one `AuthDialogProvider` for public pages; `auth-control.tsx` triggers the source-inspired copy in `blocks/minimax-auth-card.tsx` while licensed `blocks/auth-4.tsx` stays untouched.
-Below 768px the shared card uses the existing bottom drawer; email sign-in uses a mailed six-digit code, and successful code sign-in follows the existing full-page reload.
+Below 768px the shared card uses the existing bottom drawer; email sign-in sends a mailed six-digit code and replaces the visible card with a wide Auth-6 dialog only after a successful send; the back action restores the card while close exits sign-in, and successful code sign-in follows the existing full-page reload.
 The standalone desktop callback keeps `sign-in-card.tsx` as a fallback outside that shell.
 `src/lib/auth-client.ts` owns the browser auth client, and `src/lib/browser-nav-copy.ts` assembles navigation and auth copy without sending mail strings to client props.
 Auth-4 uses Tailwind v4 theme variables and utilities without a global base reset via `postcss.config.mjs` and `src/app/globals.css`.
@@ -255,7 +257,10 @@ When `email.passwordReset` is on, the forgot-password link is sent through `Emai
 `site/messages/{en,zh}/pricing.ts` owns tier feature lists, annual-only feature lines, and interpolated pack perks; pricing cards select those lists by tier or plan ID without reusing plan-name copy as features.
 `src/lib/ledger.ts` writes `credit_lot`, `credit_entry`, `credit_alloc`, and `video_task` with D1's own `prepare().bind()` statements and `batch()` for multi-step writes, preserving atomic reservations under concurrent requests.
 Grant source IDs, entry idempotency keys, and task state transitions make retries observable. A verified annual payment calls `grantSubscriptionMonth` for the current calendar month only. There is no separate billing scheduler.
-`src/lib/email.ts` chooses Cloudflare Email or Resend behind `EmailProvider`, and `src/lib/notifications.ts` composes and escapes localized mail, including sign-in codes, verification and password reset links, independently of delivery.
+`src/lib/email.ts` chooses Cloudflare Email or Resend behind `EmailProvider`, requires Cloudflare's acknowledgement ID, and `src/lib/notifications.ts` composes and escapes localized mail, including a site-branded six-digit sign-in code card, verification and password reset links.
+Cloudflare Email Sending must be onboarded for each sender domain to reach arbitrary recipients; an Email Routing-only binding is limited to verified destination addresses, even when Wrangler labels it unrestricted.
+The reference site's `EMAIL` binding has no recipient allowlist; the app forwards the entered email to the provider, which may still reject invalid or suppressed recipients.
+The email OTP plugin in `src/lib/auth.ts` explicitly keeps the code valid for 15 minutes, matching the dialog and mail copy; a successful binding send is not proof of final mailbox delivery.
 
 ### Current state and extension paths
 
@@ -349,7 +354,7 @@ Schema changes gain a new reviewed migration and matching service/query types an
 | `apex`, `url` | Canonical host and absolute base URL for authentication, callbacks, links, metadata, and site-check. |
 | `languages`, derived `locales`, `defaultLocale` | Code, native name, flag emoji, and date locale for every language; default homepage and request-locale document language. |
 | `deploy.worker`, `deploy.d1`, `deploy.r2`, `deploy.queue` | Expected per-site Worker, D1, R2, and Queue names compared with Wrangler. |
-| `email.provider`, `email.from` | Selects the email adapter and sender address. |
+| `email.provider`, `email.from`, optional `email.brand` | Selects the email adapter, sender address, and mail-specific display brand. |
 | `signupCredits` | Amount granted once to an eligible new account. |
 | `account` | Reward switches/amounts, submission cap, contact addresses, commercial-use link, icon and share-network choices. |
 | `plans` | Monthly and annual tiers plus credit packs; Worker `WAFFO_PRODUCTS` enables only matching test products. |
@@ -361,7 +366,7 @@ Schema changes gain a new reviewed migration and matching service/query types an
 | `desktop.schemes` | Allow-listed app URL schemes for signed-in desktop handoff. |
 | `turnstile.onSignIn` | Applies Turnstile verification to sign-in requests supplied with a client token. |
 | `site/database.config.ts`: `binding`, `migrationsDir` | Site D1 binding name and migration directory. |
-| `site/theme.config.ts`: `light`, `dark`, `chrome`, `authCard`, `pricing`, `rowTones`, `defaultMode`, `font`, `account`, `tones` | Paired semantic palettes and navigation/account-card/auth-card/pricing chrome, row tones, homepage/other-page defaults, and account accents emitted through `src/lib/theme-tokens.ts`. |
+| `site/theme.config.ts`: `light`, `dark`, `chrome`, `authCard`, `mail`, `pricing`, `rowTones`, `defaultMode`, `font`, `account`, `tones` | Paired semantic palettes and navigation/account-card/auth-card/pricing chrome, email-only palette, row tones, homepage/other-page defaults, and account accents; web tokens emitted through `src/lib/theme-tokens.ts`. |
 | `site/video-tool.config.ts` | Landing tool media, workflows, models, fields, references, assets, and optional promo. |
 | `site/messages/en.ts`, `zh.ts`: `metadata`, `nav`, `hero`, `videoTool`, `account`, `dashboard`, `credits`, `pricing`, `planCopy` | Localized strings for metadata, navigation, credit sources, plan names and pricing features, the video tool, and content views. |
 
@@ -376,7 +381,7 @@ Schema changes gain a new reviewed migration and matching service/query types an
 | `d1_databases[].binding`, `database_name`, `database_id`, `migrations_dir` | D1 binding, owned database identity, and migration location. |
 | `r2_buckets[].binding`, `bucket_name` | Media binding and bucket identity. |
 | `queues.producers[]`, `queues.consumers[]` | Job submission binding and delivery to the Worker queue handler. |
-| `send_email[].name` | Cloudflare Email binding. |
+| `send_email[].name` | Cloudflare Email binding; its sender domain also needs Email Sending onboarding for arbitrary recipients. |
 | `routes[].pattern`, `routes[].custom_domain` | Site hostname and custom-domain routing. |
 | `triggers.crons` | Schedule sent to `worker.ts`'s `scheduled` handler. |
 | `secrets.required`, `vars.SITE_URL` | Required secret names and request-time canonical auth base URL. |
