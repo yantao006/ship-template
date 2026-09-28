@@ -71,7 +71,8 @@ test('light and dark palettes have the same six semantic keys', () => {
   assert.match(authPanel, /color:\s*var\(--text\)/);
   const css = read('src/app/globals.css');
   assert.doesNotMatch(css, /\.auth-panel\s*\{/);
-  assert.match(read('src/components/styles/controls.css'), /html:is\(\[data-mode="dark"\],[^}]+\.auth-panel \.auth-button \{ color: var\(--bg\); \}/);
+  assert.match(read('src/components/styles/controls.css'), /\.auth-button \{[^}]*--control-text: var\(--bg\)/);
+  assert.match(read('src/components/auth/sign-in-card.tsx'), /ui-button-solid auth-button/);
   assert.match(css, /body \{[^}]*background: var\(--bg\); color: var\(--text\)/);
 });
 
@@ -89,6 +90,8 @@ test('shared controls and motion consume semantic tokens without duplicating ent
   assert.match(read('src/components/account/account-section-nav.tsx'), /SidebarItem/);
   assert.match(read('src/components/workspace/workspace-section-nav.tsx'), /SidebarItem/);
   assert.match(read('src/components/pricing/pricing-checkout.tsx'), /<SolidButton[^>]+className="pricing-pay"/);
+  assert.match(read('src/components/account/account-dialogs.tsx'), /<DialogSurface[^>]+account-dialog/);
+  assert.match(read('src/components/account/account-dialogs.tsx'), /<TextInput type="url"/);
   for (const path of ['src/components/account/account-popovers.css', 'src/components/auth/minimax-auth-card.css', 'src/components/pricing/pricing.css', 'src/components/shell/replica-navigation.css']) {
     assert.doesNotMatch(read(path), /@keyframes (?:account-dialog-enter|account-contact-enter|minimax-auth-enter|pricing-enter|replica-pop)/);
   }

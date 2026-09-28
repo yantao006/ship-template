@@ -37,7 +37,7 @@ export function InviteAdmin({ copy }: { copy: (typeof messages)['en']['invites']
   }
   return <main className="mx-auto max-w-[900px] px-6 py-[60px]">
     <h1 className="text-[36px]">{copy.title}</h1>
-    <form className="flex flex-wrap items-end gap-3" onSubmit={create}><label className="grid gap-2">{copy.maxUses} <input className="ui-input min-h-[42px] rounded-[6px] p-2" name="maxUses" type="number" min="1" max="10000" defaultValue="1" required /></label><button className="auth-button" disabled={pending}>{copy.create}</button></form>
+    <form className="flex flex-wrap items-end gap-3" onSubmit={create}><label className="grid gap-2">{copy.maxUses} <input className="ui-input min-h-[42px] rounded-[6px] p-2" name="maxUses" type="number" min="1" max="10000" defaultValue="1" required /></label><button className="ui-button-solid auth-button" disabled={pending}>{copy.create}</button></form>
     {error && <p role="alert">{error}</p>}
     <ul className="list-none p-0">{codes.map(item => <li className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--line)] py-[15px]" key={item.code}><code className="break-words">{item.code}</code><span>{item.used_count} / {item.max_uses} {copy.used}</span><button type="button" disabled={pending} onClick={() => void revoke(item.code)}>{copy.revoke}</button></li>)}</ul>
   </main>;

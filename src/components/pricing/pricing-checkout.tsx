@@ -89,7 +89,7 @@ export function PricingCheckout({ locale, plans, models, brand, copy }: { locale
       <div className="pricing-inner mx-auto max-w-[1432px]">
         {savings > 0 && <div className="pricing-launch"><strong>{savingsLabel}</strong><span>{brand} · {copy.yearlyHint}</span></div>}
         <h1 id="pricing-title">{copy.title}</h1><p className="pricing-lead">{copy.lead}</p>
-        <div id="pricing-plans" className="pricing-tabs-wrap"><div className="pricing-tabs" role="group" aria-label={copy.title}>
+        <div id="pricing-plans" className="pricing-tabs-wrap"><div className="pricing-tabs ui-segmented" role="group" aria-label={copy.title}>
           {(['month', 'year', 'once'] as const).map(option => <button type="button" aria-pressed={mode === option} className={mode === option ? 'selected' : ''} key={option} onClick={() => { setMode(option); setError(''); }}>{option === 'month' ? copy.monthly : option === 'year' ? copy.yearly : copy.packs}{option === 'year' && savings > 0 && <small>{savingsLabel}</small>}</button>)}
         </div><p><Check size={16} />{mode === 'year' ? copy.yearlyHint : mode === 'month' ? copy.monthlyHint : copy.packHint}</p></div>
         {!actionable && <p className="pricing-availability" role="status">{copy.unavailableNote}</p>}

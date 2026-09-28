@@ -19,7 +19,7 @@ export function InviteGate({ copy }: { copy: { invite: string; inviteInvalid: st
   }
   return <form className="mt-6 grid max-w-[330px] gap-3" onSubmit={submit}>
     <label className="grid gap-2 text-[var(--muted)]">{copy.invite}<input className="ui-input min-h-[42px] rounded-[6px] p-2" name="code" autoComplete="off" required maxLength={32} placeholder={copy.invite} /></label>
-    <button className="auth-button" disabled={pending}>{pending ? copy.wait : copy.invite}</button>
+    <button className="ui-button-solid auth-button" disabled={pending}>{pending ? copy.wait : copy.invite}</button>
     {error && <p className="form-error" role="alert">{error}</p>}
   </form>;
 }

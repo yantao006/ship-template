@@ -8,6 +8,12 @@
 .ui-button-solid:disabled, .ui-button-outline:disabled { cursor: not-allowed; opacity: .55; }
 .ui-button-solid:focus-visible, .ui-button-outline:focus-visible, .ui-input:focus-visible, .ui-nav-item:focus-visible { outline: 2px solid var(--control-focus, var(--text)); outline-offset: 3px; }
 .ui-input { border: 1px solid var(--input-border, var(--line)); border-radius: var(--input-radius, var(--radius-control)); background: var(--input-bg, var(--surface)); color: var(--input-text, var(--text)); font: inherit; }
+/* Billing period toggles share one compact segmented control in pricing and purchase. */
+.ui-segmented { display: inline-flex; align-items: center; padding: var(--space-1); border: 1px solid var(--segment-border, var(--line)); border-radius: var(--radius-pill); background: var(--segment-bg, var(--surface)); }
+.ui-segmented button { min-height: 50px; padding: 10px var(--space-5); border: 0; border-radius: var(--radius-pill); background: transparent; color: var(--segment-text, var(--muted)); font-size: var(--text-16); font-weight: var(--weight-bold); white-space: nowrap; cursor: pointer; }
+.ui-segmented button.selected { background: var(--segment-selected-bg, var(--text)); color: var(--segment-selected-text, var(--bg)); }
+.ui-segmented button:focus-visible { outline: 2px solid var(--control-focus, var(--text)); outline-offset: 3px; }
+@media (max-width: 767px) { .ui-segmented button { padding: 9px var(--space-2); font-size: var(--text-13); } }
 .ui-enter-scale { animation: ui-enter-scale var(--enter-duration, var(--duration-enter)) var(--enter-ease, ease-out) both; }
 .ui-enter-rise { animation: ui-enter-rise var(--enter-duration, var(--duration-enter)) ease-out both; }
 @keyframes ui-enter-scale { from { opacity: 0; transform: scale(.95); } to { opacity: 1; transform: scale(1); } }
@@ -17,8 +23,7 @@
 /* The standalone auth fallback shares this control layer without modifying either source-styled login card. */
 .auth-actions { display: flex; gap: 10px; align-items: center; position: relative; }
 .account-name { max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); font-size: var(--text-13); }
-.auth-button { display: inline-flex; align-items: center; justify-content: center; min-height: 40px; padding: 9px 17px; border: 1px solid var(--text); border-radius: var(--radius-control); background: var(--text); color: var(--bg); font-size: var(--text-13); font-weight: var(--weight-semibold); text-decoration: none; white-space: nowrap; cursor: pointer; transition: transform var(--duration-enter) ease, background var(--duration-enter) ease; }
-.auth-button:hover:not(:disabled) { transform: translateY(-2px); background: var(--text); opacity: .85; }
+.auth-button { display: inline-flex; align-items: center; justify-content: center; min-height: 40px; padding: 9px 17px; --control-border: var(--text); --control-bg: var(--text); --control-text: var(--bg); --control-weight: var(--weight-semibold); --control-hover-transform: translateY(-2px); font-size: var(--text-13); white-space: nowrap; }
 .auth-button:disabled, .social-button:disabled { cursor: wait; opacity: .65; }
 .auth4-overlay { position: fixed; inset: 0; z-index: 110; display: grid; place-items: center; padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom)); background: var(--scrim); }
 .auth4-dialog { position: relative; width: min(100%, 960px); max-height: calc(100dvh - 24px); overflow-y: auto; overscroll-behavior: contain; border-radius: var(--radius-card-lg); }
@@ -37,15 +42,12 @@
 .auth-panel { position: relative; width: min(100%, 420px); max-height: calc(100dvh - 36px); overflow-y: auto; padding: 32px; border: 1px solid var(--line); border-radius: var(--radius-card-md); background: var(--surface); color: var(--text); box-shadow: var(--shadow-dialog); }
 .auth-panel h2 { margin: 0 30px 24px 0; font-size: 23px; letter-spacing: -.03em; }
 .auth-panel form, .social-methods { display: grid; gap: 13px; }
-.social-button { width: 100%; min-height: 43px; padding: 8px 16px; border: 1px solid var(--line); border-radius: var(--radius-control); background: var(--surface); color: var(--text); font-size: var(--text-14); font-weight: var(--weight-medium); cursor: pointer; }
-.social-button:hover { background: var(--bg); }
+.social-button { width: 100%; min-height: 43px; padding: 8px 16px; --control-border: var(--line); --control-bg: var(--surface); --control-text: var(--text); --control-weight: var(--weight-medium); --control-hover-bg: var(--bg); font-size: var(--text-14); }
 .method-divider { display: flex; align-items: center; gap: 12px; margin: 21px 0; color: var(--muted); font-size: var(--text-12); white-space: nowrap; }
 .method-divider::before, .method-divider::after { content: ''; height: 1px; flex: 1; background: var(--line); }
 .auth-panel label { display: grid; gap: 7px; font-size: var(--text-13); color: var(--text); font-weight: var(--weight-medium); }
-.auth-panel input { width: 100%; min-height: 43px; padding: 9px 12px; border: 1px solid var(--line); border-radius: var(--radius-control); background: var(--surface); color: var(--text); font-weight: 400; }
+.auth-panel input { width: 100%; min-height: 43px; padding: 9px 12px; --input-border: var(--line); --input-bg: var(--surface); --input-text: var(--text); font-weight: 400; }
 .auth-panel .auth-button { width: 100%; margin-top: 4px; }
-html:is([data-mode="dark"], [data-mode="auto"][data-default-mode="dark"]) .auth-panel .auth-button { color: var(--bg); }
-html:is([data-mode="dark"], [data-mode="auto"][data-default-mode="dark"]) .auth-panel .auth-button:hover:not(:disabled) { background: var(--text); }
 .auth-close { position: absolute; top: 15px; right: 17px; border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 25px; }
 .auth-switch { display: block; margin: 18px auto 0; border: 0; background: none; color: var(--accent); text-decoration: underline; cursor: pointer; font-size: var(--text-13); }
 .verify-page, .reset-page { min-height: 80dvh; display: grid; place-items: center; padding: 32px 16px; }
@@ -58,4 +60,3 @@ html:is([data-mode="dark"], [data-mode="auto"][data-default-mode="dark"]) .auth-
 .auth-error { position: absolute; top: 46px; right: 0; width: 280px; padding: 10px; border: 1px solid var(--tone-danger); border-radius: var(--radius-control); background: var(--surface); color: var(--tone-danger); z-index: 2; font-size: var(--text-13); }
 :where(a, button, input, select, textarea):focus-visible { outline: 2px solid var(--text); outline-offset: 3px; }
 @media (max-width: 640px) { .account-name { display: none; } .auth-button { min-height: 37px; padding-inline: 11px; font-size: var(--text-12); } .auth-panel { padding: 25px; } }
-@media (prefers-reduced-motion: reduce) { .auth-button { transition: none; } }

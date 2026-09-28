@@ -53,7 +53,7 @@ export function BuyCreditsContent({ plans, copy, pricing, brand, locale }: { pla
 
   return <div className={`buy-credits-content${period === 'once' ? ' packs' : ''}`}>
     {annual && <div className="buy-credits-offer"><span><Sparkles size={16}/>{brand} · {pricing.save.replace('{percent}', String(savings))}</span><strong>{savings}% OFF</strong><small>{pricing.yearlyHint}</small></div>}
-    <div className="buy-credits-tabs" role="group" aria-label={copy.plansTitle}>{(['month', 'year', 'once'] as const).map(value => <button key={value} type="button" aria-pressed={period === value} className={period === value ? 'selected' : ''} onClick={() => changePeriod(value)}>{value === 'month' ? pricing.monthly : value === 'year' ? pricing.yearly : pricing.packs}{value === 'year' && annual && <small>-{savings}%</small>}</button>)}</div>
+    <div className="buy-credits-tabs ui-segmented" role="group" aria-label={copy.plansTitle}>{(['month', 'year', 'once'] as const).map(value => <button key={value} type="button" aria-pressed={period === value} className={period === value ? 'selected' : ''} onClick={() => changePeriod(value)}>{value === 'month' ? pricing.monthly : value === 'year' ? pricing.yearly : pricing.packs}{value === 'year' && annual && <small>-{savings}%</small>}</button>)}</div>
     {period !== 'once' && <p className="buy-credits-cancel"><Check size={16}/>{copy.cancelAnytime}</p>}
     <div className="buy-credits-columns">
       <section className="buy-credits-included" aria-labelledby="buy-credits-included-heading"><h3 id="buy-credits-included-heading">{copy.whatsIncluded}</h3>

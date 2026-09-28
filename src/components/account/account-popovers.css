@@ -44,9 +44,9 @@
 .account-invite-grid{align-items:start}
 .account-referral{display:flex;align-items:center;min-width:0;background:var(--dialog-inset);border:1px solid var(--dialog-border);border-radius:var(--radius-control-lg);padding:5px;gap:5px}
 .account-referral span{min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 8px;color:var(--dialog-accent);font-size:var(--text-12)}
-.account-referral button{border:0;background:#7956e8;color:white;border-radius:6px;padding:8px;white-space:nowrap;display:flex;gap:4px;align-items:center;font-size:var(--text-12);cursor:pointer}
+.account-referral button{--control-border-width:0px;--control-bg:var(--account-accent);--control-text:var(--video-on-media);--control-radius:var(--radius-control);padding:8px;white-space:nowrap;display:flex;gap:4px;align-items:center;font-size:var(--text-12)}
 .account-stats{display:flex;gap:10px}
-.account-stats span{flex:1;background:var(--dialog-elevated);padding:12px;border-radius:8px;color:var(--dialog-muted);font-size:var(--text-12)}
+.account-stats span{flex:1;background:var(--dialog-elevated);padding:12px;border-radius:var(--radius-control-md);color:var(--dialog-muted);font-size:var(--text-12)}
 .account-stats b{display:block;color:var(--dialog-text);font-size:24px}
 .account-contact-overlay{backdrop-filter:none}
 .account-dialog.account-contact-dialog{width:min(448px,100%);border-radius:var(--radius-control-lg);background:var(--nav-bg);color:var(--nav-text);border-color:var(--line)}
@@ -66,7 +66,7 @@ html[data-mode="dark"] .account-contact-dialog .account-close,html[data-mode="au
 .account-feedback-body a:hover{background:var(--purchase-line)}
 .account-toast{position:fixed;z-index:300;bottom:24px;right:22px;background:var(--dialog-elevated);color:var(--dialog-text);border:1px solid #aa91d9;border-radius:var(--radius-control-lg);padding:11px 14px;display:flex;gap:10px;align-items:center}
 .account-toast button{background:none;border:0;color:inherit;display:grid;place-items:center;cursor:pointer}
-.account-error,.account-message{margin:0 34px 20px;padding:10px 12px;border-radius:8px;font-size:var(--text-13);color:var(--dialog-message-text);background:var(--dialog-message-bg)}
+.account-error,.account-message{margin:0 34px 20px;padding:10px 12px;border-radius:var(--radius-control-md);font-size:var(--text-13);color:var(--dialog-message-text);background:var(--dialog-message-bg)}
 .account-error{color:var(--dialog-error-text);background:var(--dialog-error-bg)}
 .account-controls :where(button,a):focus-visible,.account-dialog :where(button,a,input,summary):focus-visible{outline:2px solid #e7c56a;outline-offset:3px}
 @media(max-width:600px){
@@ -89,7 +89,7 @@ html[data-mode="dark"] .account-contact-dialog .account-close,html[data-mode="au
 .account-checkin-dialog .account-close{right:16px;top:16px;background:var(--dialog-inset);color:var(--dialog-text);width:36px;height:36px}
 /* The 32px hairline grid is source-observed in the check-in hero, not a generic page background. impeccable-disable-next-line codex-grid-background */
 .account-checkin-hero{min-height:174px;padding:36px;display:flex;align-items:flex-start;gap:24px;background:radial-gradient(circle at 95% 5%,var(--dialog-hero-glow),transparent 35%),linear-gradient(90deg,var(--dialog-grid) 1px,transparent 1px),linear-gradient(var(--dialog-grid) 1px,transparent 1px),var(--dialog-canvas);background-size:auto,32px 32px,32px 32px,auto;border-bottom:1px solid var(--dialog-border)}
-.account-hero-icon{width:56px;height:56px;border-radius:15px;background:var(--account-accent);color:#111212;display:grid;place-items:center;flex:none;box-shadow:4px 4px 0 var(--dialog-disabled);transform:rotate(-4deg)}
+.account-hero-icon{width:56px;height:56px;border-radius:var(--radius-card-xl);background:var(--account-accent);color:#111212;display:grid;place-items:center;flex:none;box-shadow:4px 4px 0 var(--dialog-disabled);transform:rotate(-4deg)}
 .account-hero-icon svg{width:26px;height:26px}
 .account-kicker{display:flex;align-items:center;gap:8px;font-size:var(--text-12);font-weight:var(--weight-black);letter-spacing:.18em;text-transform:uppercase;color:var(--dialog-accent)}
 .account-checkin-hero .account-kicker:before{content:'';width:8px;height:8px;background:#ff6b4a;border-radius:50%}

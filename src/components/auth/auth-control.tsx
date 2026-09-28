@@ -32,12 +32,12 @@ export function AuthControl({ copy, methods, userName, userEmail, callbackURL, l
     finally { setPending(false); }
   }
 
-  if (!userName) return authDialog ? <div className={variant === 'avatar' ? 'auth-actions replica-auth' : 'auth-actions'}>{variant === 'avatar' ? <button className="replica-avatar" type="button" aria-label={copy.login} aria-haspopup="dialog" onClick={() => void authDialog.openAuth({ source: 'navigation', intent: 'stay', showImmediately: true })}><UserRound size={19} aria-hidden="true" /></button> : <button className="auth-button" type="button" onClick={() => void authDialog.openAuth({ source: 'navigation', intent: 'stay' })}>{copy.login}</button>}</div> : <SignInCard copy={copy} methods={methods} callbackURL={callbackURL} locale={locale} inviteRequired={inviteRequired} variant={variant} />;
+  if (!userName) return authDialog ? <div className={variant === 'avatar' ? 'auth-actions replica-auth' : 'auth-actions'}>{variant === 'avatar' ? <button className="replica-avatar" type="button" aria-label={copy.login} aria-haspopup="dialog" onClick={() => void authDialog.openAuth({ source: 'navigation', intent: 'stay', showImmediately: true })}><UserRound size={19} aria-hidden="true" /></button> : <button className="ui-button-solid auth-button" type="button" onClick={() => void authDialog.openAuth({ source: 'navigation', intent: 'stay' })}>{copy.login}</button>}</div> : <SignInCard copy={copy} methods={methods} callbackURL={callbackURL} locale={locale} inviteRequired={inviteRequired} variant={variant} />;
   return <div className={variant === 'avatar' ? 'auth-actions replica-auth' : 'auth-actions'} ref={area}>
     {variant === 'avatar' ? <>
       <AvatarTrigger buttonRef={trigger} name={userName} label={copy.name} open={open} onClick={() => setOpen(value => !value)} />
       {open && <AccountPopoverCard role="menu" label={copy.name} className="account-menu" header={<ProfileHeader name={userName} email={userEmail} />} rows={inviteGateRows(accountLinks, copy.logout, () => void signOut(), pending)} />}
-    </> : <><span className="account-name" title={userName}>{userName}</span><button className="auth-button" type="button" disabled={pending} onClick={() => void signOut()}>{copy.logout}</button></>}
+    </> : <><span className="account-name" title={userName}>{userName}</span><button className="ui-button-solid auth-button" type="button" disabled={pending} onClick={() => void signOut()}>{copy.logout}</button></>}
     {error && <p className="auth-error" role="alert">{error}</p>}
   </div>;
 }

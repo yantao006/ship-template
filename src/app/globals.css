@@ -16,7 +16,7 @@ a { color: inherit; }
 .public-shell { display: flex; flex-direction: column; min-height: 100dvh; }
 .site-main { display: flex; flex: 1; flex-direction: column; min-width: 0; padding-top: 56px; }
 .site-main > :is(.site-shell, .workspace-page) { flex: 1; }
-.site-shell { background: radial-gradient(circle at 78% 52%, #edf0f4, var(--bg) 53%); }
+.site-shell { background: var(--bg); }
 .site-main:has(> .commercial-license-page) + .site-footer { border-top: 0; background: var(--bg); }
 .site-footer { padding: 64px clamp(20px, 5vw, 72px) 28px; border-top: 1px solid var(--line); background: var(--surface); color: var(--muted); font-size: 14px; }
 .site-footer-inner { width: min(100%, 1200px); margin-inline: auto; }
