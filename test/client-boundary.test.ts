@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
-import { join } from 'node:path';
+import { dirname, join, relative, resolve } from 'node:path';
 import test from 'node:test';
+import ts from 'typescript';
 import messages from '../site/messages';
 import { browserNavCopy } from '../src/lib/browser-nav-copy';
 import { requestJson } from '../src/lib/json-request';
@@ -21,6 +22,33 @@ test('client entries do not value-import site configuration or server route copy
     const source = readFileSync(path, 'utf8');
     assert.doesNotMatch(source, /import\s+(?!type\b)[^;]+from\s+['"]@\/lib\/config['"]/, path);
     assert.doesNotMatch(source, /from\s+['"]@\/lib\/(routes|plan-copy)['"]/, path);
+  }
+});
+
+test('modules do not import app routes or UI components', () => {
+  const forbidden = (path: string, specifier: string) => {
+    const target = specifier.startsWith('@/')
+      ? join('src', specifier.slice(2))
+      : specifier.startsWith('.') ? resolve(dirname(path), specifier) : null;
+    return target !== null && /^(?:app|components)(?:\/|$)/.test(relative('src', target));
+  };
+  assert.equal(forbidden('src/modules/invites/service.ts', '@/components/example'), true);
+  assert.equal(forbidden('src/modules/invites/service.ts', '../../app/example'), true);
+  assert.equal(forbidden('src/modules/invites/service.ts', '../../lib/config'), false);
+
+  for (const path of sources.filter(path => path.startsWith('src/modules/'))) {
+    const file = ts.createSourceFile(path, readFileSync(path, 'utf8'), ts.ScriptTarget.Latest, true);
+    const visit = (node: ts.Node) => {
+      let specifier: string | undefined;
+      if ((ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) && node.moduleSpecifier && ts.isStringLiteral(node.moduleSpecifier)) {
+        specifier = node.moduleSpecifier.text;
+      } else if (ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword && node.arguments.length === 1 && ts.isStringLiteral(node.arguments[0])) {
+        specifier = node.arguments[0].text;
+      }
+      if (specifier) assert.equal(forbidden(path, specifier), false, `${path} imports ${specifier}`);
+      ts.forEachChild(node, visit);
+    };
+    visit(file);
   }
 });
 

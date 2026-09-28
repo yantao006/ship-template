@@ -1,7 +1,7 @@
 import { site, auth } from '@/lib/config';
 import { routePath } from '@/lib/routes';
 import { workerEnv } from '@/lib/env';
-import { hasInvite } from '@/lib/invites';
+import { hasInvite } from '@/modules/invites/service';
 import { planById, startCheckout } from '@/lib/payments';
 import { productForPlan } from '@/lib/waffo-products';
 import { browserWriteAllowed, readJson, readSession } from '@/lib/request-context';

@@ -1,6 +1,6 @@
 import { auth } from '@/lib/config';
 import { workerEnv } from '@/lib/env';
-import { createInvite, isInviteAdmin, listInvites, revokeInvite, validInviteCode } from '@/lib/invites';
+import { createInvite, isInviteAdmin, listInvites, revokeInvite, validInviteCode } from '@/modules/invites/service';
 import { browserWriteAllowed, readJson, readSession } from '@/lib/request-context';
 
 async function admin(request: Request) {

@@ -6,7 +6,7 @@ import { createAuth, type AuthSettings } from '../src/lib/auth';
 import productAuth from '../site/auth.config';
 import secondSiteAuth from '../fixtures/second-site/site/auth.config';
 import { allowedDesktopTarget, handoffURL } from '../src/lib/desktop-auth';
-import { createInvite, hasInvite, listInvites, normalizeInviteCode, redeemInvite, revokeInvite, validateInvite, validInviteCode } from '../src/lib/invites';
+import { createInvite, hasInvite, listInvites, normalizeInviteCode, redeemInvite, revokeInvite, validateInvite, validInviteCode } from '../src/modules/invites/service';
 import type { Env } from '../src/lib/env';
 
 const secret = 'this-is-only-a-local-test-secret-long-enough';

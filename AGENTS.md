@@ -33,7 +33,7 @@ The current example has site-local accounts, invitation primitives, configurable
 | Web and HTTP | `src/app/`, Next.js App Router | Pages, metadata, better-auth handler, and request/response endpoints. |
 | UI | `src/components/`, React server/client components, CSS, Motion, Lucide and React Icons | Homepage and workspace composition, shared navigation, signed-in account cards, sign-in, invitation, language, and desktop interaction. |
 | Authentication | `src/lib/auth.ts`, `src/lib/auth-schema.ts`, better-auth, Drizzle on D1 | Sessions and accounts from this site's DB; enabled methods from `site/auth.config.ts`. |
-| Access control | `src/lib/request-context.ts`, `src/lib/invites.ts`, `src/lib/turnstile.ts`, `src/lib/desktop-auth.ts`, D1 and Turnstile HTTP API | Centralized request session, browser write guard, JSON parsing and account snapshot; invitation eligibility, optional sign-in verification, and allow-listed app handoff. |
+| Access control | `src/lib/request-context.ts`, `src/modules/invites/service.ts`, `src/lib/turnstile.ts`, `src/lib/desktop-auth.ts`, D1 and Turnstile HTTP API | Centralized request session, browser write guard, JSON parsing and account snapshot; invitation eligibility, optional sign-in verification, and allow-listed app handoff. |
 | Credits | `src/lib/ledger.ts`, `src/lib/credit-history.ts`, native D1 statements and batches | Atomic grants, reservations, allocation, refund, balance, and bounded account history. |
 | Email | `src/lib/email.ts`, `src/lib/notifications.ts`, Cloudflare Email or Resend | One `EmailProvider` interface for message delivery and application notification copy. |
 | Video and payments | `src/components/video-tool/`, `src/lib/mock-services.ts`, `src/lib/waffo.ts`, `src/lib/waffo-products.ts`, `src/lib/payments.ts`, `src/lib/ledger.ts`, `video_task` | The landing tool previews a create payload from site config. Checkout selects a price- and period-matched test product from `WAFFO_PRODUCTS`; signed test callbacks must match before granting. |
@@ -138,7 +138,9 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │   ├── invites/                  # Invite redemption and administration views
 │   │   ├── styles/                   # Shared controls.css (via globals.css) and tags.css (via app layout)
 │   │   └── video-tool/               # Existing tool flat layout plus internal view-model.ts types
-│   └── lib/                          # Business logic, config exports, and integration seams
+│   ├── modules/invites/              # Invite business logic
+│   │   └── service.ts                # Invite eligibility, validation, redemption, admin match
+│   └── lib/                          # Other business logic, config exports, and integration seams
 │       ├── config.ts                 # Compiled choices, stable type re-exports and helpers
 │       ├── site-config-types.ts      # Site/auth/theme/database types without site-data imports
 │       ├── message-shape.ts          # Locale copy value-shape checker for symmetric key parity
@@ -159,7 +161,6 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │       ├── auth-schema.ts            # Drizzle mapping for better-auth D1 tables
 │       ├── auth.ts                   # Better-auth construction, origin checks, signup grant
 │       ├── request-context.ts        # Session, browser write guard, JSON reader and account snapshot
-│       ├── invites.ts                # Invite eligibility, validation, redemption, admin match
 │       ├── ledger.ts                 # Atomic credits, source registry, paid-source policy and labels
 │       ├── credit-history.ts         # Bounded user credit-lot query
 │       ├── account-page-history.ts   # Bounded user credit-entry timeline with grant provenance
@@ -181,7 +182,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
     ├── account-popover-card.test.ts  # Row badges, dividers, shared profile and invite-gate destinations
     ├── account-dialogs.test.ts       # Six dialog bodies, shared hero and route destinations
     ├── checkin-invite.test.ts        # Check-in invite payload, networks, and separate invite card
-    ├── client-boundary.test.ts       # Client imports, singleton auth, localized props guards
+    ├── client-boundary.test.ts       # Client/module imports, singleton auth, localized props guards
     ├── auth-integration.test.ts      # Local better-auth signup and idempotent credits
     ├── auth-options.test.ts          # Provider switches, invites, desktop handoff
     ├── password-reset.test.ts        # Reset switch, mailed link, and reset page
@@ -206,10 +207,11 @@ Next.js server components such as `src/components/workspace/workspace-content.ts
 
 ## Module system
 
-The current code uses responsibility-based files in `src/lib/`, not a formal plugin loader or `src/modules/` directory.
+The code uses responsibility-based files in `src/lib/` and `src/modules/invites/service.ts`, not a formal plugin loader.
+New invite business belongs in `src/modules/invites`; modules must not import from `src/components` or `src/app`.
 `src/lib/config.ts` exports site choices; library functions take `Env`, a D1 handle, or an adapter as input, so business operations can be reused by HTTP handlers and Worker events.
 App Router endpoints own request parsing, session and origin checks, HTTP status, and response serialization; library functions own reusable decisions and persistence.
-`src/lib/auth.ts` composes better-auth, `src/lib/invites.ts` and `src/lib/ledger.ts` around signup eligibility, while `src/lib/email.ts` demonstrates a provider interface selected from site configuration.
+`src/lib/auth.ts` composes better-auth, `src/modules/invites/service.ts` and `src/lib/ledger.ts` around signup eligibility, while `src/lib/email.ts` demonstrates a provider interface selected from site configuration.
 `src/lib/request-context.ts` owns server session lookup, browser-write origin and cross-site checks, JSON reads, and the invited account snapshot with its read-time signup grant and balance; signed payment callbacks remain server-to-server.
 Self-deletion uses `readSession` without the invite gate so an uninvited account can still leave; it does not invoke the provider's signup grant while deleting.
 Presentation composition lives in `src/components/`, and external vendor response shapes can be translated inside future video or checkout adapters before reaching those components.
@@ -238,7 +240,7 @@ On each request, production login accepts the Worker `SITE_URL` only when it equ
 `src/app/api/auth/[...all]/route.ts` wraps signup with invite validation, limits the email OTP plugin to sign-in codes, and applies optional sign-in Turnstile verification before delegating to better-auth.
 `ensureSignupCredits` checks invitation eligibility and grants a signup lot with the user ID as its stable source ID; when email verification is enabled, it waits until the emailed link marks the account verified.
 `src/app/api/invites/redeem/route.ts` uses the shared session and browser-write guard, redeems the code through an atomic D1 batch, and grants the eligible user credits.
-`src/lib/invites.ts` owns invite code format, normalization, inventory reads, creation, and revocation.
+`src/modules/invites/service.ts` owns invite code format, normalization, inventory reads, creation, and revocation.
 `src/components/shell/site-shell.tsx` mounts one `AuthDialogProvider` for public pages; `auth/auth-control.tsx` triggers the live source-inspired card in `auth/minimax-auth-card.tsx`.
 Below 768px the shared card uses the existing bottom drawer; email sign-in sends a mailed six-digit code and replaces the visible card with a wide Auth-6 dialog only after a successful send; the back action restores the card while close exits sign-in, and successful code sign-in follows the existing full-page reload.
 Outside the shared shell, including the standalone desktop callback, `auth-control.tsx` opens the same `minimax-auth-card.tsx` and Auth-6 email-code flow instead of a password sign-in form.
@@ -346,7 +348,7 @@ Changes to these paths receive focused tests in `test/` and the verification com
 | `account_share` | User, public URL, review status | Pending public share submissions, no automatic grant. |
 | `account_referral_code`, `account_referral_alias`, `account_referral` | One 8-character lowercase display code per user, optional previous 32-hex alias, and one claim per referred user | Idempotent referral grants; the next activity load replaces a 32-hex display code and keeps that code claimable. |
 
-`src/lib/auth.ts` uses Drizzle's D1 adapter for the four auth tables, while `src/lib/ledger.ts` and `src/lib/invites.ts` use prepared native D1 statements and batches for write-side invariants.
+`src/lib/auth.ts` uses Drizzle's D1 adapter for the four auth tables, while `src/lib/ledger.ts` and `src/modules/invites/service.ts` use prepared native D1 statements and batches for write-side invariants.
 `src/lib/account-rewards.ts` scopes reward reads and writes by user, owns the referral-code format, throws coded account reward errors, and grants check-in/referral credits through the ledger.
 Display codes are 8 lowercase alphanumeric characters; claim lookup also accepts an already issued 32-hex code.
 `src/lib/credit-history.ts` limits history reads to 100 lots for the signed-in user, and `src/app/api/credits/balance/route.ts` validates the session and invite gate before reading a balance.

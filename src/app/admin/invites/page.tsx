@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { readSession } from '@/lib/request-context';
 import { auth } from '@/lib/config';
 import { workerEnv } from '@/lib/env';
-import { isInviteAdmin } from '@/lib/invites';
+import { isInviteAdmin } from '@/modules/invites/service';
 import { InviteAdmin } from '@/components/invites/invite-admin';
 import { messages, site } from '@/lib/config';
 

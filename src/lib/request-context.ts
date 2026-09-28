@@ -1,7 +1,7 @@
 import { createAuth, ensureSignupCredits } from './auth';
 import { isAllowedBrowserOrigin } from './config';
 import type { Env } from './env';
-import { hasInvite } from './invites';
+import { hasInvite } from '../modules/invites/service';
 import { balance } from './ledger';
 
 /** Session lookup for both HTTP handlers and server-rendered entries. */
