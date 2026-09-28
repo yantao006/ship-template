@@ -38,6 +38,11 @@ test('all seven account dialogs retain their accessible shell and destination co
   assert.match(contact, /class="account-body account-contact"/);
   assert.doesNotMatch(contact, /Questions about your account or payment/);
   assert.match(render('invoices'), /mailto:/);
+  const css = readFileSync('src/components/blocks/account-popovers.css', 'utf8');
+  assert.match(css, /\.account-contact-overlay\{backdrop-filter:none\}/);
+  for (const id of ['account', 'subscription', 'invoices']) {
+    assert.match(css, new RegExp(`\\.account-menu \\.account-row-${id} \\.account-row-icon\\{color:var\\(--account-tone-`));
+  }
 });
 
 test('invite card uses the official claim link, true empty data and configured rewards', () => {

@@ -52,11 +52,13 @@
 .account-stats{display:flex;gap:10px}
 .account-stats span{flex:1;background:var(--dialog-elevated);padding:12px;border-radius:8px;color:var(--dialog-muted);font-size:12px}
 .account-stats b{display:block;color:var(--dialog-text);font-size:24px}
+.account-contact-overlay{backdrop-filter:none}
 .account-dialog.account-contact-dialog{width:min(448px,100%);border-radius:9px;background:var(--nav-bg);color:var(--nav-text);border-color:var(--line);animation:account-contact-enter .2s ease-out both}
 .account-contact-dialog>h2{background:none;border:0;padding:24px 60px 0 24px;font-size:18px;font-weight:650;letter-spacing:-.02em;line-height:20px}
 .account-contact-dialog .account-close{right:16px;top:16px;width:36px;height:36px;background:color-mix(in srgb,var(--nav-text) 75%,transparent);color:var(--nav-bg);border:2px solid var(--nav-bg);outline:2px solid var(--nav-muted);outline-offset:0}
 .account-contact-dialog .account-close:hover{background:var(--nav-text)}
-.account-contact{justify-items:center;text-align:center;padding:34px 24px 38px;gap:16px}
+html[data-mode="dark"] .account-contact-dialog .account-close,html[data-mode="auto"][data-default-mode="dark"] .account-contact-dialog .account-close{background:var(--nav-bg);color:var(--nav-text);border-color:var(--nav-muted)}
+.account-contact{justify-items:center;text-align:center;padding:34px 24px 43px;gap:16px}
 .account-contact>svg{color:var(--nav-text)}
 .account-contact p{max-width:400px;color:var(--nav-muted);font-size:16px;line-height:24px;margin:0}
 .account-contact a{color:var(--nav-text);font-size:18px;font-weight:700;text-decoration:none;overflow-wrap:anywhere}
