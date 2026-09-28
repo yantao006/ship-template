@@ -127,11 +127,13 @@ test('one shared Auth-4 dialog uses server session confirmation and does not rep
   assert.match(source('src/components/auth/auth-control.tsx'), /className="replica-avatar"[\s\S]*?showImmediately: true/);
   assert.match(provider, /const immediateAttempt = options\.showImmediately \? showDialog\(\) : null;[\s\S]*await serverHasSession\(\)/);
   assert.match(provider, /attempt\.current !== immediateAttempt\) return false/);
-  assert.match(auth4, /authClient\.emailOtp\.sendVerificationOtp/);
+  assert.match(auth4, /sendSignInCode\(email\)/);
+  assert.match(source('src/components/auth/flows.ts'), /authClient\.emailOtp\.sendVerificationOtp/);
   assert.match(auth4, /authClient\.signIn\.emailOtp/);
   assert.match(source('src/app/api/auth/[...all]/route.ts'), /parsed\.body\.type !== 'sign-in'/);
   assert.doesNotMatch(auth4, /authClient\.signIn\.email\(/);
-  assert.match(auth4, /authClient\.signIn\.social/);
+  assert.match(auth4, /socialSignIn\(provider, callbackURL\)/);
+  assert.match(source('src/components/auth/flows.ts'), /authClient\.signIn\.social/);
   assert.doesNotMatch(auth4, /console\.log|placeholder\.svg|SSO enforced/);
   assert.match(pricing, /result\.status === 401[\s\S]*openAuth/);
   assert.doesNotMatch(provider, /requestJson\('\/api\/checkout'/);

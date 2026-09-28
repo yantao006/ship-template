@@ -7,7 +7,7 @@ import Link from "next/link";
 import { ArrowRight, Eye, EyeOff, ShieldCheck } from "lucide-react";
 import { motion, useReducedMotion, type Variants } from "motion/react";
 import { authClient } from "@/lib/auth-client";
-import { requestJson } from "@/lib/json-request";
+import { redeemSignupInvite, sendPasswordReset, sendSignInCode, sendVerification, socialSignIn, validateSignupInvite } from '../flows';
 import { routePath } from "@/lib/route-paths";
 import type { AuthSettings } from "@/lib/auth";
 import type { Copy } from "@/components/auth/sign-in-card";
@@ -60,8 +60,8 @@ export function Auth4({ copy, brand, logo, supportEmail, methods, inviteRequired
     setError("");
     try {
       onOAuthStart?.();
-      const result = await authClient.signIn.social({ provider, callbackURL });
-      if (result.error) { onOAuthFailure?.(); setError(copy.socialFailed); }
+      const succeeded = await socialSignIn(provider, callbackURL);
+      if (!succeeded) { onOAuthFailure?.(); setError(copy.socialFailed); }
     } catch { onOAuthFailure?.(); setError(copy.socialFailed); }
     finally { setPending(false); }
   }
@@ -73,17 +73,17 @@ export function Auth4({ copy, brand, logo, supportEmail, methods, inviteRequired
     setError("");
     try {
       if (mode === "forgot") {
-        const result = await authClient.requestPasswordReset({ email: email.trim(), redirectTo: routePath(locale, "resetPassword") });
-        if (result.error) setError(copy.resetSendFailed);
+        const sent = await sendPasswordReset(email, routePath(locale, "resetPassword"));
+        if (!sent) setError(copy.resetSendFailed);
         else setNotice(copy.resetSent);
       } else if (mode === "verify") {
-        const result = await authClient.sendVerificationEmail({ email: email.trim(), callbackURL });
-        if (result.error) setError(copy.resendFailed);
+        const sent = await sendVerification(email, callbackURL);
+        if (!sent) setError(copy.resendFailed);
         else setNotice(copy.verificationSent);
       } else if (mode === "sign-in") {
         if (emailStep === "email") {
-          const sent = await authClient.emailOtp.sendVerificationOtp({ email: email.trim(), type: "sign-in" });
-          if (sent.error) setError(copy.codeSendFailed);
+          const sent = await sendSignInCode(email);
+          if (!sent) setError(copy.codeSendFailed);
           else { setOtp(""); setEmailStep("code"); setNotice(copy.codeSent); }
         } else {
           if (!/^\d{6}$/.test(otp)) { setError(copy.codeInvalid); return; }
@@ -92,19 +92,16 @@ export function Auth4({ copy, brand, logo, supportEmail, methods, inviteRequired
           else await onAuthenticated('email-code');
         }
       } else {
-        const code = inviteCode.trim().toUpperCase();
-        if (mode === "sign-up" && inviteRequired) {
-          const validation = await requestJson("/api/invites/validate", { code });
-          if (!validation.ok || !(await validation.json() as { valid: boolean }).valid) { setError(copy.inviteInvalid); return; }
-        }
+        const { code, valid } = inviteRequired ? await validateSignupInvite(inviteCode) : { code: inviteCode.trim().toUpperCase(), valid: true };
+        if (!valid) { setError(copy.inviteInvalid); return; }
         const result = await authClient.signUp.email({ email: email.trim(), password, name: name.trim(), ...(needsVerification ? { callbackURL } : {}), ...(inviteRequired ? { inviteCode: code } : {}) } as Parameters<typeof authClient.signUp.email>[0]);
         if (result.error) setError(result.error.message ?? copy.authFailed);
         else if (needsVerification) {
           switchMode("verify"); setNotice(copy.verificationSent);
         } else {
           if (inviteRequired) {
-            const redeemed = await requestJson("/api/invites/redeem", { code });
-            if (!redeemed.ok) { setError(copy.createdButInviteFailed); return; }
+            const redeemed = await redeemSignupInvite(code);
+            if (!redeemed) { setError(copy.createdButInviteFailed); return; }
           }
           await onAuthenticated('sign-up');
         }
@@ -130,7 +127,7 @@ export function Auth4({ copy, brand, logo, supportEmail, methods, inviteRequired
           </motion.div>
           {mode === "verify" ? <motion.div variants={item} className="space-y-4 text-sm">
             <p role="status">{notice} {email}</p><p>{copy.verifyHint}</p>
-            <button type="button" disabled={pending} className={oauthClasses} onClick={async () => { if (pending) return; setPending(true); try { const result = await authClient.sendVerificationEmail({ email: email.trim(), callbackURL }); if (result.error) setError(copy.resendFailed); else setNotice(copy.verificationSent); } catch { setError(copy.resendFailed); } finally { setPending(false); } }}>{pending ? copy.wait : copy.resendVerification}</button>
+            <button type="button" disabled={pending} className={oauthClasses} onClick={async () => { if (pending) return; setPending(true); try { const sent = await sendVerification(email, callbackURL); if (!sent) setError(copy.resendFailed); else setNotice(copy.verificationSent); } catch { setError(copy.resendFailed); } finally { setPending(false); } }}>{pending ? copy.wait : copy.resendVerification}</button>
             <Link href={`${routePath(locale, "verifyEmail")}?email=${encodeURIComponent(email)}`} className={linkClasses}>{copy.verifyLink}</Link>
             <button type="button" className={linkClasses} onClick={() => switchMode("sign-in")}>{copy.signIn}</button>
           </motion.div> : <>
