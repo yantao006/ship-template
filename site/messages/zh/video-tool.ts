@@ -1,4 +1,4 @@
-import { videoTemplatesZh } from '../video-templates-zh';
+import { videoTemplatesZh } from './video-templates';
 
 export default {
     title: '从一条片子开始', description: '预览这次请求。目前不会生成，也不会扣积分。',

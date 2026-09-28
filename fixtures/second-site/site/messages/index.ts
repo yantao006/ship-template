@@ -1,15 +1,9 @@
 import en from './en';
 import zh from './zh';
-import type { messages } from '../../../../src/lib/config';
+import type { MessageShape } from '../../../../src/lib/message-shape';
 
-type StringShape<T> = { [K in keyof T]: T[K] extends string ? string : StringShape<T[K]> };
-const checkedZh: StringShape<typeof en> = zh;
-// Plan IDs and pricing feature keys are site-local, so only their common pricing copy must match.
-type ReferenceMessages = (typeof messages)['en'];
-type SharedMessages = Omit<ReferenceMessages, 'planCopy' | 'pricing'> & {
-  pricing: Omit<ReferenceMessages['pricing'], 'planFeatures'>;
-};
-const checkedEn: StringShape<SharedMessages> = en;
+const checkedZh: MessageShape<typeof en> = zh;
+const checkedEn: MessageShape<typeof zh> = en;
 void checkedZh;
 void checkedEn;
 

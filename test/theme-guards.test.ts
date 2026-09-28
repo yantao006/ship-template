@@ -18,7 +18,7 @@ const legacyColors: Record<string, string> = {
 };
 
 const literalAllowlist = new Set([
-  'site/theme.config.ts',
+  ...['foundation', 'chrome', 'auth-card', 'dialog', 'video-tool', 'pricing', 'purchase', 'mail'].map(name => `site/theme/${name}.ts`),
   'site/video-tool.config.ts', // Unmigrated configured icons.
   ...Object.keys(legacyColors),
   'src/components/blocks/account-popovers.tsx', // Unmigrated row colors.
@@ -162,7 +162,7 @@ test('literal colors remain confined to the documented 224-color baseline and al
       if (!literalAllowlist.has(path)) assert.equal(colors(read(path)).size, 0, `${path} introduces literal colors`);
     }
   }
-  const configured = colors(read('site/theme.config.ts'));
+  const configured = new Set([...literalAllowlist].filter(path => path.startsWith('site/theme/')).flatMap(path => [...colors(read(path))]));
   for (const value of colors(themeTokenStylesheet())) assert.ok(configured.has(value), `generated stylesheet has unconfigured color ${value}`);
 });
 

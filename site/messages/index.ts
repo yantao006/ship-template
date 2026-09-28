@@ -1,8 +1,11 @@
 import en from './en';
 import zh from './zh';
 
-type StringShape<T> = { [K in keyof T]: T[K] extends string ? string : StringShape<T[K]> };
-const checkedZh: StringShape<typeof en> = zh;
+import type { MessageShape } from '../../src/lib/message-shape';
+
+const checkedZh: MessageShape<typeof en> = zh;
+const checkedEn: MessageShape<typeof zh> = en;
 void checkedZh;
+void checkedEn;
 
 export default { en, zh };
