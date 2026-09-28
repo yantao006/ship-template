@@ -143,9 +143,9 @@ export function AuthDialogProvider({ children, ...auth }: Omit<MinimaxAuthCardPr
   return <Context.Provider value={{ openAuth, closeAuth }}>
     <div ref={shell} className="public-shell">{children}</div>
     {open && createPortal(<div ref={backdrop} className="auth4-overlay minimax-auth-overlay" aria-label={auth.copy.signIn}>
-      <div ref={dialog} role="dialog" aria-modal={!codeOpen} aria-hidden={codeOpen} inert={codeOpen} aria-labelledby="auth4-title" className="auth4-dialog minimax-auth-dialog">
+      <div ref={dialog} role="dialog" aria-modal={!codeOpen} hidden={codeOpen} inert={codeOpen} aria-labelledby="auth4-title" className="auth4-dialog minimax-auth-dialog">
         <button type="button" className="auth4-close" onClick={closeAuth} aria-label={auth.copy.close}><X size={20} /></button>
-        <MinimaxAuthCard {...auth} callbackURL={callbackURL} onAuthenticated={onAuthenticated} onOAuthStart={onOAuthStart} onOAuthFailure={onOAuthFailure} onCodeOpenChange={setCodeOpen} />
+        <MinimaxAuthCard {...auth} callbackURL={callbackURL} onAuthenticated={onAuthenticated} onOAuthStart={onOAuthStart} onOAuthFailure={onOAuthFailure} onCodeOpenChange={setCodeOpen} onCloseAuth={closeAuth} />
       </div>
     </div>, document.body)}
   </Context.Provider>;

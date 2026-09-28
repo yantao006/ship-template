@@ -20,9 +20,10 @@ export type MinimaxAuthCardProps = Auth4Props & {
   };
   signupCredits: number;
   onCodeOpenChange?: (open: boolean) => void;
+  onCloseAuth?: () => void;
 };
 
-export function MinimaxAuthCard({ copy, card, signupCredits, brand, logo, methods, inviteRequired, locale, callbackURL, onAuthenticated, onOAuthStart, onOAuthFailure, onCodeOpenChange }: MinimaxAuthCardProps) {
+export function MinimaxAuthCard({ copy, card, signupCredits, brand, logo, methods, inviteRequired, locale, callbackURL, onAuthenticated, onOAuthStart, onOAuthFailure, onCodeOpenChange, onCloseAuth }: MinimaxAuthCardProps) {
   const [mode, setMode] = useState<'sign-in' | 'sign-up' | 'forgot' | 'verify'>('sign-in');
   const [emailExpanded, setEmailExpanded] = useState(false);
   const [email, setEmail] = useState('');
@@ -166,6 +167,6 @@ export function MinimaxAuthCard({ copy, card, signupCredits, brand, logo, method
       </div>}
     </div>
   </div>
-  {codeOpen && <Auth6 email={sentEmail} copy={copy} onClose={closeCode} onDifferentEmail={changeEmail} onAuthenticated={() => onAuthenticated('email-code')} returnFocus={emailInput} />}
+  {codeOpen && <Auth6 email={sentEmail} copy={copy} onClose={onCloseAuth ?? closeCode} onDifferentEmail={changeEmail} onAuthenticated={() => onAuthenticated('email-code')} returnFocus={emailInput} />}
   </>;
 }

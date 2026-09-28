@@ -91,11 +91,12 @@ The expanded email input follows the OR divider in a column flow with 12px of se
 
 The preview alias now serves `minimax-auth-card.tsx` for the email entry and the licensed Auth-6 adaptation in `src/components/blocks/auth-6.tsx` for the six-digit code.
 The Auth-4 original and Google sign-in remain unchanged.
-A successful send opens the independent dialog, while verification and resend call the existing better-auth email OTP methods.
-An ego-browser unsigned desktop and 390px mobile run confirmed the dialog, copy, grouping, paste/auto-advance/backspace, resend cooldown, email-change return, and code-only close.
+A successful send hides the email card and opens the independent wide dialog; Use a different email restores the card, while closing the code dialog exits sign-in entirely.
+Verification and resend call the existing better-auth email OTP methods.
+An ego-browser unsigned desktop and 390px mobile run confirmed the wide dialog without the login card behind it, copy, grouping, paste/auto-advance/backspace, resend cooldown, email-change return, and full sign-in close.
 No received code was entered, so this browser run did not prove a completed sign-in.
 Desktop and mobile captures and the detailed checklist are in [email OTP dialog verification](docs/verification/email-otp-dialog/README.md).
-Worker version `19c78194-f102-4e77-8cb7-7ff8ca82f162` was uploaded to the existing preview alias without deploying to the live hostname.
+Worker version `a17c646e-c744-4eef-bc32-d351bfa22a0f` was uploaded to the existing preview alias without deploying to the live hostname.
 
 ## Site and secret boundaries
 

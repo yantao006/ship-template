@@ -101,7 +101,9 @@ test('one shared Auth-4 dialog uses server session confirmation and does not rep
   assert.match(shell, /<AuthDialogProvider/);
   assert.match(provider, /createPortal\(/);
   assert.match(provider, /active: open && !codeOpen/);
-  assert.match(provider, /inert=\{codeOpen\}/);
+  assert.match(provider, /hidden=\{codeOpen\} inert=\{codeOpen\}/);
+  assert.match(provider, /onCloseAuth=\{closeAuth\}/);
+  assert.match(source('src/components/blocks/minimax-auth-card.tsx'), /onClose=\{onCloseAuth \?\? closeCode\}/);
   assert.match(provider, /\/api\/auth\/get-session/);
   assert.match(provider, /if \(!\(await serverHasSession\(\)\)\)/);
   assert.match(auth4, /authClient\.emailOtp\.sendVerificationOtp/);

@@ -4,23 +4,24 @@ Preview alias:
 
 https://popovers-awesomejev-test.yantao006.workers.dev/en
 
-Worker version: `19c78194-f102-4e77-8cb7-7ff8ca82f162`.
-Uploaded using `pnpm cf:build` and `pnpm exec wrangler versions upload --preview-alias popovers --message otp-dialog`, not deployed to production.
+Worker version: `a17c646e-c744-4eef-bc32-d351bfa22a0f`.
+Uploaded using `pnpm cf:build` and `pnpm exec wrangler versions upload --preview-alias popovers --message otp-wide-mobile`, not deployed to production.
 `SITE_URL` was not changed.
 
 ## Unsigned ego-browser run
 
 Opened Sign In and the email entry within the source-inspired card.
 Submitted an owner-controlled email address and waited for a successful send response before the separate dialog appeared.
-The code was not shown inside the email card.
+The email card disappears while the code dialog is open, leaving only the page behind the wide dialog.
 Confirmed the top-left Use a different email action, top-right close button, no diamond icon, Enter Verification Code, a separate stronger email line after Verification code sent to, Code expires in 15 minutes, grouped six fields with central divider, a disabled Verify & Sign In until six digits, and Didn't receive it? with Resend in Ns followed by Resend code.
-At 2548 × 1341 the dialog measured 420 × 471px; at 390 × 844 it measured 358 × 451px with no horizontal overflow.
+At 1440 × 900 the dialog measured 580 × 419px; at 390 × 844 it measured 358 × 306px with no horizontal overflow.
+Both measured widths exceed their heights.
 The desktop dialog used the existing dark auth-card panel and purple button token.
 Entered one digit to confirm focus advanced; Backspace on an empty field focused the previous field; pasted six digits to confirm all cells filled and the verify button enabled.
 Did not submit a real code.
 Clicked Use a different email and confirmed focus returned to the original editable email input with the code layer closed.
 Changed the email, sent a second code, waited for the 30-second cooldown and clicked Resend code; the cooldown restarted on successful resend.
-Clicked the close X and confirmed only the code layer closed while the email card remained open with the current address.
+Clicked the close X and confirmed the whole sign-in flow closed, with neither the code layer nor email card left open.
 
 Screenshots:
 
