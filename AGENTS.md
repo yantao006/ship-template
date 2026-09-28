@@ -244,7 +244,8 @@ On each request, production login accepts the Worker `SITE_URL` only when it equ
 `ensureSignupCredits` checks invitation eligibility and grants a signup lot with the user ID as its stable source ID; when email verification is enabled, it waits until the emailed link marks the account verified.
 `src/app/api/invites/redeem/route.ts` uses the shared session and browser-write guard, redeems the code through an atomic D1 batch, and grants the eligible user credits.
 `src/lib/invites.ts` owns invite code format, normalization, inventory reads, creation, and revocation.
-`src/components/site-shell.tsx` mounts one `AuthDialogProvider` for public pages; `auth-control.tsx` triggers the source-inspired copy in `blocks/minimax-auth-card.tsx` while licensed `blocks/auth-4.tsx` stays untouched.
+`src/components/site-shell.tsx` mounts one `AuthDialogProvider` for public pages and derives the account-menu display name from the email when Better Auth's email OTP creates a valid session with an empty name; a positive browser session probe never dismisses the guest avatar's card before the refreshed server header can render the account menu.
+`auth-control.tsx` triggers the source-inspired copy in `blocks/minimax-auth-card.tsx` while licensed `blocks/auth-4.tsx` stays untouched.
 Below 768px the shared card uses the existing bottom drawer; email sign-in sends a mailed six-digit code and replaces the visible card with a wide Auth-6 dialog only after a successful send; the back action restores the card while close exits sign-in, and successful code sign-in follows the existing full-page reload.
 The standalone desktop callback keeps `sign-in-card.tsx` as a fallback outside that shell.
 `src/lib/auth-client.ts` owns the browser auth client, and `src/lib/browser-nav-copy.ts` assembles navigation and auth copy without sending mail strings to client props.

@@ -60,8 +60,16 @@ test('email OTP signs in with a six-digit code in the form, consumes it once, an
     const signed = await post('sign-in/email-otp', { email: 'otp@example.com', otp: code });
     assert.equal(signed.status, 200);
     assert.match(signed.headers.get('set-cookie') ?? '', /better-auth\.session_token/);
-    const user = await db.prepare('SELECT id,email_verified FROM user WHERE email = ?').bind('otp@example.com').first<{ id: string; email_verified: number }>();
+    const cookie = signed.headers.get('set-cookie')?.split(';')[0];
+    assert.ok(cookie);
+    const sessionResponse = await auth.handler(new Request('http://localhost:3000/api/auth/get-session', { headers: { cookie } }));
+    const identity = await sessionResponse.json() as { session?: { id: string }; user?: { name: string; email: string } };
+    assert.ok(identity.session?.id);
+    assert.equal(identity.user?.name, '');
+    assert.equal(identity.user?.email, 'otp@example.com');
+    const user = await db.prepare('SELECT id,name,email_verified FROM user WHERE email = ?').bind('otp@example.com').first<{ id: string; name: string; email_verified: number }>();
     assert.ok(user?.id);
+    assert.equal(user.name, '');
     assert.equal(user.email_verified, 1);
     assert.equal(await balance(db, user.id), site.signupCredits);
     const replay = await post('sign-in/email-otp', { email: 'otp@example.com', otp: code });
