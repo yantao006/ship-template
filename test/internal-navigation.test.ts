@@ -13,12 +13,12 @@ test('dashboard and credits share a persistent layout with pathname-aware client
   assert.match(layout, /<WorkspaceShell[^>]+>\{children\}<\/WorkspaceShell>/);
   const sidebar = source('workspace/workspace-section-nav');
   assert.match(sidebar, /usePathname\(\)/);
-  assert.match(sidebar, /from 'next\/link'/);
-  assert.match(sidebar, /<Link key=\{link.id\}/);
+  assert.match(sidebar, /SidebarItem key=\{link.id\}/);
+  assert.match(readFileSync('src/components/ui/controls.tsx', 'utf8'), /from 'next\/link'/);
   assert.doesNotMatch(sidebar, /<a\b/);
   assert.match(source('workspace/workspace-shell'), /<WorkspaceSectionNav/);
   const content = source('workspace/workspace-content');
-  for (const destination of ['home', 'credits', 'pricing']) assert.match(content, new RegExp(`<Link href=\\{routePath\\(locale, '${destination}'\\)\\}`));
+  for (const destination of ['home', 'credits', 'pricing']) assert.match(content, new RegExp(`<Link [^>]*href=\\{routePath\\(locale, '${destination}'\\)\\}`));
   assert.doesNotMatch(content, /<a\b/);
 });
 

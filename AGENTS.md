@@ -11,7 +11,7 @@ The current example has site-local accounts, invitation primitives, configurable
 - **One language per file:** `site/messages/en.ts` and `site/messages/zh.ts` compose matching per-module message files in `site/messages/en/` and `site/messages/zh/`; locale-aware pages select one set at a time.
   `site/site.config.ts` owns language entries; `src/lib/routes.ts` owns server navigation metadata, while `src/lib/route-paths.ts` holds client-safe route paths.
 - **One navigation path per purpose:** the navigation has one language control and one sign-in entry; its sign-in card lists only the methods enabled in `site/auth.config.ts`.
-- **Theme owns color:** `site/theme.config.ts` assembles `site/theme/` foundation and region palettes; `src/lib/theme-tokens.ts` generates color and semantic spacing/type/radius/motion tokens in `src/app/layout.tsx`. `src/components/styles/controls.css`, imported by `globals.css`, owns shared navigation items, solid/outline buttons, inputs and entrance motion; feature CSS retains surface colors and layout.
+- **Theme owns color:** `site/theme.config.ts` assembles `site/theme/` foundation and region palettes; `src/lib/theme-tokens.ts` generates color and semantic spacing/type/radius/motion tokens in `src/app/layout.tsx`. `src/components/ui/controls.tsx` and `src/components/styles/controls.css`, imported by `globals.css`, own shared sidebar items, solid/outline buttons, inputs and dialog entrance motion; ordinary page layout lives in utility classes while feature CSS retains distinctive surface treatments.
   `src/lib/theme-mode.ts` owns the root mode transitions; the layout freezes the first page's default and the shared header toggles the root mode without resetting it on client navigation, while legacy CSS surfaces still await migration.
 - **Pages compose sections:** `src/components/home/sections/HomePage.tsx` orders six content sections; five remain empty scaffolds, and the video tool renders its existing implementation. `src/components/shell/site-shell.tsx` owns one persistent header, flexible `main.site-main`, footer, and shared source-inspired login dialog for home, pricing, dashboard, and credits.
 - **Long-running work is observable:** video generation uses an asynchronous task and progress flow, while the server validates costs and records credit movements in the ledger.
@@ -228,7 +228,7 @@ The middleware marks whether the first route uses the public shell; the root lay
 Header language changes use App Router navigation to preserve the document; `ReplicaNavigation` synchronizes `<html lang>` because the root layout persists across client-side transitions.
 `src/middleware.ts` forwards the route locale so the root layout sets matching `<html lang>` and metadata, including for the default-language `/` homepage.
 `SiteShell` mounts `shell/language-suggestion.tsx`, which compares the browser's preferred primary language with `site.languages`, uses suggested-language navigation copy, remembers a page/suggestion decision in local storage, and switches through `pathForLocale`.
-`src/app/globals.css` applies the tokens across marketing and workspace surfaces, and `.auth-panel` sets foreground with its surface background.
+`src/app/globals.css` keeps the public shell skeleton and login-card imports; `src/components/styles/controls.css` keeps the standalone auth fallback's `.auth-panel` foreground with its surface background.
 
 ### Authentication and eligibility
 

@@ -36,8 +36,8 @@ export function VerifyEmail({ locale, email: initialEmail, enabled, copy }: {
     <h1>{copy.verifyTitle}</h1>
     <p>{copy.verifyHint}</p>
     {enabled && <form onSubmit={resend}>
-      <label>{copy.emailLabel}<input type="email" autoComplete="email" required value={email} onChange={event => setEmail(event.target.value)} /></label>
-      <button className="auth-button" type="submit" disabled={pending}>{pending ? copy.wait : copy.resendVerification}</button>
+      <label>{copy.emailLabel}<input className="ui-input" type="email" autoComplete="email" required value={email} onChange={event => setEmail(event.target.value)} /></label>
+      <button className="ui-button-solid auth-button" type="submit" disabled={pending}>{pending ? copy.wait : copy.resendVerification}</button>
     </form>}
     {notice && <p role="status">{notice}</p>}
     {error && <p className="form-error" role="alert">{error}</p>}

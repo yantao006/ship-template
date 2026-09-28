@@ -1,37 +1,33 @@
 /* Shared navigation follows the reference site's compact fixed bar and anchored menus. */
-body:has(.replica-topbar) .site-shell:not(.pricing-experience) { background: #111113; }
-.replica-light body:has(.replica-topbar) .site-shell:not(.pricing-experience) { background: #fafafa; }
 .replica-topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 100; height: 56px; padding: 0 24px; display: flex; align-items: center; gap: 22px; background: var(--nav-bg); border-bottom: 1px solid var(--nav-line); color: var(--nav-text); }
-.replica-brand { display: inline-flex; align-items: center; gap: 9px; flex-shrink: 0; color: var(--nav-text); font-size: 24px; font-weight: 750; letter-spacing: -.7px; white-space: nowrap; text-decoration: none; }
+.replica-brand { display: inline-flex; align-items: center; gap: 9px; flex-shrink: 0; color: var(--nav-text); font-size: 24px; font-weight: var(--weight-heavy); letter-spacing: -.7px; white-space: nowrap; text-decoration: none; }
 .replica-brand img { width: 28px; height: 28px; object-fit: contain; }
 .replica-desktop-nav { display: flex; flex: 1; align-items: center; justify-content: center; gap: 32px; height: 100%; min-width: 0; }
 .replica-desktop-nav a { display: flex; align-items: center; height: 100%; position: relative; color: var(--nav-muted); font-size: 18px; font-weight: 500; padding: 0 12px; white-space: nowrap; text-decoration: none; transition: color .18s ease; }
 .replica-desktop-nav a:hover, .replica-desktop-nav a.active { color: var(--nav-text); }
 .replica-desktop-nav a.active::after { content: ''; position: absolute; bottom: 6px; left: 12px; right: 12px; height: 2px; background: currentColor; }
 .replica-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.replica-icon { width: 36px; height: 36px; border: 0; border-radius: 10px; background: none; color: var(--nav-muted); display: grid; place-items: center; cursor: pointer; }
+.replica-icon { width: 36px; height: 36px; border: 0; border-radius: var(--radius-card-sm); background: none; color: var(--nav-muted); display: grid; place-items: center; cursor: pointer; }
 .replica-icon:hover, .replica-icon.selected { background: var(--nav-hover); color: var(--nav-text); }
 .replica-action-wrap, .replica-auth { position: relative; }
-.replica-credits-pill { display: flex; align-items: center; gap: 7px; background: var(--pill-bg); color: var(--nav-text); border: 1px solid var(--pill-line); border-radius: 20px; height: 36px; padding: 0 12px; font-size: 14px; font-weight: 700; cursor: pointer; }
+.replica-credits-pill { display: flex; align-items: center; gap: 7px; background: var(--pill-bg); color: var(--nav-text); border: 1px solid var(--pill-line); border-radius: var(--radius-pill); height: 36px; padding: 0 12px; font-size: 14px; font-weight: 700; cursor: pointer; }
 .replica-credits-pill:hover { background: var(--pill-hover); }
-.replica-avatar { display: grid; place-items: center; width: 34px; height: 34px; border: 2px solid #ddd; border-radius: 50%; font-size: 12px; font-weight: 800; color: #fff; background: #292632; overflow: hidden; }
+.replica-avatar { display: grid; place-items: center; width: 34px; height: 34px; border: 2px solid var(--line); border-radius: 50%; font-size: var(--text-12); font-weight: var(--weight-heavy); color: var(--nav-text); background: var(--popover-bg); overflow: hidden; }
 .replica-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .replica-avatar-trigger { display: block; padding: 0; border: 0; border-radius: 50%; background: none; cursor: pointer; }
-.replica-avatar-trigger:hover .replica-avatar { border-color: #a178ff; }
+.replica-avatar-trigger:hover .replica-avatar { border-color: var(--account-accent); }
 .replica-avatar-trigger[aria-expanded=true] { box-shadow: 0 0 0 3px color-mix(in srgb, var(--account-tone-account-box) 27%, transparent); }
 /* The language menu and account cards share the same anchored popover shell. */
 .account-popover, .replica-popover { position: absolute; top: calc(100% + 9px); right: 0; z-index: 120; max-width: calc(100vw - 16px); max-height: calc(100dvh - 80px); background: linear-gradient(130deg,var(--popover-bg) 55%,var(--popover-end)); border: 1px solid var(--popover-border); border-radius: var(--radius-card); color: var(--text); box-shadow: 0 18px 48px color-mix(in srgb,var(--bg) 65%,transparent); --enter-duration: var(--duration-quick); --enter-offset: -6px; --enter-opacity: 0; transform-origin: top right; }
 .account-popover { width: 288px; overflow: auto; }
 .replica-popover { overflow: hidden; }
-.replica-language-menu { width: 165px; padding: 8px 6px; background: var(--language-bg); }
-.replica-language-menu button { width: 100%; height: 36px; border: 0; border-radius: 5px; background: none; color: var(--nav-muted); display: flex; align-items: center; text-align: left; font-size: 13px; gap: 10px; padding: 0 12px; cursor: pointer; }
-.replica-language-menu button:hover { background: var(--nav-hover); color: var(--text); }
-.replica-language-menu button.current { color: var(--text); font-weight: 600; }
+.replica-language-menu { width: 165px; padding: 8px 6px; background: var(--language-bg); --muted: var(--nav-muted); --hover: var(--nav-hover); --text: var(--nav-text); }
+.replica-language-menu button { width: 100%; height: 36px; border: 0; background: none; display: flex; align-items: center; text-align: left; gap: 10px; padding: 0 12px; cursor: pointer; }
 .replica-language-dot { width: 6px; height: 6px; border-radius: 50%; background: transparent; }
 .replica-language-menu .current .replica-language-dot { background: var(--language-dot); }
 .replica-avatar-large { width: 44px; height: 44px; flex-shrink: 0; }
 .replica-mobile-bottom { display: none; }
-.replica-topbar :where(a, button):focus-visible, .replica-mobile-bottom a:focus-visible { outline: 2px solid #e7c56a; outline-offset: 3px; }
+.replica-topbar :where(a, button):focus-visible, .replica-mobile-bottom a:focus-visible { outline: 2px solid var(--account-accent); outline-offset: 3px; }
 @media (max-width: 1100px) { .replica-desktop-nav { gap: 6px; } .replica-desktop-nav a { font-size: 15px; padding-inline: 8px; } }
 @media (max-width: 767px) {
   .replica-topbar { padding: 0 14px; gap: 8px; }
@@ -42,10 +38,10 @@ body:has(.replica-topbar) .site-shell:not(.pricing-experience) { background: #11
   .replica-icon { width: 30px; }
   .replica-credits-pill { padding: 0 8px; }
   .replica-avatar-trigger .replica-avatar { width: 30px; height: 30px; }
-  .replica-mobile-bottom { position: fixed; bottom: 0; left: 0; right: 0; z-index: 90; background: #17171c; border-top: 1px solid #34343a; border-radius: 20px 20px 0 0; padding: 9px 5px max(9px, env(safe-area-inset-bottom)); display: flex; justify-content: space-around; }
-  .replica-light .replica-mobile-bottom { background: #fff; border-color: #dedee3; }
-  .replica-mobile-bottom a { color: #aaa; display: grid; justify-items: center; align-content: center; gap: 4px; font-size: 10px; width: 25%; min-height: 43px; text-decoration: none; }
+  .replica-mobile-bottom { position: fixed; bottom: 0; left: 0; right: 0; z-index: 90; background: var(--nav-bg); border-top: 1px solid var(--nav-line); border-radius: 20px 20px 0 0; padding: 9px 5px max(9px, env(safe-area-inset-bottom)); display: flex; justify-content: space-around; }
+  .replica-light .replica-mobile-bottom { background: var(--nav-bg); border-color: var(--nav-line); }
+  .replica-mobile-bottom a { color: var(--nav-muted); display: grid; justify-items: center; align-content: center; gap: 4px; font-size: 10px; width: 25%; min-height: 43px; text-decoration: none; }
   .replica-mobile-bottom svg { width: 21px; height: 21px; }
-  .replica-mobile-bottom a.active { color: #a178ff; }
+  .replica-mobile-bottom a.active { color: var(--account-accent); }
 }
 @media (prefers-reduced-motion: reduce) { .account-popover, .replica-popover { animation: none; } .replica-desktop-nav a { transition: none; } }

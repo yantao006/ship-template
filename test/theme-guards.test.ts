@@ -65,12 +65,14 @@ test('light and dark palettes have the same six semantic keys', () => {
   assert.doesNotMatch(navigation, /dataset\.mode = 'auto'/);
   assert.match(layout, /<ThemeModeInitializer defaultMode=\{defaultMode\}/);
   assert.doesNotMatch(read('src/components/shell/theme-mode-initializer.tsx'), /querySelector|:has/);
-  const authPanel = read('src/app/globals.css').match(/\.auth-panel\s*\{([^}]+)\}/)?.[1];
+  const authPanel = read('src/components/styles/controls.css').match(/\.auth-panel\s*\{([^}]+)\}/)?.[1];
   assert.ok(authPanel);
   assert.match(authPanel, /background:\s*var\(--surface\)/);
   assert.match(authPanel, /color:\s*var\(--text\)/);
   const css = read('src/app/globals.css');
-  assert.match(css, /html:is\(\[data-mode="dark"\],[^}]+\.auth-panel \.auth-button \{ color: var\(--bg\); \}/);
+  assert.doesNotMatch(css, /\.auth-panel\s*\{/);
+  assert.match(read('src/components/styles/controls.css'), /\.auth-button \{[^}]*--control-text: var\(--bg\)/);
+  assert.match(read('src/components/auth/sign-in-card.tsx'), /ui-button-solid auth-button/);
   assert.match(css, /body \{[^}]*background: var\(--bg\); color: var\(--text\)/);
 });
 
@@ -84,9 +86,12 @@ test('shared controls and motion consume semantic tokens without duplicating ent
   for (const selector of ['ui-nav-item', 'ui-button-solid', 'ui-button-outline', 'ui-input', 'ui-enter-scale', 'ui-enter-rise']) {
     assert.match(controls, new RegExp(`\\.${selector}\\b`));
   }
-  assert.match(read('src/components/account/account-section-nav.tsx'), /ui-nav-item/);
-  assert.match(read('src/components/workspace/workspace-section-nav.tsx'), /ui-nav-item/);
-  assert.match(read('src/components/pricing/pricing-checkout.tsx'), /pricing-pay ui-button-solid/);
+  assert.match(read('src/components/ui/controls.tsx'), /ui-nav-item/);
+  assert.match(read('src/components/account/account-section-nav.tsx'), /SidebarItem/);
+  assert.match(read('src/components/workspace/workspace-section-nav.tsx'), /SidebarItem/);
+  assert.match(read('src/components/pricing/pricing-checkout.tsx'), /<SolidButton[^>]+className="pricing-pay"/);
+  assert.match(read('src/components/account/account-dialogs.tsx'), /<DialogSurface[^>]+account-dialog/);
+  assert.match(read('src/components/account/account-dialogs.tsx'), /<TextInput type="url"/);
   for (const path of ['src/components/account/account-popovers.css', 'src/components/auth/minimax-auth-card.css', 'src/components/pricing/pricing.css', 'src/components/shell/replica-navigation.css']) {
     assert.doesNotMatch(read(path), /@keyframes (?:account-dialog-enter|account-contact-enter|minimax-auth-enter|pricing-enter|replica-pop)/);
   }
@@ -191,11 +196,17 @@ test('new stylesheets do not repeat selectors; unmigrated CSS is exempt', () => 
   const stylesheets = [themeTokenStylesheet(), ...[...sourceFiles('src')].filter(path => path.endsWith('.css') && !legacyCss.has(path)).map(read)];
   for (const source of stylesheets) {
     const seen = new Set<string>();
-    for (const match of source.matchAll(/(?:^|})\s*([^{}]+)\{/g)) {
+    const scope: (string | null)[] = [];
+    for (const match of source.replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/([^{}]*)([{}])/g)) {
+      if (match[2] === '}') { scope.pop(); continue; }
       const selector = match[1].trim();
-      if (selector.startsWith('@') || selector === 'from' || selector === 'to') continue;
-      assert.ok(!seen.has(selector), `duplicate selector: ${selector}`);
-      seen.add(selector);
+      if (selector.startsWith('@')) { scope.push(selector); continue; }
+      const key = `${scope.filter(Boolean).join('|')}|${selector}`;
+      if (selector !== 'from' && selector !== 'to') {
+        assert.ok(!seen.has(key), `duplicate selector: ${selector}`);
+        seen.add(key);
+      }
+      scope.push(null);
     }
   }
 });

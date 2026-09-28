@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Check, ChevronDown, Image as ImageIcon, ShieldCheck, Sparkles, Video, X } from 'lucide-react';
 import { requestJson } from '@/lib/json-request';
+import { SolidButton } from '@/components/ui/controls';
 import { PricingConfetti } from './pricing-confetti';
 import { useOptionalAuthDialog } from '../auth/auth-dialog';
 import { annualSavingsPercent, count, money, planDisplay, pricingFeatureLines } from './plan-display';
@@ -83,16 +84,16 @@ export function PricingCheckout({ locale, plans, models, brand, copy }: { locale
 
   return <>
     <PricingConfetti />
-    {banner && savings > 0 && <div className="pricing-banner"><Sparkles size={18} /><span>{brand} · {savingsLabel}</span><button type="button" onClick={() => { setMode('year'); document.getElementById('pricing-plans')?.scrollIntoView({ behavior: 'smooth' }); }}>{copy.yearly}</button><button type="button" className="pricing-banner-close" aria-label="Close" onClick={() => setBanner(false)}><X size={16} /></button></div>}
-    <div className="pricing-page">
-      <div className="pricing-inner">
+    {banner && savings > 0 && <div className="pricing-banner"><Sparkles size={18} /><span>{brand} · {savingsLabel}</span><SolidButton type="button" className="pricing-banner-action" onClick={() => { setMode('year'); document.getElementById('pricing-plans')?.scrollIntoView({ behavior: 'smooth' }); }}>{copy.yearly}</SolidButton><button type="button" className="pricing-banner-close" aria-label="Close" onClick={() => setBanner(false)}><X size={16} /></button></div>}
+    <div className="pricing-page px-6 pt-[72px] pb-24 max-[767px]:px-4 max-[767px]:pt-[45px] max-[767px]:pb-[65px]">
+      <div className="pricing-inner mx-auto max-w-[1432px]">
         {savings > 0 && <div className="pricing-launch"><strong>{savingsLabel}</strong><span>{brand} · {copy.yearlyHint}</span></div>}
         <h1 id="pricing-title">{copy.title}</h1><p className="pricing-lead">{copy.lead}</p>
-        <div id="pricing-plans" className="pricing-tabs-wrap"><div className="pricing-tabs" role="group" aria-label={copy.title}>
+        <div id="pricing-plans" className="pricing-tabs-wrap"><div className="pricing-tabs ui-segmented" role="group" aria-label={copy.title}>
           {(['month', 'year', 'once'] as const).map(option => <button type="button" aria-pressed={mode === option} className={mode === option ? 'selected' : ''} key={option} onClick={() => { setMode(option); setError(''); }}>{option === 'month' ? copy.monthly : option === 'year' ? copy.yearly : copy.packs}{option === 'year' && savings > 0 && <small>{savingsLabel}</small>}</button>)}
         </div><p><Check size={16} />{mode === 'year' ? copy.yearlyHint : mode === 'month' ? copy.monthlyHint : copy.packHint}</p></div>
         {!actionable && <p className="pricing-availability" role="status">{copy.unavailableNote}</p>}
-        <div className={`pricing-card-grid ui-enter-rise ${mode === 'once' ? 'packs' : 'plans'}`} key={mode}>
+        <div className={`pricing-card-grid ui-enter-rise grid grid-cols-4 items-stretch gap-6 [--enter-duration:var(--duration-stagger)] max-[1200px]:grid-cols-2 max-[767px]:grid-cols-1 ${mode === 'once' ? 'packs' : 'plans'}`} key={mode}>
           {visible.map(plan => {
             const isMax = plan.tier === 'max';
             const { factor, price, total, previousPrice, discount, credits, canCheckout: canPay } = planDisplay(plan, plans, multiple);
@@ -105,7 +106,7 @@ export function PricingCheckout({ locale, plans, models, brand, copy }: { locale
               {yearly && <p className="pricing-billed">{money(total, plan.currency, locale)} {copy.billedYearly}</p>}
               {mode === 'once' && <p className="pricing-billed">{copy.oneTime}</p>}
               {isMax && <div className="pricing-multiplier"><label htmlFor="pricing-max-range">{copy.maxMultiplier} <b>{multiple}×</b></label><input id="pricing-max-range" type="range" min="1" max="5" step="1" value={multiple} onChange={event => setMultiple(Number(event.target.value))} /><div className="pricing-multiplier-labels">{[1, 2, 3, 4, 5].map(value => <button type="button" aria-pressed={multiple === value} key={value} onClick={() => setMultiple(value)}>{value}×</button>)}</div><p>{copy.maxBase}: {count(plan.credits)} · {copy.maxTotal}: {count(credits)} {copy.creditsMonth}</p></div>}
-              <button type="button" className="pricing-pay ui-button-solid" disabled={!canPay || !!pending} onClick={() => checkout(plan)}>{pending === plan.id ? copy.wait : canPay ? copy.checkout : copy.unavailable}</button>
+              <SolidButton type="button" className="pricing-pay" disabled={!canPay || !!pending} onClick={() => checkout(plan)}>{pending === plan.id ? copy.wait : canPay ? copy.checkout : copy.unavailable}</SolidButton>
               <div className="pricing-credits"><Sparkles size={18} /><strong>{count(credits)} {mode === 'once' ? copy.credits : copy.creditsMonth}</strong></div>
               {mode !== 'once' && <div className="pricing-models"><ModelDropdown title={copy.videoModels} models={video} /><ModelDropdown title={copy.imageModels} models={image} /></div>}
               <ul className="pricing-features">{pricingFeatureLines(plan, mode, copy).map(line => <li key={line}><Check size={16} />{line}</li>)}</ul>

@@ -23,9 +23,9 @@
 .vt-workflows button[aria-pressed=true] { background: var(--video-selected); color: var(--video-text); }
 .vt-workflows button[aria-pressed=true] .vt-mark { color: var(--video-accent); }
 .vt-model-wrap { position: relative; z-index: 3; margin-top: 16px; }
-.vt-model { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 50px; padding: 0 14px; border: 0; border-radius: 13px; background: var(--video-control); text-align: left; }
+.vt-model { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 50px; padding: 0 14px; border: 0; border-radius: var(--radius-card-md); background: var(--video-control); text-align: left; }
 .vt-model .vt-mark, .vt-model-menu .vt-mark { width: 22px; height: 22px; }
-.vt-model .vt-mark img, .vt-model-menu .vt-mark img { width: 22px; height: 22px; border-radius: 6px; }
+.vt-model .vt-mark img, .vt-model-menu .vt-mark img { width: 22px; height: 22px; border-radius: var(--radius-control); }
 .vt-model-name { font-size:var(--text-14); font-weight:var(--weight-semibold); }
 .vt-model-menu { position: absolute; top: calc(100% + 8px); left: 0; right: 0; z-index: 4; max-height: min(400px, 52vh); overflow: auto; padding: 8px; border: 1px solid var(--video-border); border-radius:var(--radius-card-xl); background: var(--video-raised); box-shadow: 0 18px 40px var(--video-shadow); scrollbar-color: var(--video-scrollbar) var(--video-raised); scrollbar-width: thin; }
 .vt-vendor-row, .vt-model-menu button { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 40px; padding: 0 8px; border: 0; border-radius:var(--radius-card-sm); background: transparent; color: var(--video-text); text-align: left; }
@@ -54,14 +54,14 @@
 .vt-end-toggle svg { flex: none; }
 .vt-end-toggle[aria-pressed=true] { color: var(--video-accent); }
 .vt-frame-upload { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; min-height: 136px; margin-top: 10px; border: 1px dashed var(--video-border); border-radius:var(--radius-card-sm); background: var(--video-control); color: var(--video-faint); font-size:var(--text-13); }
-.vt-frame-upload > img { max-width: 96px; max-height: 60px; object-fit: cover; border-radius: 6px; }
+.vt-frame-upload > img { max-width: 96px; max-height: 60px; object-fit: cover; border-radius: var(--radius-control); }
 .vt-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .vt-limits, .vt-selected { display: flex; flex-wrap: wrap; gap: 8px; }
 .vt-limits { margin-top: 8px; }
 .vt-limits > span { display: inline-flex; align-items: center; gap: 8px; min-height: 26px; padding: 0 8px; border-radius:var(--radius-pill); background: var(--video-inset); color: var(--video-focus); font-size:var(--text-12); }
 .vt-limits .vt-mark { color: var(--video-icon-muted, var(--video-muted)); }
 .vt-selected { margin-top: 8px; }
-.vt-selected button { width: 44px; height: 44px; padding: 0; border: 1px solid var(--video-text); border-radius: 8px; overflow: hidden; background: var(--video-inset); }
+.vt-selected button { width: 44px; height: 44px; padding: 0; border: 1px solid var(--video-text); border-radius: var(--radius-control-md); overflow: hidden; background: var(--video-inset); }
 .vt-selected img, .vt-thumbnails img, .vt-library img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .vt-upload { display: grid; justify-items: center; align-content: center; gap: 8px; height: 136px; margin-top: 10px; padding: 12px 16px; border: 1px dashed var(--video-border); border-radius:var(--radius-card-sm); background: var(--video-control); color: var(--video-secondary); text-align: center; }
 .vt-upload p { margin: 0; font-size:var(--text-13); line-height: 1.45; }
@@ -74,16 +74,16 @@
 .video-tool .vt-library-chip { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 28px; padding: 0 12px; border-radius:var(--radius-pill); background: var(--video-raised); color: var(--video-text); font-size:var(--text-12); font-weight:var(--weight-medium); }
 .vt-library-chip svg { flex: none; color: var(--video-icon-library, var(--video-accent)); }
 .vt-library { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
-.vt-library button { min-width: 0; padding: 4px; border: 1px solid transparent; border-radius: 8px; background: var(--video-inset); color: var(--video-secondary); text-align: left; font-size:var(--text-11); }
-.vt-library img { aspect-ratio: 1; border-radius: 6px; }
+.vt-library button { min-width: 0; padding: 4px; border: 1px solid transparent; border-radius: var(--radius-control-md); background: var(--video-inset); color: var(--video-secondary); text-align: left; font-size:var(--text-11); }
+.vt-library img { aspect-ratio: 1; border-radius: var(--radius-control); }
 .vt-library span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 4px 2px 2px; }
 .vt-library button[aria-pressed=true], .vt-thumbnails button[aria-pressed=true] { border-color: var(--video-text); }
 .vt-prompt { position: relative; display: flex; flex-direction: column; flex: 0 0 190px; min-height: 190px; margin-top: 16px; }
 .vt-prompt-actions { display: flex; align-items: center; gap: 8px; }
-.video-tool .vt-mention-button { display: inline-flex; align-items: center; justify-content: center; flex: none; width: 28px; height: 28px; padding: 0; border: 0; border-radius: 8px; background: var(--video-raised); color: var(--video-icon-muted, var(--video-muted)); }
+.video-tool .vt-mention-button { display: inline-flex; align-items: center; justify-content: center; flex: none; width: 28px; height: 28px; padding: 0; border: 0; border-radius: var(--radius-control-md); background: var(--video-raised); color: var(--video-icon-muted, var(--video-muted)); }
 .video-tool .vt-assist { display: inline-flex; align-items: center; gap: 8px; flex: none; padding: 0; background: none; color: var(--video-accent); font-size:var(--text-12); font-weight:var(--weight-semibold); white-space: nowrap; }
 .vt-assist svg { flex: none; }
-.video-tool textarea, .vt-field input:not([type=checkbox]):not([type=range]), .vt-field select, .vt-quantity select { width: 100%; border: 0; border-radius:var(--radius-card-sm); background: var(--video-inset); color: var(--video-text); }
+.video-tool textarea, .vt-field select, .vt-quantity select { width: 100%; border: 0; border-radius:var(--radius-card-sm); background: var(--video-inset); color: var(--video-text); }
 .video-tool textarea { flex: 1; min-height: 92px; margin-top: 8px; padding: 14px 16px 32px; resize: none; line-height: 1.6; background: var(--video-control); }
 .video-tool textarea::placeholder { color: var(--video-muted); }
 .vt-prompt-count { align-self: flex-end; margin: -23px 12px 8px 0; position: relative; color: var(--video-muted); font-size:var(--text-11); pointer-events: none; }
@@ -96,7 +96,8 @@
 .vt-choices button[aria-pressed=true] { border-color: var(--video-accent); background: var(--video-accent-soft); color: var(--video-text); }
 .vt-ratio-choices button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; min-width: 55px; min-height: 55px; padding: 6px 8px; }
 .vt-ratio-icon { display: block; flex: none; border: 2px solid currentColor; border-radius: 2px; }
-.vt-field input:not([type=range]), .vt-field select { min-height: 36px; padding: 6px 8px; border: 1px solid var(--video-border); }
+.vt-field input:not([type=range]), .vt-field select { min-height: 36px; padding: 6px 8px; }
+.vt-field input.ui-input { width: 100%; --input-border: var(--video-border); --input-radius: var(--radius-card-sm); --input-bg: var(--video-inset); --input-text: var(--video-text); }
 .vt-range-labels { display: flex; align-items: center; justify-content: space-between; margin: 0 2px 4px; color: var(--video-muted); font-size:var(--text-12); }
 .vt-range-labels strong { color: var(--video-accent); font-size:var(--text-15); }
 .vt-duration-field input[type=range] { width: 100%; height: 4px; margin: 4px 0 8px; appearance: none; border-radius:var(--radius-pill); background: linear-gradient(to right, var(--video-accent) var(--vt-range-fill), var(--video-range-track) var(--vt-range-fill)); cursor: pointer; }
@@ -116,9 +117,9 @@
 .vt-quantity > button { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 50px; border: 0; border-radius:var(--radius-card-md); background: var(--video-control); color: var(--video-text); font-size:var(--text-13); font-weight:var(--weight-semibold); }
 .vt-quantity .vt-chevron { margin: 0; }
 .vt-quantity-menu { position: absolute; right: 0; bottom: calc(100% + 6px); z-index: 7; display: grid; min-width: 72px; padding: 4px; border: 1px solid var(--video-border); border-radius:var(--radius-card-sm); background: var(--video-raised); box-shadow: 0 12px 32px var(--video-shadow); }
-.vt-quantity-menu button { min-height: 32px; border: 0; border-radius: 8px; background: transparent; color: var(--video-text); }
+.vt-quantity-menu button { min-height: 32px; border: 0; border-radius: var(--radius-control-md); background: transparent; color: var(--video-text); }
 .vt-quantity-menu button[aria-selected=true] { background: var(--video-selected); color: var(--video-selection-text); }
-.vt-create { width: 100%; min-height: 45px; margin-top: 8px; border: 0; border-radius:var(--radius-card-md); background: var(--video-disabled); color: var(--video-secondary); font-size:var(--text-14); font-weight:var(--weight-bold); }
+.vt-create { width: 100%; min-height: 45px; margin-top: 8px; --control-border-width: 0px; --control-radius: var(--radius-card-md); --control-bg: var(--video-disabled); --control-text: var(--video-secondary); --control-weight: var(--weight-bold); font-size:var(--text-14); }
 .vt-create:hover:not(:disabled) { background: var(--video-selected); }
 .vt-promo { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 40px; margin-top: 8px; padding: 8px 12px; border-radius:var(--radius-card-md); background: var(--video-promo-bg); color: var(--video-promo-text); font-size:var(--text-13); font-weight:var(--weight-semibold); text-align: center; }
 .vt-promo a { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
@@ -128,7 +129,7 @@
 .vt-tabs { position: sticky; top: -24px; z-index: 2; display: flex; align-items: center; gap: 4px; margin-bottom: 16px; padding: 0 0 12px; background: var(--video-panel); }
 .vt-tabs button { min-height: 34px; padding: 0 14px; border-radius:var(--radius-pill); color: var(--video-muted); font-size:var(--text-14); font-weight:var(--weight-semibold); }
 .vt-tabs button[aria-selected=true] { background: var(--video-tab-selected-bg); color: var(--video-tab-selected-text); }
-.vt-preview { display: grid; overflow: hidden; aspect-ratio: 16 / 9; border-radius: 18px; background: var(--video-inset); }
+.vt-preview { display: grid; overflow: hidden; aspect-ratio: 16 / 9; border-radius: var(--radius-card-xl); background: var(--video-inset); }
 .vt-preview img, .vt-preview video { width: 100%; height: 100%; object-fit: cover; }
 .vt-empty { align-self: center; margin: 0; padding: 24px; color: var(--video-muted); font-size:var(--text-14); text-align: center; }
 .vt-thumbnails { display: flex; gap: 8px; margin-top: 10px; overflow-x: auto; }
@@ -145,7 +146,7 @@
 .vt-template-gallery { flex: 1; }
 .vt-template-gallery h3 { margin: 10px 0 16px; color: var(--video-text); font-size:var(--text-14); }
 .vt-template-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
-.vt-template-card { position: relative; aspect-ratio: 4 / 5; min-width: 0; overflow: hidden; padding: 0; border: 0; border-radius: 17px; background: var(--video-raised); text-align: left; }
+.vt-template-card { position: relative; aspect-ratio: 4 / 5; min-width: 0; overflow: hidden; padding: 0; border: 0; border-radius: var(--radius-card-xl); background: var(--video-raised); text-align: left; }
 .vt-template-card img { width: 100%; height: 100%; display: block; object-fit: cover; }
 .vt-template-card > span { position: absolute; inset: auto 0 0; display: grid; gap: 2px; padding: 36px 12px 10px; background: linear-gradient(transparent, var(--video-media-scrim)); color: var(--video-on-media); font-size:var(--text-11); line-height: 1.25; }
 .vt-template-card strong { font-size:var(--text-13); }

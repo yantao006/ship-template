@@ -6,6 +6,7 @@ import { LogOut, Trash2, X } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
 import { routePath } from '@/lib/route-paths';
 import { useDismissableLayer } from '@/lib/use-dismissable-layer';
+import { DialogSurface, OutlineButton, SolidButton } from '@/components/ui/controls';
 import type { CreditMovement } from '@/lib/account-page-history';
 
 type Labels = { changeType: string; allRecords: string; earned: string; spent: string; noCredits: string; noFilteredCredits: string; expires: string; noExpiry: string; signOut: string; signOutFailed: string; creditsUnit: string; deleteAccount: string; deleteTitle: string; deleteWarning: string; deleteCancel: string; deleteConfirm: string; deleting: string; deleteFailed: string };
@@ -35,12 +36,12 @@ export function AccountActions({ labels, email, locale }: { labels: Pick<Labels,
     catch { setError(labels.signOutFailed); setBusy(false); }
   }}><LogOut size={16} aria-hidden="true"/>{labels.signOut}</button><button ref={deleteTrigger} type="button" className="account-page-delete ui-nav-item" disabled={busy} onClick={() => { setError(''); setConfirming(true); }}><Trash2 size={16} aria-hidden="true"/>{labels.deleteAccount}</button></div>
     {error && !confirming && <p className="account-page-action-error" role="alert">{error}</p>}
-    {confirming && <div className="account-delete-overlay" ref={backdrop}><div className="account-delete-dialog" role="dialog" aria-modal="true" aria-labelledby="account-delete-title" aria-describedby="account-delete-warning" ref={dialog}>
+    {confirming && <div className="account-delete-overlay" ref={backdrop}><DialogSurface className="account-delete-dialog" aria-labelledby="account-delete-title" aria-describedby="account-delete-warning" ref={dialog}>
       <button type="button" className="account-delete-close" aria-label={labels.deleteCancel} disabled={busy} onClick={() => setConfirming(false)}><X size={18}/></button>
       <h2 id="account-delete-title">{labels.deleteTitle}</h2><p id="account-delete-warning">{labels.deleteWarning}</p>
       {error && <p className="account-page-action-error" role="alert">{error}</p>}
-      <div className="account-delete-buttons"><button type="button" className="ui-button-outline" disabled={busy} onClick={() => setConfirming(false)}>{labels.deleteCancel}</button><button type="button" className="ui-button-solid" disabled={busy} onClick={() => void deleteAccount()}>{busy ? labels.deleting : labels.deleteConfirm}</button></div>
-    </div></div>}
+      <div className="account-delete-buttons"><OutlineButton type="button" disabled={busy} onClick={() => setConfirming(false)}>{labels.deleteCancel}</OutlineButton><SolidButton type="button" disabled={busy} onClick={() => void deleteAccount()}>{busy ? labels.deleting : labels.deleteConfirm}</SolidButton></div>
+    </DialogSurface></div>}
   </>;
 }
 

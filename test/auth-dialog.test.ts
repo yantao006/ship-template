@@ -129,7 +129,7 @@ test('one shared sign-in dialog uses server session confirmation and does not re
   assert.match(provider, /method === 'sign-up'[\s\S]*closeAuth\(\)[\s\S]*router\.refresh\(\)/);
   assert.match(provider, /site-auth-reload-start[\s\S]*setOpen\(false\)[\s\S]*window\.location\.reload\(\)/);
   assert.match(card, /onAuthenticated\('email-code'\)/);
-  assert.match(source('src/app/globals.css'), /@media \(max-width: 767px\)[\s\S]*auth4-overlay \{ display: flex; align-items: flex-end/);
+  assert.match(source('src/components/styles/controls.css'), /@media \(max-width: 767px\)[\s\S]*auth4-overlay \{ display: flex; align-items: flex-end/);
   assert.match(tool, /site-auth-reload-start/);
   assert.match(tool, /sessionStorage\.setItem\(authDraftKey/);
   assert.match(tool, /sessionStorage\.removeItem\(authDraftKey/);

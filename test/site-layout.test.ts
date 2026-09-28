@@ -28,7 +28,6 @@ test('site content does not add another viewport or landmark inside the shell', 
   for (const path of [
     'src/app/globals.css',
     'src/components/account/account-pages.css',
-    'src/components/pricing/commercial-license.css',
     'src/components/pricing/pricing.css',
   ]) {
     const css = read(path);
@@ -38,6 +37,8 @@ test('site content does not add another viewport or landmark inside the shell', 
     }
   }
   const globals = read('src/app/globals.css');
-  assert.match(globals, /\.workspace-layout \{[^}]*flex: 1;/);
-  assert.match(globals, /\.sidebar-footnote \{[^}]*margin: auto 12px 0/);
+  assert.doesNotMatch(globals, /\.workspace-layout\s*\{|\.sidebar-footnote\s*\{/);
+  const workspace = read('src/components/workspace/workspace-shell.tsx');
+  assert.match(workspace, /workspace-layout grid flex-1/);
+  assert.match(workspace, /sidebar-footnote mt-auto/);
 });

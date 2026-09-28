@@ -8,6 +8,7 @@ import { useDismissableLayer } from '@/lib/use-dismissable-layer';
 import { Coins, CreditCard, FileText, Gift, LogOut, Mail, MessageCircle, Plus, Settings as SettingsIcon, Share2, ShieldCheck, Sparkles, X } from 'lucide-react';
 import { routePath, sitePath } from '@/lib/route-paths';
 import { AccountPopoverCard, type PopoverRow } from './account-popover-card';
+import { SolidButton } from '@/components/ui/controls';
 import { AvatarTrigger, ProfileHeader } from './account-profile';
 import { AccountDialogs, type AccountCopy, type Activity, type Dialog, type Plan, type Settings } from './account-dialogs';
 import type { PricingCopy } from './buy-credits-dialog';
@@ -89,10 +90,10 @@ export function AccountPopovers({ user, balance, locale, dateLocale, copy, label
     { id: 'signout', icon: <LogOut/>, label: labels.logout, tone: 'danger', disabled: busy, onClick: () => void signOut() },
   ];
   const accountStyle = { '--account-accent': palette.accent, '--account-accent-end': palette.accentEnd, '--account-accent-text': palette.accentText } as CSSProperties;
-  return <><div className="account-controls" ref={area} style={accountStyle}>
-    <div className="account-anchor"><button ref={creditTrigger} className="replica-credits-pill" type="button" aria-label={`${currentBalance} ${labels.credits}`} aria-haspopup="dialog" aria-expanded={menu === 'credits'} onClick={() => setMenu(menu === 'credits' ? null : 'credits')}><Coins size={17}/>{currentBalance}</button>
-      {menu === 'credits' && <AccountPopoverCard role="dialog" label={labels.credits} className="account-credits" header={<div className="account-credit-header"><div className="account-balance"><strong><Coins size={23}/>{currentBalance}</strong><span>{labels.credits}</span></div><button type="button" className="account-buy ui-button-solid" onClick={() => show('plans')}><Plus size={19}/>{copy.buy}</button></div>} rows={creditRows} />}</div>
-    <div className="account-anchor"><AvatarTrigger buttonRef={trigger} name={user.name} image={user.image} label={copy.menu} open={menu === 'account'} onClick={() => setMenu(menu === 'account' ? null : 'account')} />
+  return <><div className="account-controls flex items-center gap-2 max-[600px]:gap-1" ref={area} style={accountStyle}>
+    <div className="account-anchor relative"><button ref={creditTrigger} className="replica-credits-pill" type="button" aria-label={`${currentBalance} ${labels.credits}`} aria-haspopup="dialog" aria-expanded={menu === 'credits'} onClick={() => setMenu(menu === 'credits' ? null : 'credits')}><Coins size={17}/>{currentBalance}</button>
+      {menu === 'credits' && <AccountPopoverCard role="dialog" label={labels.credits} className="account-credits" header={<div className="account-credit-header"><div className="account-balance"><strong><Coins size={23}/>{currentBalance}</strong><span>{labels.credits}</span></div><SolidButton type="button" className="account-buy" onClick={() => show('plans')}><Plus size={19}/>{copy.buy}</SolidButton></div>} rows={creditRows} />}</div>
+    <div className="account-anchor relative"><AvatarTrigger buttonRef={trigger} name={user.name} image={user.image} label={copy.menu} open={menu === 'account'} onClick={() => setMenu(menu === 'account' ? null : 'account')} />
       {menu === 'account' && <AccountPopoverCard role="menu" label={copy.menu} className="account-menu" header={<ProfileHeader name={user.name} email={user.email} image={user.image} />} rows={accountRows} />}</div>
   </div>
   {!dialog && (error || notice) && <p className="account-toast" role={error ? 'alert' : 'status'}>{error || notice}<button aria-label={copy.close} onClick={() => { setError(''); setNotice(''); }}><X size={15}/></button></p>}

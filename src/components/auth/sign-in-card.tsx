@@ -110,7 +110,7 @@ export function SignInCard({ copy, methods, callbackURL, locale, inviteRequired 
 
   const begin = () => { setError(''); setVerificationEmail(''); setRegister(false); setForgot(false); setResetNotice(''); setOpen(true); };
   return <div className={variant === 'avatar' ? 'auth-actions replica-auth' : 'auth-actions'}>
-    {variant === 'avatar' ? <button ref={triggerRef} className="replica-avatar" type="button" aria-label={copy.login} aria-haspopup="dialog" onClick={begin}><UserRound size={19} aria-hidden="true" /></button> : (methods.google.enabled || methods.github.enabled || methods.email.enabled) ? <button ref={triggerRef} className="auth-button" type="button" disabled={pending} onClick={begin}>{copy.login}</button> : <span className="account-name">{copy.noMethods}</span>}
+    {variant === 'avatar' ? <button ref={triggerRef} className="replica-avatar" type="button" aria-label={copy.login} aria-haspopup="dialog" onClick={begin}><UserRound size={19} aria-hidden="true" /></button> : (methods.google.enabled || methods.github.enabled || methods.email.enabled) ? <button ref={triggerRef} className="ui-button-solid auth-button" type="button" disabled={pending} onClick={begin}>{copy.login}</button> : <span className="account-name">{copy.noMethods}</span>}
     {error && !open && <p className="auth-error" role="alert">{error}</p>}
     {open && <div ref={overlayRef} className="auth-overlay">
       <section ref={dialogRef} className="auth-panel" role="dialog" aria-modal="true" aria-labelledby="auth-title">
@@ -119,30 +119,30 @@ export function SignInCard({ copy, methods, callbackURL, locale, inviteRequired 
         {verificationEmail ? <div className="verification-actions">
           <p role="status">{verificationNotice} {verificationEmail}</p>
           <p>{copy.verifyHint}</p>
-          <button className="auth-button" type="button" disabled={pending} onClick={resendVerification}>{pending ? copy.wait : copy.resendVerification}</button>
+          <button className="ui-button-solid auth-button" type="button" disabled={pending} onClick={resendVerification}>{pending ? copy.wait : copy.resendVerification}</button>
           <Link className="auth-switch" href={`${verifyPath}?email=${encodeURIComponent(verificationEmail)}`}>{copy.verifyLink}</Link>
           <button className="auth-switch" type="button" onClick={() => { setVerificationEmail(''); setRegister(false); setError(''); }}>{copy.signIn}</button>
         </div> : forgot ? <div className="verification-actions">
           <p>{copy.forgotHint}</p>
           {resetNotice ? <p role="status">{resetNotice}</p> : <form onSubmit={submitForgot}>
-            <label>{copy.emailLabel}<input name="email" type="email" autoComplete="email" required /></label>
-            <button className="auth-button" type="submit" disabled={pending}>{pending ? copy.wait : copy.forgotPassword}</button>
+            <label>{copy.emailLabel}<input className="ui-input" name="email" type="email" autoComplete="email" required /></label>
+            <button className="ui-button-solid auth-button" type="submit" disabled={pending}>{pending ? copy.wait : copy.forgotPassword}</button>
           </form>}
           <button className="auth-switch" type="button" onClick={() => { setForgot(false); setResetNotice(''); setError(''); }}>{copy.signIn}</button>
         </div> : <>
         {(methods.google.enabled || methods.github.enabled) && <div className="social-methods">
-          {methods.google.enabled && <button className="social-button" type="button" disabled={pending} onClick={() => social('google')}>{copy.google}</button>}
-          {methods.github.enabled && <button className="social-button" type="button" disabled={pending} onClick={() => social('github')}>{copy.github}</button>}
+          {methods.google.enabled && <button className="ui-button-outline social-button" type="button" disabled={pending} onClick={() => social('google')}>{copy.google}</button>}
+          {methods.github.enabled && <button className="ui-button-outline social-button" type="button" disabled={pending} onClick={() => social('github')}>{copy.github}</button>}
         </div>}
         {methods.email.enabled && <>
           {(methods.google.enabled || methods.github.enabled) && <p className="method-divider"><span>{copy.orEmail}</span></p>}
           <form onSubmit={submitEmail}>
-            {register && <label>{copy.name}<input name="name" autoComplete="name" required minLength={1} /></label>}
-            <label>{copy.emailLabel}<input name="email" type="email" autoComplete="email" required /></label>
+            {register && <label>{copy.name}<input className="ui-input" name="name" autoComplete="name" required minLength={1} /></label>}
+            <label>{copy.emailLabel}<input className="ui-input" name="email" type="email" autoComplete="email" required /></label>
             {register && needsVerification && <p className="verification-hint">{copy.verifyHint}</p>}
-            <label>{copy.password}<input name="password" type="password" autoComplete={register ? 'new-password' : 'current-password'} required minLength={8} /></label>
-            {register && inviteRequired && <label>{copy.invite}<input name="inviteCode" autoComplete="off" required maxLength={32} /></label>}
-            <button className="auth-button" type="submit" disabled={pending}>{pending ? copy.wait : register ? copy.signUp : copy.signIn}</button>
+            <label>{copy.password}<input className="ui-input" name="password" type="password" autoComplete={register ? 'new-password' : 'current-password'} required minLength={8} /></label>
+            {register && inviteRequired && <label>{copy.invite}<input className="ui-input" name="inviteCode" autoComplete="off" required maxLength={32} /></label>}
+            <button className="ui-button-solid auth-button" type="submit" disabled={pending}>{pending ? copy.wait : register ? copy.signUp : copy.signIn}</button>
           </form>
           {!register && canReset && <button className="auth-switch" type="button" onClick={() => { setForgot(true); setError(''); }}>{copy.forgotPassword}</button>}
           <button className="auth-switch" type="button" onClick={() => { setRegister(!register); setForgot(false); setError(''); }}>{register ? copy.signIn : copy.signUp}</button>

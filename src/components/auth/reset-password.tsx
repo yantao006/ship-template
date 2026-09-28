@@ -33,9 +33,9 @@ export function ResetPassword({ locale, token, enabled, copy }: {
     <h1>{copy.resetTitle}</h1>
     <p>{copy.resetHint}</p>
     {enabled && token && !notice && <form onSubmit={submit}>
-      <label>{copy.newPassword}<input type="password" autoComplete="new-password" required minLength={8} value={password} onChange={event => setPassword(event.target.value)} /></label>
-      <label>{copy.confirmPassword}<input type="password" autoComplete="new-password" required minLength={8} value={confirm} onChange={event => setConfirm(event.target.value)} /></label>
-      <button className="auth-button" type="submit" disabled={pending}>{pending ? copy.wait : copy.updatePassword}</button>
+      <label>{copy.newPassword}<input className="ui-input" type="password" autoComplete="new-password" required minLength={8} value={password} onChange={event => setPassword(event.target.value)} /></label>
+      <label>{copy.confirmPassword}<input className="ui-input" type="password" autoComplete="new-password" required minLength={8} value={confirm} onChange={event => setConfirm(event.target.value)} /></label>
+      <button className="ui-button-solid auth-button" type="submit" disabled={pending}>{pending ? copy.wait : copy.updatePassword}</button>
     </form>}
     {notice && <p role="status">{notice}</p>}
     {error && <p className="form-error" role="alert">{error}</p>}
