@@ -1,7 +1,6 @@
 import type { VideoToolStructure } from '../src/components/video-tool/types';
 import { videoToolTemplates } from './video-tool-templates.config';
 
-const svg = (body: string) => `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">${body}</svg>`)}`;
 // The panel's named marks render as Lucide components; model/vendor logos remain image assets.
 const video = 'lucide:video';
 const film = 'lucide:film';
@@ -17,7 +16,7 @@ const klingLogo = '/video-tool/kling-logo.svg';
 const seedreamLogo = '/video-tool/seedream-logo.svg';
 const openaiLogo = '/video-tool/openai-logo.svg';
 const bananaLogo = '/video-tool/banana-logo.svg';
-const premiumBadgeIcon = svg('<path fill="currentColor" d="M4 16.5l1.8-8 4.2 4.4L12 6.2l1.9 6.7 4.3-4.4 1.8 8z"/><path d="M4.5 18.2h15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>');
+const premiumBadgeIcon = 'lucide:crown';
 
 const latticePieImageUrl = 'https://images.unsplash.com/photo-1621743478914-cc8a86d7e7b5?auto=format&fit=crop&w=1600&q=80';
 const fruitTartsImageUrl = 'https://images.unsplash.com/photo-1495147466023-ac5c588e2e94?auto=format&fit=crop&w=1200&q=80';

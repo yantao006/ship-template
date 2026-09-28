@@ -1,4 +1,4 @@
-import { ChevronDown } from 'lucide-react';
+import { Check, ChevronDown } from 'lucide-react';
 import { Mark } from './mark';
 
 export type ModelMenuItem = { id: string; icon: string; label: string; subtitle?: string; tags: { id: string; label: string; tone: string; icon?: string }[] };
@@ -29,7 +29,7 @@ export function ModelMenu({ label, selectedId, selected, groups, open, onToggle,
           <Mark icon={item.icon} />
           <span className="vt-model-copy"><span>{item.label}</span>{item.subtitle && <small>{item.subtitle}</small>}</span>
           <Tags tags={item.tags} as="em" />
-          {item.id === selectedId && <span className="vt-check" aria-hidden="true">✓</span>}
+          {item.id === selectedId && <Check className="vt-check" aria-hidden="true" size={16} strokeWidth={2} />}
         </button>)}
       </div>)}
     </div>}

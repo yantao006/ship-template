@@ -112,6 +112,7 @@ test('reference panel marks use the named Lucide outlines and filled crown', () 
   assert.deepEqual(config.workflows.slice(0, 3).map(item => item.icon), ['lucide:film', 'lucide:pen-line', 'lucide:image']);
   assert.deepEqual(config.referenceKinds.map(item => item.icon), ['lucide:image', 'lucide:film', 'lucide:music']);
   assert.equal(config.promo?.icon, 'lucide:crown');
+  assert.deepEqual(config.models.filter(model => model.tags.some(tag => tag.icon)).flatMap(model => model.tags.map(tag => tag.icon).filter(Boolean)), ['lucide:crown', 'lucide:crown']);
   for (const [name, className] of Object.entries({ video: 'video', image: 'image', film: 'film', music: 'music', 'pen-line': 'pen-line', crown: 'crown' })) {
     const html = renderToStaticMarkup(createElement(Mark, { icon: `lucide:${name}` }));
     assert.match(html, new RegExp(`lucide-${className}`));
@@ -124,6 +125,10 @@ test('second site keeps the same structure without a promo', () => {
   assert.notEqual(second.models[0].id, config.models[0].id);
   assert.equal('promo' in second, false);
   assert.deepEqual(second.media.map(item => item.id), ['video', 'image']);
+  assert.deepEqual(second.media.map(item => item.icon), ['lucide:video', 'lucide:image']);
+  assert.deepEqual(second.workflows.map(item => item.icon), ['lucide:film', 'lucide:pen-line', 'lucide:image', 'lucide:pen-line']);
+  assert.ok(second.models.every(model => model.icon.startsWith('lucide:')));
+  assert.equal(second.referenceKinds[0]?.icon, 'lucide:image');
   assert.ok(second.models.every(model => second.vendors.some(vendor => vendor.id === model.vendorId)));
   assert.ok(second.assets.some(asset => asset.tabId === 'use-cases' && asset.url.startsWith('https://')));
   assert.equal(second.assets.some(asset => asset.tabId === 'history'), false);

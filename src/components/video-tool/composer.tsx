@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { ArrowRight, AtSign, ChevronDown, Sparkles, SwatchBook } from 'lucide-react';
+import { ArrowRight, AtSign, ChevronDown, Circle, CircleDot, Sparkles, SwatchBook, X } from 'lucide-react';
 import { useDismissableLayer } from '@/lib/use-dismissable-layer';
 import { Mark } from './mark';
 import { ModelMenu, type ModelMenuProps } from './model-menu';
@@ -41,7 +41,7 @@ function References({ view, actions }: { view: ReferenceView; actions: ComposerP
   const used = (kind: ReferenceView['kinds'][number]) => `${kind.used}/${kind.limit}`;
   return <div className="vt-block">
     <div className="vt-reference-head"><h3>{view.title}</h3>
-      {view.framePair && <button type="button" className="vt-end-toggle" aria-pressed={view.endFrame} onClick={actions.onEndFrame}>{view.endFrameLabel} {view.endFrame ? '●' : '○'}</button>}
+      {view.framePair && <button type="button" className="vt-end-toggle" aria-pressed={view.endFrame} onClick={actions.onEndFrame}>{view.endFrameLabel}{view.endFrame ? <CircleDot aria-hidden="true" size={14} strokeWidth={2} /> : <Circle aria-hidden="true" size={14} strokeWidth={2} />}</button>}
       {view.templateMedia && view.kinds.map(kind => <span key={kind.id} aria-label={`${kind.label} ${used(kind)}`}>{kind.used} / {kind.limit}</span>)}
     </div>
     {view.framePair ? (view.endFrame ? ['start', 'end'] as const : ['start'] as const).map(slot => <div className="vt-frame-upload" key={slot}>
@@ -106,7 +106,7 @@ export function Composer({ title, workflowLabel, media, workflows, modelMenu, re
         </div>
       </div>
       <button className="vt-create" type="button" disabled={create.disabled} onClick={actions.onCreate}>{create.label}</button>
-      {promo && <div className="vt-promo"><a href={promo.href}><Mark icon={promo.icon} />{promo.label}<ArrowRight aria-hidden="true" size={16} strokeWidth={2} /></a>{promo.dismissLabel && <button type="button" aria-label={promo.dismissLabel} onClick={actions.onPromoDismiss}>×</button>}</div>}
+      {promo && <div className="vt-promo"><a href={promo.href}><Mark icon={promo.icon} />{promo.label}<ArrowRight aria-hidden="true" size={16} strokeWidth={2} /></a>{promo.dismissLabel && <button type="button" aria-label={promo.dismissLabel} onClick={actions.onPromoDismiss}><X aria-hidden="true" size={18} strokeWidth={2} /></button>}</div>}
     </div>
   </div>;
 }

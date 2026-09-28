@@ -143,8 +143,9 @@ test('video workbench and account dialogs use paired theme surfaces with one tag
   assert.match(tool, /\.vt-editor, \.vt-gallery\s*\{[^}]*var\(--video-panel\)/);
   assert.match(read('src/components/video-tool/video-tool-section.tsx'), /import '\.\/video-tool\.css'/);
   assert.match(read('src/components/blocks/account-popovers.css'), /\.account-dialog\{[^}]*var\(--dialog-canvas\)/);
-  assert.match(read('src/components/video-tool/mark.tsx'), /mask|vt-icon/);
-  assert.doesNotMatch(read('site/video-tool.config.ts'), /stroke="#|fill="#/);
+  assert.match(read('src/components/video-tool/mark.tsx'), /from 'lucide-react'/);
+  assert.doesNotMatch(read('src/components/video-tool/mark.tsx'), /data:image\/svg\+xml/);
+  assert.doesNotMatch(read('site/video-tool.config.ts'), /data:image\/svg\+xml|stroke="#|fill="#/);
 });
 
 test('literal colors remain confined to the documented 224-color baseline and allowlist', () => {
