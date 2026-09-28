@@ -1,20 +1,21 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import messages from '../site/messages/en';
 import site from '../site/site.config';
-import { AccountDialogs, type Dialog } from '../src/components/blocks/account-dialogs';
+import { AccountDialogs, shareRecommendationText, type Dialog } from '../src/components/blocks/account-dialogs';
 
 const copy = messages.account;
 const dialogs = ['checkin', 'share', 'invite', 'contact', 'feedback', 'plans', 'invoices'] as const satisfies readonly NonNullable<Dialog>[];
-const activity = { balance: 10, referralCode: '0123456789abcdef0123456789abcdef', checkInDays: [], submissions: [], referralCount: 0, purchases: [], leaderboard: [] };
+const activity = { balance: 10, referralCode: '0123456789abcdef0123456789abcdef', checkInDays: [], submissions: [], referralCount: 0, purchases: [], leaderboard: [], referralHistory: [] };
 const render = (dialog: NonNullable<Dialog>) => renderToStaticMarkup(createElement(AccountDialogs, {
   dialog, onClose: () => {}, copy, labels: { credits: messages.nav.availableCredits }, settings: site.account,
   plans: site.plans.map(plan => ({ ...plan, name: plan.id })), activity, busy: false, error: '', notice: '',
   locale: 'en', dateLocale: 'en-US', siteUrl: site.url, brand: site.brand,
   icons: { checkin: createElement('svg'), share: createElement('svg'), invite: createElement('svg') },
-  onCopyText: () => {}, onAction: async () => true,
+  onCopyText: () => {}, onAction: async () => true, onRefresh: () => {},
 }));
 
 test('all seven account dialogs retain their accessible shell and destination content', () => {
@@ -32,4 +33,39 @@ test('all seven account dialogs retain their accessible shell and destination co
   assert.match(render('plans'), /href="\/en\/pricing"/);
   assert.match(render('contact'), /mailto:/);
   assert.match(render('invoices'), /mailto:/);
+});
+
+test('invite card uses the official claim link, true empty data and configured rewards', () => {
+  const markup = render('invite');
+  assert.match(markup, /Get Your Referral Link/);
+  assert.match(markup, new RegExp(`${site.account.referral.inviterCredits} CREDITS`));
+  assert.match(markup, /class="account-invite-credit-pill">6 credits<\/strong>/);
+  assert.match(markup, /invitation-landing\?invite_code=/);
+  assert.match(markup, /No rewarded referrals yet/);
+  assert.match(markup, /You haven&#x27;t referred any friends yet!/);
+  assert.match(markup, /Refresh referral history/);
+  assert.match(markup, /TOP 3/);
+  assert.doesNotMatch(markup, /Gmail|daily cap|IP address/);
+});
+
+test('invite social hover and keyboard focus share the same scoped, reduced-motion-aware treatment', () => {
+  const markup = render('invite');
+  for (const name of site.account.shareNetworks) assert.match(markup, new RegExp(`aria-label="${name}"`));
+  const css = readFileSync('src/components/blocks/account-popovers.css', 'utf8');
+  assert.match(css, /\.account-invite-social \.account-sharelinks a:is\(:hover,:focus-visible\)\{background:/);
+  assert.match(css, /\.account-invite-social \.account-sharelinks a\{[^}]*transition:background-color \.15s/);
+  assert.match(css, /@media\(prefers-reduced-motion:reduce\)\{[^}]*\}[^}]*\.account-invite-social \.account-sharelinks a\{transition:none\}/);
+});
+
+test('share card uses the configured site URL, honest localized recommendation and disabled empty submission', () => {
+  assert.match(copy.shareRecommendation, /MiniMax H3 video and AI image requests/);
+  assert.equal(shareRecommendationText(site.url, site.account.checkIn.enabled, copy), `${copy.shareRecommendation}\n${site.url}`);
+  assert.equal(shareRecommendationText('https://other.example', false, copy), `${copy.shareRecommendationNoDaily}\nhttps://other.example`);
+  const markup = render('share');
+  assert.match(markup, /Quick copy/);
+  assert.match(markup, /Where can I share\?/);
+  assert.match(markup, /We value genuine shares/);
+  assert.match(markup, /href="https:\/\/www.reddit.com\/"/);
+  assert.match(markup, /type="submit" disabled=""/);
+  assert.match(markup, /https:\/\/reddit.com\/r\/\.\.\./);
 });
