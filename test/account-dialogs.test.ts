@@ -4,7 +4,7 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import messages from '../site/messages/en';
 import site from '../site/site.config';
-import { AccountDialogs, type Dialog } from '../src/components/blocks/account-dialogs';
+import { AccountDialogs, shareRecommendationText, type Dialog } from '../src/components/blocks/account-dialogs';
 
 const copy = messages.account;
 const dialogs = ['checkin', 'share', 'invite', 'contact', 'feedback', 'plans', 'invoices'] as const satisfies readonly NonNullable<Dialog>[];
@@ -32,4 +32,17 @@ test('all seven account dialogs retain their accessible shell and destination co
   assert.match(render('plans'), /href="\/en\/pricing"/);
   assert.match(render('contact'), /mailto:/);
   assert.match(render('invoices'), /mailto:/);
+});
+
+test('share card uses the configured site URL, honest localized recommendation and disabled empty submission', () => {
+  assert.match(copy.shareRecommendation, /MiniMax H3 video and AI image requests/);
+  assert.equal(shareRecommendationText(site.url, site.account.checkIn.enabled, copy), `${copy.shareRecommendation}\n${site.url}`);
+  assert.equal(shareRecommendationText('https://other.example', false, copy), `${copy.shareRecommendationNoDaily}\nhttps://other.example`);
+  const markup = render('share');
+  assert.match(markup, /Quick copy/);
+  assert.match(markup, /Where can I share\?/);
+  assert.match(markup, /We value genuine shares/);
+  assert.match(markup, /href="https:\/\/www.reddit.com\/"/);
+  assert.match(markup, /type="submit" disabled=""/);
+  assert.match(markup, /https:\/\/reddit.com\/r\/\.\.\./);
 });

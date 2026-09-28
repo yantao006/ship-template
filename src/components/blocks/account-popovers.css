@@ -89,6 +89,7 @@
 }
 /* Source-observed account dialogs: preserve shared shell while exposing real site rewards. */
 .account-dialog.account-checkin-dialog,.account-dialog.account-share-dialog{width:min(1040px,100%)}
+.account-dialog.account-share-dialog{max-height:calc(100dvh - 36px)}
 .account-dialog.account-invite-dialog{width:min(980px,100%)}
 .account-dialog.account-checkin-dialog>h2{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);padding:0;border:0}
 .account-checkin-dialog .account-close{right:16px;top:16px;background:var(--dialog-inset);color:var(--dialog-text);width:36px;height:36px}
@@ -134,16 +135,38 @@
 @media(max-width:600px){.account-dialog.account-checkin-dialog{max-height:calc(100dvh - 16px);width:100%;border-radius:0}.account-checkin-hero{padding:28px 20px;min-height:198px;gap:16px}.account-hero-icon{width:48px;height:48px}.account-checkin-hero h2{font-size:24px}.account-checkin-hero p{font-size:14px}.account-checkin-body{padding:24px 16px;gap:24px}.account-checkin-body .account-heading b{font-size:14px}.account-checkin-body .account-heading span{font-size:11px;padding:4px 8px}.account-checkin-body .account-days{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.account-checkin-body .account-days>div{height:76px}.account-daily-share{padding:20px}.account-daily-share-intro{display:grid}.account-daily-share .account-secondary{width:100%;justify-content:center}.account-social-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.account-dialog.account-share-dialog,.account-dialog.account-invite-dialog{max-height:calc(100dvh - 16px)}}
 .account-share-dialog>h2,.account-invite-dialog>h2{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);padding:0;border:0}
 .account-share-dialog .account-close,.account-invite-dialog .account-close{right:16px;top:16px;background:var(--dialog-inset);color:var(--dialog-text);width:36px;height:36px}
+.account-share-dialog .account-hero-icon{background:color-mix(in srgb,var(--account-accent) 55%,var(--dialog-accent))}
 .account-share-body{grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;padding:32px 36px;gap:16px}
 .account-share-body>.account-panel{min-height:370px;border-radius:16px;padding:24px;display:flex;flex-direction:column;align-items:stretch;gap:12px}
-.account-share-body .account-panel h3{font-size:16px;font-weight:900;letter-spacing:.04em}
+.account-share-body .account-panel h3{display:flex;align-items:center;gap:12px;font-size:16px;font-weight:900;letter-spacing:.04em;line-height:1.25}
+.account-share-step-icon{display:grid;place-items:center;width:32px;height:32px;flex:none;border-radius:9px;background:var(--dialog-text);color:var(--dialog-canvas)}
 .account-share-body .account-panel p{color:var(--dialog-muted)}
-.account-share-body .account-primary{background:var(--account-accent);color:#111212;display:flex;align-items:center;justify-content:center;gap:8px;min-height:56px;font-size:16px;margin-top:6px}
-.account-share-body .account-sharelinks{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
-.account-share-body .account-sharelinks a{height:44px;text-align:center;display:grid;place-items:center;background:var(--dialog-elevated);border-color:var(--dialog-border);border-radius:12px}
-.account-share-body details{margin-top:auto}.account-share-body details summary{padding:12px 16px;border:1px solid var(--dialog-border);border-radius:12px;background:var(--dialog-elevated);justify-content:space-between;font-size:14px;font-weight:700;color:var(--dialog-text)}
-.account-share-body .account-submit{margin-top:8px}.account-share-body .account-submit input{height:56px;background:var(--dialog-elevated);border-color:var(--dialog-border);border-radius:16px}.account-share-body .account-submit button{border-radius:16px}
+.account-share-body .account-primary{background:color-mix(in srgb,var(--account-accent) 55%,var(--dialog-accent));color:#111212;display:flex;align-items:center;justify-content:center;gap:12px;min-height:56px;font-size:16px;margin-top:6px;border-radius:16px;box-shadow:0 8px 18px -10px var(--account-accent)}
+.account-share-body .account-primary:hover{background:color-mix(in srgb,var(--account-accent) 35%,var(--dialog-accent))}
+.account-share-body .account-sharelinks{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.account-share-body .account-sharelinks a,.account-share-body .account-sharelinks button{height:44px;text-align:center;display:grid;place-items:center;background:var(--dialog-elevated);border:1px solid var(--dialog-border);border-radius:12px;padding:0;color:var(--dialog-text);cursor:pointer}
+.account-share-body .account-sharelinks a:hover,.account-share-body .account-sharelinks button:hover{border-color:var(--account-accent)}
+.account-share-body .account-social-mark.reddit{color:#ff6b4a}
+.account-share-body details{margin-top:auto;border:1px solid var(--dialog-border);border-radius:12px;background:var(--dialog-elevated);overflow:hidden}
+.account-share-body details summary{padding:12px 16px;justify-content:space-between;font-size:14px;font-weight:700;color:var(--dialog-text);list-style:none}
+.account-share-body details summary::-webkit-details-marker{display:none}
+.account-share-body details[open] summary{border-bottom:1px solid var(--dialog-border)}
+.account-share-body details[open] summary svg{transform:rotate(180deg)}
+.account-share-guide{padding:16px;background:var(--dialog-elevated)}
+.account-share-community-links{display:flex;flex-wrap:wrap;gap:8px}
+.account-share-community-links a{display:flex;align-items:center;gap:5px;border:1px solid var(--dialog-border);border-radius:99px;padding:6px 10px;color:var(--dialog-muted);font-size:13px;font-weight:700;text-decoration:none}
+.account-share-community-links a:hover{color:var(--dialog-text);border-color:var(--account-accent)}
+.account-share-guide ul{padding:16px 18px 16px 36px;margin:14px 0 0;background:var(--dialog-accent-soft);border:1px solid var(--dialog-border);border-radius:12px;color:var(--dialog-muted);font-size:14px;line-height:1.65}
+.account-share-guide li+li{margin-top:12px}
+.account-share-guide li::marker{color:var(--account-accent)}
+.account-share-body .account-submit{margin-top:8px;align-items:stretch;gap:8px}
+.account-share-body .account-submit-url{min-width:0;flex:1;display:flex;align-items:center;gap:10px;height:56px;padding:0 14px;background:var(--dialog-elevated);border:1px solid var(--dialog-border);border-radius:16px;color:var(--dialog-muted)}
+.account-share-body .account-submit-url input{width:100%;height:100%;padding:0;background:none;border:0;outline:none;color:var(--dialog-text);font-size:13px}
+.account-share-body .account-submit-url:focus-within{outline:2px solid var(--account-accent);outline-offset:2px}
+.account-share-body .account-submit button{display:flex;align-items:center;justify-content:center;gap:10px;min-width:110px;border-radius:16px;background:var(--account-accent);color:#111212}
+.account-share-body .account-submit button:disabled{background:var(--dialog-elevated);color:var(--dialog-subtle)}
 .account-share-body .account-share-history{min-height:auto;grid-column:1/-1}
+.account-share-toast{position:fixed;z-index:301;top:20px;left:50%;transform:translateX(-50%);width:max-content;max-width:calc(100vw - 48px);margin:0;padding:10px 16px;border-radius:10px;box-shadow:0 8px 30px var(--dialog-overlay);background:var(--dialog-message-bg);color:var(--dialog-message-text);font-size:13px;font-weight:700}
 .account-invite-dialog .account-invite-hero{background:linear-gradient(105deg,var(--account-accent),#bb33e9 65%,#e967bc);min-height:188px;color:var(--video-on-media);border:0}
 .account-invite-hero .account-kicker,.account-invite-hero p{color:var(--video-on-media)}.account-invite-hero .account-kicker:before{display:none}
 .account-invite-hero .account-hero-icon{background:var(--dialog-hero-icon-bg);color:var(--video-on-media);border:1px solid #ffffff40}
@@ -163,7 +186,7 @@
 .account-invite-rules{border-top:1px solid var(--dialog-border);padding-top:16px}.account-invite-rules strong{font-size:12px;color:var(--dialog-subtle)}.account-leaderboard{padding-left:22px}.account-leaderboard li{padding:10px;margin-bottom:8px;border-radius:12px;background:var(--dialog-accent-soft);color:var(--dialog-text);font-weight:700}.account-leaderboard li span{display:block;font-size:11px;color:var(--dialog-muted)}
 .account-invite-grid .account-referral-history{grid-column:1/-1}
 @media(max-width:600px){.account-overlay{padding:8px 0}.account-menu{width:calc(100vw - 32px)}}
-@media(max-width:700px){.account-share-body{grid-template-columns:1fr;padding:20px}.account-share-body>.account-panel{min-height:auto}.account-invite-dialog .account-invite-grid{padding:20px;grid-template-columns:1fr}.account-invite-grid .account-panel{padding:18px}.account-invite-grid .account-invite-link,.account-invite-grid .account-referral-history{grid-column:1}.account-invite-link .account-referral button{min-width:auto}}
+@media(max-width:700px){.account-dialog.account-share-dialog{max-height:calc(100dvh - 16px)}.account-share-body{grid-template-columns:1fr;padding:20px}.account-share-body>.account-panel{min-height:auto}.account-invite-dialog .account-invite-grid{padding:20px;grid-template-columns:1fr}.account-invite-grid .account-panel{padding:18px}.account-invite-grid .account-invite-link,.account-invite-grid .account-referral-history{grid-column:1}.account-invite-link .account-referral button{min-width:auto}}
 @media(prefers-reduced-motion:reduce){.account-dialog{animation:none}.account-social-grid a,.account-checkin-body .account-primary{transition:none}}
 
 /* Both popovers share one row treatment; the ordered row data owns every separator and badge. */
