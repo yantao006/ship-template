@@ -106,6 +106,10 @@ test('one shared Auth-4 dialog uses server session confirmation and does not rep
   assert.match(source('src/components/blocks/minimax-auth-card.tsx'), /onClose=\{onCloseAuth \?\? closeCode\}/);
   assert.match(provider, /\/api\/auth\/get-session/);
   assert.match(provider, /if \(!\(await serverHasSession\(\)\)\)/);
+  // The guest avatar renders the dialog before the session request can stall it.
+  assert.match(source('src/components/auth-control.tsx'), /className="replica-avatar"[\s\S]*?showImmediately: true/);
+  assert.match(provider, /const immediateAttempt = options\.showImmediately \? showDialog\(\) : null;[\s\S]*await serverHasSession\(\)/);
+  assert.match(provider, /attempt\.current !== immediateAttempt\) return false/);
   assert.match(auth4, /authClient\.emailOtp\.sendVerificationOtp/);
   assert.match(auth4, /authClient\.signIn\.emailOtp/);
   assert.match(source('src/app/api/auth/[...all]/route.ts'), /parsed\.body\.type !== 'sign-in'/);

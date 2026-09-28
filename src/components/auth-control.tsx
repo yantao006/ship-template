@@ -32,7 +32,7 @@ export function AuthControl({ copy, methods, userName, userEmail, callbackURL, l
     finally { setPending(false); }
   }
 
-  if (!userName) return authDialog ? <div className={variant === 'avatar' ? 'auth-actions replica-auth' : 'auth-actions'}>{variant === 'avatar' ? <button className="replica-avatar" type="button" aria-label={copy.login} aria-haspopup="dialog" onClick={() => void authDialog.openAuth({ source: 'navigation', intent: 'stay' })}><UserRound size={19} aria-hidden="true" /></button> : <button className="auth-button" type="button" onClick={() => void authDialog.openAuth({ source: 'navigation', intent: 'stay' })}>{copy.login}</button>}</div> : <SignInCard copy={copy} methods={methods} callbackURL={callbackURL} locale={locale} inviteRequired={inviteRequired} variant={variant} />;
+  if (!userName) return authDialog ? <div className={variant === 'avatar' ? 'auth-actions replica-auth' : 'auth-actions'}>{variant === 'avatar' ? <button className="replica-avatar" type="button" aria-label={copy.login} aria-haspopup="dialog" onClick={() => void authDialog.openAuth({ source: 'navigation', intent: 'stay', showImmediately: true })}><UserRound size={19} aria-hidden="true" /></button> : <button className="auth-button" type="button" onClick={() => void authDialog.openAuth({ source: 'navigation', intent: 'stay' })}>{copy.login}</button>}</div> : <SignInCard copy={copy} methods={methods} callbackURL={callbackURL} locale={locale} inviteRequired={inviteRequired} variant={variant} />;
   return <div className={variant === 'avatar' ? 'auth-actions replica-auth' : 'auth-actions'} ref={area}>
     {variant === 'avatar' ? <>
       <AvatarTrigger buttonRef={trigger} name={userName} label={copy.name} open={open} onClick={() => setOpen(value => !value)} />
