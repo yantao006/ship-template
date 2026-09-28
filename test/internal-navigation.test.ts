@@ -34,8 +34,6 @@ test('account, video tool and auth internal entries navigate with Link while ext
   const card = source('auth/minimax-auth-card');
   for (const id of ['terms', 'privacy', 'verifyEmail']) assert.match(card, new RegExp(`<Link href=\\{[^>]*routePath\\(locale, '${id}'\\)`));
   assert.match(source('auth/sign-in-card'), /<Link className="auth-switch" href=\{`\$\{verifyPath\}/);
-  assert.match(source('auth/legacy/auth-4'), /<Link href=\{`\$\{routePath\(locale, "verifyEmail"\)/);
-  assert.match(source('auth/legacy/auth-4'), /<a href=\{`mailto:/);
   for (const file of ['verify-email', 'reset-password']) {
     assert.match(source(`auth/${file}`), /<Link className="auth-switch" href=\{routePath\(locale, 'home'\)\}/);
   }

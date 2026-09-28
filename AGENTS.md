@@ -13,7 +13,7 @@ The current example has site-local accounts, invitation primitives, configurable
 - **One navigation path per purpose:** the navigation has one language control and one sign-in entry; its sign-in card lists only the methods enabled in `site/auth.config.ts`.
 - **Theme owns color:** `site/theme.config.ts` assembles `site/theme/` foundation and region palettes; `src/lib/theme-tokens.ts` generates color and semantic spacing/type/radius/motion tokens in `src/app/layout.tsx`. `src/components/styles/controls.css`, imported by `globals.css`, owns shared navigation items, solid/outline buttons, inputs and entrance motion; feature CSS retains surface colors and layout.
   `src/lib/theme-mode.ts` owns the root mode transitions; the layout freezes the first page's default and the shared header toggles the root mode without resetting it on client navigation, while legacy CSS surfaces still await migration.
-- **Pages compose sections:** `src/components/home/sections/HomePage.tsx` orders six content sections; five remain empty scaffolds, and the video tool renders its existing implementation. `src/components/shell/site-shell.tsx` owns one persistent header, flexible `main.site-main`, footer, and shared source-inspired login dialog for home, pricing, dashboard, and credits; the licensed Auth-4 fallback retains its original layout while its internal verification link uses client navigation.
+- **Pages compose sections:** `src/components/home/sections/HomePage.tsx` orders six content sections; five remain empty scaffolds, and the video tool renders its existing implementation. `src/components/shell/site-shell.tsx` owns one persistent header, flexible `main.site-main`, footer, and shared source-inspired login dialog for home, pricing, dashboard, and credits.
 - **Long-running work is observable:** video generation uses an asynchronous task and progress flow, while the server validates costs and records credit movements in the ledger.
 
 ## Overall tech stack
@@ -128,7 +128,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   ├── components/                   # Feature-level UI composition and client controls
 │   │   ├── account/                  # Account pages, sidebar, profile, menus, purchase dialog, header account adapter
 │   │   ├── auth/                     # Sign-in, OTP, recovery, handoff, shared headless flows
-│   │   │   └── legacy/auth-4.tsx     # Licensed fallback layout; password fallback remains separate
+│   │   │   └── minimax-auth-card.tsx  # Live email-code sign-in card; password fallback remains separate
 │   │   ├── pricing/                  # Pricing page, checkout, commercial license, shared plan-display.ts rules
 │   │   ├── workspace/                # Persistent dashboard/credits sidebar and workspace content
 │   │   ├── home/                     # Session-aware home entry and referral capture
@@ -239,11 +239,10 @@ On each request, production login accepts the Worker `SITE_URL` only when it equ
 `ensureSignupCredits` checks invitation eligibility and grants a signup lot with the user ID as its stable source ID; when email verification is enabled, it waits until the emailed link marks the account verified.
 `src/app/api/invites/redeem/route.ts` uses the shared session and browser-write guard, redeems the code through an atomic D1 batch, and grants the eligible user credits.
 `src/lib/invites.ts` owns invite code format, normalization, inventory reads, creation, and revocation.
-`src/components/shell/site-shell.tsx` mounts one `AuthDialogProvider` for public pages; `auth/auth-control.tsx` triggers the source-inspired copy in `auth/minimax-auth-card.tsx` while licensed `auth/legacy/auth-4.tsx` keeps its original layout.
+`src/components/shell/site-shell.tsx` mounts one `AuthDialogProvider` for public pages; `auth/auth-control.tsx` triggers the live source-inspired card in `auth/minimax-auth-card.tsx`.
 Below 768px the shared card uses the existing bottom drawer; email sign-in sends a mailed six-digit code and replaces the visible card with a wide Auth-6 dialog only after a successful send; the back action restores the card while close exits sign-in, and successful code sign-in follows the existing full-page reload.
 The standalone desktop callback keeps `sign-in-card.tsx` as a fallback outside that shell.
 `src/lib/auth-client.ts` owns the browser auth client, and `src/lib/browser-nav-copy.ts` assembles navigation and auth copy without sending mail strings to client props.
-Auth-4 uses Tailwind v4 theme variables and utilities without a global base reset via `postcss.config.mjs` and `src/app/globals.css`.
 When `email.passwordReset` is on, the forgot-password link is sent through `EmailProvider`; `src/components/auth/verify-email.tsx` provides the verification waiting and resend page; `src/components/auth/reset-password.tsx` accepts the new password; desktop handoff uses `src/lib/desktop-auth.ts` to validate a configured app scheme before `/api/auth/desktop-handoff` issues a session-bearing return URL.
 
 ### Credits, tasks, and provider seams
