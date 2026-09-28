@@ -12,7 +12,7 @@ const dialogs = ['checkin', 'share', 'invite', 'contact', 'feedback', 'plans', '
 const activity = { balance: 10, referralCode: '0123456789abcdef0123456789abcdef', checkInDays: [], submissions: [], referralCount: 0, purchases: [], leaderboard: [], referralHistory: [] };
 const render = (dialog: NonNullable<Dialog>) => renderToStaticMarkup(createElement(AccountDialogs, {
   dialog, onClose: () => {}, copy, labels: { credits: messages.nav.availableCredits }, settings: site.account,
-  plans: site.plans.map(plan => ({ ...plan, name: plan.id })), activity, busy: false, error: '', notice: '',
+  plans: site.plans.map(plan => ({ ...plan, name: plan.id, checkoutEnabled: false })), pricing: messages.pricing, activity, busy: false, error: '', notice: '',
   locale: 'en', dateLocale: 'en-US', siteUrl: site.url, brand: site.brand,
   icons: { checkin: createElement('svg'), share: createElement('svg'), invite: createElement('svg') },
   onCopyText: () => {}, onAction: async () => true, onRefresh: () => {},
@@ -30,9 +30,19 @@ test('all seven account dialogs retain their accessible shell and destination co
     assert.match(markup, /class="account-hero account-checkin-hero/);
     assert.match(markup, /class="account-hero-icon"/);
   }
-  assert.match(render('plans'), /href="\/en\/pricing"/);
-  assert.match(render('contact'), /mailto:/);
+  assert.match(render('plans'), /Get Started/);
+  assert.match(render('feedback'), /Feedback &amp; Get Credits/);
+  const contact = render('contact');
+  assert.match(contact, /mailto:support@awesomejev\.link/);
+  assert.match(contact, /Have questions or feedback about Awesomejev Test Video\?/);
+  assert.match(contact, /class="account-body account-contact"/);
+  assert.doesNotMatch(contact, /Questions about your account or payment/);
   assert.match(render('invoices'), /mailto:/);
+  const css = readFileSync('src/components/blocks/account-popovers.css', 'utf8');
+  assert.match(css, /\.account-contact-overlay\{backdrop-filter:none\}/);
+  for (const id of ['account', 'subscription', 'invoices']) {
+    assert.match(css, new RegExp(`\\.account-menu \\.account-row-${id} \\.account-row-icon\\{color:var\\(--account-tone-`));
+  }
 });
 
 test('invite card uses the official claim link, true empty data and configured rewards', () => {

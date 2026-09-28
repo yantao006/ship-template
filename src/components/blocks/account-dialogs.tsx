@@ -4,15 +4,16 @@ import React, { useEffect, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { FaFacebookF, FaLinkedinIn, FaRedditAlien, FaTelegram, FaWhatsapp, FaXTwitter } from 'react-icons/fa6';
-import { Check, ChevronDown, CircleHelp, Copy, Crown, ExternalLink, Gift, Link2, Mail, MessageCircle, MoreHorizontal, RefreshCw, Send, Share2, ShieldCheck, Trophy, Users, X } from 'lucide-react';
+import { Check, ChevronDown, CircleHelp, Copy, Crown, ExternalLink, Gift, Link2, Mail, MoreHorizontal, RefreshCw, Send, Share2, ShieldCheck, Trophy, Users, X } from 'lucide-react';
 import { routePath } from '@/lib/route-paths';
 import { checkinInviteShare } from '@/lib/checkin-invite';
 import { useDismissableLayer } from '@/lib/use-dismissable-layer';
 import type en from '@site/messages/en';
 import { dailyRewardState } from './account-popover-state';
+import { BuyCreditsContent, PurchaseConfetti, type PricingCopy } from './buy-credits-dialog';
 
 export type AccountCopy = (typeof en)['account'];
-export type Plan = { id: string; billing: 'once' | 'month' | 'year'; credits: number; amount: string; currency: string; name: string };
+export type Plan = { id: string; tier?: string; billing: 'once' | 'month' | 'year'; credits: number; amount: string; currency: string; name: string; checkoutEnabled: boolean };
 export type Network = import('@/lib/site-config-types').ShareNetworkName;
 export type Settings = import('@/lib/config').SiteConfig['account'];
 export type Activity = { balance: number; referralCode: string; checkInDays: string[]; submissions: { id: string; url: string; status: string; created_at: number }[]; referralCount: number; purchases: { source_id: string; granted: number; created_at: number }[]; leaderboard: { name: string; total: number }[]; referralHistory: { name: string; created_at: number }[] };
@@ -30,22 +31,21 @@ function PopupDialog({ title, closeLabel, onClose, children, wide = false, varia
   const overlay = useRef<HTMLDivElement>(null);
   useDismissableLayer({ active: true, area: ref, backdrop: overlay, onClose, trapFocus: true });
   useEffect(() => { const overflow = document.body.style.overflow; document.body.style.overflow = 'hidden'; return () => { document.body.style.overflow = overflow; }; }, []);
-  return <div className="account-overlay" ref={overlay}><div className={`account-dialog${wide ? ' wide' : ''} account-${variant}-dialog`} ref={ref} role="dialog" aria-modal="true" aria-labelledby="account-dialog-title"><button type="button" className="account-close" aria-label={closeLabel} onClick={onClose}><X size={20} /></button><h2 id="account-dialog-title">{title}</h2>{children}</div></div>;
+  return <div className={`account-overlay account-${variant}-overlay`} ref={overlay}><div className={`account-dialog${wide ? ' wide' : ''} account-${variant}-dialog`} ref={ref} role="dialog" aria-modal="true" aria-labelledby="account-dialog-title"><button type="button" className="account-close" aria-label={closeLabel} onClick={onClose}><X size={20} /></button><h2 id="account-dialog-title">{title}</h2>{children}</div>{variant === 'plans' && <PurchaseConfetti />}</div>;
 }
 
 function DialogHero({ icon, kicker, title, lead, invite = false }: { icon: ReactNode; kicker: ReactNode; title: string; lead: ReactNode; invite?: boolean }) {
   return <div className={`account-hero account-checkin-hero${invite ? ' account-invite-hero' : ''}`}><span className="account-hero-icon">{icon}</span><div><span className="account-kicker">{kicker}</span><h2>{title}</h2><p>{lead}</p></div></div>;
 }
 
-export function AccountDialogs({ dialog, onClose, copy, labels, settings, plans, activity, busy, error, notice, locale, dateLocale, siteUrl, brand, icons, onCopyText, onAction, onRefresh }: {
-  dialog: NonNullable<Dialog>; onClose: () => void; copy: AccountCopy; labels: { credits: string }; settings: Settings; plans: Plan[];
+export function AccountDialogs({ dialog, onClose, copy, labels, settings, plans, pricing, activity, busy, error, notice, locale, dateLocale, siteUrl, brand, icons, onCopyText, onAction, onRefresh }: {
+  dialog: NonNullable<Dialog>; onClose: () => void; copy: AccountCopy; labels: { credits: string }; settings: Settings; plans: Plan[]; pricing: PricingCopy;
   activity: Activity | null; busy: boolean; error: string; notice: string; locale: string; dateLocale: string; siteUrl: string; brand: string;
   icons: { checkin: ReactNode; share: ReactNode; invite: ReactNode };
   onCopyText: (text: string) => void; onAction: (kind: 'checkin' | 'share', postUrl?: string) => Promise<boolean>; onRefresh: () => void;
 }) {
   const [postUrl, setPostUrl] = useState('');
   const shareDetailsRef = useRef<HTMLDetailsElement>(null);
-  const [planBilling, setPlanBilling] = useState<'once' | 'month' | 'year'>('year');
   const [detailsOpen, setDetailsOpen] = useState(false);
   const { claimedToday, completed: streakDays, nextClaimAt } = dailyRewardState(activity?.checkInDays ?? [], new Date());
   const nextClaim = nextClaimAt.toLocaleString(dateLocale);
@@ -91,8 +91,9 @@ export function AccountDialogs({ dialog, onClose, copy, labels, settings, plans,
         </section>
       </div>
     </>}
-    {dialog === 'contact' || dialog === 'feedback' ? <div className="account-body account-contact">{dialog === 'contact' ? <CircleHelp size={28}/> : <MessageCircle size={28}/>}<p>{dialog === 'contact' ? copy.contactLead : copy.feedbackLead}</p><a href={`mailto:${dialog === 'contact' ? settings.contactEmail : settings.feedbackEmail}`}>{dialog === 'contact' ? settings.contactEmail : settings.feedbackEmail}</a></div> : null}
-    {dialog === 'plans' && <div className="account-body"><div className="account-tabs">{(['month','year','once'] as const).map(period => <button key={period} className={planBilling === period ? 'selected' : ''} onClick={() => setPlanBilling(period)}>{period === 'month' ? copy.month : copy[period]}</button>)}</div><div className="account-plans">{plans.filter(plan => plan.billing === planBilling).map(plan => <Link key={plan.id} href={routePath(locale, 'pricing')}><h3>{plan.name}</h3><strong>{plan.currency} {plan.amount}</strong><span>{plan.credits} {labels.credits}</span></Link>)}</div><p>{copy.planHint}</p><Link className="account-primary" href={routePath(locale, 'pricing')}>{copy.viewPlans}</Link></div>}
+    {dialog === 'contact' && <div className="account-body account-contact"><Mail size={48} strokeWidth={2} aria-hidden="true"/><p>{copy.contactLead.replace('{brand}', brand)}</p><a href={`mailto:${settings.contactEmail}`}>{settings.contactEmail}</a></div>}
+    {dialog === 'feedback' && <div className="account-body account-feedback-body"><p>{copy.feedbackLead.replace('{brand}', brand)}</p><a href={`mailto:${settings.feedbackEmail}`}>{settings.feedbackEmail}</a><p>{copy.feedbackReview.replace('{brand}', brand)}</p></div>}
+    {dialog === 'plans' && <BuyCreditsContent plans={plans} copy={copy} pricing={pricing} brand={brand} locale={locale} />}
     {dialog === 'invoices' && <div className="account-body"><p>{copy.invoiceLead}</p>{activity?.purchases.length ? activity.purchases.map(item => <div className="account-entry" key={item.source_id}><span><b>{item.source_id}</b><small>{new Date(item.created_at).toLocaleDateString(dateLocale)}</small></span><strong>+{item.granted} {labels.credits}</strong></div>) : <div className="account-panel">{copy.noInvoices}</div>}<a className="account-secondary" href={`mailto:${settings.contactEmail}?subject=${encodeURIComponent(copy.requestInvoice)}`}><Mail size={16}/>{copy.requestInvoice}</a></div>}
     {(error || (dialog !== 'share' && dialog !== 'invite' && notice)) && <p className={error ? 'account-error' : 'account-message'} role={error ? 'alert' : 'status'}>{error || notice}</p>}
   </PopupDialog>{(dialog === 'share' || dialog === 'invite') && notice && !error && createPortal(<p className="account-share-toast" role="status">{dialog === 'share' && notice === copy.copied ? copy.shareCopied : notice}</p>, document.body)}</>;

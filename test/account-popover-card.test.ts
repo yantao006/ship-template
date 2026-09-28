@@ -20,7 +20,7 @@ test('row badge is absent unless supplied and an unboxed badge receives its row 
 
 test('row divider is controlled solely by the row input', () => {
   assert.doesNotMatch(renderRow(), /account-row-divider/);
-  assert.match(renderRow({ dividerBelow: true }), /class="account-row account-row-divider"/);
+  assert.match(renderRow({ dividerBelow: true }), /class="account-row account-row-example account-row-divider"/);
 });
 
 test('boxed badge uses one named row tone; a row without a badge tones its label', () => {
@@ -28,7 +28,7 @@ test('boxed badge uses one named row tone; a row without a badge tones its label
   assert.match(markup, /class="tone-tag tone-account account-row-badge boxed"/);
   assert.match(markup, /--row-tone:var\(--account-tone-account\)/);
   assert.doesNotMatch(markup, /tone-label/);
-  assert.match(renderRow({ tone: 'danger' }), /class="account-row tone-label"/);
+  assert.match(renderRow({ tone: 'danger' }), /class="account-row account-row-example tone-label"/);
   assert.doesNotMatch(renderRow({ tone: 'danger' }), /account-row-badge/);
 });
 

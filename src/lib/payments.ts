@@ -51,6 +51,9 @@ export async function handlePaymentWebhook(env: Env, request: Request, now = Dat
       settled.billing !== plan.billing || settled.amount !== product.amount || (settled.total && settled.total !== product.amount) ||
       settled.currency !== product.currency ||
       (settled.billing !== 'once' && settled.billingPeriod !== product.billingPeriod)) return Response.json({ message: 'failed' });
+  // A delayed renewal or replay for a deleted account must not recreate orphaned credits.
+  const user = await env.DB.prepare('SELECT id FROM user WHERE id=?').bind(settled.userId).first();
+  if (!user) return Response.json({ message: 'success' });
   try {
     const outcome = await grantVerifiedPayment(env.DB, settled, site.plans, now);
     if (outcome === 'rejected') return Response.json({ message: 'failed' });

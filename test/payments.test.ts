@@ -59,6 +59,9 @@ before(async () => {
   mf = new Miniflare({ modules: true, script: 'export default { fetch() { return new Response("ok") } }', d1Databases: { DB: 'test-payments' } });
   db = await mf.getD1Database('DB') as unknown as D1Database;
   for (const sql of readFileSync('migrations/0001_initial.sql', 'utf8').split(';').map(s => s.trim()).filter(Boolean)) await db.prepare(sql).run();
+  for (const id of ['user-renewal', 'user-real-pack', 'user-real-year', 'user-real-month']) {
+    await db.prepare('INSERT INTO user(id,name,email,created_at,updated_at) VALUES (?,?,?,?,?)').bind(id, id, `${id}@example.com`, 1, 1).run();
+  }
 });
 after(async () => mf?.dispose());
 
@@ -121,6 +124,12 @@ test('a paid monthly renewal grants the next month once, not extra credits in th
   const lots = await db.prepare("SELECT granted FROM credit_lot WHERE source='subscription_month' AND user_id='user-renewal'").all<{ granted: number }>();
   assert.deepEqual(lots.results.map(lot => lot.granted), [1500, 1500]);
   assert.equal(await balance(db, 'user-renewal', october), 1500);
+});
+
+test('a delayed signed callback for a deleted account is acknowledged without restoring credits', async () => {
+  const body = event('order.completed', 'starter', 'pay-deleted', 'deleted-user');
+  assert.equal((await (await handlePaymentWebhook({ ...env, DB: db }, webhook(body))).json()).message, 'success');
+  assert.equal(await balance(db, 'deleted-user'), 0);
 });
 
 test('test catalog matches every displayed price, period and unique product', () => {

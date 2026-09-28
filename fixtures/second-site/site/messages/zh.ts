@@ -5,6 +5,7 @@ import mail from './zh/mail';
 import invites from './zh/invites';
 import handoff from './zh/handoff';
 import account from './zh/account';
+import accountPages from './zh/account-pages';
 import dashboard from './zh/workspace';
 import credits from './zh/credits';
 import pricing from './zh/pricing';
@@ -23,5 +24,5 @@ export default {
     credits: '可用积分',
   },
   nav: navigation,
-  footer, signIn, mail, invites, handoff, account, dashboard, credits, pricing, planCopy, videoTool,
+  footer, signIn, mail, invites, handoff, account, accountPages, dashboard, credits, pricing, planCopy, videoTool,
 };

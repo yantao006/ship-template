@@ -2,9 +2,9 @@
 
 **问题**
 1. 我点实现卡片的 **Quick copy**，再原生粘贴到卡片内的 URL 输入框，得到的文案是“Found a site to preview MiniMax H3 video and AI image requests, with free daily credits”，末尾链接为：
-   
+
    https://awesomejev.link
-   
+
    对标同样操作得到“Found a site with free daily MiniMax H3 videos and free images”，末尾是对标站地址。实现文案如实强调 *preview*，值得保留；但分享链接与本轮打开的预览站不同，收件人能否到达目标页面**无法判断**，因为这一轮只操作了指定的两个页面。下一轮应从实际分享入口打开该目标链接，确认落地页。
 
 **值得留下**：两边点击 **Quick copy** 后按钮都仍显示“Quick copy”，并出现“Message and link copied”提示；展开 **Where can I share?** 后都有 Reddit、X、Facebook、LinkedIn 链接及公开、真实社区的三条说明。空 URL 输入框可聚焦，空值时 **Submit** 不可点；关闭叉也都能关闭卡片。

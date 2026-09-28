@@ -131,6 +131,9 @@ test('video workbench and account dialogs use paired theme surfaces with one tag
   }
   assert.deepEqual(Object.keys(theme.dialog.light).sort(), Object.keys(theme.dialog.dark).sort());
   assert.deepEqual(Object.keys(theme.videoTool.light).sort(), Object.keys(theme.videoTool.dark).sort());
+  assert.deepEqual(Object.keys(theme.purchase.light).sort(), Object.keys(theme.purchase.dark).sort());
+  assert.match(sheet, /--purchase-canvas:/);
+  assert.match(sheet, /--popover-menu-end:/);
   assert.notEqual(theme.dialog.light.canvas, theme.dialog.dark.canvas);
   assert.notEqual(theme.videoTool.light.panel, theme.videoTool.dark.panel);
   const globals = read('src/app/globals.css');

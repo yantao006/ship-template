@@ -5,18 +5,20 @@ import { useRouter } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';
 import { requestJson } from '@/lib/json-request';
 import { useDismissableLayer } from '@/lib/use-dismissable-layer';
-import { Coins, FileText, Gift, LogOut, Mail, MessageCircle, Plus, Settings as SettingsIcon, Share2, ShieldCheck, Sparkles, X } from 'lucide-react';
+import { Coins, CreditCard, FileText, Gift, LogOut, Mail, MessageCircle, Plus, Settings as SettingsIcon, Share2, ShieldCheck, Sparkles, X } from 'lucide-react';
 import { routePath, sitePath } from '@/lib/route-paths';
 import { AccountPopoverCard, type PopoverRow } from './account-popover-card';
 import { AvatarTrigger, ProfileHeader } from './account-profile';
 import { AccountDialogs, type AccountCopy, type Activity, type Dialog, type Plan, type Settings } from './account-dialogs';
+import type { PricingCopy } from './buy-credits-dialog';
 import './account-popovers.css';
+import './buy-credits-dialog.css';
 
 type Menu = 'account' | 'credits' | null;
 const icons = { sparkles: Sparkles, share: Share2, gift: Gift, mail: Mail, message: MessageCircle } satisfies Record<import('@/lib/site-config-types').AccountIconName, typeof Sparkles>;
 function FeatureIcon({ name }: { name: string }) { const Icon = icons[name as keyof typeof icons] ?? Sparkles; return <Icon aria-hidden="true" />; }
 
-export function AccountPopovers({ user, balance, locale, dateLocale, copy, labels, settings, palette, plans, siteUrl, brand }: { user: { name: string; email: string; image?: string | null }; balance: number; locale: string; dateLocale: string; copy: AccountCopy; labels: { credits: string; logout: string; signOutFailed: string }; settings: Settings; palette: { accent: string; accentEnd: string; accentText: string }; plans: Plan[]; siteUrl: string; brand: string }) {
+export function AccountPopovers({ user, balance, locale, dateLocale, copy, labels, settings, palette, plans, pricing, siteUrl, brand }: { user: { name: string; email: string; image?: string | null }; balance: number; locale: string; dateLocale: string; copy: AccountCopy; labels: { credits: string; logout: string; signOutFailed: string }; settings: Settings; palette: { accent: string; accentEnd: string; accentText: string }; plans: Plan[]; pricing: PricingCopy; siteUrl: string; brand: string }) {
   const router = useRouter();
   const [menu, setMenu] = useState<Menu>(null);
   const [dialog, setDialog] = useState<Dialog>(null);
@@ -43,7 +45,8 @@ export function AccountPopovers({ user, balance, locale, dateLocale, copy, label
     return () => window.removeEventListener('account-referral-claimed', claimed);
   }, [copy.referralNotice]);
   useDismissableLayer({ active: !!menu && !dialog, area, trigger: menu === 'account' ? trigger : creditTrigger, onClose: () => setMenu(null) });
-  const show = (target: Dialog) => { setMenu(null); setError(''); setNotice(''); setDialog(target); void refresh(); };
+  const show = useCallback((target: Dialog) => { setMenu(null); setError(''); setNotice(''); setDialog(target); void refresh(); }, [refresh]);
+  useEffect(() => { const open = () => show('plans'); window.addEventListener('open-buy-credits', open); return () => window.removeEventListener('open-buy-credits', open); }, [show]);
   const currentBalance = activity?.balance ?? balance;
   async function copyText(text: string) {
     try { await navigator.clipboard.writeText(text); setNotice(copy.copied); } catch { setError(copy.copyFailed); }
@@ -79,9 +82,10 @@ export function AccountPopovers({ user, balance, locale, dateLocale, copy, label
     ...rewardRows().map((row, index, rows) => ({ ...row, dividerBelow: index === rows.length - 1 })),
     { id: 'license', icon: <ShieldCheck/>, label: copy.license, href: sitePath(locale, settings.commercialUseHref), onClick: () => setMenu(null) },
     { id: 'contact', icon: <FeatureIcon name={settings.icons.contact}/>, label: copy.contact, onClick: () => show('contact'), dividerBelow: true },
-    { id: 'account', icon: <SettingsIcon/>, label: copy.account, href: routePath(locale, 'dashboard'), onClick: () => setMenu(null) },
-    { id: 'invoices', icon: <FileText/>, label: copy.invoices, onClick: () => show('invoices') },
-    { id: 'center', icon: <Coins/>, label: copy.center, href: routePath(locale, 'credits'), onClick: () => setMenu(null), dividerBelow: true },
+    { id: 'account', icon: <SettingsIcon/>, label: copy.account, href: routePath(locale, 'account'), onClick: () => setMenu(null) },
+    { id: 'subscription', icon: <CreditCard/>, label: copy.subscription, href: routePath(locale, 'subscription'), onClick: () => setMenu(null) },
+    { id: 'invoices', icon: <FileText/>, label: copy.invoices, href: routePath(locale, 'invoices'), onClick: () => setMenu(null) },
+    { id: 'center', icon: <Coins/>, label: copy.center, href: routePath(locale, 'creditCenter'), onClick: () => setMenu(null), dividerBelow: true },
     { id: 'signout', icon: <LogOut/>, label: labels.logout, tone: 'danger', disabled: busy, onClick: () => void signOut() },
   ];
   const accountStyle = { '--account-accent': palette.accent, '--account-accent-end': palette.accentEnd, '--account-accent-text': palette.accentText } as CSSProperties;
@@ -92,6 +96,6 @@ export function AccountPopovers({ user, balance, locale, dateLocale, copy, label
       {menu === 'account' && <AccountPopoverCard role="menu" label={copy.menu} className="account-menu" header={<ProfileHeader name={user.name} email={user.email} image={user.image} />} rows={accountRows} />}</div>
   </div>
   {!dialog && (error || notice) && <p className="account-toast" role={error ? 'alert' : 'status'}>{error || notice}<button aria-label={copy.close} onClick={() => { setError(''); setNotice(''); }}><X size={15}/></button></p>}
-  {dialog && <div style={accountStyle}><AccountDialogs key={dialog} dialog={dialog} onClose={closeDialog} copy={copy} labels={labels} settings={settings} plans={plans} activity={activity} busy={busy} error={error} notice={notice} locale={locale} dateLocale={dateLocale} siteUrl={siteUrl} brand={brand} icons={{ checkin: <FeatureIcon name={settings.icons.checkin}/>, share: <FeatureIcon name={settings.icons.share}/>, invite: <FeatureIcon name={settings.icons.invite}/> }} onCopyText={text => void copyText(text)} onAction={action} onRefresh={() => void refresh()} /></div>}
+  {dialog && <div style={accountStyle}><AccountDialogs key={dialog} dialog={dialog} onClose={closeDialog} copy={copy} labels={labels} settings={settings} plans={plans} pricing={pricing} activity={activity} busy={busy} error={error} notice={notice} locale={locale} dateLocale={dateLocale} siteUrl={siteUrl} brand={brand} icons={{ checkin: <FeatureIcon name={settings.icons.checkin}/>, share: <FeatureIcon name={settings.icons.share}/>, invite: <FeatureIcon name={settings.icons.invite}/> }} onCopyText={text => void copyText(text)} onAction={action} onRefresh={() => void refresh()} /></div>}
   </>;
 }
