@@ -45,7 +45,7 @@ test('product One Tap is enabled only for signed-out homepage visitors with Goog
   assert.equal(productAuth.google.enabled, true);
   assert.equal(productAuth.google.oneTapEnabled, true);
   assert.equal(secondSiteAuth.google.oneTapEnabled, false);
-  const home = readFileSync('src/components/home-content.tsx', 'utf8');
+  const home = readFileSync('src/components/home/home-content.tsx', 'utf8');
   assert.match(home, /!session\s*&&\s*auth\.google\.enabled\s*&&\s*auth\.google\.oneTapEnabled\s*&&\s*env\.GOOGLE_CLIENT_ID\s*&&\s*<GoogleOneTap\b/);
   assert.match(home, /const \{ session \} = await accountSnapshot\(env, requestHeaders\)/);
 });
