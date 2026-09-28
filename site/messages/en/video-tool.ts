@@ -1,4 +1,4 @@
-import { videoTemplatesEn } from '../video-templates-en';
+import { videoTemplatesEn } from './video-templates';
 
 export default {
     title: 'Shape a clip', description: 'Preview the request. Nothing is generated or charged yet.',

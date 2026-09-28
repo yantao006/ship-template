@@ -1,4 +1,4 @@
-import type { SiteConfig } from '../src/lib/config';
+import type { SiteConfig } from '../src/lib/site-config-types';
 
 const languages = [
   { code: 'en', name: 'English', flag: '🇺🇸', dateLocale: 'en-US' },

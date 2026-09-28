@@ -11,7 +11,7 @@ The current example has site-local accounts, invitation primitives, configurable
 - **One language per file:** `site/messages/en.ts` and `site/messages/zh.ts` compose matching per-module message files in `site/messages/en/` and `site/messages/zh/`; locale-aware pages select one set at a time.
   `site/site.config.ts` owns language entries; `src/lib/routes.ts` owns server navigation metadata, while `src/lib/route-paths.ts` holds client-safe route paths.
 - **One navigation path per purpose:** the navigation has one language control and one sign-in entry; its sign-in card lists only the methods enabled in `site/auth.config.ts`.
-- **Theme owns color:** `site/theme.config.ts` defines paired light/dark palettes, top-bar and account-card chrome, auth-card, dialog, video-tool and pricing surfaces, row tones, default modes, and account accents; `src/lib/theme-tokens.ts` generates the stylesheet in `src/app/layout.tsx`.
+- **Theme owns color:** `site/theme.config.ts` assembles `site/theme/` foundation and region palettes; `src/lib/theme-tokens.ts` generates the stylesheet in `src/app/layout.tsx`.
   `src/lib/theme-mode.ts` owns the root mode transitions; the layout freezes the first page's default and the shared header toggles the root mode without resetting it on client navigation, while legacy CSS surfaces still await migration.
 - **Pages compose sections:** `src/components/sections/HomePage.tsx` orders six content sections; five remain empty scaffolds, and the video tool renders its existing implementation. `src/components/site-shell.tsx` owns one persistent header, flexible `main.site-main`, footer, and shared source-inspired login dialog for home, pricing, dashboard, and credits; the licensed Auth-4 fallback retains its original layout while its internal verification link uses client navigation.
 - **Long-running work is observable:** video generation uses an asynchronous task and progress flow, while the server validates costs and records credit movements in the ledger.
@@ -90,14 +90,15 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   ├── site.config.ts                # Brand, URL, resources, email, signup and account rewards
 │   ├── auth.config.ts                # Login methods, invitations, desktop schemes, Turnstile
 │   ├── database.config.ts            # D1 binding and migration directory
-│   ├── theme.config.ts               # Light/dark palettes, mode defaults, accent tones and font
+│   ├── theme.config.ts               # Stable theme entry assembling site/theme/ regions
+│   ├── theme/                       # Foundation, chrome, auth-card, dialog, video-tool, pricing, purchase, mail palettes
 │   ├── video-tool.config.ts          # Landing tool structure, models, references, preview assets
-│   ├── video-tool-templates.config.ts # Image template ids and asset paths
+│   ├── video-tool/templates.ts       # Image template ids and asset paths
 │   └── messages/                     # Locale-specific copy with matching message keys
 │       ├── en.ts, zh.ts              # Locale-specific message composition
 │       ├── en/, zh/                  # Matching per-module navigation, sign-in, mail, invites, handoff, account, workspace, credits, pricing, video-tool copy
-│       ├── video-templates-en.ts     # English image-template titles and descriptions
-│       ├── video-templates-zh.ts     # Chinese image-template titles and descriptions
+│       ├── en/video-templates.ts     # English image-template titles and descriptions
+│       ├── zh/video-templates.ts     # Chinese image-template titles and descriptions
 │       └── index.ts                  # Locale-to-message map
 ├── src/                               # Application routes, presentation, and services
 │   ├── middleware.ts                 # Forwards route locale to the root layout
@@ -166,7 +167,9 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │   ├── invite-admin.tsx          # Client code inventory and actions
 │   │   └── desktop-handoff.tsx       # Client app-return request and redirect
 │   └── lib/                          # Business logic, config exports, and integration seams
-│       ├── config.ts                 # Typed site/auth/theme/database contracts and compiled choices
+│       ├── config.ts                 # Compiled choices, stable type re-exports and helpers
+│       ├── site-config-types.ts      # Site/auth/theme/database types without site-data imports
+│       ├── message-shape.ts          # Locale copy value-shape checker for symmetric key parity
 │       ├── routes.ts                 # Server navigation, request-locale and initial shell mode lookup
 │       ├── route-paths.ts            # Client-safe localized route primitives
 │       ├── checkin-invite.ts         # Check-in invite URL, copy payload and social share targets
@@ -218,6 +221,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
     ├── ledger.test.ts               # Concurrent spend, refunds, and monthly grants
     ├── home-sections.test.ts        # Homepage section scaffold order and stable ids
     ├── theme-guards.test.ts         # Palette parity, legacy literal baseline, duplicate-selector guard
+    ├── site-directory-contract.test.ts # Template IDs, bilingual copy, local assets and plan invariants
     ├── payments.test.ts             # Waffo signature, one-time grant, monthly grant, and replay
     ├── pricing-port.test.ts         # Reference catalog, feature lists, disabled checkout, locale/theme guards
     └── video-tool.test.ts           # Tool helpers and locale copy shape
@@ -242,10 +246,10 @@ A new capability can be a new `src/lib/` service called by an API endpoint, a se
 
 ### Configuration and localization
 
-`src/lib/config.ts` declares the site, auth, and database config contracts; site files use `satisfies` to check build-time choices, while `wrangler.jsonc` declares matching live resources.
+`src/lib/site-config-types.ts` declares site, auth, database and theme contracts without loading site data; `src/lib/config.ts` re-exports the types and assembles choices, while `wrangler.jsonc` declares matching live resources.
 `scripts/site-check.ts` compares the Worker name, D1/R2/Queue names, auth shape, email binding, callback origin, and required secret names before publication.
 `site/messages/en.ts` and `site/messages/zh.ts` compose matching per-module copy under `site/messages/{en,zh}/`, including separate mail, sign-in, invites, handoff, account, workspace, credits, pricing, footer, and video-tool files; `src/app/[locale]/` and `src/components/language-control.tsx` select copy without duplicating business logic.
-`site/theme.config.ts` provides same-key light and dark palettes, paired top-bar/account-card/auth-card/dialog/video-tool/pricing/purchase colors, an email-only palette, row tones, mode defaults, and account colors; `src/lib/theme-tokens.ts` generates the CSS token stylesheet in `src/app/layout.tsx` instead of inline body styles.
+`site/theme.config.ts` assembles the foundation and paired region palettes in `site/theme/`, plus the single email-only palette; `src/lib/theme-tokens.ts` generates the CSS token stylesheet in `src/app/layout.tsx` instead of inline body styles.
 The middleware marks whether the first route uses the public shell; the root layout applies that route's default through `data-mode="auto"`, and `ThemeModeInitializer` freezes it on `<html>` before client navigation. `ReplicaNavigation` reads the document mode and toggles it through `src/lib/theme-mode.ts`, preserving the selected mode across page changes.
 Header language changes use App Router navigation to preserve the document; `ReplicaNavigation` synchronizes `<html lang>` because the root layout persists across client-side transitions.
 `src/middleware.ts` forwards the route locale so the root layout sets matching `<html lang>` and metadata, including for the default-language `/` homepage.
@@ -311,7 +315,7 @@ The footer takes identity and contact from `site/site.config.ts`, copy from `sit
 `video-generation-tool.tsx` composes the dark workbench from `composer.tsx` and `stage.tsx`.
 `use-video-tool-state.ts` owns interactive state, saves a serializable draft before OAuth navigation or the full reload after email-code sign-in, restores it after a confirmed session and calls pure selectors in `state.ts`; `model-menu.tsx` and `parameter-field.tsx` accept only their scoped presentation data.
 Media, workflows and their reference limits, grouped models and duration-specific preview costs, and media-filtered use cases come from that config.
-The image-template list lives in `site/video-tool-templates.config.ts`, localized titles in `site/messages/video-templates-*.ts`, and the referenced local media in `public/video-tool/`.
+The image-template list lives in `site/video-tool/templates.ts`, localized titles in `site/messages/{en,zh}/video-templates.ts`, and the referenced local media in `public/video-tool/`.
 The model menu shows only the selected workflow's compatible models, and optional workflow defaults reset fields and quantities when switching.
 Parameter fields stay behind a summary of the current values until the summary is opened, and a duration control only offers the selected model's numeric stops.
 The site config also sets each field's presentation and order and each model's options, stops, and optional defaults; expanded controls scroll within the editor above its anchored summary and actions without covering the prompt.
@@ -394,7 +398,7 @@ Schema changes gain a new reviewed migration and matching service/query types an
 | `desktop.schemes` | Allow-listed app URL schemes for signed-in desktop handoff. |
 | `turnstile.onSignIn` | Applies Turnstile verification to sign-in requests supplied with a client token. |
 | `site/database.config.ts`: `binding`, `migrationsDir` | Site D1 binding name and migration directory. |
-| `site/theme.config.ts`: `light`, `dark`, `chrome`, `authCard`, `mail`, `pricing`, `purchase`, `rowTones`, `defaultMode`, `font`, `account`, `tones` | Paired semantic palettes and navigation/account-card/auth-card/pricing chrome, email-only palette, row tones, homepage/other-page defaults, and account accents; web tokens emitted through `src/lib/theme-tokens.ts`. |
+| `site/theme.config.ts` assembling `site/theme/`: `light`, `dark`, `chrome`, `authCard`, `mail`, `pricing`, `purchase`, `rowTones`, `defaultMode`, `font`, `account`, `tones` | Paired semantic palettes and navigation/account-card/auth-card/pricing chrome, email-only palette, row tones, homepage/other-page defaults, and account accents; web tokens emitted through `src/lib/theme-tokens.ts`. |
 | `site/video-tool.config.ts` | Landing tool media, workflows, models, fields, references, assets, and optional promo. |
 | `site/messages/en.ts`, `zh.ts`: `metadata`, `nav`, `hero`, `videoTool`, `account`, `dashboard`, `credits`, `pricing`, `planCopy` | Localized strings for metadata, navigation, credit sources, plan names and pricing features, the video tool, and content views. |
 

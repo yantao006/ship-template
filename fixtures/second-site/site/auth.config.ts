@@ -1,4 +1,4 @@
-import type { AuthConfig } from '../../../src/lib/config';
+import type { AuthConfig } from '../../../src/lib/site-config-types';
 
 export default {
   backend: 'better-auth' as const,

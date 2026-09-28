@@ -1,4 +1,4 @@
-import type { AuthConfig } from '../src/lib/config';
+import type { AuthConfig } from '../src/lib/site-config-types';
 
 // OAuth credentials live only in Worker secrets, never in site config or D1.
 // Enable GitHub only after configuring GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET

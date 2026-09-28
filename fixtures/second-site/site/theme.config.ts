@@ -1,4 +1,4 @@
-import type { ThemeConfig } from '../../../src/lib/config';
+import type { ThemeConfig } from '../../../src/lib/site-config-types';
 
 const light = {
   background: '#fafafa',

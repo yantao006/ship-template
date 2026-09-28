@@ -13,9 +13,11 @@ export async function check(root: string, env: Record<string, string | undefined
   const wrangler = JSON.parse(readFileSync(join(root, 'wrangler.jsonc'), 'utf8'));
   const errors: string[] = [];
   if (config.languages.some((language: { code: string }) => !copy[language.code]) || !copy[config.defaultLocale]) errors.push('Site language copy missing');
-  for (const key of ['light', 'dark'] as const) {
-    if (!theme[key] || !theme.chrome?.[key] || !theme.dialog?.[key] || !theme.videoTool?.[key] || !theme.rowTones?.[key]) errors.push(`Theme ${key} missing`);
+  for (const area of ['chrome', 'authCard', 'dialog', 'videoTool', 'pricing', 'purchase', 'rowTones'] as const) {
+    const pair = theme[area];
+    if (!pair?.light || !pair?.dark || JSON.stringify(Object.keys(pair.light).sort()) !== JSON.stringify(Object.keys(pair.dark).sort())) errors.push(`Theme ${area} mode keys mismatch`);
   }
+  if (!theme.light || !theme.dark || JSON.stringify(Object.keys(theme.light).sort()) !== JSON.stringify(Object.keys(theme.dark).sort())) errors.push('Theme palette mode keys mismatch');
   const requireValue = (key: string) => { if (!env[key]) errors.push(`${key} missing`); };
   const d1 = wrangler.d1_databases?.find((item: {binding: string}) => item.binding === 'DB');
   const r2 = wrangler.r2_buckets?.find((item: {binding: string}) => item.binding === 'MEDIA');

@@ -1,5 +1,5 @@
 import type { VideoToolStructure } from '../src/components/video-tool/types';
-import { videoToolTemplates } from './video-tool-templates.config';
+import { videoToolTemplates } from './video-tool/templates';
 
 // The panel's named marks render as Lucide components; model/vendor logos remain image assets.
 const video = 'lucide:video';
