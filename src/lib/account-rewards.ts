@@ -24,6 +24,7 @@ function createReferralCode(): string {
 function validReferralCode(code: string): boolean { return /^[a-z0-9]{8}$/.test(code) || legacyReferralCode.test(code); }
 function uniqueConstraint(error: unknown): boolean { return error instanceof Error && /UNIQUE constraint failed/i.test(error.message); }
 const utcDay = (now: number) => new Date(now).toISOString().slice(0, 10);
+const maskName = (name: string) => name.length > 2 ? `${name.slice(0, 2)}***${name.at(-1)}` : `${name.slice(0, 1)}***`;
 
 async function referralCodeFor(db: Env['DB'], userId: string) {
   return db.prepare('SELECT code FROM account_referral_code WHERE user_id=?').bind(userId).first<{code: string}>();
@@ -73,14 +74,15 @@ async function ensureReferralCode(db: Env['DB'], userId: string): Promise<string
 export async function accountActivity(env: Env, userId: string, now = Date.now()) {
   const db = env.DB;
   const referralCode = await ensureReferralCode(db, userId);
-  const [days, shares, count, purchases, leaderboard] = await Promise.all([
+  const [days, shares, count, purchases, leaderboard, referralHistory] = await Promise.all([
     db.prepare('SELECT day FROM account_checkin WHERE user_id=? AND day>=? ORDER BY day DESC').bind(userId, utcDay(now - 6 * 86400000)).all<{day: string}>(),
     db.prepare('SELECT id,url,status,created_at FROM account_share WHERE user_id=? ORDER BY created_at DESC LIMIT 20').bind(userId).all<{id: string; url: string; status: string; created_at: number}>(),
-    db.prepare('SELECT COUNT(*) AS total FROM account_referral WHERE inviter_id=?').bind(userId).first<{total: number}>(),
+    db.prepare("SELECT COUNT(*) AS total FROM account_referral r JOIN credit_lot l ON l.source='referral_inviter' AND l.source_id=r.referred_id AND l.user_id=r.inviter_id WHERE r.inviter_id=?").bind(userId).first<{total: number}>(),
     db.prepare(`SELECT source_id,granted,created_at FROM credit_lot WHERE user_id=? AND source IN (${paidLedgerSources.map(() => '?').join(',')}) ORDER BY created_at DESC LIMIT 30`).bind(userId, ...paidLedgerSources).all<{source_id: string; granted: number; created_at: number}>(),
-    db.prepare('SELECT u.name, COUNT(*) AS total FROM account_referral r JOIN user u ON u.id=r.inviter_id GROUP BY r.inviter_id ORDER BY total DESC, r.inviter_id LIMIT 3').all<{name: string; total: number}>(),
+    db.prepare("SELECT u.name, COUNT(*) AS total FROM account_referral r JOIN user u ON u.id=r.inviter_id JOIN credit_lot l ON l.source='referral_inviter' AND l.source_id=r.referred_id AND l.user_id=r.inviter_id GROUP BY r.inviter_id ORDER BY total DESC, r.inviter_id LIMIT 3").all<{name: string; total: number}>(),
+    db.prepare("SELECT u.name, r.created_at FROM account_referral r JOIN user u ON u.id=r.referred_id JOIN credit_lot l ON l.source='referral_inviter' AND l.source_id=r.referred_id AND l.user_id=r.inviter_id WHERE r.inviter_id=? ORDER BY r.created_at DESC LIMIT 20").bind(userId).all<{name: string; created_at: number}>(),
   ]);
-  return { balance: await balance(db, userId, now), referralCode, checkInDays: days.results.map(row => row.day), submissions: shares.results, referralCount: count?.total ?? 0, purchases: purchases.results, leaderboard: leaderboard.results.map(({ name, total }) => ({ name: name.length > 2 ? `${name.slice(0, 2)}***${name.at(-1)}` : `${name.slice(0, 1)}***`, total })) };
+  return { balance: await balance(db, userId, now), referralCode, checkInDays: days.results.map(row => row.day), submissions: shares.results, referralCount: count?.total ?? 0, purchases: purchases.results, leaderboard: leaderboard.results.map(({ name, total }) => ({ name: maskName(name), total })), referralHistory: referralHistory.results.map(({ name, created_at }) => ({ name: maskName(name), created_at })) };
 }
 
 export async function claimCheckIn(env: Env, userId: string, now = Date.now()) {

@@ -259,7 +259,7 @@ Grant source IDs, entry idempotency keys, and task state transitions make retrie
 
 ### Current state and extension paths
 
-The homepage account popovers read the signed-in balance and profile and expose configured check-ins, referral sharing and a masked real-data leaderboard, pending share submissions, support links, plans and payment receipts.
+The homepage account popovers read the signed-in balance and profile and expose configured check-ins, referral sharing, a masked leaderboard and user-scoped referral history derived from settled invitation rewards, pending share submissions, support links, plans and payment receipts.
 `src/lib/use-dismissable-layer.ts` centralizes client dismissal, Escape and focus handling; `src/lib/use-referral-claim.ts` captures `ref` on home or `invite_code` on `/invitation-landing` through sign-in and redeems eligible claims, and `src/lib/json-request.ts` owns JSON writes.
 `src/lib/checkin-invite.ts` builds the check-in card's share payload from the site origin and current user's referral code; `/invitation-landing` renders the branded homepage with the existing referral capture, while the separate invite dialog retains its existing `ref` link.
 `src/components/blocks/account-popover-card.tsx` renders account menus from ordered rows with optional badges, one named tone, and per-row dividers.

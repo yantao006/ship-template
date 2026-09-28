@@ -11,7 +11,7 @@ import { isSiteShellPath } from '../src/lib/routes';
 import { referralCodeFromUrl } from '../src/lib/use-referral-claim';
 
 const code = '0123456789abcdef0123456789abcdef';
-const activity = { balance: 10, referralCode: code, checkInDays: [], submissions: [], referralCount: 0, purchases: [], leaderboard: [] };
+const activity = { balance: 10, referralCode: code, checkInDays: [], submissions: [], referralCount: 0, purchases: [], leaderboard: [], referralHistory: [] };
 
 test('check-in invite uses this site origin and the current user code in both languages', () => {
   for (const [locale, copy] of [['en', en.account], ['zh', zh.account]] as const) {
@@ -40,18 +40,17 @@ test('landing and legacy links retain only valid referral codes through the same
   assert.equal(referralCodeFromUrl(new URL('https://example.org/invitation-landing?invite_code=invalid')), null);
 });
 
-test('check-in renders the new share destinations without changing the separate invite card', () => {
+test('check-in and invite render the same official claim destination', () => {
   const render = (dialog: 'checkin' | 'invite') => renderToStaticMarkup(createElement(AccountDialogs, {
     dialog, onClose: () => {}, copy: en.account, labels: { credits: en.nav.availableCredits }, settings: site.account,
     plans: [], activity, busy: false, error: '', notice: '', locale: 'en', dateLocale: 'en-US',
     siteUrl: site.url, brand: site.brand, icons: { checkin: createElement('svg'), share: createElement('svg'), invite: createElement('svg') },
-    onCopyText: () => {}, onAction: async () => true,
+    onCopyText: () => {}, onAction: async () => true, onRefresh: () => {},
   }));
   const checkin = render('checkin');
   const invite = render('invite');
   const share = checkinInviteShare(site.url, code, en.account.checkinInviteMessage);
   for (const name of site.account.shareNetworks) assert.ok(checkin.includes(share.targets[name].replaceAll('&', '&amp;')), name);
-  assert.match(invite, new RegExp(`/en\\?ref=${code}`));
-  assert.ok(!invite.includes('/invitation-landing'));
+  assert.ok(invite.includes(`/invitation-landing?invite_code=${code}`));
   assert.ok(isSiteShellPath('/invitation-landing'));
 });
