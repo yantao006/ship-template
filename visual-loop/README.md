@@ -1,6 +1,11 @@
 # Share and earn 视觉闭环
 
 范围仅限 Share and earn 卡片。
+
+PR：
+
+https://github.com/yantao006/ship-template/pull/35
+
 桌面评审视口为 1440×900，双站均使用深色主题。
 实现端与每轮独立评审端均使用 Pi `openai-codex/gpt-6-sol`，thinking high。
 评审用 ego-browser 亲手开卡、复制、原生粘贴、展开规则、检查空输入和关闭叉。
