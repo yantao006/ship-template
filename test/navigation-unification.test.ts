@@ -11,7 +11,7 @@ test('marketing and workspace routes share persistent chrome while auth panels s
   assert.match(shell, /\{children\}\s*<Footer locale=\{locale\} \/>/);
   assert.match(read('src/app/(site)/layout.tsx'), /<SiteShell/);
   assert.match(read('src/app/[locale]/(site)/layout.tsx'), /<SiteShell/);
-  for (const route of ['page.tsx', 'pricing/page.tsx', 'dashboard/page.tsx', 'credits/page.tsx']) {
+  for (const route of ['page.tsx', 'pricing/page.tsx', '(workspace)/layout.tsx', '(workspace)/dashboard/page.tsx', '(workspace)/credits/page.tsx']) {
     assert.ok(existsSync(new URL(`../src/app/[locale]/(site)/${route}`, import.meta.url)));
   }
   for (const route of ['verify-email', 'reset-password']) {
@@ -27,6 +27,7 @@ test('marketing and workspace routes share persistent chrome while auth panels s
   }
   const workspace = read('src/components/workspace-shell.tsx');
   assert.match(workspace, /link\.id === 'dashboard' \|\| link\.id === 'credits'/);
+  assert.match(read('src/components/workspace-section-nav.tsx'), /usePathname/);
   assert.doesNotMatch(workspace, /LanguageControl/);
   const pricingCss = read('src/components/pricing.css');
   assert.doesNotMatch(pricingCss, /\.site-nav|\.replica-topbar/);

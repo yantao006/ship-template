@@ -34,7 +34,7 @@ test('account section entries are in-app links and the ledger does not gate the 
   assert.match(content.slice(content.indexOf('async function AccountSectionBody')), /await creditMovements/);
   assert.match(content, /<Suspense fallback=\{null\}><AccountSectionBody/);
   assert.match(content, /mailto:/);
-  assert.match(content, /<a href=\{routePath\(locale, 'pricing'\)\}/);
+  assert.match(content, /<Link href=\{routePath\(locale, 'pricing'\)\}/);
 });
 
 test('account credit records include real grants, spends and refunds, scoped to the signed-in user', async () => {

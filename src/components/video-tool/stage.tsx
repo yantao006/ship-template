@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import type { ToolAsset, ToolStatus } from './types';
 
 export type StageProps = {
@@ -35,7 +36,7 @@ export function Stage({ title, tabs, tabId, onTabChange, assets, assetId, onAsse
         <p><RichText text={preview.description} /></p>
         <div className="vt-asset-actions">{preview.secondaryActions?.map(action => <button key={action.id} type="button">{action.label}</button>)}</div>
       </div>}
-      {preview?.links && preview.links.length > 0 && <div className="vt-explore">{preview.links.map(link => <a key={link.id} href={link.href}>{link.label}</a>)}</div>}
+      {preview?.links && preview.links.length > 0 && <div className="vt-explore">{preview.links.map(link => link.href.startsWith('/') && !link.href.includes('{locale}') ? <Link key={link.id} href={link.href}>{link.label}</Link> : <a key={link.id} href={link.href}>{link.label}</a>)}</div>}
     </>}
     <div className={status.state === 'idle' ? 'sr-only' : 'vt-status'} role="status">{statusText}{status.state === 'running' && status.progress !== undefined && <progress max={100} value={Math.min(100, Math.max(0, status.progress))} />}</div>
   </div>;

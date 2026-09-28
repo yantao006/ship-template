@@ -2,6 +2,7 @@
 
 // Visual variant of auth-4.tsx. Keep that licensed original untouched.
 import { useRef, useState, type FormEvent } from 'react';
+import Link from 'next/link';
 import { ArrowRight, Check, Eye, EyeOff, Mail, ShieldCheck } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
 import { requestJson } from '@/lib/json-request';
@@ -136,7 +137,7 @@ export function MinimaxAuthCard({ copy, card, signupCredits, brand, logo, method
               <button type="button" className="minimax-auth-link minimax-auth-sign-up" onClick={() => switchMode('sign-up')}>{copy.signUp}</button>
             </form> : <button className="minimax-auth-email-action" type="button" onClick={() => setEmailExpanded(true)}><Mail size={16} aria-hidden="true" />{card.emailAction}</button>}
           </div>}
-          <p className="minimax-auth-terms">{card.agreement} <a href={routePath(locale, 'terms')}>{card.terms}</a> {card.and} <a href={routePath(locale, 'privacy')}>{card.privacy}</a></p>
+          <p className="minimax-auth-terms">{card.agreement} <Link href={routePath(locale, 'terms')}>{card.terms}</Link> {card.and} <Link href={routePath(locale, 'privacy')}>{card.privacy}</Link></p>
           {error && <p role="alert" className="minimax-auth-error">{error}</p>}
         </div>
       </> : <div className="minimax-auth-form-view">
@@ -144,7 +145,7 @@ export function MinimaxAuthCard({ copy, card, signupCredits, brand, logo, method
         {mode === 'verify' ? <div className="minimax-auth-form">
           <p role="status">{notice} {email}</p><p>{copy.verifyHint}</p>
           <button type="button" disabled={pending} className="minimax-auth-primary" onClick={async () => { if (pending) return; setPending(true); try { const result = await authClient.sendVerificationEmail({ email: email.trim(), callbackURL }); if (result.error) setError(copy.resendFailed); else setNotice(copy.verificationSent); } catch { setError(copy.resendFailed); } finally { setPending(false); } }}>{pending ? copy.wait : copy.resendVerification}</button>
-          <a href={`${routePath(locale, 'verifyEmail')}?email=${encodeURIComponent(email)}`}>{copy.verifyLink}</a>
+          <Link href={`${routePath(locale, 'verifyEmail')}?email=${encodeURIComponent(email)}`}>{copy.verifyLink}</Link>
           <button type="button" className="minimax-auth-link" onClick={() => switchMode('sign-in')}>{copy.signIn}</button>
         </div> : <>
           {mode === 'forgot' && <p className="minimax-auth-hint">{copy.forgotHint}</p>}

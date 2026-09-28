@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import Link from 'next/link';
 import { ArrowRight, AtSign, ChevronDown, Circle, CircleDot, Sparkles, SwatchBook, X } from 'lucide-react';
 import { useDismissableLayer } from '@/lib/use-dismissable-layer';
 import { Mark } from './mark';
@@ -106,7 +107,7 @@ export function Composer({ title, workflowLabel, media, workflows, modelMenu, re
         </div>
       </div>
       <button className="vt-create" type="button" disabled={create.disabled} onClick={actions.onCreate}>{create.label}</button>
-      {promo && <div className="vt-promo"><a href={promo.href}><Mark icon={promo.icon} />{promo.label}<ArrowRight aria-hidden="true" size={16} strokeWidth={2} /></a>{promo.dismissLabel && <button type="button" aria-label={promo.dismissLabel} onClick={actions.onPromoDismiss}><X aria-hidden="true" size={18} strokeWidth={2} /></button>}</div>}
+      {promo && <div className="vt-promo">{promo.href.startsWith('/') && !promo.href.includes('{locale}') ? <Link href={promo.href}><Mark icon={promo.icon} />{promo.label}<ArrowRight aria-hidden="true" size={16} strokeWidth={2} /></Link> : <a href={promo.href}><Mark icon={promo.icon} />{promo.label}<ArrowRight aria-hidden="true" size={16} strokeWidth={2} /></a>}{promo.dismissLabel && <button type="button" aria-label={promo.dismissLabel} onClick={actions.onPromoDismiss}><X aria-hidden="true" size={18} strokeWidth={2} /></button>}</div>}
     </div>
   </div>;
 }
