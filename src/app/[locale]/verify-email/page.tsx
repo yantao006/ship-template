@@ -1,4 +1,4 @@
-import { VerifyEmail } from '@/components/verify-email';
+import { VerifyEmail } from '@/components/auth/verify-email';
 import { auth, localeFor, messages } from '@/lib/config';
 import { browserNavCopy } from '@/lib/browser-nav-copy';
 

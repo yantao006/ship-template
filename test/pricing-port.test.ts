@@ -9,7 +9,7 @@ import en from '../site/messages/en/pricing';
 import zh from '../site/messages/zh/pricing';
 import { planById, grantVerifiedPayment } from '../src/lib/payments';
 import { productForPlan } from '../src/lib/waffo-products';
-import { PricingCheckout, pricingFeatureLines } from '../src/components/pricing-checkout';
+import { PricingCheckout, pricingFeatureLines } from '../src/components/pricing/pricing-checkout';
 import secondSite from '../fixtures/second-site/site/site.config';
 import secondEn from '../fixtures/second-site/site/messages/en/pricing';
 import secondZh from '../fixtures/second-site/site/messages/zh/pricing';
@@ -118,13 +118,14 @@ test('a second site owns its own pricing features rather than inheriting MiniMax
 test('unprovisioned plans stay unpaid; Max multiplier above 1 stays unpaid', async () => {
   for (const plan of site.plans) assert.equal(productForPlan({}, plan), null);
   const route = readFileSync('src/app/api/checkout/route.ts', 'utf8');
-  const page = readFileSync('src/components/pricing-content.tsx', 'utf8');
+  const page = readFileSync('src/components/pricing/pricing-content.tsx', 'utf8');
   assert.match(route, /productForPlan\(env, plan\)/);
   assert.match(page, /checkoutEnabled: !!productForPlan\(env, plan\)/);
   assert.doesNotMatch(page, /<Header\b|accountSnapshot\(/, 'the shared site shell owns the header and account snapshot');
-  const client = readFileSync('src/components/pricing-checkout.tsx', 'utf8');
+  const client = readFileSync('src/components/pricing/pricing-checkout.tsx', 'utf8');
   assert.match(client, /disabled=\{!canPay \|\| !!pending\}/);
-  assert.match(client, /factor === 1/);
+  assert.match(client, /planDisplay\(plan, plans, multiple\)\.canCheckout/);
+  assert.match(readFileSync('src/components/pricing/plan-display.ts', 'utf8'), /canCheckout: plan\.checkoutEnabled && factor === 1/);
   const webhook = readFileSync('src/lib/payments.ts', 'utf8');
   assert.match(webhook, /settled\.amount !== product\.amount/);
   const rejected = await grantVerifiedPayment({} as never, { userId: 'user', paymentId: 'payment', planId: 'lite-month', billing: 'once', subscriptionId: 'order', amount: '29.90', currency: 'USD', mode: 'test' });
@@ -134,7 +135,7 @@ test('unprovisioned plans stay unpaid; Max multiplier above 1 stays unpaid', asy
 test('pricing has locale parity and paired theme tokens without imported clone pricing', () => {
   assert.deepEqual(Object.keys(en).sort(), Object.keys(zh).sort());
   assert.deepEqual(Object.keys(theme.pricing.light).sort(), Object.keys(theme.pricing.dark).sort());
-  const content = readFileSync('src/components/pricing-content.tsx', 'utf8');
+  const content = readFileSync('src/components/pricing/pricing-content.tsx', 'utf8');
   assert.match(content, /planCopy\(locale, plan\.id\)/);
   assert.match(content, /videoTool\.models/);
   assert.match(content, /brand=\{site\.brand\}/);

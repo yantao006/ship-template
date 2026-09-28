@@ -5,7 +5,7 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import messages from '../site/messages/en';
 import site from '../site/site.config';
-import { AccountDialogs, shareRecommendationText, type Activity, type Dialog } from '../src/components/blocks/account-dialogs';
+import { AccountDialogs, shareRecommendationText, type Activity, type Dialog } from '../src/components/account/account-dialogs';
 
 const copy = messages.account;
 const dialogs = ['checkin', 'share', 'invite', 'contact', 'feedback', 'plans', 'invoices'] as const satisfies readonly NonNullable<Dialog>[];
@@ -38,7 +38,7 @@ test('all seven account dialogs retain their accessible shell and destination co
   assert.match(contact, /class="account-body account-contact"/);
   assert.doesNotMatch(contact, /Questions about your account or payment/);
   assert.match(render('invoices'), /mailto:/);
-  const css = readFileSync('src/components/blocks/account-popovers.css', 'utf8');
+  const css = readFileSync('src/components/account/account-popovers.css', 'utf8');
   assert.match(css, /\.account-contact-overlay\{backdrop-filter:none\}/);
   for (const id of ['account', 'subscription', 'invoices']) {
     assert.match(css, new RegExp(`\\.account-menu \\.account-row-${id} \\.account-row-icon\\{color:var\\(--account-tone-`));
@@ -80,10 +80,26 @@ test('illustrative leaderboard is scoped to the configured viewer and never repl
 test('invite social hover and keyboard focus share the same scoped, reduced-motion-aware treatment', () => {
   const markup = render('invite');
   for (const name of site.account.shareNetworks) assert.match(markup, new RegExp(`aria-label="${name}"`));
-  const css = readFileSync('src/components/blocks/account-popovers.css', 'utf8');
+  const css = readFileSync('src/components/account/account-popovers.css', 'utf8');
   assert.match(css, /\.account-invite-social \.account-sharelinks a:is\(:hover,:focus-visible\)\{background:/);
   assert.match(css, /\.account-invite-social \.account-sharelinks a\{[^}]*transition:background-color \.15s/);
   assert.match(css, /@media\(prefers-reduced-motion:reduce\)\{[^}]*\}[^}]*\.account-invite-social \.account-sharelinks a\{transition:none\}/);
+});
+
+test('a claimed check-in keeps completed days checked and leaves the next day unclaimable', () => {
+  const today = new Date().toISOString().slice(0, 10);
+  const offset = (days: number) => new Date(Date.parse(today) + days * 86400000).toISOString().slice(0, 10);
+  const classes = (markup: string) => [...markup.matchAll(/<div class="(complete|current|future)">/g)].map(match => match[1]);
+  const claimed = render('checkin', { activity: { ...activity, checkInDays: [offset(-1), today] } });
+  assert.deepEqual(classes(claimed), ['complete', 'complete', 'future', 'future', 'future', 'future', 'future']);
+  assert.equal((claimed.match(/aria-label="Claimed today · come back tomorrow"/g) ?? []).length, 2);
+  assert.match(claimed, />2\/7 days complete</);
+  assert.match(claimed, /<button class="account-primary" disabled="">/);
+  const pending = render('checkin', { activity: { ...activity, checkInDays: [offset(-1)] } });
+  assert.deepEqual(classes(pending), ['complete', 'current', 'future', 'future', 'future', 'future', 'future']);
+  assert.match(pending, />1\/7 days complete</);
+  assert.match(pending, /Claim today’s free reward/);
+  assert.doesNotMatch(pending, /<button class="account-primary" disabled="">/);
 });
 
 test('share card uses the configured site URL, honest localized recommendation and disabled empty submission', () => {

@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { dailyRewardState } from '../src/components/blocks/account-popover-state';
+import { dailyRewardState } from '../src/components/account/account-popover-state';
 
 test('daily reward highlights the next day after a completed claim', () => {
   const now = new Date('2026-09-26T17:30:00Z');

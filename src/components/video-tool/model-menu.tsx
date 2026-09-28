@@ -1,12 +1,8 @@
 import { Check, ChevronDown } from 'lucide-react';
 import { Mark } from './mark';
 
-export type ModelMenuItem = { id: string; icon: string; label: string; subtitle?: string; tags: { id: string; label: string; tone: string; icon?: string }[] };
-export type ModelMenuGroup = { id: string; icon: string; label: string; models: ModelMenuItem[] };
-export type ModelMenuProps = {
-  label: string; selectedId: string; selected?: ModelMenuItem; groups: ModelMenuGroup[]; open: boolean;
-  onToggle: () => void; onSelect: (id: string) => void;
-};
+import type { ModelMenuItem, ModelMenuProps } from './view-model';
+export type { ModelMenuItem, ModelMenuGroup, ModelMenuProps } from './view-model';
 
 function Tags({ tags, as = 'span' }: { tags: ModelMenuItem['tags']; as?: 'span' | 'em' }) {
   return <>{tags.map(tag => as === 'em'

@@ -1,4 +1,4 @@
-import { InformationPage } from '@/components/information-page';
+import { InformationPage } from '@/components/information/information-page';
 import { localeFor } from '@/lib/config';
 
 export default async function AboutPage({ params }: { params: Promise<{ locale: string }> }) {

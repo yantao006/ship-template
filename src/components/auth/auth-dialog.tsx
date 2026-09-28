@@ -4,7 +4,7 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState, ty
 import { createPortal, flushSync } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { X } from 'lucide-react';
-import { MinimaxAuthCard, type MinimaxAuthCardProps } from './blocks/minimax-auth-card';
+import { MinimaxAuthCard, type MinimaxAuthCardProps } from './minimax-auth-card';
 import { useDismissableLayer } from '@/lib/use-dismissable-layer';
 
 const storageKey = 'site-auth-return';

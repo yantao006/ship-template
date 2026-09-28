@@ -7,7 +7,7 @@ import { Miniflare } from 'miniflare';
 import { createAuth, type AuthSettings } from '../src/lib/auth';
 import { FakeEmail } from '../src/lib/email';
 import { site, messages } from '../src/lib/config';
-import { ResetPassword } from '../src/components/reset-password';
+import { ResetPassword } from '../src/components/auth/reset-password';
 import type { Env } from '../src/lib/env';
 
 const secret = 'this-is-only-a-local-test-secret-long-enough';

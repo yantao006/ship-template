@@ -5,7 +5,7 @@ import { test } from 'node:test';
 const read = (path: string) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
 
 test('marketing and workspace routes share persistent chrome while auth panels stay outside it', () => {
-  const shell = read('src/components/site-shell.tsx');
+  const shell = read('src/components/shell/site-shell.tsx');
   assert.match(shell, /accountSnapshot\(workerEnv\(\), await headers\(\)\)/);
   assert.match(shell, /<Header locale=\{locale\} userName=\{displayName\} userEmail=\{session\?\.user\.email\} userImage=\{session\?\.user\.image\} credits=\{credits\} \/>/);
   assert.match(shell, /<main className="site-main">\{children\}<\/main>\s*<Footer locale=\{locale\} \/>/);
@@ -22,14 +22,14 @@ test('marketing and workspace routes share persistent chrome while auth panels s
   assert.ok(existsSync(new URL('../src/app/admin/invites/page.tsx', import.meta.url)));
   assert.ok(!existsSync(new URL('../src/components/marketing-nav.tsx', import.meta.url)));
 
-  for (const path of ['src/components/sections/HomePage.tsx', 'src/components/pricing-content.tsx', 'src/components/workspace-shell.tsx']) {
+  for (const path of ['src/components/home/sections/HomePage.tsx', 'src/components/pricing/pricing-content.tsx', 'src/components/workspace/workspace-shell.tsx']) {
     assert.doesNotMatch(read(path), /<Header|<Footer/);
   }
-  const workspace = read('src/components/workspace-shell.tsx');
+  const workspace = read('src/components/workspace/workspace-shell.tsx');
   assert.match(workspace, /link\.id === 'dashboard' \|\| link\.id === 'credits'/);
-  assert.match(read('src/components/workspace-section-nav.tsx'), /usePathname/);
+  assert.match(read('src/components/workspace/workspace-section-nav.tsx'), /usePathname/);
   assert.doesNotMatch(workspace, /LanguageControl/);
-  const pricingCss = read('src/components/pricing.css');
+  const pricingCss = read('src/components/pricing/pricing.css');
   assert.doesNotMatch(pricingCss, /\.site-nav|\.replica-topbar/);
   assert.doesNotMatch(pricingCss, /\.pricing-experience \{[^}]*(?:min-height: 100dvh|padding-top: 56px)/);
   const globals = read('src/app/globals.css');

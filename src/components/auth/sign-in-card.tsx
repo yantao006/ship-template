@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { UserRound } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
-import { requestJson } from '@/lib/json-request';
+import { redeemSignupInvite, sendPasswordReset, sendVerification, socialSignIn, validateSignupInvite } from './flows';
 import { useDismissableLayer } from '@/lib/use-dismissable-layer';
 import type { AuthSettings } from '@/lib/auth';
 import { routePath } from '@/lib/route-paths';
@@ -38,8 +38,8 @@ export function SignInCard({ copy, methods, callbackURL, locale, inviteRequired 
     setPending(true);
     setError('');
     try {
-      const result = await authClient.signIn.social({ provider, callbackURL });
-      if (result.error) setError(copy.socialFailed);
+      const succeeded = await socialSignIn(provider, callbackURL);
+      if (!succeeded) setError(copy.socialFailed);
     } catch { setError(copy.socialFailed); }
     finally { setPending(false); }
   }
@@ -53,11 +53,9 @@ export function SignInCard({ copy, methods, callbackURL, locale, inviteRequired 
     const email = String(form.get('email') ?? '').trim();
     const password = String(form.get('password') ?? '');
     try {
-      const code = String(form.get('inviteCode') ?? '').trim().toUpperCase();
-      if (register && inviteRequired) {
-        const validation = await requestJson('/api/invites/validate', { code });
-        if (!validation.ok || !(await validation.json() as { valid: boolean }).valid) { setError(copy.inviteInvalid); return; }
-      }
+      const inviteValue = String(form.get('inviteCode') ?? '');
+      const { code, valid } = register && inviteRequired ? await validateSignupInvite(inviteValue) : { code: inviteValue.trim().toUpperCase(), valid: true };
+      if (!valid) { setError(copy.inviteInvalid); return; }
       const result = register
         ? await authClient.signUp.email({ email, password, name: String(form.get('name') ?? '').trim(), ...(needsVerification ? { callbackURL: callbackURL.startsWith('/') && !callbackURL.startsWith('//') ? callbackURL : '/' } : {}), ...(inviteRequired ? { inviteCode: code } : {}) } as Parameters<typeof authClient.signUp.email>[0])
         : await authClient.signIn.email({ email, password });
@@ -73,8 +71,8 @@ export function SignInCard({ copy, methods, callbackURL, locale, inviteRequired 
           return;
         }
         if (register && inviteRequired) {
-          const redeemed = await requestJson('/api/invites/redeem', { code });
-          if (!redeemed.ok) { setError(copy.createdButInviteFailed); return; }
+          const redeemed = await redeemSignupInvite(code);
+          if (!redeemed) { setError(copy.createdButInviteFailed); return; }
         }
         setOpen(false);
         if (callbackURL.startsWith('/auth-callback?')) window.location.assign(callbackURL); else router.refresh();
@@ -91,8 +89,8 @@ export function SignInCard({ copy, methods, callbackURL, locale, inviteRequired 
     setResetNotice('');
     const email = String(new FormData(event.currentTarget).get('email') ?? '').trim();
     try {
-      const result = await authClient.requestPasswordReset({ email, redirectTo: routePath(locale, 'resetPassword') });
-      if (result.error) setError(copy.resetSendFailed);
+      const sent = await sendPasswordReset(email, routePath(locale, 'resetPassword'));
+      if (!sent) setError(copy.resetSendFailed);
       else setResetNotice(copy.resetSent);
     } catch { setError(copy.resetSendFailed); }
     finally { setPending(false); }
@@ -103,8 +101,8 @@ export function SignInCard({ copy, methods, callbackURL, locale, inviteRequired 
     setPending(true);
     setError('');
     try {
-      const result = await authClient.sendVerificationEmail({ email: verificationEmail, callbackURL: callbackURL.startsWith('/') && !callbackURL.startsWith('//') ? callbackURL : '/' });
-      if (result.error) setError(copy.resendFailed);
+      const sent = await sendVerification(verificationEmail, callbackURL.startsWith('/') && !callbackURL.startsWith('//') ? callbackURL : '/');
+      if (!sent) setError(copy.resendFailed);
       else setVerificationNotice(copy.verificationSent);
     } catch { setError(copy.resendFailed); }
     finally { setPending(false); }

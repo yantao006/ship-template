@@ -10,7 +10,7 @@ import { routePath } from '../src/lib/route-paths';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import messages from '../site/messages/en';
-import { CreditRecords } from '../src/components/account-pages-controls';
+import { CreditRecords } from '../src/components/account/account-pages-controls';
 
 test('account page routes retain the public shell for both locales', () => {
   for (const locale of ['en', 'zh']) for (const section of ['account', 'subscription', 'invoices', 'creditCenter'] as const) {
@@ -19,9 +19,9 @@ test('account page routes retain the public shell for both locales', () => {
 });
 
 test('account section entries are in-app links and the ledger does not gate the shell', () => {
-  const nav = readFileSync('src/components/account-section-nav.tsx', 'utf8');
+  const nav = readFileSync('src/components/account/account-section-nav.tsx', 'utf8');
   const layout = readFileSync('src/app/[locale]/(site)/account/layout.tsx', 'utf8');
-  const content = readFileSync('src/components/account-pages-content.tsx', 'utf8');
+  const content = readFileSync('src/components/account/account-pages-content.tsx', 'utf8');
   assert.match(nav, /from 'next\/link'/);
   assert.match(nav, /<Link/);
   assert.doesNotMatch(nav, /<a[\s/>]/);

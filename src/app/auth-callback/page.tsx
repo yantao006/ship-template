@@ -1,7 +1,7 @@
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { AuthControl } from '@/components/auth-control';
-import { DesktopHandoff } from '@/components/desktop-handoff';
+import { AuthControl } from '@/components/auth/auth-control';
+import { DesktopHandoff } from '@/components/auth/desktop-handoff';
 import { readSession } from '@/lib/request-context';
 import { allowedDesktopTarget } from '@/lib/desktop-auth';
 import { auth, messages, localeFor } from '@/lib/config';

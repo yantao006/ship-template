@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
-import { pathForLocale } from '../src/components/language-control';
+import { pathForLocale } from '../src/components/shell/language-control';
 
 const read = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8');
 
@@ -16,10 +16,10 @@ test('language switch keeps the page and locale in the URL', () => {
 });
 
 test('both language controls navigate within the existing document', () => {
-  for (const source of [read('../src/components/blocks/replica-navigation.tsx'), read('../src/components/language-control.tsx')]) {
+  for (const source of [read('../src/components/shell/replica-navigation.tsx'), read('../src/components/shell/language-control.tsx')]) {
     assert.match(source, /useRouter\(\)/);
     assert.match(source, /router\.push\(pathForLocale\(/);
     assert.doesNotMatch(source, /window\.location\.(?:assign|replace)|location\.href\s*=/);
   }
-  assert.match(read('../src/components/blocks/replica-navigation.tsx'), /document\.documentElement\.lang = locale/);
+  assert.match(read('../src/components/shell/replica-navigation.tsx'), /document\.documentElement\.lang = locale/);
 });

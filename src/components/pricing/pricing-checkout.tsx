@@ -4,7 +4,9 @@ import { useEffect, useState } from 'react';
 import { Check, ChevronDown, Image as ImageIcon, ShieldCheck, Sparkles, Video, X } from 'lucide-react';
 import { requestJson } from '@/lib/json-request';
 import { PricingConfetti } from './pricing-confetti';
-import { useOptionalAuthDialog } from './auth-dialog';
+import { useOptionalAuthDialog } from '../auth/auth-dialog';
+import { count, money, planDisplay, pricingFeatureLines } from './plan-display';
+export { pricingFeatureLines } from './plan-display';
 
 type Plan = { id: string; tier?: string; billing: 'month' | 'year' | 'once'; credits: number; amount: string; currency: string; name: string; checkoutEnabled: boolean };
 type Mode = Plan['billing'];
@@ -22,16 +24,6 @@ type Copy = {
 
 const methods = ['mastercard', 'visa', 'amex', 'apple-pay', 'google-pay', 'discover', 'jcb'] as const;
 const methodNames = ['Mastercard', 'Visa', 'American Express', 'Apple Pay', 'Google Pay', 'Discover', 'JCB'];
-const money = (value: number) => `$${value.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}`;
-const count = (value: number) => value.toLocaleString('en-US');
-
-export function pricingFeatureLines(plan: Pick<Plan, 'id' | 'tier' | 'credits'>, mode: Mode, copy: Pick<Copy, 'planFeatures' | 'packFeatures'>) {
-  if (mode === 'once') return copy.packFeatures.map(line => line.replace('{count}', count(plan.credits)));
-  const features = copy.planFeatures[plan.tier ?? plan.id];
-  if (!features) throw new Error(`Missing pricing features for ${plan.id}`);
-  return features.flatMap(feature => typeof feature === 'string' ? [feature] : mode === 'year' ? [feature.yearly] : []);
-}
-
 function ModelDropdown({ title, models }: { title: string; models: Model[] }) {
   const [open, setOpen] = useState(false);
   return <div className="pricing-model-dropdown">
@@ -63,10 +55,10 @@ export function PricingCheckout({ locale, plans, models, brand, copy }: { locale
       }
     } catch { sessionStorage.removeItem('pricing-auth-selection'); }
   }, [plans]);
-  const actionable = visible.some(plan => plan.checkoutEnabled && (!plan.tier || plan.tier !== 'max' || multiple === 1));
+  const actionable = visible.some(plan => planDisplay(plan, plans, multiple).canCheckout);
 
   async function checkout(plan: Plan) {
-    if (!plan.checkoutEnabled || (plan.tier === 'max' && multiple !== 1)) return;
+    if (!planDisplay(plan, plans, multiple).canCheckout) return;
     setPending(plan.id);
     setError('');
     try {
@@ -101,22 +93,18 @@ export function PricingCheckout({ locale, plans, models, brand, copy }: { locale
         <div className={`pricing-card-grid ${mode === 'once' ? 'packs' : 'plans'}`} key={mode}>
           {visible.map(plan => {
             const isMax = plan.tier === 'max';
-            const factor = isMax ? multiple : 1;
+            const { factor, price, total, previousPrice, discount, credits, canCheckout: canPay } = planDisplay(plan, plans, multiple);
             const yearly = mode === 'year';
-            const price = Number(plan.amount) * factor / (yearly ? 12 : 1);
-            const monthlyPlan = plans.find(item => item.tier === plan.tier && item.billing === 'month');
-            const savings = yearly && monthlyPlan ? 1 - price / (Number(monthlyPlan.amount) * factor) : 0;
-            const canPay = plan.checkoutEnabled && factor === 1;
             return <article className={`pricing-card ${plan.tier === 'standard' ? 'featured' : ''}${selectedPlan === plan.id ? ' selected-auth-plan' : ''}`} key={plan.id}>
               {plan.tier === 'standard' && <span className="pricing-popular"><Sparkles size={13} />{copy.popular}</span>}
-              <div className="pricing-card-title"><h2>{plan.name}</h2>{yearly && <span className="pricing-discount">{Math.round(savings * 100)}% {copy.off}</span>}</div>
+              <div className="pricing-card-title"><h2>{plan.name}</h2>{yearly && <span className="pricing-discount">{discount}% {copy.off}</span>}</div>
               <p className="pricing-rate">{money(price / (plan.credits * factor))} {copy.perCredit}</p>
-              <div className="pricing-amount">{yearly && monthlyPlan && <del>{money(Number(monthlyPlan.amount) * factor)}</del>}<strong>{money(price)}</strong>{mode !== 'once' && <span>{copy.perMonth}</span>}</div>
-              {yearly && <p className="pricing-billed">{money(Number(plan.amount) * factor)} {copy.billedYearly}</p>}
+              <div className="pricing-amount">{yearly && previousPrice && <del>{money(previousPrice)}</del>}<strong>{money(price)}</strong>{mode !== 'once' && <span>{copy.perMonth}</span>}</div>
+              {yearly && <p className="pricing-billed">{money(total)} {copy.billedYearly}</p>}
               {mode === 'once' && <p className="pricing-billed">{copy.oneTime}</p>}
-              {isMax && <div className="pricing-multiplier"><label htmlFor="pricing-max-range">{copy.maxMultiplier} <b>{multiple}×</b></label><input id="pricing-max-range" type="range" min="1" max="5" step="1" value={multiple} onChange={event => setMultiple(Number(event.target.value))} /><div className="pricing-multiplier-labels">{[1, 2, 3, 4, 5].map(value => <button type="button" aria-pressed={multiple === value} key={value} onClick={() => setMultiple(value)}>{value}×</button>)}</div><p>{copy.maxBase}: {count(plan.credits)} · {copy.maxTotal}: {count(plan.credits * multiple)} {copy.creditsMonth}</p></div>}
+              {isMax && <div className="pricing-multiplier"><label htmlFor="pricing-max-range">{copy.maxMultiplier} <b>{multiple}×</b></label><input id="pricing-max-range" type="range" min="1" max="5" step="1" value={multiple} onChange={event => setMultiple(Number(event.target.value))} /><div className="pricing-multiplier-labels">{[1, 2, 3, 4, 5].map(value => <button type="button" aria-pressed={multiple === value} key={value} onClick={() => setMultiple(value)}>{value}×</button>)}</div><p>{copy.maxBase}: {count(plan.credits)} · {copy.maxTotal}: {count(credits)} {copy.creditsMonth}</p></div>}
               <button type="button" className="pricing-pay" disabled={!canPay || !!pending} onClick={() => checkout(plan)}>{pending === plan.id ? copy.wait : canPay ? copy.checkout : copy.unavailable}</button>
-              <div className="pricing-credits"><Sparkles size={18} /><strong>{count(plan.credits * factor)} {mode === 'once' ? copy.credits : copy.creditsMonth}</strong></div>
+              <div className="pricing-credits"><Sparkles size={18} /><strong>{count(credits)} {mode === 'once' ? copy.credits : copy.creditsMonth}</strong></div>
               {mode !== 'once' && <div className="pricing-models"><ModelDropdown title={copy.videoModels} models={video} /><ModelDropdown title={copy.imageModels} models={image} /></div>}
               <ul className="pricing-features">{pricingFeatureLines(plan, mode, copy).map(line => <li key={line}><Check size={16} />{line}</li>)}</ul>
             </article>;

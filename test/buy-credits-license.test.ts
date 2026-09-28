@@ -5,8 +5,8 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import site from '../site/site.config';
 import en from '../site/messages/en';
 import zh from '../site/messages/zh';
-import { BuyCreditsContent, defaultPurchaseSelection } from '../src/components/blocks/buy-credits-dialog';
-import { CommercialLicense } from '../src/components/commercial-license';
+import { BuyCreditsContent, defaultPurchaseSelection } from '../src/components/account/buy-credits-dialog';
+import { CommercialLicense } from '../src/components/pricing/commercial-license';
 import { isSiteShellPath } from '../src/lib/routes';
 import { planCopy } from '../src/lib/plan-copy';
 

@@ -2,9 +2,9 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { AccountPopoverCard } from './blocks/account-popover-card';
-import { inviteGateRows, type AccountLinks } from './blocks/account-gate-rows';
-import { AvatarTrigger, ProfileHeader } from './blocks/account-profile';
+import { AccountPopoverCard } from '../account/account-popover-card';
+import { inviteGateRows, type AccountLinks } from '../account/account-gate-rows';
+import { AvatarTrigger, ProfileHeader } from '../account/account-profile';
 import type { AuthSettings } from '@/lib/auth';
 import { authClient } from '@/lib/auth-client';
 import { useDismissableLayer } from '@/lib/use-dismissable-layer';

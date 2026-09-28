@@ -1,4 +1,4 @@
-import { ResetPassword } from '@/components/reset-password';
+import { ResetPassword } from '@/components/auth/reset-password';
 import { auth, localeFor, messages } from '@/lib/config';
 import { browserNavCopy } from '@/lib/browser-nav-copy';
 

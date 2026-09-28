@@ -6,7 +6,7 @@ import { routePath } from '@/lib/routes';
 import { ledgerSourceLabel } from '@/lib/ledger';
 import { workerEnv } from '@/lib/env';
 import { creditHistory, type CreditLot } from '@/lib/credit-history';
-import { InviteGate } from './invite-gate';
+import { InviteGate } from '../invites/invite-gate';
 import Link from 'next/link';
 
 export async function WorkspaceContent({ locale, section }: { locale: keyof typeof messages; section: 'dashboard' | 'credits' }) {

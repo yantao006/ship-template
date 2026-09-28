@@ -1,13 +1,6 @@
 import type { CSSProperties } from 'react';
-import type { FieldType, FieldValue, ToolField } from './types';
-
-export type ParameterFieldProps = {
-  id: string; type: FieldType; label: string; value: FieldValue;
-  presentation?: ToolField['presentation']; unit?: string;
-  options?: { value: string; label: string }[]; stops?: number[]; uploadHint?: string;
-  switchStates?: { on: string; off: string };
-  onChange: (value: FieldValue) => void;
-};
+import type { ParameterFieldProps } from './view-model';
+export type { ParameterFieldProps } from './view-model';
 
 function ratioDimensions(value: string) {
   const match = /^(\d+)-(\d+)$/.exec(value);

@@ -1,4 +1,4 @@
-import { PricingContent } from '@/components/pricing-content';
+import { PricingContent } from '@/components/pricing/pricing-content';
 import { localeFor } from '@/lib/config';
 
 export const dynamic = 'force-dynamic';

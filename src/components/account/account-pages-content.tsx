@@ -8,8 +8,8 @@ import { workerEnv } from '@/lib/env';
 import { routePath } from '@/lib/route-paths';
 import { ledgerSourceLabel, paidLedgerSources } from '@/lib/ledger';
 import { creditMovements } from '@/lib/account-page-history';
-import { Avatar } from './blocks/account-profile';
-import { InviteGate } from './invite-gate';
+import { Avatar } from './account-profile';
+import { InviteGate } from '../invites/invite-gate';
 import { browserNavCopy } from '@/lib/browser-nav-copy';
 import { AccountActions, CreditRecords } from './account-pages-controls';
 
