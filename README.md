@@ -79,13 +79,23 @@ This browser run did not apply that migration, submit a payment, or deploy the p
 
 ### Source-inspired auth card preview (2026-09-27)
 
-The preview alias now serves the copied `minimax-auth-card.tsx` variant; `auth-4.tsx` is unchanged.
+At the time of this browser run, the preview alias served the copied `minimax-auth-card.tsx` variant; `auth-4.tsx` is unchanged.
 The card keeps the site's brand, configured welcome credits and localized claims, and uses the existing email-code sign-in after the email action.
 The image is a site-local placeholder.
-The email-code flow, mobile bottom drawer and full-page reload are owned by the existing application; this variant changes their appearance, not their implementation.
+At the time of this run, the email-code flow still used the card's inline code field, mobile bottom drawer and full-page reload.
 The measured source spec, computed-color comparison and initial plus expanded-email viewport/theme screenshot pairs live in `docs/research/auth-card/source-spec.md` and `docs/verification/auth-card/`.
 Cloudflare Worker version `2b762543-321f-4191-81d8-eabf8c426b05` was uploaded to the preview alias with the existing `WAFFO_PRODUCTS` catalog, without deploying to the live hostname.
-The expanded email input now follows the OR divider in a column flow with 12px of separation; both themes were compared at 1440 × 900 and 390 × 844 in ego-browser.
+The expanded email input follows the OR divider in a column flow with 12px of separation; both themes were compared at 1440 × 900 and 390 × 844 in ego-browser.
+
+### Email OTP dialog preview (2026-09-28)
+
+The preview alias now serves `minimax-auth-card.tsx` for the email entry and the licensed Auth-6 adaptation in `src/components/blocks/auth-6.tsx` for the six-digit code.
+The Auth-4 original and Google sign-in remain unchanged.
+A successful send opens the independent dialog, while verification and resend call the existing better-auth email OTP methods.
+An ego-browser unsigned desktop and 390px mobile run confirmed the dialog, copy, grouping, paste/auto-advance/backspace, resend cooldown, email-change return, and code-only close.
+No received code was entered, so this browser run did not prove a completed sign-in.
+Desktop and mobile captures and the detailed checklist are in [email OTP dialog verification](docs/verification/email-otp-dialog/README.md).
+Worker version `19c78194-f102-4e77-8cb7-7ff8ca82f162` was uploaded to the existing preview alias without deploying to the live hostname.
 
 ## Site and secret boundaries
 

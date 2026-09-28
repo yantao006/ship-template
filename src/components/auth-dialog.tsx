@@ -36,6 +36,7 @@ async function serverHasSession() {
 
 export function AuthDialogProvider({ children, ...auth }: Omit<MinimaxAuthCardProps, 'onAuthenticated' | 'onOAuthStart'> & { children: ReactNode }) {
   const [open, setOpen] = useState(false);
+  const [codeOpen, setCodeOpen] = useState(false);
   const [intent, setIntent] = useState<AuthIntent>({});
   const shell = useRef<HTMLDivElement>(null);
   const dialog = useRef<HTMLDivElement>(null);
@@ -50,11 +51,12 @@ export function AuthDialogProvider({ children, ...auth }: Omit<MinimaxAuthCardPr
     attempt.current += 1;
     active.current = false;
     setOpen(false);
+    setCodeOpen(false);
     setIntent({});
     sessionStorage.removeItem(storageKey);
     sessionStorage.removeItem('pricing-auth-selection');
   }, []);
-  useDismissableLayer({ active: open, area: dialog, trigger, backdrop, onClose: closeAuth, trapFocus: true });
+  useDismissableLayer({ active: open && !codeOpen, area: dialog, trigger, backdrop, onClose: closeAuth, trapFocus: true });
 
   useEffect(() => {
     if (!open) return;
@@ -141,9 +143,9 @@ export function AuthDialogProvider({ children, ...auth }: Omit<MinimaxAuthCardPr
   return <Context.Provider value={{ openAuth, closeAuth }}>
     <div ref={shell} className="public-shell">{children}</div>
     {open && createPortal(<div ref={backdrop} className="auth4-overlay minimax-auth-overlay" aria-label={auth.copy.signIn}>
-      <div ref={dialog} role="dialog" aria-modal="true" aria-labelledby="auth4-title" className="auth4-dialog minimax-auth-dialog">
+      <div ref={dialog} role="dialog" aria-modal={!codeOpen} aria-hidden={codeOpen} inert={codeOpen} aria-labelledby="auth4-title" className="auth4-dialog minimax-auth-dialog">
         <button type="button" className="auth4-close" onClick={closeAuth} aria-label={auth.copy.close}><X size={20} /></button>
-        <MinimaxAuthCard {...auth} callbackURL={callbackURL} onAuthenticated={onAuthenticated} onOAuthStart={onOAuthStart} onOAuthFailure={onOAuthFailure} />
+        <MinimaxAuthCard {...auth} callbackURL={callbackURL} onAuthenticated={onAuthenticated} onOAuthStart={onOAuthStart} onOAuthFailure={onOAuthFailure} onCodeOpenChange={setCodeOpen} />
       </div>
     </div>, document.body)}
   </Context.Provider>;

@@ -128,6 +128,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │   ├── blocks/auth-4.tsx         # Preserved licensed Auth-4 original
 │   │   ├── blocks/minimax-auth-card.tsx # Source-inspired copy wired to better-auth
 │   │   ├── blocks/minimax-auth-card.css # Measured card styles and responsive layout
+│   │   ├── blocks/auth-6.tsx, auth-6.css # Scoped email OTP dialog adapted from licensed React Bits Pro block
 │   │   ├── blocks/account-popovers.tsx   # Signed-in account/credit menu data and actions
 │   │   ├── blocks/account-dialogs.tsx    # Seven account dialog bodies and shared dialog hero
 │   │   ├── blocks/account-profile.tsx    # Shared avatar trigger and profile header
@@ -243,7 +244,7 @@ On each request, production login accepts the Worker `SITE_URL` only when it equ
 `src/app/api/invites/redeem/route.ts` uses the shared session and browser-write guard, redeems the code through an atomic D1 batch, and grants the eligible user credits.
 `src/lib/invites.ts` owns invite code format, normalization, inventory reads, creation, and revocation.
 `src/components/site-shell.tsx` mounts one `AuthDialogProvider` for public pages; `auth-control.tsx` triggers the source-inspired copy in `blocks/minimax-auth-card.tsx` while licensed `blocks/auth-4.tsx` stays untouched.
-Below 768px the shared card uses the existing bottom drawer; email sign-in uses a mailed six-digit code, and successful code sign-in follows the existing full-page reload.
+Below 768px the shared card uses the existing bottom drawer; email sign-in sends a mailed six-digit code and opens the separate Auth-6 dialog only after a successful send, while successful code sign-in follows the existing full-page reload.
 The standalone desktop callback keeps `sign-in-card.tsx` as a fallback outside that shell.
 `src/lib/auth-client.ts` owns the browser auth client, and `src/lib/browser-nav-copy.ts` assembles navigation and auth copy without sending mail strings to client props.
 Auth-4 uses Tailwind v4 theme variables and utilities without a global base reset via `postcss.config.mjs` and `src/app/globals.css`.
