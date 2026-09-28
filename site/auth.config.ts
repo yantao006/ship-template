@@ -6,7 +6,7 @@ import type { AuthConfig } from '../src/lib/site-config-types';
 export default {
   backend: 'better-auth' as const,
   email: { enabled: true as boolean, requireVerification: true as boolean, passwordReset: true as boolean },
-  google: { enabled: true as boolean, oneTapEnabled: false as boolean },
+  google: { enabled: true as boolean, oneTapEnabled: true as boolean },
   github: { enabled: false as boolean },
   invite: { required: false as boolean, adminEmails: [] as string[] },
   desktop: { schemes: [] as string[] },
