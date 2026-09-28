@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { Miniflare } from 'miniflare';
 import { createAuth, type AuthSettings } from '../src/lib/auth';
+import productAuth from '../site/auth.config';
+import secondSiteAuth from '../fixtures/second-site/site/auth.config';
 import { allowedDesktopTarget, handoffURL } from '../src/lib/desktop-auth';
 import { createInvite, hasInvite, listInvites, normalizeInviteCode, redeemInvite, revokeInvite, validateInvite, validInviteCode } from '../src/lib/invites';
 import type { Env } from '../src/lib/env';
@@ -36,6 +38,26 @@ test('provider flags gate both auth endpoints and credentials; email session liv
     const github = createAuth({ ...env, GITHUB_CLIENT_ID: 'fake-id', GITHUB_CLIENT_SECRET: 'fake-secret' }, 'localhost', { ...settings, github: { enabled: true } });
     assert.ok(github.options.socialProviders?.github);
     assert.equal(github.options.socialProviders?.google, undefined);
+  } finally { await mf.dispose(); }
+});
+
+test('product One Tap is enabled only for signed-out homepage visitors with Google configured', () => {
+  assert.equal(productAuth.google.enabled, true);
+  assert.equal(productAuth.google.oneTapEnabled, true);
+  assert.equal(secondSiteAuth.google.oneTapEnabled, false);
+  const home = readFileSync('src/components/home-content.tsx', 'utf8');
+  assert.match(home, /!session\s*&&\s*auth\.google\.enabled\s*&&\s*auth\.google\.oneTapEnabled\s*&&\s*env\.GOOGLE_CLIENT_ID\s*&&\s*<GoogleOneTap\b/);
+  assert.match(home, /const \{ session \} = await accountSnapshot\(env, requestHeaders\)/);
+});
+
+test('server One Tap plugin follows both Google switches', async () => {
+  const { mf, db } = await database('one-tap-options-test');
+  try {
+    const env: Env = { DB: db, SITE_URL: 'http://localhost:3000', LOCAL_AUTH_TEST: '1', BETTER_AUTH_SECRET: secret, GOOGLE_CLIENT_ID: 'local-test-id', GOOGLE_CLIENT_SECRET: 'local-test-secret' };
+    const plugins = (google: AuthSettings['google']) => createAuth(env, 'localhost', { ...settings, google }).options.plugins?.map(plugin => plugin.id) ?? [];
+    assert.ok(plugins({ enabled: true, oneTapEnabled: true }).includes('one-tap'));
+    assert.ok(!plugins({ enabled: true, oneTapEnabled: false }).includes('one-tap'));
+    assert.ok(!plugins({ enabled: false, oneTapEnabled: true }).includes('one-tap'));
   } finally { await mf.dispose(); }
 });
 
