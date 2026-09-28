@@ -7,6 +7,7 @@ export default {
       languageBg: '#ffffff', rowHover: '#f0edf5', rowIcon: '#6d28d9', rowIconBg: '#f6f3fa', rowIconLine: '#e2ddea',
       pillBg: '#f0f0f2', pillHover: '#e7e7ea', pillLine: '#dedee3',
       buyBg: '#18181b', buyText: '#ffffff', buyHover: '#334155',
+      suggestionBg: '#1b1b1f', suggestionText: '#ffffff', suggestionMuted: '#d4d4d8', suggestionBorder: '#494951', suggestionButtonBg: '#ffffff', suggestionButtonText: '#171717',
     },
     dark: {
       navBg: '#0b0b0c', navText: '#ffffff', navMuted: '#aaaaaa', navHover: '#202022', navLine: '#2b2b2e', languageDot: '#ffd600',
@@ -14,5 +15,6 @@ export default {
       languageBg: '#1b1b1f', rowHover: '#ffffff12', rowIcon: '#c4b5fd', rowIconBg: '#ffffff0a', rowIconLine: '#34343a',
       pillBg: '#252527', pillHover: '#343439', pillLine: '#333338',
       buyBg: '#fafafa', buyText: '#111111', buyHover: '#dedee2',
+      suggestionBg: '#1b1b1f', suggestionText: '#ffffff', suggestionMuted: '#d4d4d8', suggestionBorder: '#494951', suggestionButtonBg: '#ffffff', suggestionButtonText: '#171717',
     },
   } satisfies ThemeConfig['chrome'];

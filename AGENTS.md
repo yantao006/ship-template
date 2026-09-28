@@ -153,6 +153,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │   ├── reset-password.tsx        # Client form that submits a new password for a reset token
 │   │   ├── google-one-tap.tsx        # Optional browser-side One Tap client
 │   │   ├── language-control.tsx      # Locale switch preserving the current route
+│   │   ├── language-suggestion.tsx, language-suggestion.css # Public-shell browser-language prompt
 │   │   ├── theme-mode-initializer.tsx # Freezes first document theme before client navigation
 │   │   ├── site-shell.tsx            # Persistent account-aware header and one footer for public pages
 │   │   ├── workspace-shell.tsx       # Persistent dashboard/credits sidebar and workspace layout
@@ -182,6 +183,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │       ├── plan-copy.ts              # Localized plan names selected by plan id
 │       ├── theme-tokens.ts           # Generated mode-aware CSS tokens from site theme
 │       ├── theme-mode.ts             # Root theme initialization and control transitions
+│       ├── language-suggestion.ts    # Preferred-language match, localized names and decision key
 │       ├── env.ts                    # Worker binding and secret types plus context accessor
 │       ├── auth-schema.ts            # Drizzle mapping for better-auth D1 tables
 │       ├── auth.ts                   # Better-auth construction, origin checks, signup grant
@@ -253,6 +255,7 @@ A new capability can be a new `src/lib/` service called by an API endpoint, a se
 The middleware marks whether the first route uses the public shell; the root layout applies that route's default through `data-mode="auto"`, and `ThemeModeInitializer` freezes it on `<html>` before client navigation. `ReplicaNavigation` reads the document mode and toggles it through `src/lib/theme-mode.ts`, preserving the selected mode across page changes.
 Header language changes use App Router navigation to preserve the document; `ReplicaNavigation` synchronizes `<html lang>` because the root layout persists across client-side transitions.
 `src/middleware.ts` forwards the route locale so the root layout sets matching `<html lang>` and metadata, including for the default-language `/` homepage.
+`SiteShell` mounts `language-suggestion.tsx`, which compares the browser's preferred primary language with `site.languages`, uses suggested-language navigation copy, remembers a page/suggestion decision in local storage, and switches through `pathForLocale`.
 `src/app/globals.css` applies the tokens across marketing and workspace surfaces, and `.auth-panel` sets foreground with its surface background.
 
 ### Authentication and eligibility
@@ -384,7 +387,7 @@ Schema changes gain a new reviewed migration and matching service/query types an
 | `site/site.config.ts`: `brand`, optional `logo` | Site title and notification brand, plus optional shared navigation logo image and alt text. |
 | `previewOnly` | Controls robots metadata and `robots.txt` indexing behavior. |
 | `apex`, `url` | Canonical host and absolute base URL for authentication, callbacks, links, metadata, and site-check. |
-| `languages`, derived `locales`, `defaultLocale` | Code, native name, flag emoji, and date locale for every language; default homepage and request-locale document language. |
+| `languages`, derived `locales`, `defaultLocale` | Code, native name, optional localized `names` for suggestion copy, flag emoji, and date locale for every language; default homepage and request-locale document language. |
 | `deploy.worker`, `deploy.d1`, `deploy.r2`, `deploy.queue` | Expected per-site Worker, D1, R2, and Queue names compared with Wrangler. |
 | `email.provider`, `email.from`, optional `email.brand` | Selects the email adapter, sender address, and mail-specific display brand. |
 | `signupCredits` | Amount granted once to an eligible new account. |
@@ -398,7 +401,7 @@ Schema changes gain a new reviewed migration and matching service/query types an
 | `desktop.schemes` | Allow-listed app URL schemes for signed-in desktop handoff. |
 | `turnstile.onSignIn` | Applies Turnstile verification to sign-in requests supplied with a client token. |
 | `site/database.config.ts`: `binding`, `migrationsDir` | Site D1 binding name and migration directory. |
-| `site/theme.config.ts` assembling `site/theme/`: `light`, `dark`, `chrome`, `authCard`, `mail`, `pricing`, `purchase`, `rowTones`, `defaultMode`, `font`, `account`, `tones` | Paired semantic palettes and navigation/account-card/auth-card/pricing chrome, email-only palette, row tones, homepage/other-page defaults, and account accents; web tokens emitted through `src/lib/theme-tokens.ts`. |
+| `site/theme.config.ts` assembling `site/theme/`: `light`, `dark`, `chrome`, `authCard`, `mail`, `pricing`, `purchase`, `rowTones`, `defaultMode`, `font`, `account`, `tones` | Paired semantic palettes and navigation/account-card/auth-card/pricing chrome (including the dark language suggestion), email-only palette, row tones, homepage/other-page defaults, and account accents; web tokens emitted through `src/lib/theme-tokens.ts`. |
 | `site/video-tool.config.ts` | Landing tool media, workflows, models, fields, references, assets, and optional promo. |
 | `site/messages/en.ts`, `zh.ts`: `metadata`, `nav`, `hero`, `videoTool`, `account`, `dashboard`, `credits`, `pricing`, `planCopy` | Localized strings for metadata, navigation, credit sources, plan names and pricing features, the video tool, and content views. |
 

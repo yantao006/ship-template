@@ -11,7 +11,7 @@ export type SiteConfig = {
   apex: string;
   url: string;
   previewOrigin: string;
-  languages: readonly { code: string; name: string; flag: string; dateLocale: string }[];
+  languages: readonly { code: string; name: string; names?: Readonly<Record<string, string>>; flag: string; dateLocale: string }[];
   locales: readonly string[];
   defaultLocale: string;
   deploy: { worker: string; d1: string; r2: string; queue: string };
@@ -51,7 +51,7 @@ export type ThemeConfig<ExtraVideoKeys extends VideoToolIconKeys = never> = {
   font: string;
   account: Record<'accent' | 'accentEnd' | 'accentText', string>;
   tones: Record<'pink' | 'info' | 'success' | 'warning' | 'danger', string>;
-  chrome: PairedColors<'navBg' | 'navText' | 'navMuted' | 'navHover' | 'navLine' | 'languageDot' | 'popoverBg' | 'popoverEnd' | 'popoverMenuEnd' | 'popoverHeader' | 'popoverBorder' | 'popoverLine' | 'languageBg' | 'rowHover' | 'rowIcon' | 'rowIconBg' | 'rowIconLine' | 'pillBg' | 'pillHover' | 'pillLine' | 'buyBg' | 'buyText' | 'buyHover'>;
+  chrome: PairedColors<'navBg' | 'navText' | 'navMuted' | 'navHover' | 'navLine' | 'languageDot' | 'popoverBg' | 'popoverEnd' | 'popoverMenuEnd' | 'popoverHeader' | 'popoverBorder' | 'popoverLine' | 'languageBg' | 'rowHover' | 'rowIcon' | 'rowIconBg' | 'rowIconLine' | 'pillBg' | 'pillHover' | 'pillLine' | 'buyBg' | 'buyText' | 'buyHover' | 'suggestionBg' | 'suggestionText' | 'suggestionMuted' | 'suggestionBorder' | 'suggestionButtonBg' | 'suggestionButtonText'>;
   dialog: PairedColors<'canvas' | 'panel' | 'inset' | 'elevated' | 'text' | 'muted' | 'subtle' | 'border' | 'accent' | 'accentSoft' | 'disabled' | 'disabledText' | 'overlay' | 'shadow' | 'grid' | 'heroGlow' | 'titleGlow' | 'inviteStart' | 'inviteMiddle' | 'inviteEnd' | 'infoPanel' | 'infoValue' | 'accentValue' | 'messageBg' | 'messageText' | 'errorBg' | 'errorText' | 'heroIconBg' | 'heroMuted' | 'socialBg' | 'socialHover' | 'shareBg'>;
   authCard: Record<'light' | 'dark', Record<'canvas' | 'panel' | 'text' | 'row' | 'line' | 'muted' | 'faint' | 'icon' | 'button' | 'buttonHover' | 'onButton' | 'focus' | 'media' | 'error', string>>;
   mail: Record<'canvas' | 'panel' | 'border' | 'text' | 'muted' | 'faint' | 'inset' | 'codeBorder' | 'code' | 'stripeStart' | 'stripeMiddle' | 'stripeEnd' | 'shadow', string>;

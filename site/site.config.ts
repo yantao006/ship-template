@@ -1,7 +1,7 @@
 import type { SiteConfig } from '../src/lib/site-config-types';
 
 const languages = [
-  { code: 'en', name: 'English', flag: '🇺🇸', dateLocale: 'en-US' },
+  { code: 'en', name: 'English', names: { zh: '英语' }, flag: '🇺🇸', dateLocale: 'en-US' },
   { code: 'zh', name: '中文', flag: '🇨🇳', dateLocale: 'zh-CN' },
 ] as const;
 

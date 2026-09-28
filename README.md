@@ -111,6 +111,16 @@ This alias is shared with another workstream and can be overwritten by its next 
 Cloudflare Email Sending for `awesomejev.link` is now onboarded: the prior Email Routing-only binding could send to verified destination addresses but not reliably to other users.
 The auth route now waits for Cloudflare's send acknowledgement before opening the OTP dialog; Cloudflare's activity log reports the Gmail and 126 test messages as Delivered, while only the `agent.qq.com` inbox was independently read.
 
+### Language suggestion preview (2026-09-28)
+
+The unmerged language suggestion was uploaded as Worker version `30f3b91c-690c-4cf7-9645-eb8344c12dee` to the shared `popovers` preview alias, without deploying to the live hostname.
+Its immutable preview URL is:
+
+https://30f3b91c-awesomejev-test.yantao006.workers.dev/en
+
+In an ego-browser with `navigator.languages[0] === 'zh-CN'`, the English page showed the Chinese suggestion card; continuing in English and closing it each survived a refresh, while switching from `/en/pricing` navigated to `/zh/pricing` and remembered the choice.
+Desktop and 375px mobile screenshots showed the card below the fixed header without horizontal overflow.
+
 ## Site and secret boundaries
 
 Each site needs its own D1, Worker, Google Cloud project and OAuth web client, and account namespace.
