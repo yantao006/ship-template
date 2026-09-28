@@ -1,11 +1,14 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync } from 'node:fs';
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 import en from '../site/messages/en';
 import zh from '../site/messages/zh';
 import config from '../site/video-tool.config';
 import second from '../fixtures/second-site/site/video-tool.config';
 import { bindToolSite } from '../src/components/video-tool/bind-copy';
+import { Mark } from '../src/components/video-tool/mark';
 import { buildCreatePayload, modelForMedia, previewCost, reconcileFieldValues, snapToStops, summaryFields, visibleWorkflows } from '../src/components/video-tool/state';
 import type { VideoToolCopy } from '../src/components/video-tool/types';
 
@@ -104,10 +107,28 @@ test('catalog is grouped and the default video model matches the workbench', () 
   assert.equal(config.assets.some(asset => asset.tabId === 'history'), false);
 });
 
+test('reference panel marks use the named Lucide outlines and filled crown', () => {
+  assert.deepEqual(config.media.map(item => item.icon), ['lucide:video', 'lucide:image']);
+  assert.deepEqual(config.workflows.slice(0, 3).map(item => item.icon), ['lucide:film', 'lucide:pen-line', 'lucide:image']);
+  assert.deepEqual(config.referenceKinds.map(item => item.icon), ['lucide:image', 'lucide:film', 'lucide:music']);
+  assert.equal(config.promo?.icon, 'lucide:crown');
+  assert.deepEqual(config.models.filter(model => model.tags.some(tag => tag.icon)).flatMap(model => model.tags.map(tag => tag.icon).filter(Boolean)), ['lucide:crown', 'lucide:crown']);
+  for (const [name, className] of Object.entries({ video: 'video', image: 'image', film: 'film', music: 'music', 'pen-line': 'pen-line', crown: 'crown' })) {
+    const html = renderToStaticMarkup(createElement(Mark, { icon: `lucide:${name}` }));
+    assert.match(html, new RegExp(`lucide-${className}`));
+    assert.match(html, /stroke-width="2"/);
+    assert.match(html, new RegExp(`fill="${name === 'crown' ? 'currentColor' : 'none'}"`));
+  }
+});
+
 test('second site keeps the same structure without a promo', () => {
   assert.notEqual(second.models[0].id, config.models[0].id);
   assert.equal('promo' in second, false);
   assert.deepEqual(second.media.map(item => item.id), ['video', 'image']);
+  assert.deepEqual(second.media.map(item => item.icon), ['lucide:video', 'lucide:image']);
+  assert.deepEqual(second.workflows.map(item => item.icon), ['lucide:film', 'lucide:pen-line', 'lucide:image', 'lucide:pen-line']);
+  assert.ok(second.models.every(model => model.icon.startsWith('lucide:')));
+  assert.equal(second.referenceKinds[0]?.icon, 'lucide:image');
   assert.ok(second.models.every(model => second.vendors.some(vendor => vendor.id === model.vendorId)));
   assert.ok(second.assets.some(asset => asset.tabId === 'use-cases' && asset.url.startsWith('https://')));
   assert.equal(second.assets.some(asset => asset.tabId === 'history'), false);

@@ -30,7 +30,7 @@ export default {
     },
     prompt: { title: '提示词', titleByWorkflow: { 'multi-image': '拆解说明（可选）' }, placeholder: '描述你想要的画面。用 @1、@2 引用已上传的素材', placeholderByMedia: { image: '描述你想生成的图片...' }, placeholderByWorkflow: { 'multi-image': '留空则自动拆解，也可以指定要分离的元素...' }, maxLength: 7000, maxLengthByMedia: { image: 20000 }, assist: '用 AI 生成', suggestion: '第一人称厨房烘焙，轻微广角，画面里只有手和前臂。' },
     model: '模型', workflowLabel: '工作流', parameters: '参数', expand: '展开参数', collapse: '收起参数', quantity: '数量', quantityPrefix: 'x', create: '创建',
-    promo: '年付方案：只要 30 积分，立省 30% →', promoDismiss: '关闭年付优惠',
+    promo: '年付方案：只要 30 积分，立省 30%', promoDismiss: '关闭年付优惠',
     tabs: {
       'use-cases': { label: '用例', empty: '暂无用例。', labelByMedia: { image: '模板' } },
       history: { label: '历史', empty: '还没有生成记录。' },

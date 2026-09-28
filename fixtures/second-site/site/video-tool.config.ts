@@ -3,21 +3,21 @@ import type { VideoToolStructure } from '../../../src/components/video-tool/type
 const still = 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=1200&q=80';
 
 export default {
-  media: [{ id: 'video', icon: '▣' }, { id: 'image', icon: '◇' }],
+  media: [{ id: 'video', icon: 'lucide:video' }, { id: 'image', icon: 'lucide:image' }],
   workflows: [
-    { id: 'multi', icon: '▦', mediaId: 'video' },
-    { id: 'text-video', icon: '✎', mediaId: 'video' },
-    { id: 'image-video', icon: '▧', mediaId: 'video' },
-    { id: 'text-image', icon: '◇', mediaId: 'image' },
+    { id: 'multi', icon: 'lucide:film', mediaId: 'video' },
+    { id: 'text-video', icon: 'lucide:pen-line', mediaId: 'video' },
+    { id: 'image-video', icon: 'lucide:image', mediaId: 'video' },
+    { id: 'text-image', icon: 'lucide:pen-line', mediaId: 'image' },
   ],
   vendors: [{ id: 'clip-lab' }, { id: 'still-lab' }],
   models: [
-    { id: 'bench-clip', vendorId: 'clip-lab', icon: '▶', workflowIds: ['multi', 'text-video', 'image-video'], fieldIds: ['ratio', 'duration'], options: { ratio: ['wide'] }, stops: { duration: [6, 10] }, tags: [{ id: 'short', tone: 'neutral' }], count: 4, costByDuration: { 6: 4, 10: 8 } },
-    { id: 'bench-still', vendorId: 'still-lab', icon: '◻', workflowIds: ['text-image'], fieldIds: ['ratio'], options: { ratio: ['square'] }, tags: [], count: 2 },
+    { id: 'bench-clip', vendorId: 'clip-lab', icon: 'lucide:video', workflowIds: ['multi', 'text-video', 'image-video'], fieldIds: ['ratio', 'duration'], options: { ratio: ['wide'] }, stops: { duration: [6, 10] }, tags: [{ id: 'short', tone: 'neutral' }], count: 4, costByDuration: { 6: 4, 10: 8 } },
+    { id: 'bench-still', vendorId: 'still-lab', icon: 'lucide:image', workflowIds: ['text-image'], fieldIds: ['ratio'], options: { ratio: ['square'] }, tags: [], count: 2 },
   ],
   fields: [{ id: 'ratio', type: 'option', presentation: 'ratio', order: 3 }, { id: 'duration', type: 'number', unit: 's', order: 2 }],
   references: [{ id: 'loaf', kind: 'image', url: still }],
-  referenceKinds: [{ id: 'image', icon: '◻' }],
+  referenceKinds: [{ id: 'image', icon: 'lucide:image' }],
   referenceLimits: { image: 2 },
   quantity: { min: 1, max: 2, default: 1 },
   tabs: [{ id: 'use-cases' }, { id: 'history' }],
