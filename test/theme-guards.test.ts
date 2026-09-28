@@ -22,6 +22,7 @@ const literalAllowlist = new Set([
   'site/video-tool.config.ts', // Unmigrated configured icons.
   ...Object.keys(legacyColors),
   'src/components/account/account-popovers.tsx', // Unmigrated row colors.
+  'src/components/pricing/pricing-confetti.tsx', // Cloned cannon colors, identical in both modes.
   'public/brand/logo.svg',
   ...['amex', 'apple-pay', 'discover', 'google-pay', 'jcb', 'mastercard', 'visa'].map(name => `public/pricing/${name}.svg`), // Third-party payment marks retain their trademark colors.
   'public/video-tool/grok-logo.svg',
