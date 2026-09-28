@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
@@ -45,6 +46,15 @@ test('invite card uses the official claim link, true empty data and configured r
   assert.match(markup, /Refresh referral history/);
   assert.match(markup, /TOP 3/);
   assert.doesNotMatch(markup, /Gmail|daily cap|IP address/);
+});
+
+test('invite social hover and keyboard focus share the same scoped, reduced-motion-aware treatment', () => {
+  const markup = render('invite');
+  for (const name of site.account.shareNetworks) assert.match(markup, new RegExp(`aria-label="${name}"`));
+  const css = readFileSync('src/components/blocks/account-popovers.css', 'utf8');
+  assert.match(css, /\.account-invite-social \.account-sharelinks a:is\(:hover,:focus-visible\)\{background:/);
+  assert.match(css, /\.account-invite-social \.account-sharelinks a\{[^}]*transition:background-color \.15s/);
+  assert.match(css, /@media\(prefers-reduced-motion:reduce\)\{[^}]*\}[^}]*\.account-invite-social \.account-sharelinks a\{transition:none\}/);
 });
 
 test('share card uses the configured site URL, honest localized recommendation and disabled empty submission', () => {
