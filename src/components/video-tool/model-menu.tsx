@@ -1,3 +1,4 @@
+import { ChevronDown } from 'lucide-react';
 import { Mark } from './mark';
 
 export type ModelMenuItem = { id: string; icon: string; label: string; subtitle?: string; tags: { id: string; label: string; tone: string; icon?: string }[] };
@@ -19,7 +20,7 @@ export function ModelMenu({ label, selectedId, selected, groups, open, onToggle,
       {selected && <Mark icon={selected.icon} />}
       <span className="vt-model-name">{selected?.label ?? label}</span>
       {selected && <Tags tags={selected.tags} />}
-      <span className="vt-chevron" aria-hidden="true" />
+      <ChevronDown className="vt-chevron" aria-hidden="true" size={18} strokeWidth={2} />
     </button>
     {open && <div className="vt-model-menu" role="listbox" aria-label={label}>
       {groups.map(group => <div key={group.id} className="vt-vendor">

@@ -30,7 +30,7 @@ export default {
     },
     prompt: { title: 'Prompt', titleByWorkflow: { 'multi-image': 'Decomposition instructions (optional)' }, placeholder: 'Describe what you want. Use @1, @2... to reference uploaded assets', placeholderByMedia: { image: 'Describe the image you want to generate...' }, placeholderByWorkflow: { 'multi-image': 'Leave blank for automatic decomposition, or specify the elements to separate...' }, maxLength: 7000, maxLengthByMedia: { image: 20000 }, assist: 'Generate with AI', suggestion: 'First-person kitchen baking vlog, slight wide lens, only hands and forearms in frame.' },
     model: 'Model', workflowLabel: 'Workflow', parameters: 'Parameters', expand: 'Show parameters', collapse: 'Hide parameters', quantity: 'Quantity', quantityPrefix: 'x', create: 'Create',
-    promo: 'Annual plan: only 30 credits, save 30% →', promoDismiss: 'Dismiss annual plan offer',
+    promo: 'Annual plan: only 30 credits, save 30%', promoDismiss: 'Dismiss annual plan offer',
     tabs: {
       'use-cases': { label: 'Use Cases', empty: 'No use cases yet.', labelByMedia: { image: 'Templates' } },
       history: { label: 'History', empty: 'No generations yet.' },

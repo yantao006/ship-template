@@ -196,7 +196,7 @@ export function useVideoToolState({ config, copy, assets, status = { state: 'idl
       uploadHint: copy.references.hintsByWorkflow?.[currentWorkflowId] ?? copy.references.uploadHintByMedia?.[mediaId] ?? copy.references.uploadHint,
       libraryLabel: copy.references.library, closeLibraryLabel: copy.references.closeLibrary, libraryOpen,
     } : undefined,
-    prompt: { title: copy.prompt.titleByWorkflow?.[currentWorkflowId] ?? copy.prompt.title, assist: copy.prompt.assist,
+    prompt: { title: copy.prompt.titleByWorkflow?.[currentWorkflowId] ?? copy.prompt.title, assist: copy.prompt.assist, referenceLabel: copy.references.title,
       placeholder: copy.prompt.placeholderByWorkflow?.[currentWorkflowId] ?? copy.prompt.placeholderByMedia?.[mediaId] ?? copy.prompt.placeholder,
       maxLength: promptLimit, value: draft },
     parameters: { summary, fallbackLabel: copy.parameters, expanded, fields: fieldProps },
