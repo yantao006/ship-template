@@ -1,5 +1,5 @@
-import { auth } from './config';
-import type { Env } from './env';
+import { auth } from '../../lib/config';
+import type { Env } from '../../lib/env';
 
 export function normalizeInviteCode(code: unknown): string {
   return typeof code === 'string' ? code.trim().toUpperCase() : '';

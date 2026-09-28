@@ -1,7 +1,7 @@
 import { ensureSignupCredits } from '@/lib/auth';
 import { auth } from '@/lib/config';
 import { workerEnv } from '@/lib/env';
-import { hasInvite, normalizeInviteCode, redeemInvite } from '@/lib/invites';
+import { hasInvite, normalizeInviteCode, redeemInvite } from '@/modules/invites/service';
 import { browserWriteAllowed, readJson, readSession } from '@/lib/request-context';
 
 export async function POST(request: Request) {

@@ -1,6 +1,6 @@
 import { auth } from '@/lib/config';
 import { workerEnv } from '@/lib/env';
-import { normalizeInviteCode, validateInvite } from '@/lib/invites';
+import { normalizeInviteCode, validateInvite } from '@/modules/invites/service';
 import { browserWriteAllowed, readJson } from '@/lib/request-context';
 
 export async function POST(request: Request) {

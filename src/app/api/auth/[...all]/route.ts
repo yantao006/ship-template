@@ -3,7 +3,7 @@ import { browserWriteAllowed, readJson } from '@/lib/request-context';
 import { auth } from '@/lib/config';
 import { workerEnv } from '@/lib/env';
 import { verifyTurnstile } from '@/lib/turnstile';
-import { normalizeInviteCode, validateInvite } from '@/lib/invites';
+import { normalizeInviteCode, validateInvite } from '@/modules/invites/service';
 
 async function handle(request: Request) {
   const env = workerEnv();

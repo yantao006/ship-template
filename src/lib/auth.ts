@@ -5,7 +5,7 @@ import { emailOTP, oneTap } from 'better-auth/plugins';
 import { drizzle } from 'drizzle-orm/d1';
 import { authSchema } from './auth-schema';
 import { grant } from './ledger';
-import { hasInvite } from './invites';
+import { hasInvite } from '../modules/invites/service';
 import { createEmailProvider, type EmailProvider } from './email';
 import type { Env } from './env';
 import { site, auth, allowedBrowserOrigins } from './config';
