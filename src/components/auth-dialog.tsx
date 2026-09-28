@@ -34,7 +34,7 @@ async function serverHasSession() {
   return !!session?.session && !!session.user;
 }
 
-export function AuthDialogProvider({ children, ...auth }: Omit<MinimaxAuthCardProps, 'onAuthenticated' | 'onOAuthStart'> & { children: ReactNode }) {
+export function AuthDialogProvider({ children, accountMenuReady, ...auth }: Omit<MinimaxAuthCardProps, 'onAuthenticated' | 'onOAuthStart'> & { children: ReactNode; accountMenuReady: boolean }) {
   const [open, setOpen] = useState(false);
   const [codeOpen, setCodeOpen] = useState(false);
   const [intent, setIntent] = useState<AuthIntent>({});
@@ -56,6 +56,9 @@ export function AuthDialogProvider({ children, ...auth }: Omit<MinimaxAuthCardPr
     sessionStorage.removeItem(storageKey);
     sessionStorage.removeItem('pricing-auth-selection');
   }, []);
+  // A positive probe can race with an older guest header. Keep the form until
+  // the refreshed server header actually exposes the account menu.
+  useEffect(() => { if (accountMenuReady && active.current) closeAuth(); }, [accountMenuReady, closeAuth]);
   useDismissableLayer({ active: open && !codeOpen, area: dialog, trigger, backdrop, onClose: closeAuth, trapFocus: true });
 
   useEffect(() => {
@@ -105,12 +108,13 @@ export function AuthDialogProvider({ children, ...auth }: Omit<MinimaxAuthCardPr
     if (immediateAttempt === null) opening.current = true;
     try {
       if (await serverHasSession()) {
-        // A dismissed dialog (or a newer attempt) cannot be closed by a late probe.
+        // A dismissed dialog (or a newer attempt) cannot be changed by a late probe.
         if (immediateAttempt !== null) {
           if (!active.current || attempt.current !== immediateAttempt) return false;
-          active.current = false;
-          setOpen(false);
-          setIntent({});
+          // The guest trigger is still rendered. Refresh identity, but only
+          // close the card once the account menu is really available.
+          router.refresh();
+          return true;
         }
         options.onSuccess?.();
         router.refresh();
