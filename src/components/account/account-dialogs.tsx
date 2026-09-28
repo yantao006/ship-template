@@ -10,7 +10,8 @@ import { checkinInviteShare } from '@/lib/checkin-invite';
 import { useDismissableLayer } from '@/lib/use-dismissable-layer';
 import type en from '@site/messages/en';
 import { dailyRewardState } from './account-popover-state';
-import { BuyCreditsContent, PurchaseConfetti, type PricingCopy } from './buy-credits-dialog';
+import { PricingConfetti } from '../pricing/pricing-confetti';
+import { BuyCreditsContent, type PricingCopy } from './buy-credits-dialog';
 
 export type AccountCopy = (typeof en)['account'];
 export type Plan = { id: string; tier?: string; billing: 'once' | 'month' | 'year'; credits: number; amount: string; currency: string; name: string; checkoutEnabled: boolean };
@@ -31,7 +32,7 @@ function PopupDialog({ title, closeLabel, onClose, children, wide = false, varia
   const overlay = useRef<HTMLDivElement>(null);
   useDismissableLayer({ active: true, area: ref, backdrop: overlay, onClose, trapFocus: true });
   useEffect(() => { const overflow = document.body.style.overflow; document.body.style.overflow = 'hidden'; return () => { document.body.style.overflow = overflow; }; }, []);
-  return <div className={`account-overlay account-${variant}-overlay`} ref={overlay}><div className={`account-dialog${wide ? ' wide' : ''} account-${variant}-dialog`} ref={ref} role="dialog" aria-modal="true" aria-labelledby="account-dialog-title"><button type="button" className="account-close" aria-label={closeLabel} onClick={onClose}><X size={20} /></button><h2 id="account-dialog-title">{title}</h2>{children}</div>{variant === 'plans' && <PurchaseConfetti />}</div>;
+  return <div className={`account-overlay account-${variant}-overlay`} ref={overlay}><div className={`account-dialog${wide ? ' wide' : ''} account-${variant}-dialog`} ref={ref} role="dialog" aria-modal="true" aria-labelledby="account-dialog-title"><button type="button" className="account-close" aria-label={closeLabel} onClick={onClose}><X size={20} /></button><h2 id="account-dialog-title">{title}</h2>{children}</div>{variant === 'plans' && <PricingConfetti />}</div>;
 }
 
 function DialogHero({ icon, kicker, title, lead, invite = false }: { icon: ReactNode; kicker: ReactNode; title: string; lead: ReactNode; invite?: boolean }) {
