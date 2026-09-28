@@ -24,13 +24,13 @@ export default {
       format: { jpeg: 'JPEG', png: 'PNG' },
     },
     references: {
-      title: '参考素材', titleByWorkflow: { 'image-video': '图片', 'image-edit': '输入图片', 'multi-image': '输入图片' }, uploadHint: '点击或拖拽上传图片、视频或音频', uploadHintByMedia: { image: '点击或拖拽上传参考图片' }, hintsByWorkflow: { 'image-video': '添加首帧或尾帧', 'image-edit': '点击上传（最多 16 张）', 'multi-image': '点击上传（最多 1 张）' }, startFrame: '首帧', endFrame: '尾帧', library: '使用素材库', closeLibrary: '关闭素材库',
+      title: '参考素材', titleByWorkflow: { 'image-video': '图片', 'image-edit': '输入图片', 'multi-image': '输入图片' }, uploadHint: '点击或拖拽上传图片、视频或音频', uploadHintByMedia: { image: '点击或拖拽上传参考图片' }, hintsByWorkflow: { 'image-video': '添加首帧或尾帧', 'image-edit': '点击上传（最多 {limit} 张）', 'multi-image': '点击上传（最多 {limit} 张）' }, startFrame: '首帧', endFrame: '尾帧', library: '使用素材库', closeLibrary: '关闭素材库',
       limits: { image: '图片', video: '视频', audio: '音频' },
       candidates: { 'lattice-pie-photo': '格子派', 'fruit-tarts-photo': '水果塔', 'seeded-loaf-photo': '杂粮面包', 'layer-cake-photo': '夹层蛋糕', 'kitchen-video': '厨房视频', 'kitchen-audio': '厨房音轨' },
     },
-    prompt: { title: '提示词', titleByWorkflow: { 'multi-image': '拆解说明（可选）' }, placeholder: '描述你想要的画面。用 @1、@2 引用已上传的素材', placeholderByMedia: { image: '描述你想生成的图片...' }, placeholderByWorkflow: { 'multi-image': '留空则自动拆解，也可以指定要分离的元素...' }, maxLength: 7000, maxLengthByMedia: { image: 20000 }, assist: '用 AI 生成', suggestion: '第一人称厨房烘焙，轻微广角，画面里只有手和前臂。' },
+    prompt: { title: '提示词', titleByWorkflow: { 'multi-image': '拆解说明（可选）' }, placeholder: '描述你想要的画面。用 @1、@2 引用已上传的素材', placeholderByMedia: { image: '描述你想生成的图片...' }, placeholderByWorkflow: { 'multi-image': '留空则自动拆解，也可以指定要分离的元素...' }, assist: '用 AI 生成', suggestion: '第一人称厨房烘焙，轻微广角，画面里只有手和前臂。' },
     model: '模型', workflowLabel: '工作流', parameters: '参数', expand: '展开参数', collapse: '收起参数', quantity: '数量', quantityPrefix: 'x', create: '创建',
-    promo: '年付方案：只要 30 积分，立省 30%', promoDismiss: '关闭年付优惠',
+    promo: '查看年付方案', promoDismiss: '关闭年付优惠',
     tabs: {
       'use-cases': { label: '用例', empty: '暂无用例。', labelByMedia: { image: '模板' } },
       history: { label: '历史', empty: '还没有生成记录。' },

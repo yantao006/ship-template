@@ -1,6 +1,6 @@
 export default {
   title: '选择适合你的套餐', lead: '按你的创作节奏选购积分。',
-  monthly: '月付', yearly: '年付', packs: '积分包', save: '最高省 50%',
+  monthly: '月付', yearly: '年付', packs: '积分包', save: '最高省 {percent}%',
   monthlyHint: '按月计价及发放积分', yearlyHint: '月均价格，下方显示全年总价', packHint: '一次性购买积分',
   popular: '最受欢迎', off: '年付优惠', perMonth: '/ 月', perCredit: '/ 积分', billedYearly: '全年付款',
   creditsMonth: '积分 / 月', credits: '积分', oneTime: '一次性',

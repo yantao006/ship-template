@@ -53,11 +53,12 @@ test('homepage content composes six sections in order, with navigation and foote
   assert.match(header, /import \{ ReplicaNavigation \} from '\.\/replica-navigation'/);
   assert.match(header, /<HeaderAccountControl/);
   const accountControl = readFileSync(new URL('../src/components/account/header-account-control.tsx', import.meta.url), 'utf8');
-  for (const field of ['brand', 'language', 'navigation', 'lightMode', 'darkMode']) {
+  for (const field of ['language', 'navigation', 'lightMode', 'darkMode']) {
     assert.match(header, new RegExp(`copy\\.nav\\.${field}`));
   }
   assert.match(accountControl, /copy\.nav\.availableCredits/);
   assert.match(header, /logo=\{site\.logo\}/);
+  assert.match(header, /brand=\{site\.brand\}/);
   assert.match(header, /navigationLinks\(locale\)/);
   assert.match(accountControl, /<AuthControl variant="avatar"/);
   assert.match(accountControl, /<AccountPopovers user=/);

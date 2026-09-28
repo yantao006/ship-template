@@ -25,7 +25,7 @@ const packs = [
   ['bulk', '999.90', 50000], ['mega', '2599.00', 160000],
 ] as const;
 
-test('reference subscription and pack prices are sourced from one site catalog', () => {
+test('reference-site subscription and pack snapshot is sourced from its site catalog', () => {
   assert.equal(site.plans.length, 13);
   for (const [tier, monthly, yearlyMonthly, credits] of tiers) {
     const month = planById(`${tier}-month`)!;
@@ -49,38 +49,34 @@ test('reference subscription and pack prices are sourced from one site catalog',
 
 test('subscription perks match the cloned cards in yearly and monthly views', () => {
   const common = 'MiniMax H3 + all premium models included';
-  const discount = '30% off MiniMax models';
   const commercial = 'Commercial Use License';
   const expected = {
-    lite: [common, 'Up to 1 batch generation task', 'Standard generation speed', 'Standard generation success rate', 'Standard customer support', commercial],
-    standard: [common, discount, 'Up to 4 batch generation tasks', 'Priority processing speed', 'High generation success rate', 'Priority customer support', commercial],
-    pro: [common, discount, 'Up to 10 batch generation tasks', 'Fastest generation speed', 'High generation success rate', 'Dedicated account manager', commercial],
-    max: [common, discount, 'Up to 10 batch generation tasks', 'Fastest generation speed', 'High generation success rate', 'Dedicated account manager', commercial],
+    lite: [common, 'Standard generation speed', 'Standard generation success rate', 'Standard customer support', commercial],
+    standard: [common, 'Priority processing speed', 'High generation success rate', 'Priority customer support', commercial],
+    pro: [common, 'Fastest generation speed', 'High generation success rate', 'Dedicated account manager', commercial],
+    max: [common, 'Fastest generation speed', 'High generation success rate', 'Dedicated account manager', commercial],
   };
   for (const [tier, yearlyFeatures] of Object.entries(expected)) {
     const plan = planById(`${tier}-year`)!;
     assert.deepEqual(pricingFeatureLines(plan, 'year', en), yearlyFeatures);
-    assert.deepEqual(pricingFeatureLines(plan, 'month', en), yearlyFeatures.filter(line => line !== discount));
+    assert.deepEqual(pricingFeatureLines(plan, 'month', en), yearlyFeatures);
     const month = planById(`${tier}-month`)!;
-    assert.deepEqual(pricingFeatureLines(month, 'month', en), yearlyFeatures.filter(line => line !== discount));
+    assert.deepEqual(pricingFeatureLines(month, 'month', en), yearlyFeatures);
     assert.equal(pricingFeatureLines(plan, 'year', zh).length, yearlyFeatures.length);
-    assert.equal(pricingFeatureLines(plan, 'month', zh).length, yearlyFeatures.length - (tier === 'lite' ? 0 : 1));
+    assert.equal(pricingFeatureLines(plan, 'month', zh).length, yearlyFeatures.length);
   }
-  assert.match(pricingFeatureLines(planById('standard-year')!, 'year', zh)[1], /MiniMax/);
-  assert.doesNotMatch(pricingFeatureLines(planById('standard-month')!, 'month', zh).join(' '), /7 折/);
+  assert.doesNotMatch(pricingFeatureLines(planById('standard-year')!, 'year', zh).join(' '), /7 折|批量/);
 });
 
-test('every credit pack shows its configured count, one-year validity and subscription requirement', () => {
+test('every credit pack shows its configured count without promising expiration', () => {
   for (const [id, , credits] of packs) {
     const plan = planById(id)!;
     assert.deepEqual(pricingFeatureLines(plan, 'once', en), [
       `${credits.toLocaleString('en-US')} credits`,
-      'Credits valid for 1 year',
       'Unlocks all features; premium perks require an active subscription',
     ]);
     assert.deepEqual(pricingFeatureLines(plan, 'once', zh), [
       `${credits.toLocaleString('en-US')} 积分`,
-      '积分有效期为 1 年',
       '解锁所有功能；高级会员权益需订阅仍在有效期内',
     ]);
   }
@@ -91,11 +87,11 @@ test('the configured brand and full feature list render in the default yearly vi
   (globalThis as typeof globalThis & { React: typeof React }).React = React;
   const plan = planById('standard-year')!;
   const html = renderToStaticMarkup(React.createElement(PricingCheckout, {
-    locale: 'en', plans: [{ ...plan, name: 'Standard', checkoutEnabled: false }], models: [], brand: site.brand, copy: en,
+    locale: 'en', plans: [plan, planById('standard-month')!].map(item => ({ ...item, name: 'Standard', checkoutEnabled: false })), models: [], brand: site.brand, copy: en,
   }));
   assert.match(html, new RegExp(site.brand));
   const features = html.match(/<ul class="pricing-features">([\s\S]*?)<\/ul>/)?.[1] ?? '';
-  assert.equal((features.match(/<li/g) ?? []).length, 7);
+  assert.equal((features.match(/<li/g) ?? []).length, pricingFeatureLines(plan, 'year', en).length);
   for (const line of pricingFeatureLines(plan, 'year', en)) assert.ok(features.includes(line), line);
   assert.doesNotMatch(features, /Preview only|billed yearly/);
 });

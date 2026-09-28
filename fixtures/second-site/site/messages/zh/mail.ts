@@ -1,6 +1,6 @@
 export default {
-  resetMailSubject: '重置 Second Video 密码',
-  resetMailLead: '打开此链接以设置新密码：',
+  resetMailSubject: '重置 {brand} 密码',
+  resetMailLead: '打开此链接以重置 {brand} 密码：',
   resetMailAction: '重置密码',
   resetMailExpiry: '此链接将在 1 小时后失效。',
   signInCodeSubject: '{brand} 登录验证码：{code} - {brand}',

@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { resolve, join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { googleCallback, githubCallback } from '../src/lib/config';
@@ -10,8 +10,48 @@ export async function check(root: string, env: Record<string, string | undefined
   const auth = (await import(pathToFileURL(join(root, 'site/auth.config.ts')).href)).default;
   const theme = (await import(pathToFileURL(join(root, 'site/theme.config.ts')).href)).default;
   const copy = (await import(pathToFileURL(join(root, 'site/messages/index.ts')).href)).default;
+  const tool = (await import(pathToFileURL(join(root, 'site/video-tool.config.ts')).href)).default;
   const wrangler = JSON.parse(readFileSync(join(root, 'wrangler.jsonc'), 'utf8'));
   const errors: string[] = [];
+  for (const [label, path] of [['Logo', config.logo?.src], ['Auth marketing image', config.authMarketingImage]] as const) {
+    if (path && (!/^\/(?!\/)/.test(path) || path.includes('..') || !existsSync(join(root, 'public', path)))) errors.push(`${label} path missing or unsafe`);
+  }
+  const keys = (value: Record<string, unknown>) => Object.keys(value ?? {}).sort().join(',');
+  const placeholders = (value: unknown, prefix = ''): Record<string, string> => {
+    if (typeof value === 'string') return { [prefix]: [...value.matchAll(/\{([a-zA-Z]+)\}/g)].map(match => match[1]).sort().join(',') };
+    if (value && typeof value === 'object') return Object.assign({}, ...Object.entries(value).map(([key, item]) => placeholders(item, `${prefix}.${key}`))) as Record<string, string>;
+    return {};
+  };
+  if (copy.en && copy.zh) {
+    const english = placeholders(copy.en);
+    const chinese = placeholders(copy.zh);
+    for (const key of new Set([...Object.keys(english), ...Object.keys(chinese)])) {
+      if (english[key] !== chinese[key]) errors.push(`Copy placeholder mismatch: ${key}`);
+    }
+  }
+  const ids = (items: { id: string }[]) => items.map(item => item.id);
+  const matchIds = (label: string, expected: string[], actual: Record<string, unknown>) => {
+    if (expected.sort().join(',') !== keys(actual)) errors.push(`Tool ${label} copy ids mismatch`);
+  };
+  for (const locale of config.locales as string[]) {
+    const text = copy[locale];
+    if (!text) continue;
+    if (keys(text.planCopy) !== config.plans.map((plan: { id: string }) => plan.id).sort().join(',')) errors.push(`${locale} plan-copy ids mismatch`);
+    const video = text.videoTool;
+    if (tool.promo && ((video.promo?.includes('{credits}') && !Number.isFinite(tool.promo.credits)) ||
+        (video.promo?.includes('{percent}') && !Number.isFinite(tool.promo.discountPercent)))) errors.push(`${locale} promo value missing`);
+    for (const [label, expected, actual] of [
+      ['media', ids(tool.media), video.media], ['workflows', ids(tool.workflows), video.workflows],
+      ['vendors', ids(tool.vendors), video.vendors], ['models', ids(tool.models), video.models],
+      ['fields', ids(tool.fields), video.fields], ['tabs', ids(tool.tabs), video.tabs],
+      ['reference candidates', ids(tool.references), video.references.candidates],
+    ] as [string, string[], Record<string, unknown>][]) matchIds(`${locale} ${label}`, expected, actual);
+    if (!text.account.checkinLead.includes('{credits}') || !text.account.checkinRewards.includes('{days}') ||
+        !text.account.inviteSummary.includes('{inviter}') || !text.account.inviteSummary.includes('{friend}') ||
+        !video.references.hintsByWorkflow || Object.entries(video.references.hintsByWorkflow).some(([id, hint]) =>
+          tool.workflows.find((workflow: { id: string }) => workflow.id === id)?.referenceLimits && /\bmax\b|最多/.test(hint as string) && !(hint as string).includes('{limit}')) ||
+        /(?<![\w])\d+\s*(?:credits?|积分|张|max)\b|一份免费积分|七日创作奖励/i.test(JSON.stringify({ account: text.account, videoTool: video, pricing: text.pricing }))) errors.push(`${locale} hard-coded reward or limit`);
+  }
   if (config.languages.some((language: { code: string }) => !copy[language.code]) || !copy[config.defaultLocale]) errors.push('Site language copy missing');
   for (const area of ['chrome', 'authCard', 'dialog', 'videoTool', 'pricing', 'purchase', 'rowTones'] as const) {
     const pair = theme[area];
@@ -38,12 +78,13 @@ export async function check(root: string, env: Record<string, string | undefined
   if (config.email.provider === 'cloudflare' && !wrangler.send_email?.some((item: {name: string}) => item.name === 'EMAIL')) errors.push('EMAIL binding missing');
   if (config.email.provider !== 'cloudflare' && config.email.provider !== 'resend') errors.push('Invalid email provider');
   const account = config.account;
+  if (account?.feedbackEmail && account.feedbackEmail === account.contactEmail) errors.push('Redundant feedback email');
   const positive = (value: unknown) => Number.isSafeInteger(value) && (value as number) > 0;
   const validNetworks = (value: unknown) => Array.isArray(value) && value.length > 0 && new Set(value).size === value.length && value.every(name => shareNetworkNames.some(network => network === name));
   if (!account || !['checkIn', 'share', 'referral'].every(key => typeof account[key]?.enabled === 'boolean') ||
       !positive(account.checkIn?.credits) || !positive(account.share?.credits) || !positive(account.share?.maxSubmissions) ||
       !positive(account.referral?.inviterCredits) || !positive(account.referral?.friendCredits) || !positive(account.referral?.claimWindowHours) ||
-      !['contactEmail', 'feedbackEmail'].every(key => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(account[key] ?? '')) ||
+      !['contactEmail', ...(account.feedbackEmail ? ['feedbackEmail'] : [])].every(key => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(account[key] ?? '')) ||
       !/^\/(?!\/)[a-z0-9/-]+$/.test(account.commercialUseHref ?? '') ||
       !validNetworks(account.shareNetworks) || !validNetworks(account.sharePostNetworks) ||
       !['checkin', 'share', 'invite', 'contact', 'feedback'].every(key => accountIconNames.some(icon => icon === account.icons?.[key]))) errors.push('Invalid account experience settings');

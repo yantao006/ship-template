@@ -93,7 +93,7 @@ export function useVideoToolState({ config, copy, assets, status = { state: 'idl
   const kinds = config.referenceKinds.filter(kind => (referenceLimits[kind.id] ?? 0) > 0 && (!kind.mediaIds || kind.mediaIds.includes(mediaId)));
   const used = (kind: string) => selectedReferenceIds.filter(id => config.references.find(item => item.id === id)?.kind === kind).length;
   const templateMedia = config.galleryModes?.[mediaId] === 'template-grid';
-  const promptLimit = copy.prompt.maxLengthByMedia?.[mediaId] ?? copy.prompt.maxLength;
+  const promptLimit = config.prompt.maxLengthByMedia?.[mediaId] ?? config.prompt.maxLength;
 
   function resetReferences() {
     setReferenceIds([]);
@@ -190,7 +190,7 @@ export function useVideoToolState({ config, copy, assets, status = { state: 'idl
       items: referenceItems, selectedItems: referenceIds.flatMap(id => referenceItems.find(item => item.id === id) ?? []),
       templateMedia, framePair, endFrame, frames: frameReferences,
       startFrameLabel: copy.references.startFrame, endFrameLabel: copy.references.endFrame,
-      uploadHint: copy.references.hintsByWorkflow?.[currentWorkflowId] ?? copy.references.uploadHintByMedia?.[mediaId] ?? copy.references.uploadHint,
+      uploadHint: copy.references.hintsByWorkflow?.[currentWorkflowId]?.replace('{limit}', String(referenceLimits.image ?? 0)) ?? copy.references.uploadHintByMedia?.[mediaId] ?? copy.references.uploadHint,
       libraryLabel: copy.references.library, closeLibraryLabel: copy.references.closeLibrary, libraryOpen,
     } : undefined,
     prompt: { title: copy.prompt.titleByWorkflow?.[currentWorkflowId] ?? copy.prompt.title, assist: copy.prompt.assist, referenceLabel: copy.references.title,
@@ -200,7 +200,7 @@ export function useVideoToolState({ config, copy, assets, status = { state: 'idl
     quantity: { label: copy.quantity, prefix: copy.quantityPrefix, value: quantity,
       values: Array.from({ length: config.quantity.max - config.quantity.min + 1 }, (_, index) => config.quantity.min + index), open: quantityOpen },
     create: { label: cost === undefined ? copy.create : `${copy.create} (${cost})`, disabled: !model || !currentWorkflowId },
-    promo: promoVisible && config.promo && copy.promo ? { icon: config.promo.icon, href: config.promo.href, label: copy.promo, dismissLabel: copy.promoDismiss } : undefined,
+    promo: promoVisible && config.promo && copy.promo ? { icon: config.promo.icon, href: config.promo.href, label: copy.promo.replace('{credits}', String(config.promo.credits ?? '')).replace('{percent}', String(config.promo.discountPercent ?? '')), dismissLabel: copy.promoDismiss } : undefined,
     actions: {
       onMedia: chooseMedia, onWorkflow: chooseWorkflow,
       onEndFrame: () => { setEndFrame(open => !open); if (endFrame) setFrameReferences(previous => ({ start: previous.start })); },

@@ -5,14 +5,14 @@ import { Check, ChevronDown, Image as ImageIcon, ShieldCheck, Sparkles, Video, X
 import { requestJson } from '@/lib/json-request';
 import { PricingConfetti } from './pricing-confetti';
 import { useOptionalAuthDialog } from '../auth/auth-dialog';
-import { count, money, planDisplay, pricingFeatureLines } from './plan-display';
+import { annualSavingsPercent, count, money, planDisplay, pricingFeatureLines } from './plan-display';
 export { pricingFeatureLines } from './plan-display';
 
 type Plan = { id: string; tier?: string; billing: 'month' | 'year' | 'once'; credits: number; amount: string; currency: string; name: string; checkoutEnabled: boolean };
 type Mode = Plan['billing'];
 type PlanFeature = string | { yearly: string };
 type Model = { id: string; name: string; icon: string; kind: 'video' | 'image'; cost: number | null };
-type Copy = {
+export type Copy = {
   title: string; lead: string; monthly: string; yearly: string; packs: string; save: string;
   monthlyHint: string; yearlyHint: string; packHint: string; popular: string; off: string; perMonth: string; perCredit: string; billedYearly: string;
   creditsMonth: string; credits: string; oneTime: string; maxMultiplier: string; maxBase: string; maxTotal: string;
@@ -43,6 +43,8 @@ export function PricingCheckout({ locale, plans, models, brand, copy }: { locale
   const video = models.filter(model => model.kind === 'video');
   const image = models.filter(model => model.kind === 'image');
   const visible = plans.filter(plan => plan.billing === mode);
+  const savings = annualSavingsPercent(plans);
+  const savingsLabel = copy.save.replace('{percent}', String(savings));
   // Only the plan selection is serialized across OAuth, never a payment request.
   useEffect(() => {
     try {
@@ -81,13 +83,13 @@ export function PricingCheckout({ locale, plans, models, brand, copy }: { locale
 
   return <>
     <PricingConfetti />
-    {banner && <div className="pricing-banner"><Sparkles size={18} /><span>{brand} · {copy.save}</span><button type="button" onClick={() => { setMode('year'); document.getElementById('pricing-plans')?.scrollIntoView({ behavior: 'smooth' }); }}>{copy.yearly}</button><button type="button" className="pricing-banner-close" aria-label="Close" onClick={() => setBanner(false)}><X size={16} /></button></div>}
+    {banner && savings > 0 && <div className="pricing-banner"><Sparkles size={18} /><span>{brand} · {savingsLabel}</span><button type="button" onClick={() => { setMode('year'); document.getElementById('pricing-plans')?.scrollIntoView({ behavior: 'smooth' }); }}>{copy.yearly}</button><button type="button" className="pricing-banner-close" aria-label="Close" onClick={() => setBanner(false)}><X size={16} /></button></div>}
     <div className="pricing-page">
       <div className="pricing-inner">
-        <div className="pricing-launch"><strong>{copy.save}</strong><span>{brand} · {copy.yearlyHint}</span></div>
+        {savings > 0 && <div className="pricing-launch"><strong>{savingsLabel}</strong><span>{brand} · {copy.yearlyHint}</span></div>}
         <h1 id="pricing-title">{copy.title}</h1><p className="pricing-lead">{copy.lead}</p>
         <div id="pricing-plans" className="pricing-tabs-wrap"><div className="pricing-tabs" role="group" aria-label={copy.title}>
-          {(['month', 'year', 'once'] as const).map(option => <button type="button" aria-pressed={mode === option} className={mode === option ? 'selected' : ''} key={option} onClick={() => { setMode(option); setError(''); }}>{option === 'month' ? copy.monthly : option === 'year' ? copy.yearly : copy.packs}{option === 'year' && <small>{copy.save}</small>}</button>)}
+          {(['month', 'year', 'once'] as const).map(option => <button type="button" aria-pressed={mode === option} className={mode === option ? 'selected' : ''} key={option} onClick={() => { setMode(option); setError(''); }}>{option === 'month' ? copy.monthly : option === 'year' ? copy.yearly : copy.packs}{option === 'year' && savings > 0 && <small>{savingsLabel}</small>}</button>)}
         </div><p><Check size={16} />{mode === 'year' ? copy.yearlyHint : mode === 'month' ? copy.monthlyHint : copy.packHint}</p></div>
         {!actionable && <p className="pricing-availability" role="status">{copy.unavailableNote}</p>}
         <div className={`pricing-card-grid ${mode === 'once' ? 'packs' : 'plans'}`} key={mode}>
@@ -97,10 +99,10 @@ export function PricingCheckout({ locale, plans, models, brand, copy }: { locale
             const yearly = mode === 'year';
             return <article className={`pricing-card ${plan.tier === 'standard' ? 'featured' : ''}${selectedPlan === plan.id ? ' selected-auth-plan' : ''}`} key={plan.id}>
               {plan.tier === 'standard' && <span className="pricing-popular"><Sparkles size={13} />{copy.popular}</span>}
-              <div className="pricing-card-title"><h2>{plan.name}</h2>{yearly && <span className="pricing-discount">{discount}% {copy.off}</span>}</div>
-              <p className="pricing-rate">{money(price / (plan.credits * factor))} {copy.perCredit}</p>
-              <div className="pricing-amount">{yearly && previousPrice && <del>{money(previousPrice)}</del>}<strong>{money(price)}</strong>{mode !== 'once' && <span>{copy.perMonth}</span>}</div>
-              {yearly && <p className="pricing-billed">{money(total)} {copy.billedYearly}</p>}
+              <div className="pricing-card-title"><h2>{plan.name}</h2>{yearly && discount > 0 && <span className="pricing-discount">{discount}% {copy.off}</span>}</div>
+              <p className="pricing-rate">{money(price / (plan.credits * factor), plan.currency, locale, 3)} {copy.perCredit}</p>
+              <div className="pricing-amount">{yearly && previousPrice && <del>{money(previousPrice, plan.currency, locale)}</del>}<strong>{money(price, plan.currency, locale)}</strong>{mode !== 'once' && <span>{copy.perMonth}</span>}</div>
+              {yearly && <p className="pricing-billed">{money(total, plan.currency, locale)} {copy.billedYearly}</p>}
               {mode === 'once' && <p className="pricing-billed">{copy.oneTime}</p>}
               {isMax && <div className="pricing-multiplier"><label htmlFor="pricing-max-range">{copy.maxMultiplier} <b>{multiple}×</b></label><input id="pricing-max-range" type="range" min="1" max="5" step="1" value={multiple} onChange={event => setMultiple(Number(event.target.value))} /><div className="pricing-multiplier-labels">{[1, 2, 3, 4, 5].map(value => <button type="button" aria-pressed={multiple === value} key={value} onClick={() => setMultiple(value)}>{value}×</button>)}</div><p>{copy.maxBase}: {count(plan.credits)} · {copy.maxTotal}: {count(credits)} {copy.creditsMonth}</p></div>}
               <button type="button" className="pricing-pay" disabled={!canPay || !!pending} onClick={() => checkout(plan)}>{pending === plan.id ? copy.wait : canPay ? copy.checkout : copy.unavailable}</button>

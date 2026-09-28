@@ -1,5 +1,4 @@
 export default {
-  brand: 'Second Video',
   navigation: 'Main navigation',
   lightMode: 'Switch to light mode',
   darkMode: 'Switch to dark mode',
@@ -9,6 +8,11 @@ export default {
   workspace: 'Workspace',
   credits: 'Credits',
   language: 'Language',
+  languageSuggestion: {
+    title: 'Would you like to browse this site in {language}?',
+    description: 'This site supports your browser language.',
+    keep: 'Continue in {language}', switch: 'Switch to {language}', close: 'Dismiss language suggestion',
+  },
   login: 'Sign In',
   logout: 'Sign out',
   wait: 'Please wait…',

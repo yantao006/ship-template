@@ -220,6 +220,7 @@ A new capability can be a new `src/lib/` service called by an API endpoint, a se
 ### Configuration and localization
 
 `src/lib/site-config-types.ts` declares site, auth, database and theme contracts without loading site data; `src/lib/config.ts` re-exports the types and assembles choices, while `wrangler.jsonc` declares matching live resources.
+`site.brand` and optional `site.logo` own visible identity; `site.authMarketingImage` owns the optional login background, while optional `account.feedbackEmail` falls back to `contactEmail` and `email.from` remains independent.
 `scripts/site-check.ts` compares the Worker name, D1/R2/Queue names, auth shape, email binding, callback origin, and required secret names before publication.
 `site/messages/en.ts` and `site/messages/zh.ts` compose matching per-module copy under `site/messages/{en,zh}/`, including separate mail, sign-in, invites, handoff, account, workspace, credits, pricing, footer, and video-tool files; `src/app/[locale]/` and `src/components/shell/language-control.tsx` select copy without duplicating business logic.
 `site/theme.config.ts` assembles the foundation and paired region palettes in `site/theme/`, plus the single email-only palette; `src/lib/theme-tokens.ts` generates the CSS token stylesheet in `src/app/layout.tsx` instead of inline body styles.
@@ -248,7 +249,8 @@ When `email.passwordReset` is on, the forgot-password link is sent through `Emai
 ### Credits, tasks, and provider seams
 
 `src/lib/ledger.ts` owns source IDs and paid-source membership, while `site/messages/` supplies localized names; `src/lib/plan-copy.ts` selects plan names by ID.
-`site/messages/{en,zh}/pricing.ts` owns tier feature lists, annual-only feature lines, and interpolated pack perks; pricing cards select those lists by tier or plan ID without reusing plan-name copy as features.
+`site/messages/{en,zh}/pricing.ts` owns tier feature lists and interpolated pack perks; pricing cards select those lists by tier or plan ID without reusing plan-name copy as features.
+Annual savings are computed from matching monthly and annual plans with the same tier, currency, and credits; unsupported discounts and expiration promises do not appear in copy.
 `site/messages/{en,zh}/account-pages.ts` owns localized account-page headings, balance labels, records and empty states; each site's matching files retain the same message shape.
 `src/lib/ledger.ts` writes `credit_lot`, `credit_entry`, `credit_alloc`, and `video_task` with D1's own `prepare().bind()` statements and `batch()` for multi-step writes, preserving atomic reservations under concurrent requests.
 Grant source IDs, entry idempotency keys, and task state transitions make retries observable. A verified annual payment calls `grantSubscriptionMonth` for the current calendar month only. There is no separate billing scheduler.
@@ -286,6 +288,7 @@ The footer takes identity and contact from `site/site.config.ts`, copy from `sit
 `Header` passes localized brand, optional site logo, links, language choices and `account/header-account-control.tsx` to `shell/replica-navigation.tsx`; the shell owns its account snapshot.
 `home/sections/VideoToolSection.tsx` binds one locale's tool copy and assets on the server and passes them to `src/components/video-tool/video-tool-section.tsx`.
 `bind-copy.ts` localizes links and assembles asset copy; the client `video-tool-section.tsx` shows the create-payload preview without importing site configuration.
+Prompt length and reference limits live in `site/video-tool.config.ts`, with localized limit hints interpolated at display time; the optional promotion copy makes no price or discount claim unless its config supplies the value.
 `video-generation-tool.tsx` composes the dark workbench from `composer.tsx` and `stage.tsx`.
 `use-video-tool-state.ts` owns interactive state, saves a serializable draft before OAuth navigation or the full reload after email-code sign-in, restores it after a confirmed session and calls pure selectors in `state.ts`; `model-menu.tsx` and `parameter-field.tsx` accept only their scoped presentation data.
 Media, workflows and their reference limits, grouped models and duration-specific preview costs, and media-filtered use cases come from that config.

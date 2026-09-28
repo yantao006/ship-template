@@ -1,6 +1,6 @@
 export default {
   title: '选择适合你的套餐', lead: '按你的创作节奏选购积分。',
-  monthly: '月付', yearly: '年付', packs: '积分包', save: '最高省 50%',
+  monthly: '月付', yearly: '年付', packs: '积分包', save: '最高省 {percent}%',
   monthlyHint: '按月计价及发放积分', yearlyHint: '月均价格，下方显示全年总价', packHint: '一次性购买积分',
   popular: '最受欢迎', off: '年付优惠', perMonth: '/ 月', perCredit: '/ 积分', billedYearly: '全年付款',
   creditsMonth: '积分 / 月', credits: '积分', oneTime: '一次性',
@@ -15,7 +15,6 @@ export default {
   planFeatures: {
     lite: [
       '包含 MiniMax H3 及所有高级模型',
-      '最多同时进行 1 个批量生成任务',
       '标准生成速度',
       '标准生成成功率',
       '标准客户支持',
@@ -23,8 +22,6 @@ export default {
     ],
     standard: [
       '包含 MiniMax H3 及所有高级模型',
-      { yearly: 'MiniMax 模型享 7 折优惠' },
-      '最多同时进行 4 个批量生成任务',
       '优先处理速度',
       '高生成成功率',
       '优先客户支持',
@@ -32,8 +29,6 @@ export default {
     ],
     pro: [
       '包含 MiniMax H3 及所有高级模型',
-      { yearly: 'MiniMax 模型享 7 折优惠' },
-      '最多同时进行 10 个批量生成任务',
       '最快生成速度',
       '高生成成功率',
       '专属客户经理',
@@ -41,8 +36,6 @@ export default {
     ],
     max: [
       '包含 MiniMax H3 及所有高级模型',
-      { yearly: 'MiniMax 模型享 7 折优惠' },
-      '最多同时进行 10 个批量生成任务',
       '最快生成速度',
       '高生成成功率',
       '专属客户经理',
@@ -51,7 +44,6 @@ export default {
   },
   packFeatures: [
     '{count} 积分',
-    '积分有效期为 1 年',
     '解锁所有功能；高级会员权益需订阅仍在有效期内',
   ],
 };

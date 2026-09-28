@@ -7,6 +7,7 @@ export type ShareNetworkName = typeof shareNetworkNames[number];
 export type SiteConfig = {
   brand: string;
   logo?: { src: string; alt: string };
+  authMarketingImage?: string;
   previewOnly: boolean;
   apex: string;
   url: string;
@@ -22,7 +23,7 @@ export type SiteConfig = {
     share: { enabled: boolean; credits: number; maxSubmissions: number };
     referral: { enabled: boolean; inviterCredits: number; friendCredits: number; claimWindowHours: number };
     leaderboardDemo?: { viewerEmail: string; entries: readonly { name: string; total: number }[] };
-    contactEmail: string; feedbackEmail: string; commercialUseHref: string;
+    contactEmail: string; feedbackEmail?: string; commercialUseHref: string;
     shareNetworks: readonly ShareNetworkName[];
     sharePostNetworks: readonly ShareNetworkName[];
     icons: Record<'checkin' | 'share' | 'invite' | 'contact' | 'feedback', AccountIconName>;

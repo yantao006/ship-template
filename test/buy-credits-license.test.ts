@@ -9,12 +9,13 @@ import { BuyCreditsContent, defaultPurchaseSelection } from '../src/components/a
 import { CommercialLicense } from '../src/components/pricing/commercial-license';
 import { isSiteShellPath } from '../src/lib/routes';
 import { planCopy } from '../src/lib/plan-copy';
+import { annualSavingsPercent } from '../src/components/pricing/plan-display';
 
 const plans = site.plans.map(plan => ({ ...plan, name: planCopy('en', plan.id).name, checkoutEnabled: false }));
 
 test('buy credits lists configured plans and annual savings but never invents a countdown or payable product', () => {
   const markup = renderToStaticMarkup(createElement(BuyCreditsContent, { plans, copy: en.account, pricing: en.pricing, brand: site.brand, locale: 'en' }));
-  assert.match(markup, /50% OFF/);
+  assert.match(markup, new RegExp(`${annualSavingsPercent(plans)}% OFF`));
   assert.match(markup, /Standard/);
   assert.match(markup, /1,500 credits \/ month/);
   assert.match(markup, /\$24\.9/);

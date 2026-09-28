@@ -1,5 +1,4 @@
 export default {
-  brand: 'Awesomejev',
   navigation: 'Main navigation',
   lightMode: 'Switch to light mode',
   darkMode: 'Switch to dark mode',

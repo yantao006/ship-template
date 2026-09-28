@@ -47,7 +47,7 @@ test('source-inspired card uses site identity, localized benefits and configured
   for (const locale of ['en', 'zh'] as const) {
     const markup = renderToStaticMarkup(React.createElement(MinimaxAuthCard, {
       copy: browserNavCopy(messages[locale]), card: messages[locale].signIn.card,
-      brand: site.brand, logo: site.logo, signupCredits: site.signupCredits,
+      brand: site.brand, logo: site.logo, authMarketingImage: site.authMarketingImage, signupCredits: site.signupCredits,
       supportEmail: site.account.contactEmail,
       methods: { email: auth.email, google: auth.google, github: auth.github },
       inviteRequired: auth.invite.required, locale, callbackURL: '/', onAuthenticated: async () => {},

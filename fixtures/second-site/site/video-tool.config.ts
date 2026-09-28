@@ -20,6 +20,7 @@ export default {
   referenceKinds: [{ id: 'image', icon: 'lucide:image' }],
   referenceLimits: { image: 2 },
   quantity: { min: 1, max: 2, default: 1 },
+  prompt: { maxLength: 7000, maxLengthByMedia: { image: 20000 } },
   tabs: [{ id: 'use-cases' }, { id: 'history' }],
   assets: [
     { id: 'loaf-case', type: 'image', url: still, tabId: 'use-cases', mediaIds: ['video'], actionIds: ['open'], links: [{ id: 'more', href: '/samples' }] },

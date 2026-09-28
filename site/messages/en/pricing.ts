@@ -1,6 +1,6 @@
 export default {
   title: 'Choose your plan', lead: 'Flexible credits for the way you create.',
-  monthly: 'Monthly', yearly: 'Yearly', packs: 'Credit Packs', save: 'Save up to 50%',
+  monthly: 'Monthly', yearly: 'Yearly', packs: 'Credit Packs', save: 'Save up to {percent}%',
   monthlyHint: 'Monthly price and credits', yearlyHint: 'Yearly total shown below each monthly rate', packHint: 'One-time credit purchase',
   popular: 'MOST POPULAR', off: 'Annual savings', perMonth: '/ month', perCredit: '/ credit', billedYearly: 'billed yearly',
   creditsMonth: 'credits / month', credits: 'credits', oneTime: 'one-time',
@@ -15,7 +15,6 @@ export default {
   planFeatures: {
     lite: [
       'MiniMax H3 + all premium models included',
-      'Up to 1 batch generation task',
       'Standard generation speed',
       'Standard generation success rate',
       'Standard customer support',
@@ -23,8 +22,6 @@ export default {
     ],
     standard: [
       'MiniMax H3 + all premium models included',
-      { yearly: '30% off MiniMax models' },
-      'Up to 4 batch generation tasks',
       'Priority processing speed',
       'High generation success rate',
       'Priority customer support',
@@ -32,8 +29,6 @@ export default {
     ],
     pro: [
       'MiniMax H3 + all premium models included',
-      { yearly: '30% off MiniMax models' },
-      'Up to 10 batch generation tasks',
       'Fastest generation speed',
       'High generation success rate',
       'Dedicated account manager',
@@ -41,8 +36,6 @@ export default {
     ],
     max: [
       'MiniMax H3 + all premium models included',
-      { yearly: '30% off MiniMax models' },
-      'Up to 10 batch generation tasks',
       'Fastest generation speed',
       'High generation success rate',
       'Dedicated account manager',
@@ -51,7 +44,6 @@ export default {
   },
   packFeatures: [
     '{count} credits',
-    'Credits valid for 1 year',
     'Unlocks all features; premium perks require an active subscription',
   ],
 };
