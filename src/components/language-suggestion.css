@@ -1,0 +1,29 @@
+.language-suggestion {
+  position: fixed;
+  z-index: 99;
+  top: 68px;
+  right: 16px;
+  width: min(360px, calc(100vw - 32px));
+  max-height: calc(100dvh - 84px);
+  overflow-y: auto;
+  padding: 22px;
+  border: 1px solid var(--suggestion-border);
+  border-radius: 16px;
+  background: var(--suggestion-bg);
+  color: var(--suggestion-text);
+  box-shadow: 0 16px 42px color-mix(in srgb, var(--suggestion-bg) 45%, transparent);
+}
+.language-suggestion h2 { margin: 0 28px 8px 0; font-size: 17px; line-height: 1.4; font-weight: 700; letter-spacing: -.02em; }
+.language-suggestion p { margin: 0; color: var(--suggestion-muted); font-size: 13px; line-height: 1.5; }
+.language-suggestion-close { position: absolute; top: 13px; right: 13px; display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: var(--suggestion-muted); cursor: pointer; }
+.language-suggestion-close:hover, .language-suggestion-keep:hover { color: var(--suggestion-text); background: color-mix(in srgb, var(--suggestion-text) 12%, transparent); }
+.language-suggestion-actions { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 22px; }
+.language-suggestion-actions button { min-height: 38px; border-radius: 8px; font-size: 13px; font-weight: 650; cursor: pointer; }
+.language-suggestion-keep { padding: 8px 10px; border: 0; background: transparent; color: var(--suggestion-muted); text-align: left; }
+.language-suggestion-switch { padding: 8px 14px; border: 1px solid var(--suggestion-button-bg); background: var(--suggestion-button-bg); color: var(--suggestion-button-text); white-space: nowrap; }
+.language-suggestion-switch:hover { background: color-mix(in srgb, var(--suggestion-button-bg) 85%, var(--suggestion-bg)); }
+.language-suggestion :is(button):focus-visible { outline: 2px solid var(--suggestion-text); outline-offset: 2px; }
+@media (max-width: 400px) {
+  .language-suggestion:is(section) { right: 8px; width: calc(100vw - 16px); padding: 18px; }
+  .language-suggestion .language-suggestion-actions { flex-wrap: wrap; }
+}
