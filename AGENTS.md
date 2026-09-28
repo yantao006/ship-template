@@ -259,6 +259,7 @@ When `email.passwordReset` is on, the forgot-password link is sent through `Emai
 Grant source IDs, entry idempotency keys, and task state transitions make retries observable. A verified annual payment calls `grantSubscriptionMonth` for the current calendar month only. There is no separate billing scheduler.
 `src/lib/email.ts` chooses Cloudflare Email or Resend behind `EmailProvider`, requires Cloudflare's acknowledgement ID, and `src/lib/notifications.ts` composes and escapes localized mail, including a site-branded six-digit sign-in code card, verification and password reset links.
 Cloudflare Email Sending must be onboarded for each sender domain to reach arbitrary recipients; an Email Routing-only binding is limited to verified destination addresses, even when Wrangler labels it unrestricted.
+The reference site's `EMAIL` binding has no recipient allowlist; the app forwards the entered email to the provider, which may still reject invalid or suppressed recipients.
 The email OTP plugin in `src/lib/auth.ts` explicitly keeps the code valid for 15 minutes, matching the dialog and mail copy; a successful binding send is not proof of final mailbox delivery.
 
 ### Current state and extension paths

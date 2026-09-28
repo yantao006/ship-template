@@ -75,7 +75,9 @@ test('OTP mail uses the site email brand, 15-minute copy and escaped centered co
   assert.match(email.sent[2].subject, new RegExp(secondSite.brand));
 });
 
-test('provider selection fails closed and Resend propagates failure', async () => {
+test('Cloudflare binding has no recipient allowlist, and provider propagates acknowledgement', async () => {
+  const config = JSON.parse(readFileSync('wrangler.jsonc', 'utf8')) as { send_email: unknown };
+  assert.deepEqual(config.send_email, [{ name: 'EMAIL' }]);
   assert.throws(() => createEmailProvider(site,{DB:null as never}),/EMAIL binding missing/);
   const unacknowledged = createEmailProvider(site, { DB: null as never, EMAIL: { async send() { return {}; } } });
   await assert.rejects(() => notifySignInCode(unacknowledged, site, 'user@example.com', '012345'), /did not acknowledge/);

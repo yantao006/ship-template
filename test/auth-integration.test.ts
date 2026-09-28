@@ -83,10 +83,11 @@ test('OTP send reports mail service rejection instead of opening an unusable cod
     assert.equal(failure.status, 502);
     assert.equal((await failure.json() as { error: string }).error, 'Could not send sign-in code');
     const mail = new FakeEmail();
-    const success = await handleAuthWithCodeDelivery(request('agent@example.com'), env, mail);
-    assert.equal(success.status, 200);
-    assert.equal(mail.sent.length, 1);
-    assert.equal(mail.sent[0].to, 'agent@example.com');
+    for (const email of ['agent@example.com', 'person@outlook.com', 'reader@proton.me']) {
+      const success = await handleAuthWithCodeDelivery(request(email), env, mail);
+      assert.equal(success.status, 200);
+    }
+    assert.deepEqual(mail.sent.map(message => message.to), ['agent@example.com', 'person@outlook.com', 'reader@proton.me']);
   } finally { await mf.dispose(); }
 });
 

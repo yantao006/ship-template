@@ -120,6 +120,7 @@ Apply D1 migrations before deploying a build that enables invitations.
 Credentials are never committed to `site/` or D1.
 `site-check` compares the Worker, D1, R2, Queue and email bindings with site configuration and secret declarations.
 Cloudflare Email is the default adapter; sending to unverified recipient addresses requires onboarding this site's sender domain to Email Sending on a Workers Paid account, in addition to the `EMAIL` binding.
+The `EMAIL` binding has no recipient allowlist and forwards any valid email address to Email Sending; the provider may still reject invalid or suppressed recipients.
 The Cloudflare adapter requires an acknowledgement ID, and the OTP send route returns an error if sending fails instead of reporting a false success.
 Resend is selectable through `site.email.provider` and needs `RESEND_API_KEY`.
 Notification functions use fake email in tests; they are not connected to real video or payment events.

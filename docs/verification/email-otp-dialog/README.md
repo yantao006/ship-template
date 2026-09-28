@@ -57,6 +57,21 @@ That status is evidence of downstream SMTP acceptance, not proof the emails appe
 The inbox and a prior full login prove the primary-address path only; the new Gmail and 126 sign-ins were not completed.
 A regression test simulates provider rejection and asserts HTTP 502 rather than an unusable code dialog.
 
+## Arbitrary recipient check
+
+`wrangler.jsonc` declares `send_email: [{ name: 'EMAIL' }]` with no `destination_address` or `allowed_destination_addresses` restriction.
+The configured sender domain `awesomejev.link` is enabled under Cloudflare Email Sending, not just Email Routing.
+The application forwards the supplied recipient to the provider without comparing it against a recipient list.
+The Miniflare regression covers accepted addresses on three different domains (`example.com`, `outlook.com`, `proton.me`) and a rejected provider send returning HTTP 502.
+Cloudflare's documented limit is that onboarding the sender domain permits sending to any recipient, subject to ordinary provider validation, suppression and delivery outcomes:
+
+https://developers.cloudflare.com/email-service/platform/limits/
+
+At 04:08:27 UTC, an independent Cloudflare Email Sending test addressed `yan.tao006@gmail.com`, which is absent from all three original test addresses and from the verified destination list.
+The Wrangler Email Sending command returned `Queued for: yan.tao006@gmail.com`; the Cloudflare activity log then reported **Delivered** for that exact recipient and no observed bounce.
+This test used the provider sending command directly rather than the OTP application route because the shared `popovers` preview alias belongs to another workstream; no alias was overwritten and no new Worker version was uploaded.
+It proves provider acceptance and downstream handoff for an unlisted recipient, not inbox visibility or a completed login for that address.
+
 ## Dialog and email visuals
 
 The earlier unsigned desktop and 390px mobile passes confirmed that only the wide code dialog remains visible after send, that Use a different email restores focus to the email input, and that the close X exits the entire sign-in flow.
