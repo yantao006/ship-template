@@ -33,5 +33,9 @@ test('all six account dialogs retain their accessible shell and destination cont
   assert.match(render('plans'), /50% OFF/);
   assert.match(render('feedback'), /mailto:support@awesomejev.link/);
   assert.match(render('feedback'), /Feedback &amp; Get Credits/);
-  assert.match(render('contact'), /mailto:/);
+  const contact = render('contact');
+  assert.match(contact, /mailto:support@awesomejev\.link/);
+  assert.match(contact, /Have questions or feedback about Awesomejev Test Video\?/);
+  assert.match(contact, /class="account-body account-contact"/);
+  assert.doesNotMatch(contact, /Questions about your account or payment/);
 });
