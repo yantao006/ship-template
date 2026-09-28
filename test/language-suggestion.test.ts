@@ -35,10 +35,10 @@ test('dismissal and acceptance persist for the page/suggested language pair; swi
   assert.equal(stored.get(suggestionDecisionKey('en', 'zh')), '1');
   assert.notEqual(suggestionDecisionKey('zh', 'en'), key);
   assert.equal(routePath('zh', 'pricing'), '/zh/pricing');
-  const component = readFileSync('src/components/language-suggestion.tsx', 'utf8');
+  const component = readFileSync('src/components/shell/language-suggestion.tsx', 'utf8');
   assert.match(component, /localStorage\.getItem\(suggestionDecisionKey\(locale, language\.code\)\)/);
   assert.match(component, /localStorage\.setItem\(suggestionDecisionKey\(locale, language\.code\), '1'\)/);
   assert.match(component, /onClick=\{remember\}/);
   assert.match(component, /router\.push\(pathForLocale\(pathname, language\.code, languages\.map\(item => item\.code\)\)\)/);
-  assert.match(readFileSync('src/components/site-shell.tsx', 'utf8'), /<LanguageSuggestion locale=\{locale\}/);
+  assert.match(readFileSync('src/components/shell/site-shell.tsx', 'utf8'), /<LanguageSuggestion locale=\{locale\}/);
 });

@@ -1,4 +1,4 @@
-import { AccountSectionPage } from '@/components/account-pages-content';
+import { AccountSectionPage } from '@/components/account/account-pages-content';
 import { localeFor } from '@/lib/config';
 
 export const dynamic = 'force-dynamic';

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { localeFor } from '@/lib/config';
-import { WorkspaceShell } from '@/components/workspace-shell';
+import { WorkspaceShell } from '@/components/workspace/workspace-shell';
 
 export default async function WorkspaceLayout({ children, params }: { children: ReactNode; params: Promise<{ locale: string }> }) {
   const { locale } = await params;

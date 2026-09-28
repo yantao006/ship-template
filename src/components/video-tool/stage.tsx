@@ -1,14 +1,7 @@
 import Link from 'next/link';
-import type { ToolAsset, ToolStatus } from './types';
-
-export type StageProps = {
-  title: string;
-  tabs: { id: string; label: string; empty: string }[];
-  tabId: string; onTabChange: (id: string) => void;
-  assets: ToolAsset[]; assetId: string; onAssetChange: (id: string) => void;
-  templateGrid: boolean; galleryHeading?: string;
-  status: ToolStatus; statusText: string;
-};
+import type { ToolAsset } from './types';
+import type { StageProps } from './view-model';
+export type { StageProps } from './view-model';
 
 function RichText({ text }: { text: string }) {
   return <>{text.split(/(@[^.,;]+)/g).map((part, index) => part.startsWith('@') ? <span className="vt-mention" key={index}>{part}</span> : <span key={index}>{part}</span>)}</>;

@@ -1,4 +1,4 @@
-import { WorkspaceContent } from '@/components/workspace-content';
+import { WorkspaceContent } from '@/components/workspace/workspace-content';
 import { localeFor } from '@/lib/config';
 
 export const dynamic = 'force-dynamic';

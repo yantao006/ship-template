@@ -3,11 +3,11 @@ import { headers } from 'next/headers';
 import { messages, site, auth } from '@/lib/config';
 import { browserNavCopy } from '@/lib/browser-nav-copy';
 import { routePath } from '@/lib/route-paths';
-import { AuthDialogProvider } from './auth-dialog';
+import { AuthDialogProvider } from '../auth/auth-dialog';
 import { workerEnv } from '@/lib/env';
 import { accountSnapshot } from '@/lib/request-context';
-import { Header } from './sections/Header';
-import { Footer } from './sections/Footer';
+import { Header } from './Header';
+import { Footer } from './Footer';
 import { LanguageSuggestion } from './language-suggestion';
 
 /** Persistent chrome for marketing and workspace routes in the same locale. */

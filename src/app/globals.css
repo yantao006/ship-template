@@ -2,8 +2,8 @@
    the existing site CSS retains ownership of base element styles. */
 @import "tailwindcss/theme" layer(theme);
 @import "tailwindcss/utilities";
-@import "../components/blocks/minimax-auth-card.css";
-@import "../components/blocks/auth-6.css";
+@import "../components/auth/minimax-auth-card.css";
+@import "../components/auth/auth-6.css";
 @custom-variant dark (&:where(html[data-mode="dark"] *, html[data-mode="auto"][data-default-mode="dark"] *));
 
 * { box-sizing: border-box; }

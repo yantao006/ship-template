@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { HomeContent } from '@/components/home-content';
+import { HomeContent } from '@/components/home/home-content';
 import { messages, site } from '@/lib/config';
 
 // Use the existing branded homepage and its referral capture on the shared invite URL.

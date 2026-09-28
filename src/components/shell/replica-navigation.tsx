@@ -4,10 +4,10 @@ import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, typ
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Globe2, Moon, Sun } from 'lucide-react';
-import { pathForLocale } from '@/components/language-control';
+import { pathForLocale } from '@/components/shell/language-control';
 import { useDismissableLayer } from '@/lib/use-dismissable-layer';
 import { ensureThemeMode, toggleThemeMode } from '@/lib/theme-mode';
-import { useOptionalAuthDialog } from '@/components/auth-dialog';
+import { useOptionalAuthDialog } from '@/components/auth/auth-dialog';
 import './replica-navigation.css';
 
 type NavLink = { label: string; href: string; icon: ReactNode; requiresAuth?: boolean };

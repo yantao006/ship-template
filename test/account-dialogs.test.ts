@@ -5,7 +5,7 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import messages from '../site/messages/en';
 import site from '../site/site.config';
-import { AccountDialogs, shareRecommendationText, type Activity, type Dialog } from '../src/components/blocks/account-dialogs';
+import { AccountDialogs, shareRecommendationText, type Activity, type Dialog } from '../src/components/account/account-dialogs';
 
 const copy = messages.account;
 const dialogs = ['checkin', 'share', 'invite', 'contact', 'feedback', 'plans', 'invoices'] as const satisfies readonly NonNullable<Dialog>[];
@@ -38,7 +38,7 @@ test('all seven account dialogs retain their accessible shell and destination co
   assert.match(contact, /class="account-body account-contact"/);
   assert.doesNotMatch(contact, /Questions about your account or payment/);
   assert.match(render('invoices'), /mailto:/);
-  const css = readFileSync('src/components/blocks/account-popovers.css', 'utf8');
+  const css = readFileSync('src/components/account/account-popovers.css', 'utf8');
   assert.match(css, /\.account-contact-overlay\{backdrop-filter:none\}/);
   for (const id of ['account', 'subscription', 'invoices']) {
     assert.match(css, new RegExp(`\\.account-menu \\.account-row-${id} \\.account-row-icon\\{color:var\\(--account-tone-`));
@@ -80,7 +80,7 @@ test('illustrative leaderboard is scoped to the configured viewer and never repl
 test('invite social hover and keyboard focus share the same scoped, reduced-motion-aware treatment', () => {
   const markup = render('invite');
   for (const name of site.account.shareNetworks) assert.match(markup, new RegExp(`aria-label="${name}"`));
-  const css = readFileSync('src/components/blocks/account-popovers.css', 'utf8');
+  const css = readFileSync('src/components/account/account-popovers.css', 'utf8');
   assert.match(css, /\.account-invite-social \.account-sharelinks a:is\(:hover,:focus-visible\)\{background:/);
   assert.match(css, /\.account-invite-social \.account-sharelinks a\{[^}]*transition:background-color \.15s/);
   assert.match(css, /@media\(prefers-reduced-motion:reduce\)\{[^}]*\}[^}]*\.account-invite-social \.account-sharelinks a\{transition:none\}/);

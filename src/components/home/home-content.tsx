@@ -3,7 +3,7 @@ import { accountSnapshot } from '@/lib/request-context';
 import { workerEnv } from '@/lib/env';
 import { site, auth, messages } from '@/lib/config';
 import { routePath } from '@/lib/routes';
-import { GoogleOneTap } from './google-one-tap';
+import { GoogleOneTap } from '../auth/google-one-tap';
 import { ReferralCapture } from './referral-capture';
 import { HomePage } from './sections/HomePage';
 

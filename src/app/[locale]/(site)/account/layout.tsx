@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
-import { AccountSectionNav } from '@/components/account-section-nav';
+import { AccountSectionNav } from '@/components/account/account-section-nav';
 import { localeFor, messages } from '@/lib/config';
 import { routePath } from '@/lib/route-paths';
-import '@/components/account-pages.css';
+import '@/components/account/account-pages.css';
 
 const sections = ['account', 'subscription', 'invoices', 'creditCenter'] as const;
 

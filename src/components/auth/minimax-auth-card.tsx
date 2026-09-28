@@ -5,9 +5,9 @@ import { useRef, useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { ArrowRight, Check, Eye, EyeOff, Mail, ShieldCheck } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
-import { requestJson } from '@/lib/json-request';
+import { redeemSignupInvite, sendPasswordReset, sendSignInCode, sendVerification, socialSignIn, validateSignupInvite } from './flows';
 import { routePath } from '@/lib/route-paths';
-import type { Auth4Props } from './auth-4';
+import type { Auth4Props } from './legacy/auth-4';
 import { Auth6 } from './auth-6';
 
 const GoogleMark = () => <svg className="minimax-auth-google-mark" viewBox="0 0 24 24" aria-hidden="true"><path fill="rgb(66,133,244)" d="M21.6 12.23c0-.71-.06-1.37-.19-2H12v3.79h5.38a4.6 4.6 0 0 1-2 3.02v2.48h3.22c1.88-1.74 3-4.3 3-7.29Z"/><path fill="rgb(52,168,83)" d="M12 22c2.7 0 4.97-.9 6.6-2.48l-3.22-2.48c-.89.6-2.02.96-3.38.96a6 6 0 0 1-5.64-4.15H3.04v2.56A10 10 0 0 0 12 22Z"/><path fill="rgb(251,188,5)" d="M6.36 13.85a6.04 6.04 0 0 1 0-3.7V7.59H3.04a10 10 0 0 0 0 8.82l3.32-2.56Z"/><path fill="rgb(234,67,53)" d="M12 6c1.47 0 2.78.51 3.82 1.5l2.85-2.86A9.6 9.6 0 0 0 12 2a10 10 0 0 0-8.96 5.59l3.32 2.56A6 6 0 0 1 12 6Z"/></svg>;
@@ -51,8 +51,8 @@ export function MinimaxAuthCard({ copy, card, signupCredits, brand, logo, method
     setError('');
     try {
       onOAuthStart?.();
-      const result = await authClient.signIn.social({ provider, callbackURL });
-      if (result.error) { onOAuthFailure?.(); setError(copy.socialFailed); }
+      const succeeded = await socialSignIn(provider, callbackURL);
+      if (!succeeded) { onOAuthFailure?.(); setError(copy.socialFailed); }
     } catch { onOAuthFailure?.(); setError(copy.socialFailed); }
     finally { setPending(false); }
   }
@@ -64,31 +64,28 @@ export function MinimaxAuthCard({ copy, card, signupCredits, brand, logo, method
     setError('');
     try {
       if (mode === 'forgot') {
-        const result = await authClient.requestPasswordReset({ email: email.trim(), redirectTo: routePath(locale, 'resetPassword') });
-        if (result.error) setError(copy.resetSendFailed);
+        const sent = await sendPasswordReset(email, routePath(locale, 'resetPassword'));
+        if (!sent) setError(copy.resetSendFailed);
         else setNotice(copy.resetSent);
       } else if (mode === 'verify') {
-        const result = await authClient.sendVerificationEmail({ email: email.trim(), callbackURL });
-        if (result.error) setError(copy.resendFailed);
+        const sent = await sendVerification(email, callbackURL);
+        if (!sent) setError(copy.resendFailed);
         else setNotice(copy.verificationSent);
       } else if (mode === 'sign-in') {
-        const sent = await authClient.emailOtp.sendVerificationOtp({ email: email.trim(), type: 'sign-in' });
-        if (sent.error) setError(copy.codeSendFailed);
+        const sent = await sendSignInCode(email);
+        if (!sent) setError(copy.codeSendFailed);
         else openCode();
       } else {
-        const code = inviteCode.trim().toUpperCase();
-        if (inviteRequired) {
-          const validation = await requestJson('/api/invites/validate', { code });
-          if (!validation.ok || !(await validation.json() as { valid: boolean }).valid) { setError(copy.inviteInvalid); return; }
-        }
+        const { code, valid } = inviteRequired ? await validateSignupInvite(inviteCode) : { code: inviteCode.trim().toUpperCase(), valid: true };
+        if (!valid) { setError(copy.inviteInvalid); return; }
         const result = await authClient.signUp.email({ email: email.trim(), password, name: name.trim(), ...(needsVerification ? { callbackURL } : {}), ...(inviteRequired ? { inviteCode: code } : {}) } as Parameters<typeof authClient.signUp.email>[0]);
         if (result.error) setError(result.error.message ?? copy.authFailed);
         else if (needsVerification) {
           switchMode('verify'); setNotice(copy.verificationSent);
         } else {
           if (inviteRequired) {
-            const redeemed = await requestJson('/api/invites/redeem', { code });
-            if (!redeemed.ok) { setError(copy.createdButInviteFailed); return; }
+            const redeemed = await redeemSignupInvite(code);
+            if (!redeemed) { setError(copy.createdButInviteFailed); return; }
           }
           await onAuthenticated('sign-up');
         }
@@ -144,7 +141,7 @@ export function MinimaxAuthCard({ copy, card, signupCredits, brand, logo, method
         <h2 id="auth4-title">{title}</h2>
         {mode === 'verify' ? <div className="minimax-auth-form">
           <p role="status">{notice} {email}</p><p>{copy.verifyHint}</p>
-          <button type="button" disabled={pending} className="minimax-auth-primary" onClick={async () => { if (pending) return; setPending(true); try { const result = await authClient.sendVerificationEmail({ email: email.trim(), callbackURL }); if (result.error) setError(copy.resendFailed); else setNotice(copy.verificationSent); } catch { setError(copy.resendFailed); } finally { setPending(false); } }}>{pending ? copy.wait : copy.resendVerification}</button>
+          <button type="button" disabled={pending} className="minimax-auth-primary" onClick={async () => { if (pending) return; setPending(true); try { const sent = await sendVerification(email, callbackURL); if (!sent) setError(copy.resendFailed); else setNotice(copy.verificationSent); } catch { setError(copy.resendFailed); } finally { setPending(false); } }}>{pending ? copy.wait : copy.resendVerification}</button>
           <Link href={`${routePath(locale, 'verifyEmail')}?email=${encodeURIComponent(email)}`}>{copy.verifyLink}</Link>
           <button type="button" className="minimax-auth-link" onClick={() => switchMode('sign-in')}>{copy.signIn}</button>
         </div> : <>

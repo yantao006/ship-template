@@ -4,9 +4,9 @@ import { headers } from 'next/headers';
 import { site, theme, messages, localeFor } from '@/lib/config';
 import { requestLocaleHeader, requestSiteShellHeader } from '@/lib/routes';
 import { themeTokenStylesheet } from '@/lib/theme-tokens';
-import { ThemeModeInitializer } from '@/components/theme-mode-initializer';
+import { ThemeModeInitializer } from '@/components/shell/theme-mode-initializer';
 import './globals.css';
-import '@/components/blocks/tags.css';
+import '@/components/styles/tags.css';
 
 async function requestLocale() {
   return localeFor((await headers()).get(requestLocaleHeader) ?? site.defaultLocale);

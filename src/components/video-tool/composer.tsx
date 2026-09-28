@@ -5,38 +5,10 @@ import Link from 'next/link';
 import { ArrowRight, AtSign, ChevronDown, Circle, CircleDot, Sparkles, SwatchBook, X } from 'lucide-react';
 import { useDismissableLayer } from '@/lib/use-dismissable-layer';
 import { Mark } from './mark';
-import { ModelMenu, type ModelMenuProps } from './model-menu';
-import { ParameterField, type ParameterFieldProps } from './parameter-field';
-
-type Choice = { id: string; icon: string; label: string; selected: boolean };
-type ReferenceItem = { id: string; kind: string; url: string; thumbnail?: string; label: string; selected: boolean; disabled: boolean };
-type ReferenceView = {
-  title: string; kinds: { id: string; icon: string; label: string; used: number; limit: number }[];
-  items: ReferenceItem[]; selectedItems: ReferenceItem[]; templateMedia: boolean;
-  framePair: boolean; endFrame: boolean; frames: { start?: string; end?: string };
-  startFrameLabel?: string; endFrameLabel?: string;
-  uploadHint: string; libraryLabel: string; closeLibraryLabel: string; libraryOpen: boolean;
-};
-
-export type ComposerProps = {
-  title: string; workflowLabel: string;
-  media: Choice[]; workflows: Choice[]; modelMenu: ModelMenuProps;
-  references?: ReferenceView;
-  prompt: { title: string; assist?: string; referenceLabel: string; placeholder: string; value: string; maxLength: number };
-  parameters: { summary: string; fallbackLabel: string; expanded: boolean; fields: ParameterFieldProps[] };
-  quantity: { label: string; prefix: string; value: number; values: number[]; open: boolean };
-  create: { label: string; disabled: boolean };
-  promo?: { icon: string; label: string; href: string; dismissLabel?: string };
-  actions: {
-    onMedia: (id: string) => void; onWorkflow: (id: string) => void;
-    onEndFrame: () => void; onFramePick: (slot: 'start' | 'end') => void;
-    onReference: (id: string) => void; onLibraryToggle: () => void;
-    onPrompt: (value: string) => void; onAssist: () => void;
-    onSummaryToggle: () => void; onQuantityToggle: () => void; onQuantity: (value: number) => void;
-    onCreate: () => void; onPromoDismiss: () => void;
-    onOutside: () => void; onCloseMenu: () => void; onCloseQuantity: () => void;
-  };
-};
+import { ModelMenu } from './model-menu';
+import { ParameterField } from './parameter-field';
+import type { ComposerProps, ReferenceView } from './view-model';
+export type { ComposerProps } from './view-model';
 
 function References({ view, actions }: { view: ReferenceView; actions: ComposerProps['actions'] }) {
   const used = (kind: ReferenceView['kinds'][number]) => `${kind.used}/${kind.limit}`;

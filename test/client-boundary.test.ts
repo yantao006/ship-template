@@ -54,7 +54,7 @@ test('browser nav copy excludes mail-only text in either language', () => {
 });
 
 test('video tool binding and browser-only nav copy happen before client props', () => {
-  const section = readFileSync('src/components/sections/VideoToolSection.tsx', 'utf8');
+  const section = readFileSync('src/components/home/sections/VideoToolSection.tsx', 'utf8');
   assert.match(section, /bindToolSite\(videoTool, copy, locale\)/);
   assert.doesNotMatch(readFileSync('src/components/video-tool/video-tool-section.tsx', 'utf8'), /@\/lib\/config/);
   const nav = readFileSync('site/messages/en/navigation.ts', 'utf8');

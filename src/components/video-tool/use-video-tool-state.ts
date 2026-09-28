@@ -2,10 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { buildCreatePayload, fieldStops, modelForMedia, previewCost, reconcileFieldValues, summaryFields, visibleWorkflows } from './state';
-import type { ComposerProps } from './composer';
-import type { ModelMenuItem } from './model-menu';
-import type { ParameterFieldProps } from './parameter-field';
-import type { StageProps } from './stage';
+import type { ComposerProps, ModelMenuItem, ParameterFieldProps, StageProps } from './view-model';
 import type { FieldValue, ToolModel, VideoGenerationToolProps } from './types';
 
 const authDraftKey = 'site-video-tool-auth-draft';

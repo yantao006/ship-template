@@ -2,9 +2,9 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { AccountPopoverCard, AccountPopoverRow, type PopoverRow } from '../src/components/blocks/account-popover-card';
-import { ProfileHeader, AvatarTrigger } from '../src/components/blocks/account-profile';
-import { inviteGateRows } from '../src/components/blocks/account-gate-rows';
+import { AccountPopoverCard, AccountPopoverRow, type PopoverRow } from '../src/components/account/account-popover-card';
+import { ProfileHeader, AvatarTrigger } from '../src/components/account/account-profile';
+import { inviteGateRows } from '../src/components/account/account-gate-rows';
 
 const row = (overrides: Partial<PopoverRow> = {}): PopoverRow => ({ id: 'example', icon: createElement('svg', { 'aria-label': 'icon' }), label: 'Example', ...overrides });
 const renderRow = (overrides: Partial<PopoverRow> = {}) => renderToStaticMarkup(createElement(AccountPopoverRow, { row: row(overrides) }));

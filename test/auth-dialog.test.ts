@@ -3,9 +3,9 @@ import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import * as React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { safeReturnPath } from '../src/components/auth-dialog';
-import { Auth4 } from '../src/components/blocks/auth-4';
-import { MinimaxAuthCard } from '../src/components/blocks/minimax-auth-card';
+import { safeReturnPath } from '../src/components/auth/auth-dialog';
+import { Auth4 } from '../src/components/auth/legacy/auth-4';
+import { MinimaxAuthCard } from '../src/components/auth/minimax-auth-card';
 import { browserNavCopy } from '../src/lib/browser-nav-copy';
 import { messages, site, theme } from '../src/lib/config';
 import auth from '../site/auth.config';
@@ -41,7 +41,7 @@ test('Auth-4 renders only configured providers with real site copy', () => {
 
 test('source-inspired card uses site identity, localized benefits and configured credits without changing Auth-4', () => {
   (globalThis as typeof globalThis & { React: typeof React }).React = React;
-  const original = source('src/components/blocks/auth-4.tsx');
+  const original = source('src/components/auth/legacy/auth-4.tsx');
   assert.match(original, /export function Auth4/);
   assert.doesNotMatch(original, /MinimaxAuthCard|auth-card-canvas/);
   for (const locale of ['en', 'zh'] as const) {
@@ -59,19 +59,22 @@ test('source-inspired card uses site identity, localized benefits and configured
     assert.match(markup, /professional-headshot.webp/);
     assert.doesNotMatch(markup, /MiniMax H3 video generation|Sign-up with Google|Continue with GitHub|type="password"/);
   }
-  const variant = source('src/components/blocks/minimax-auth-card.tsx');
+  const variant = source('src/components/auth/minimax-auth-card.tsx');
   assert.match(variant, /minimax-auth-email-group[\s\S]*minimax-auth-divider[\s\S]*minimax-auth-inline-form/);
-  const variantCss = source('src/components/blocks/minimax-auth-card.css');
+  const variantCss = source('src/components/auth/minimax-auth-card.css');
   assert.match(variantCss, /\.minimax-auth-email-group \{ display: flex; flex-direction: column/);
   assert.match(variantCss, /\.minimax-auth-email-group\.is-expanded \{ gap: 12px/);
   assert.doesNotMatch(variantCss, /\.minimax-auth-inline-form \{[^}]*margin-top:/);
-  const codeDialog = source('src/components/blocks/auth-6.tsx');
-  assert.match(variant, /authClient\.emailOtp\.sendVerificationOtp/);
-  assert.match(variant, /if \(sent\.error\) setError\(copy\.codeSendFailed\);\s*else openCode\(\)/);
+  const codeDialog = source('src/components/auth/auth-6.tsx');
+  const flows = source('src/components/auth/flows.ts');
+  assert.match(flows, /authClient\.emailOtp\.sendVerificationOtp/);
+  assert.match(variant, /sendSignInCode\(email\)/);
+  assert.match(variant, /if \(!sent\) setError\(copy\.codeSendFailed\);\s*else openCode\(\)/);
   assert.match(variant, /<Auth6 email=\{sentEmail\}/);
   assert.doesNotMatch(variant, /name="otp"|emailStep/);
   assert.match(codeDialog, /authClient\.signIn\.emailOtp/);
-  assert.match(codeDialog, /authClient\.emailOtp\.sendVerificationOtp/);
+  assert.match(codeDialog, /sendSignInCode\(email\)/);
+  assert.match(flows, /type: 'sign-in'/);
   assert.match(codeDialog, /onAuthenticated\(\)/);
   assert.match(codeDialog, /\[0, 1, 2\]\.map\(renderInput\)[\s\S]*auth6-separator[\s\S]*\[3, 4, 5\]\.map\(renderInput\)/);
   assert.match(codeDialog, /onKeyDown=\{event => handleKeyDown[\s\S]*onPaste=\{handlePaste\}/);
@@ -88,8 +91,8 @@ test('source-inspired card uses site identity, localized benefits and configured
 });
 
 test('a positive session probe cannot dismiss a guest avatar dialog before the account menu renders', () => {
-  const provider = source('src/components/auth-dialog.tsx');
-  const shell = source('src/components/site-shell.tsx');
+  const provider = source('src/components/auth/auth-dialog.tsx');
+  const shell = source('src/components/shell/site-shell.tsx');
   const immediate = provider.match(/if \(immediateAttempt !== null\) \{([\s\S]*?)\n        \}\n        options\.onSuccess/)?.[1];
   assert.ok(immediate, 'the immediate avatar attempt must have its own session branch');
   assert.match(immediate, /attempt\.current !== immediateAttempt\) return false/);
@@ -108,27 +111,29 @@ test('Auth-4 loads Tailwind theme tokens without resetting the existing site', (
 });
 
 test('one shared Auth-4 dialog uses server session confirmation and does not replay checkout', () => {
-  const shell = source('src/components/site-shell.tsx');
-  const provider = source('src/components/auth-dialog.tsx');
-  const auth4 = source('src/components/blocks/auth-4.tsx');
-  const pricing = source('src/components/pricing-checkout.tsx');
+  const shell = source('src/components/shell/site-shell.tsx');
+  const provider = source('src/components/auth/auth-dialog.tsx');
+  const auth4 = source('src/components/auth/legacy/auth-4.tsx');
+  const pricing = source('src/components/pricing/pricing-checkout.tsx');
   assert.match(shell, /<AuthDialogProvider/);
   assert.match(provider, /createPortal\(/);
   assert.match(provider, /active: open && !codeOpen/);
   assert.match(provider, /hidden=\{codeOpen\} inert=\{codeOpen\}/);
   assert.match(provider, /onCloseAuth=\{closeAuth\}/);
-  assert.match(source('src/components/blocks/minimax-auth-card.tsx'), /onClose=\{onCloseAuth \?\? closeCode\}/);
+  assert.match(source('src/components/auth/minimax-auth-card.tsx'), /onClose=\{onCloseAuth \?\? closeCode\}/);
   assert.match(provider, /\/api\/auth\/get-session/);
   assert.match(provider, /if \(!\(await serverHasSession\(\)\)\)/);
   // The guest avatar renders the dialog before the session request can stall it.
-  assert.match(source('src/components/auth-control.tsx'), /className="replica-avatar"[\s\S]*?showImmediately: true/);
+  assert.match(source('src/components/auth/auth-control.tsx'), /className="replica-avatar"[\s\S]*?showImmediately: true/);
   assert.match(provider, /const immediateAttempt = options\.showImmediately \? showDialog\(\) : null;[\s\S]*await serverHasSession\(\)/);
   assert.match(provider, /attempt\.current !== immediateAttempt\) return false/);
-  assert.match(auth4, /authClient\.emailOtp\.sendVerificationOtp/);
+  assert.match(auth4, /sendSignInCode\(email\)/);
+  assert.match(source('src/components/auth/flows.ts'), /authClient\.emailOtp\.sendVerificationOtp/);
   assert.match(auth4, /authClient\.signIn\.emailOtp/);
   assert.match(source('src/app/api/auth/[...all]/route.ts'), /parsed\.body\.type !== 'sign-in'/);
   assert.doesNotMatch(auth4, /authClient\.signIn\.email\(/);
-  assert.match(auth4, /authClient\.signIn\.social/);
+  assert.match(auth4, /socialSignIn\(provider, callbackURL\)/);
+  assert.match(source('src/components/auth/flows.ts'), /authClient\.signIn\.social/);
   assert.doesNotMatch(auth4, /console\.log|placeholder\.svg|SSO enforced/);
   assert.match(pricing, /result\.status === 401[\s\S]*openAuth/);
   assert.doesNotMatch(provider, /requestJson\('\/api\/checkout'/);

@@ -1,4 +1,4 @@
-import { HomeContent } from '@/components/home-content';
+import { HomeContent } from '@/components/home/home-content';
 import { localeFor } from '@/lib/config';
 
 export const dynamic = 'force-dynamic';

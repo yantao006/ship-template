@@ -3,7 +3,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { pathForLocale } from '@/components/language-control';
+import { pathForLocale } from '@/components/shell/language-control';
 
 export function FooterLanguages({ locale, languages, label }: { locale: string; languages: readonly { code: string; name: string; flag: string }[]; label: string }) {
   const pathname = usePathname();

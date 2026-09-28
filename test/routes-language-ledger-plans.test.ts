@@ -74,7 +74,7 @@ test('all ledger sources have translated copy, and the receipt query uses the pa
   assert.equal(ledgerSourceLabel('zh', 'checkin'), '每日签到');
   assert.equal(ledgerSourceLabel('zh', 'referral_inviter'), '邀请好友奖励');
   assert.equal(ledgerSourceLabel('zh', 'referral_friend'), '好友推荐奖励');
-  assert.match(readFileSync('src/components/account-pages-content.tsx', 'utf8'), /paidLedgerSources\.includes/);
+  assert.match(readFileSync('src/components/account/account-pages-content.tsx', 'utf8'), /paidLedgerSources\.includes/);
 });
 
 test('every configured plan has an id-based name in every language', () => {
@@ -86,7 +86,7 @@ test('every configured plan has an id-based name in every language', () => {
     }
   }
   assert.throws(() => planCopy('en', 'unknown'), /Missing plan copy/);
-  assert.match(readFileSync('src/components/pricing-content.tsx', 'utf8'), /planCopy\(locale, plan\.id\)/);
-  assert.match(readFileSync('src/components/sections/Header.tsx', 'utf8'), /planCopy\(locale, plan\.id\)\.name/);
-  assert.match(readFileSync('src/components/blocks/buy-credits-dialog.tsx', 'utf8'), /<b>\{plan\.name\}<\/b>/);
+  assert.match(readFileSync('src/components/pricing/pricing-content.tsx', 'utf8'), /planCopy\(locale, plan\.id\)/);
+  assert.match(readFileSync('src/components/account/header-account-control.tsx', 'utf8'), /planCopy\(locale, plan\.id\)\.name/);
+  assert.match(readFileSync('src/components/account/buy-credits-dialog.tsx', 'utf8'), /<b>\{plan\.name\}<\/b>/);
 });

@@ -5,7 +5,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import en from '../site/messages/en';
 import zh from '../site/messages/zh';
 import site from '../site/site.config';
-import { AccountDialogs } from '../src/components/blocks/account-dialogs';
+import { AccountDialogs } from '../src/components/account/account-dialogs';
 import { checkinInviteShare } from '../src/lib/checkin-invite';
 import { isSiteShellPath } from '../src/lib/routes';
 import { referralCodeFromUrl } from '../src/lib/use-referral-claim';

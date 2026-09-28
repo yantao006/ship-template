@@ -7,6 +7,7 @@ import { ArrowLeft, X } from 'lucide-react';
 import { motion, useReducedMotion, type Variants } from 'motion/react';
 import { authClient } from '@/lib/auth-client';
 import { useDismissableLayer } from '@/lib/use-dismissable-layer';
+import { sendSignInCode } from './flows';
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 const CODE_LENGTH = 6;
@@ -78,8 +79,8 @@ export function Auth6({ email, copy, onClose, onDifferentEmail, onAuthenticated,
     setPending(true);
     setError('');
     try {
-      const result = await authClient.emailOtp.sendVerificationOtp({ email, type: 'sign-in' });
-      if (result.error) setError(copy.codeSendFailed);
+      const sent = await sendSignInCode(email);
+      if (!sent) setError(copy.codeSendFailed);
       else { setCode(Array(CODE_LENGTH).fill('')); setCooldown(30); focusInput(0); }
     } catch { setError(copy.codeSendFailed); }
     finally { setPending(false); }

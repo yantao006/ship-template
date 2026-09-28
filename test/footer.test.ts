@@ -6,16 +6,16 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { PathnameContext } from 'next/dist/shared/lib/hooks-client-context.shared-runtime';
 import site from '../site/site.config';
 import messages from '../site/messages';
-import { pathForLocale } from '../src/components/language-control';
+import { pathForLocale } from '../src/components/shell/language-control';
 import { informationIds, routePath } from '../src/lib/route-paths';
-import { Footer } from '../src/components/sections/Footer';
-import { InformationPage } from '../src/components/information-page';
+import { Footer } from '../src/components/shell/Footer';
+import { InformationPage } from '../src/components/information/information-page';
 
 const source = (path: string) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
 
 test('footer copy, brand and contact are site-owned and localized', () => {
-  const footer = source('src/components/sections/Footer.tsx');
-  const page = source('src/components/information-page.tsx');
+  const footer = source('src/components/shell/Footer.tsx');
+  const page = source('src/components/information/information-page.tsx');
   assert.match(footer, /site\.brand/);
   assert.match(footer, /site\.logo\.src/);
   assert.match(footer, /site\.account\.contactEmail/);
@@ -38,8 +38,8 @@ test('footer copy, brand and contact are site-owned and localized', () => {
 });
 
 test('footer language row is driven by configured languages and preserves the route', () => {
-  const footer = source('src/components/sections/Footer.tsx');
-  const row = source('src/components/sections/FooterLanguages.tsx');
+  const footer = source('src/components/shell/Footer.tsx');
+  const row = source('src/components/shell/FooterLanguages.tsx');
   assert.match(footer, /languages=\{site\.languages\}/);
   assert.match(row, /languages\.map\(language => <Link/);
   assert.match(row, /language\.flag/);
@@ -77,11 +77,11 @@ test('rendered footer and informational pages have real per-locale destinations'
 });
 
 test('footer links resolve to real content in the persistent shell only', () => {
-  const footer = source('src/components/sections/Footer.tsx');
+  const footer = source('src/components/shell/Footer.tsx');
   assert.match(footer, /routePath\(locale, 'home'\).*#video-tool-section/);
-  assert.match(source('src/components/sections/VideoToolSection.tsx'), /id="video-tool-section"/);
+  assert.match(source('src/components/home/sections/VideoToolSection.tsx'), /id="video-tool-section"/);
   for (const id of ['pricing', ...informationIds] as const) assert.match(footer, new RegExp(`routePath\\(locale, '${id}'\\)`));
-  const shell = source('src/components/site-shell.tsx');
+  const shell = source('src/components/shell/site-shell.tsx');
   assert.match(shell, /<Footer locale=\{locale\} \/>/);
   for (const id of ['verify-email', 'reset-password']) {
     assert.doesNotMatch(source(`src/app/[locale]/${id}/page.tsx`), /SiteShell|Footer/);
