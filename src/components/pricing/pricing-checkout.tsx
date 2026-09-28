@@ -92,7 +92,7 @@ export function PricingCheckout({ locale, plans, models, brand, copy }: { locale
           {(['month', 'year', 'once'] as const).map(option => <button type="button" aria-pressed={mode === option} className={mode === option ? 'selected' : ''} key={option} onClick={() => { setMode(option); setError(''); }}>{option === 'month' ? copy.monthly : option === 'year' ? copy.yearly : copy.packs}{option === 'year' && savings > 0 && <small>{savingsLabel}</small>}</button>)}
         </div><p><Check size={16} />{mode === 'year' ? copy.yearlyHint : mode === 'month' ? copy.monthlyHint : copy.packHint}</p></div>
         {!actionable && <p className="pricing-availability" role="status">{copy.unavailableNote}</p>}
-        <div className={`pricing-card-grid ${mode === 'once' ? 'packs' : 'plans'}`} key={mode}>
+        <div className={`pricing-card-grid ui-enter-rise ${mode === 'once' ? 'packs' : 'plans'}`} key={mode}>
           {visible.map(plan => {
             const isMax = plan.tier === 'max';
             const { factor, price, total, previousPrice, discount, credits, canCheckout: canPay } = planDisplay(plan, plans, multiple);
@@ -105,7 +105,7 @@ export function PricingCheckout({ locale, plans, models, brand, copy }: { locale
               {yearly && <p className="pricing-billed">{money(total, plan.currency, locale)} {copy.billedYearly}</p>}
               {mode === 'once' && <p className="pricing-billed">{copy.oneTime}</p>}
               {isMax && <div className="pricing-multiplier"><label htmlFor="pricing-max-range">{copy.maxMultiplier} <b>{multiple}×</b></label><input id="pricing-max-range" type="range" min="1" max="5" step="1" value={multiple} onChange={event => setMultiple(Number(event.target.value))} /><div className="pricing-multiplier-labels">{[1, 2, 3, 4, 5].map(value => <button type="button" aria-pressed={multiple === value} key={value} onClick={() => setMultiple(value)}>{value}×</button>)}</div><p>{copy.maxBase}: {count(plan.credits)} · {copy.maxTotal}: {count(credits)} {copy.creditsMonth}</p></div>}
-              <button type="button" className="pricing-pay" disabled={!canPay || !!pending} onClick={() => checkout(plan)}>{pending === plan.id ? copy.wait : canPay ? copy.checkout : copy.unavailable}</button>
+              <button type="button" className="pricing-pay ui-button-solid" disabled={!canPay || !!pending} onClick={() => checkout(plan)}>{pending === plan.id ? copy.wait : canPay ? copy.checkout : copy.unavailable}</button>
               <div className="pricing-credits"><Sparkles size={18} /><strong>{count(credits)} {mode === 'once' ? copy.credits : copy.creditsMonth}</strong></div>
               {mode !== 'once' && <div className="pricing-models"><ModelDropdown title={copy.videoModels} models={video} /><ModelDropdown title={copy.imageModels} models={image} /></div>}
               <ul className="pricing-features">{pricingFeatureLines(plan, mode, copy).map(line => <li key={line}><Check size={16} />{line}</li>)}</ul>

@@ -20,10 +20,9 @@ body:has(.replica-topbar) .site-shell:not(.pricing-experience) { background: #11
 .replica-avatar-trigger:hover .replica-avatar { border-color: #a178ff; }
 .replica-avatar-trigger[aria-expanded=true] { box-shadow: 0 0 0 3px color-mix(in srgb, var(--account-tone-account-box) 27%, transparent); }
 /* The language menu and account cards share the same anchored popover shell. */
-.account-popover, .replica-popover { position: absolute; top: calc(100% + 9px); right: 0; z-index: 120; max-width: calc(100vw - 16px); max-height: calc(100dvh - 80px); background: linear-gradient(130deg,var(--popover-bg) 55%,var(--popover-end)); border: 1px solid var(--popover-border); border-radius: 14px; color: var(--text); box-shadow: 0 18px 48px color-mix(in srgb,var(--bg) 65%,transparent); animation: replica-pop .18s ease-out both; transform-origin: top right; }
+.account-popover, .replica-popover { position: absolute; top: calc(100% + 9px); right: 0; z-index: 120; max-width: calc(100vw - 16px); max-height: calc(100dvh - 80px); background: linear-gradient(130deg,var(--popover-bg) 55%,var(--popover-end)); border: 1px solid var(--popover-border); border-radius: var(--radius-card); color: var(--text); box-shadow: 0 18px 48px color-mix(in srgb,var(--bg) 65%,transparent); --enter-duration: var(--duration-quick); --enter-offset: -6px; --enter-opacity: 0; transform-origin: top right; }
 .account-popover { width: 288px; overflow: auto; }
 .replica-popover { overflow: hidden; }
-@keyframes replica-pop { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
 .replica-language-menu { width: 165px; padding: 8px 6px; background: var(--language-bg); }
 .replica-language-menu button { width: 100%; height: 36px; border: 0; border-radius: 5px; background: none; color: var(--nav-muted); display: flex; align-items: center; text-align: left; font-size: 13px; gap: 10px; padding: 0 12px; cursor: pointer; }
 .replica-language-menu button:hover { background: var(--nav-hover); color: var(--text); }

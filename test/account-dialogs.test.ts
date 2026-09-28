@@ -82,7 +82,7 @@ test('invite social hover and keyboard focus share the same scoped, reduced-moti
   for (const name of site.account.shareNetworks) assert.match(markup, new RegExp(`aria-label="${name}"`));
   const css = readFileSync('src/components/account/account-popovers.css', 'utf8');
   assert.match(css, /\.account-invite-social \.account-sharelinks a:is\(:hover,:focus-visible\)\{background:/);
-  assert.match(css, /\.account-invite-social \.account-sharelinks a\{[^}]*transition:background-color \.15s/);
+  assert.match(css, /\.account-invite-social \.account-sharelinks a\{[^}]*transition:background-color var\(--duration-fast\)/);
   assert.match(css, /@media\(prefers-reduced-motion:reduce\)\{[^}]*\}[^}]*\.account-invite-social \.account-sharelinks a\{transition:none\}/);
 });
 
@@ -94,12 +94,12 @@ test('a claimed check-in keeps completed days checked and leaves the next day un
   assert.deepEqual(classes(claimed), ['complete', 'complete', 'future', 'future', 'future', 'future', 'future']);
   assert.equal((claimed.match(/aria-label="Claimed today · come back tomorrow"/g) ?? []).length, 2);
   assert.match(claimed, />2\/7 days complete</);
-  assert.match(claimed, /<button class="account-primary" disabled="">/);
+  assert.match(claimed, /<button class="account-primary ui-button-solid" disabled="">/);
   const pending = render('checkin', { activity: { ...activity, checkInDays: [offset(-1)] } });
   assert.deepEqual(classes(pending), ['complete', 'current', 'future', 'future', 'future', 'future', 'future']);
   assert.match(pending, />1\/7 days complete</);
   assert.match(pending, /Claim today’s free reward/);
-  assert.doesNotMatch(pending, /<button class="account-primary" disabled="">/);
+  assert.doesNotMatch(pending, /<button class="account-primary ui-button-solid" disabled="">/);
 });
 
 test('share card uses the configured site URL, honest localized recommendation and disabled empty submission', () => {
@@ -111,6 +111,6 @@ test('share card uses the configured site URL, honest localized recommendation a
   assert.match(markup, /Where can I share\?/);
   assert.match(markup, /We value genuine shares/);
   assert.match(markup, /href="https:\/\/www.reddit.com\/"/);
-  assert.match(markup, /type="submit" disabled=""/);
+  assert.match(markup, /type="submit" class="ui-button-solid" disabled=""/);
   assert.match(markup, /https:\/\/reddit.com\/r\/\.\.\./);
 });

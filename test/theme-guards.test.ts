@@ -74,6 +74,24 @@ test('light and dark palettes have the same six semantic keys', () => {
   assert.match(css, /body \{[^}]*background: var\(--bg\); color: var\(--text\)/);
 });
 
+test('shared controls and motion consume semantic tokens without duplicating entrance keyframes', () => {
+  const sheet = themeTokenStylesheet();
+  for (const name of ['space-1', 'space-5', 'text-11', 'text-18', 'weight-medium', 'weight-semibold', 'weight-black', 'radius-control', 'radius-card', 'radius-pill', 'shadow-dialog', 'duration-enter']) {
+    assert.match(sheet, new RegExp(`--${name}:`));
+  }
+  assert.match(read('src/app/globals.css'), /@import "\.\.\/components\/styles\/controls\.css"/);
+  const controls = read('src/components/styles/controls.css');
+  for (const selector of ['ui-nav-item', 'ui-button-solid', 'ui-button-outline', 'ui-input', 'ui-enter-scale', 'ui-enter-rise']) {
+    assert.match(controls, new RegExp(`\\.${selector}\\b`));
+  }
+  assert.match(read('src/components/account/account-section-nav.tsx'), /ui-nav-item/);
+  assert.match(read('src/components/workspace/workspace-section-nav.tsx'), /ui-nav-item/);
+  assert.match(read('src/components/pricing/pricing-checkout.tsx'), /pricing-pay ui-button-solid/);
+  for (const path of ['src/components/account/account-popovers.css', 'src/components/auth/minimax-auth-card.css', 'src/components/pricing/pricing.css', 'src/components/shell/replica-navigation.css']) {
+    assert.doesNotMatch(read(path), /@keyframes (?:account-dialog-enter|account-contact-enter|minimax-auth-enter|pricing-enter|replica-pop)/);
+  }
+});
+
 test('client navigation preserves the chosen mode and only the control switches it', () => {
   for (const locale of ['en', 'zh']) {
     const classes = new Set<string>();
@@ -175,7 +193,7 @@ test('new stylesheets do not repeat selectors; unmigrated CSS is exempt', () => 
     const seen = new Set<string>();
     for (const match of source.matchAll(/(?:^|})\s*([^{}]+)\{/g)) {
       const selector = match[1].trim();
-      if (selector.startsWith('@')) continue;
+      if (selector.startsWith('@') || selector === 'from' || selector === 'to') continue;
       assert.ok(!seen.has(selector), `duplicate selector: ${selector}`);
       seen.add(selector);
     }

@@ -1,0 +1,15 @@
+/* Semantic control states. Surfaces supply colors through custom properties; layout stays local. */
+.ui-nav-item { border-radius: var(--radius-control); color: var(--muted); text-decoration: none; font-size: var(--text-14); }
+.ui-nav-item:is(:hover, .active) { background: var(--hover); color: var(--text); }
+.ui-nav-item.active { font-weight: var(--nav-active-weight, var(--weight-semibold)); }
+.ui-button-solid, .ui-button-outline { border: 1px solid var(--control-border, transparent); border-radius: var(--control-radius, var(--radius-control)); background: var(--control-bg, var(--text)); color: var(--control-text, var(--bg)); font-weight: var(--control-weight, var(--weight-medium)); text-decoration: none; cursor: pointer; transition: background var(--duration-enter) ease, opacity var(--duration-enter) ease, transform var(--duration-enter) ease; }
+.ui-button-outline { --control-border: var(--line); --control-bg: var(--surface); --control-text: var(--text); }
+.ui-button-solid:hover:not(:disabled), .ui-button-outline:hover:not(:disabled) { background: var(--control-hover-bg, var(--control-bg)); opacity: var(--control-hover-opacity, .85); transform: var(--control-hover-transform, none); }
+.ui-button-solid:disabled, .ui-button-outline:disabled { cursor: not-allowed; opacity: .55; }
+.ui-button-solid:focus-visible, .ui-button-outline:focus-visible, .ui-input:focus-visible, .ui-nav-item:focus-visible { outline: 2px solid var(--control-focus, var(--text)); outline-offset: 3px; }
+.ui-input { border: 1px solid var(--input-border, var(--line)); border-radius: var(--input-radius, var(--radius-control)); background: var(--input-bg, var(--surface)); color: var(--input-text, var(--text)); font: inherit; }
+.ui-enter-scale { animation: ui-enter-scale var(--enter-duration, var(--duration-enter)) var(--enter-ease, ease-out) both; }
+.ui-enter-rise { animation: ui-enter-rise var(--enter-duration, var(--duration-enter)) ease-out both; }
+@keyframes ui-enter-scale { from { opacity: 0; transform: scale(.95); } to { opacity: 1; transform: scale(1); } }
+@keyframes ui-enter-rise { from { opacity: var(--enter-opacity, .7); transform: translateY(var(--enter-offset, 8px)); } to { opacity: 1; transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) { .ui-enter-scale, .ui-enter-rise { animation: none; } :is(.ui-button-solid, .ui-button-outline) { transition: none; } }
