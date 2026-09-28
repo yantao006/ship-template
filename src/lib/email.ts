@@ -12,7 +12,8 @@ export function createEmailProvider(site: SiteConfig, env: Env, fetcher: typeof 
     if (!env.EMAIL) throw new Error('EMAIL binding missing');
     return { async sendEmail(message) {
       const response = await env.EMAIL!.send(message) as { messageId?: string };
-      return { id: response?.messageId ?? '' };
+      if (!response?.messageId) throw new Error('Cloudflare did not acknowledge the email');
+      return { id: response.messageId };
     } };
   }
   if (site.email.provider === 'resend') {

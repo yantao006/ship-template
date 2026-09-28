@@ -2,8 +2,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { Miniflare } from 'miniflare';
-import { createAuth, ensureSignupCredits, type AuthSettings } from '../src/lib/auth';
-import { FakeEmail } from '../src/lib/email';
+import { createAuth, ensureSignupCredits, handleAuthWithCodeDelivery, type AuthSettings } from '../src/lib/auth';
+import { FakeEmail, type EmailProvider } from '../src/lib/email';
 import { site, messages } from '../src/lib/config';
 import { balance } from '../src/lib/ledger';
 import type { Env } from '../src/lib/env';
@@ -66,6 +66,27 @@ test('email OTP signs in with a six-digit code in the form, consumes it once, an
     assert.equal(await balance(db, user.id), site.signupCredits);
     const replay = await post('sign-in/email-otp', { email: 'otp@example.com', otp: code });
     assert.equal(replay.status, 400);
+  } finally { await mf.dispose(); }
+});
+
+test('OTP send reports mail service rejection instead of opening an unusable code dialog', async () => {
+  const mf = new Miniflare({ modules: true, script: 'export default { fetch() { return new Response("ok") } }', d1Databases: { DB: 'otp-rejection-test' } });
+  try {
+    const db = await mf.getD1Database('DB') as unknown as Env['DB'];
+    for (const sql of readFileSync('migrations/0001_initial.sql', 'utf8').split(';').map(s => s.trim()).filter(Boolean)) await db.prepare(sql).run();
+    const env: Env = { DB: db, SITE_URL: 'http://localhost:3000', LOCAL_AUTH_TEST: '1', BETTER_AUTH_SECRET: 'this-is-only-a-local-test-secret-long-enough', GOOGLE_CLIENT_ID: 'local-id', GOOGLE_CLIENT_SECRET: 'local-secret' };
+    const request = (email: string) => new Request('http://localhost:3000/api/auth/email-otp/send-verification-otp', {
+      method: 'POST', headers: { origin: 'http://localhost:3000', referer: 'http://localhost:3000/en', 'content-type': 'application/json' }, body: JSON.stringify({ email, type: 'sign-in' }),
+    });
+    const rejected: EmailProvider = { async sendEmail() { throw new Error('E_RECIPIENT_NOT_ALLOWED'); } };
+    const failure = await handleAuthWithCodeDelivery(request('gmail@example.com'), env, rejected);
+    assert.equal(failure.status, 502);
+    assert.equal((await failure.json() as { error: string }).error, 'Could not send sign-in code');
+    const mail = new FakeEmail();
+    const success = await handleAuthWithCodeDelivery(request('agent@example.com'), env, mail);
+    assert.equal(success.status, 200);
+    assert.equal(mail.sent.length, 1);
+    assert.equal(mail.sent[0].to, 'agent@example.com');
   } finally { await mf.dispose(); }
 });
 

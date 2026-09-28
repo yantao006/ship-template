@@ -237,7 +237,8 @@ Header language changes use App Router navigation to preserve the document; `Rep
 
 ### Authentication and eligibility
 
-`src/lib/auth.ts` constructs better-auth using request-time `SITE_URL`, the Worker D1, the enabled email/Google/GitHub methods from `site/auth.config.ts`, and its email OTP plugin for the shared Auth-4 sign-in.
+`src/lib/auth.ts` constructs better-auth using request-time `SITE_URL`, the Worker D1, the enabled email/Google/GitHub methods from `site/auth.config.ts`, and its email OTP plugin for the shared sign-in.
+The plugin swallows email-send failures, so `handleAuthWithCodeDelivery` observes that same send promise and returns a failed response rather than opening the code dialog without a send acknowledgement.
 On each request, production login accepts the Worker `SITE_URL` only when it equals `site.url` from `site/site.config.ts`; a mismatch refuses login rather than creating a session on another origin.
 `src/app/api/auth/[...all]/route.ts` wraps signup with invite validation, limits the email OTP plugin to sign-in codes, and applies optional sign-in Turnstile verification before delegating to better-auth.
 `ensureSignupCredits` checks invitation eligibility and grants a signup lot with the user ID as its stable source ID; when email verification is enabled, it waits until the emailed link marks the account verified.
@@ -256,7 +257,8 @@ When `email.passwordReset` is on, the forgot-password link is sent through `Emai
 `site/messages/{en,zh}/pricing.ts` owns tier feature lists, annual-only feature lines, and interpolated pack perks; pricing cards select those lists by tier or plan ID without reusing plan-name copy as features.
 `src/lib/ledger.ts` writes `credit_lot`, `credit_entry`, `credit_alloc`, and `video_task` with D1's own `prepare().bind()` statements and `batch()` for multi-step writes, preserving atomic reservations under concurrent requests.
 Grant source IDs, entry idempotency keys, and task state transitions make retries observable. A verified annual payment calls `grantSubscriptionMonth` for the current calendar month only. There is no separate billing scheduler.
-`src/lib/email.ts` chooses Cloudflare Email or Resend behind `EmailProvider`, and `src/lib/notifications.ts` composes and escapes localized mail, including a site-branded six-digit sign-in code card, verification and password reset links, independently of delivery.
+`src/lib/email.ts` chooses Cloudflare Email or Resend behind `EmailProvider`, requires Cloudflare's acknowledgement ID, and `src/lib/notifications.ts` composes and escapes localized mail, including a site-branded six-digit sign-in code card, verification and password reset links.
+Cloudflare Email Sending must be onboarded for each sender domain to reach arbitrary recipients; an Email Routing-only binding is limited to verified destination addresses, even when Wrangler labels it unrestricted.
 The email OTP plugin in `src/lib/auth.ts` explicitly keeps the code valid for 15 minutes, matching the dialog and mail copy; a successful binding send is not proof of final mailbox delivery.
 
 ### Current state and extension paths
@@ -378,7 +380,7 @@ Schema changes gain a new reviewed migration and matching service/query types an
 | `d1_databases[].binding`, `database_name`, `database_id`, `migrations_dir` | D1 binding, owned database identity, and migration location. |
 | `r2_buckets[].binding`, `bucket_name` | Media binding and bucket identity. |
 | `queues.producers[]`, `queues.consumers[]` | Job submission binding and delivery to the Worker queue handler. |
-| `send_email[].name` | Cloudflare Email binding. |
+| `send_email[].name` | Cloudflare Email binding; its sender domain also needs Email Sending onboarding for arbitrary recipients. |
 | `routes[].pattern`, `routes[].custom_domain` | Site hostname and custom-domain routing. |
 | `triggers.crons` | Schedule sent to `worker.ts`'s `scheduled` handler. |
 | `secrets.required`, `vars.SITE_URL` | Required secret names and request-time canonical auth base URL. |

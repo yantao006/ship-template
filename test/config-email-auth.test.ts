@@ -77,6 +77,10 @@ test('OTP mail uses the site email brand, 15-minute copy and escaped centered co
 
 test('provider selection fails closed and Resend propagates failure', async () => {
   assert.throws(() => createEmailProvider(site,{DB:null as never}),/EMAIL binding missing/);
+  const unacknowledged = createEmailProvider(site, { DB: null as never, EMAIL: { async send() { return {}; } } });
+  await assert.rejects(() => notifySignInCode(unacknowledged, site, 'user@example.com', '012345'), /did not acknowledge/);
+  const acknowledged = createEmailProvider(site, { DB: null as never, EMAIL: { async send() { return { messageId: 'cf-id' }; } } });
+  assert.equal((await notifySignInCode(acknowledged, site, 'user@example.com', '012345')).id, 'cf-id');
   const other = (await check(resolve('fixtures/second-site'))).config;
   assert.throws(() => createEmailProvider(other,{DB:null as never}),/RESEND_API_KEY missing/);
   const provider = createEmailProvider(other,{DB:null as never, RESEND_API_KEY:'local-not-real'},async () => new Response(JSON.stringify({id:'mock-id'}),{status:200}));

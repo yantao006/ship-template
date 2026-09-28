@@ -18,7 +18,7 @@ export interface AuthSettings {
   github: { enabled: boolean };
 }
 
-export function createAuth(env: Env, requestHostname?: string, settings: AuthSettings = auth, emailProvider?: EmailProvider) {
+export function createAuth(env: Env, requestHostname?: string, settings: AuthSettings = auth, emailProvider?: EmailProvider, onSignInCodeDelivery?: (delivery: Promise<{ id: string }>) => void) {
   const local = env.LOCAL_AUTH_TEST === '1' && /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(env.SITE_URL ?? '') && (!requestHostname || /^(localhost|127\.0\.0\.1)$/.test(requestHostname));
   const preview = requestHostname === new URL(site.previewOrigin).hostname;
   if (!env.BETTER_AUTH_SECRET) throw new Error('BETTER_AUTH_SECRET missing');
@@ -72,7 +72,9 @@ export function createAuth(env: Env, requestHostname?: string, settings: AuthSet
           if (type !== 'sign-in') throw new APIError('BAD_REQUEST', { message: 'Unsupported OTP type' });
           const referer = ctx?.request?.headers.get('referer');
           const locale = referer && URL.canParse(referer) ? new URL(referer).pathname.split('/').filter(Boolean)[0] : '';
-          await notifySignInCode(mailer(), site, email, otp, locale);
+          const delivery = notifySignInCode(mailer(), site, email, otp, locale);
+          onSignInCodeDelivery?.(delivery);
+          await delivery;
         },
       })] : []),
       ...(settings.google.enabled && settings.google.oneTapEnabled ? [oneTap()] : []),
@@ -81,6 +83,23 @@ export function createAuth(env: Env, requestHostname?: string, settings: AuthSet
       await ensureSignupCredits(env, created.id, !!settings.email.requireVerification);
     } } } },
   });
+}
+
+// Better Auth logs and swallows sendVerificationOTP errors before returning 200.
+// Observe the same delivery promise so the client only opens its code dialog
+// after the email service acknowledges the message.
+export async function handleAuthWithCodeDelivery(request: Request, env: Env, emailProvider?: EmailProvider) {
+  const sendingCode = request.method === 'POST' && new URL(request.url).pathname.endsWith('/email-otp/send-verification-otp');
+  let delivery: Promise<{ id: string }> | undefined;
+  const response = await createAuth(env, new URL(request.url).hostname, auth, emailProvider, sendingCode ? pending => { delivery = pending; } : undefined).handler(request);
+  if (!sendingCode || !response.ok || !delivery) return response;
+  try {
+    const accepted = await delivery;
+    console.info('Sign-in code accepted by email service', { messageId: accepted.id });
+    return response;
+  } catch {
+    return Response.json({ error: 'Could not send sign-in code' }, { status: 502 });
+  }
 }
 
 export async function ensureSignupCredits(env: Env, userId: string, requireVerification = auth.email.requireVerification) {

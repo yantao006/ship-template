@@ -97,7 +97,10 @@ An ego-browser unsigned desktop and 390px mobile run confirmed the wide dialog w
 A subsequent browser run submitted the authorized `yantao006@agent.qq.com` inbox, confirmed the redesigned message really arrived, entered its received code, and established a server-confirmed session.
 That run also found that the prior five-minute OTP lifetime contradicted the dialog's 15-minute claim; the plugin, mail copy, and dialog now agree on 15 minutes.
 Desktop and mobile captures, a safe sample of the redesigned email, and the delivery/login evidence are in [email OTP dialog verification](docs/verification/email-otp-dialog/README.md).
-Worker version `4d34c8a5-efda-4026-95f8-8c32242019a8` was uploaded to the existing preview alias after the delivery/login run, without deploying to the live hostname.
+Worker version `3b50f1ce-1e3a-4be1-a78b-2352b637b474` was uploaded to the existing preview alias after the delivery fix, without deploying to the live hostname.
+This alias is shared with another workstream and can be overwritten by its next upload; use the immutable version URL in the verification record to identify this build.
+Cloudflare Email Sending for `awesomejev.link` is now onboarded: the prior Email Routing-only binding could send to verified destination addresses but not reliably to other users.
+The auth route now waits for Cloudflare's send acknowledgement before opening the OTP dialog; Cloudflare's activity log reports the Gmail and 126 test messages as Delivered, while only the `agent.qq.com` inbox was independently read.
 
 ## Site and secret boundaries
 
@@ -116,7 +119,9 @@ When required, new accounts cannot use their credits until a valid invite is red
 Apply D1 migrations before deploying a build that enables invitations.
 Credentials are never committed to `site/` or D1.
 `site-check` compares the Worker, D1, R2, Queue and email bindings with site configuration and secret declarations.
-Cloudflare Email is the default adapter; Resend is selectable through `site.email.provider` and needs `RESEND_API_KEY`.
+Cloudflare Email is the default adapter; sending to unverified recipient addresses requires onboarding this site's sender domain to Email Sending on a Workers Paid account, in addition to the `EMAIL` binding.
+The Cloudflare adapter requires an acknowledgement ID, and the OTP send route returns an error if sending fails instead of reporting a false success.
+Resend is selectable through `site.email.provider` and needs `RESEND_API_KEY`.
 Notification functions use fake email in tests; they are not connected to real video or payment events.
 Turnstile verification remains implemented and locally tested, but this reference site's `site/auth.config.ts` disables the sign-in gate until a real client widget and secret are configured.
 Do not flip it on without both pieces, or Google login will be blocked.

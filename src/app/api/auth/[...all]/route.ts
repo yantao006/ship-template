@@ -1,4 +1,4 @@
-import { createAuth } from '@/lib/auth';
+import { handleAuthWithCodeDelivery } from '@/lib/auth';
 import { browserWriteAllowed, readJson } from '@/lib/request-context';
 import { auth } from '@/lib/config';
 import { workerEnv } from '@/lib/env';
@@ -8,11 +8,12 @@ import { normalizeInviteCode, validateInvite } from '@/lib/invites';
 async function handle(request: Request) {
   const env = workerEnv();
   const url = new URL(request.url);
+  const sendingCode = request.method === 'POST' && url.pathname.endsWith('/email-otp/send-verification-otp');
   if (request.method === 'POST' && !browserWriteAllowed(request, env, { originRequired: false, allowLocalTest: true })) return Response.json({ error: 'Forbidden' }, { status: 403 });
   // The dialog only uses sign-in codes. Keep other email OTP plugin flows
   // unavailable; password reset and email verification still use their links.
   if (url.pathname.includes('/email-otp/') && !url.pathname.endsWith('/email-otp/send-verification-otp')) return Response.json({ error: 'Not found' }, { status: 404 });
-  if (request.method === 'POST' && url.pathname.endsWith('/email-otp/send-verification-otp')) {
+  if (sendingCode) {
     const parsed = await readJson<{ type?: string }>(request.clone());
     if (!parsed.ok || parsed.body.type !== 'sign-in') return Response.json({ error: 'Invalid OTP type' }, { status: 400 });
   }
@@ -25,7 +26,7 @@ async function handle(request: Request) {
     const token = request.headers.get('x-turnstile-token');
     if (!await verifyTurnstile(env, token, url.hostname)) return Response.json({ error: 'Turnstile verification failed' }, { status: 403 });
   }
-  return createAuth(env, url.hostname).handler(request);
+  return handleAuthWithCodeDelivery(request, env);
 }
 export const GET = handle;
 export const POST = handle;
