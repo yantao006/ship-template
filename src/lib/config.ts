@@ -55,6 +55,7 @@ export type ThemeConfig = {
   mail: Record<'canvas' | 'panel' | 'border' | 'text' | 'muted' | 'faint' | 'inset' | 'codeBorder' | 'code' | 'stripeStart' | 'stripeMiddle' | 'stripeEnd' | 'shadow', string>;
   videoTool: Record<'light' | 'dark', Record<string, string>>;
   pricing: Record<'light' | 'dark', Record<string, string>>;
+  purchase: Record<'light' | 'dark', Record<string, string>>;
   rowTones: Record<'light' | 'dark', Record<'account' | 'pink' | 'info' | 'danger', { text: string; box: string }>>;
 };
 

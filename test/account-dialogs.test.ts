@@ -7,17 +7,17 @@ import site from '../site/site.config';
 import { AccountDialogs, type Dialog } from '../src/components/blocks/account-dialogs';
 
 const copy = messages.account;
-const dialogs = ['checkin', 'share', 'invite', 'contact', 'feedback', 'plans', 'invoices'] as const satisfies readonly NonNullable<Dialog>[];
+const dialogs = ['checkin', 'share', 'invite', 'contact', 'feedback', 'plans'] as const satisfies readonly NonNullable<Dialog>[];
 const activity = { balance: 10, referralCode: '0123456789abcdef0123456789abcdef', checkInDays: [], submissions: [], referralCount: 0, purchases: [], leaderboard: [] };
 const render = (dialog: NonNullable<Dialog>) => renderToStaticMarkup(createElement(AccountDialogs, {
   dialog, onClose: () => {}, copy, labels: { credits: messages.nav.availableCredits }, settings: site.account,
-  plans: site.plans.map(plan => ({ ...plan, name: plan.id })), activity, busy: false, error: '', notice: '',
+  plans: site.plans.map(plan => ({ ...plan, name: plan.id, checkoutEnabled: false })), pricing: messages.pricing, activity, busy: false, error: '', notice: '',
   locale: 'en', dateLocale: 'en-US', siteUrl: site.url, brand: site.brand,
   icons: { checkin: createElement('svg'), share: createElement('svg'), invite: createElement('svg') },
   onCopyText: () => {}, onAction: async () => true,
 }));
 
-test('all seven account dialogs retain their accessible shell and destination content', () => {
+test('all six account dialogs retain their accessible shell and destination content', () => {
   for (const dialog of dialogs) {
     const markup = render(dialog);
     assert.match(markup, new RegExp(`account-${dialog}-dialog`));
@@ -29,7 +29,9 @@ test('all seven account dialogs retain their accessible shell and destination co
     assert.match(markup, /class="account-hero account-checkin-hero/);
     assert.match(markup, /class="account-hero-icon"/);
   }
-  assert.match(render('plans'), /href="\/en\/pricing"/);
+  assert.match(render('plans'), /Get Started/);
+  assert.match(render('plans'), /50% OFF/);
+  assert.match(render('feedback'), /mailto:support@awesomejev.link/);
+  assert.match(render('feedback'), /Feedback &amp; Get Credits/);
   assert.match(render('contact'), /mailto:/);
-  assert.match(render('invoices'), /mailto:/);
 });

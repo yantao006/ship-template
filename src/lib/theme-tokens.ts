@@ -13,7 +13,8 @@ function chromeRules(mode: 'light' | 'dark') {
   const authCard = Object.entries(theme.authCard[mode]).map(([key, value]) => `--auth-card-${key.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)}:${value};`).join('');
   const video = Object.entries(theme.videoTool[mode]).map(([key, value]) => `--video-${key.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)}:${value};`).join('');
   const pricing = Object.entries(theme.pricing[mode]).map(([key, value]) => `--pricing-${key.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)}:${value};`).join('');
-  return chrome + tones + dialogs + authCard + video + pricing;
+  const purchase = Object.entries(theme.purchase[mode]).map(([key, value]) => `--purchase-${key.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)}:${value};`).join('');
+  return chrome + tones + dialogs + authCard + video + pricing + purchase;
 }
 
 /** One token stylesheet per site; the root document selects the initial route default without a flash. */

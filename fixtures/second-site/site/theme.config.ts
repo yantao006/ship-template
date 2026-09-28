@@ -28,14 +28,14 @@ export default {
   chrome: {
     light: {
       navBg: '#ffffff', navText: '#171717', navMuted: '#555555', navHover: '#f0f0f2', navLine: '#dedee3', languageDot: '#8b5cf6',
-      popoverBg: '#ffffff', popoverEnd: '#f7f7fa', popoverHeader: '#f4f0fa', popoverBorder: '#ded8e7', popoverLine: '#e4e4e7',
+      popoverBg: '#ffffff', popoverEnd: '#f7f7fa', popoverMenuEnd: '#e6f5f2', popoverHeader: '#f4f0fa', popoverBorder: '#ded8e7', popoverLine: '#e4e4e7',
       languageBg: '#ffffff', rowHover: '#f0edf5', rowIcon: '#6d28d9', rowIconBg: '#f6f3fa', rowIconLine: '#e2ddea',
       pillBg: '#f0f0f2', pillHover: '#e7e7ea', pillLine: '#dedee3',
       buyBg: '#18181b', buyText: '#ffffff', buyHover: '#334155',
     },
     dark: {
       navBg: '#0b0b0c', navText: '#ffffff', navMuted: '#aaaaaa', navHover: '#202022', navLine: '#2b2b2e', languageDot: '#ffd600',
-      popoverBg: '#0b0b0c', popoverEnd: '#1a1c23', popoverHeader: '#17121f88', popoverBorder: '#3b3052', popoverLine: '#2c2c32',
+      popoverBg: '#0b0b0c', popoverEnd: '#1a1c23', popoverMenuEnd: '#17312e', popoverHeader: '#17121f88', popoverBorder: '#3b3052', popoverLine: '#2c2c32',
       languageBg: '#1b1b1f', rowHover: '#ffffff12', rowIcon: '#c4b5fd', rowIconBg: '#ffffff0a', rowIconLine: '#34343a',
       pillBg: '#252527', pillHover: '#343439', pillLine: '#333338',
       buyBg: '#fafafa', buyText: '#111111', buyHover: '#dedee2',
@@ -68,6 +68,10 @@ export default {
   pricing: {
     light: { canvas: '#fafafa', panel: '#ffffff', inset: '#f0f0f2', text: '#18181b', muted: '#5b606b', border: '#dedee3', accent: '#0d9488', accentText: '#ffffff', success: '#166534', successSoft: '#dcfce7', banner: '#f6ead8', bannerText: '#18181b', bannerAccent: '#8a5a32', featured: '#e0f2f1', button: '#18181b', buttonText: '#ffffff', paymentBadge: '#18181b' },
     dark: { canvas: '#111113', panel: '#202024', inset: '#1b1b1f', text: '#f6f6f8', muted: '#b5b5bf', border: '#38383f', accent: '#14b8a6', accentText: '#18181b', success: '#99f6e4', successSoft: '#1b302a', banner: '#f6ead8', bannerText: '#18181b', bannerAccent: '#8a5a32', featured: '#1b302a', button: '#f6f6f8', buttonText: '#18181b', paymentBadge: '#18181b' },
+  },
+  purchase: {
+    light: { canvas: '#111113', panel: '#222226', line: '#38383f', text: '#ffffff', muted: '#aaaab3', accent: '#0d9488', success: '#00c99a', offer: '#8a5a32', offerEnd: '#e7c56a', offerBg: '#f6ead8', offerText: '#18181b', pink: '#14b8a6', peach: '#99f6e4', glow: '#0d94883d' },
+    dark: { canvas: '#101012', panel: '#222226', line: '#39393f', text: '#ffffff', muted: '#aaaab3', accent: '#14b8a6', success: '#00c99a', offer: '#8a5a32', offerEnd: '#e7c56a', offerBg: '#f6ead8', offerText: '#18181b', pink: '#0d9488', peach: '#99f6e4', glow: '#0d94883d' },
   },
   rowTones: {
     light: {

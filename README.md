@@ -15,11 +15,20 @@ The old single `WAFFO_PRODUCT_ID` is not used and must not be mapped to a differ
 The thirteen current prices were created and verified in the existing Kanvora merchant's test mode; the per-Worker catalog is installed separately as `WAFFO_PRODUCTS`.
 A missing or mismatched entry leaves its pay button disabled and its server checkout unavailable.
 Max above 1× remains a non-payable preview.
-The homepage navigation has signed-in account and credit popovers with shared accessible dialogs for daily credit claims, referral links, share submissions, contact, feedback, payment receipts and plans.
+The homepage navigation has signed-in account and credit popovers with shared accessible dialogs for daily credit claims, referral links, share submissions, contact, feedback and plans.
+The account menu links to localized Account, My Subscription, Invoices and Credit Center pages with one sidebar under the shared public shell.
+The credit-pill Buy Credits dialog lists site-configured plans, annual savings and features; only products verified in `WAFFO_PRODUCTS` can start checkout, and the Max multiplier above 1× stays a preview.
+The commercial-use page is informational only: certificates are not issued in this preview, and View Plans opens the shared plan chooser.
+The Feedback & Get Credits card uses the site's support address and explicitly states that quality feedback may receive credits after review, never automatically.
+The Account page offers confirmed self-deletion; `/api/account/delete` requires a same-origin signed-in request and matching account confirmation, then atomically removes that user's ledger and identity, revoking sessions through database cascades.
+Do not test deletion on an account with valuable data; `test/delete-account.test.ts` uses a one-time local account and checks the old login, related records, and another user's isolation.
 `site/site.config.ts` configures rewards, limits, contact addresses, link and icon choices; `site/messages/en.ts` and `zh.ts` provide all account copy.
 Migration `0003_account_rewards.sql` stores check-ins, pending share submissions and referral claims in this site's D1.
 Check-in and eligible referral credits use the existing idempotent ledger; share submissions remain pending and do not award credits without review.
-The payment receipts card reads settled credit grants, not tax invoices; the request-invoice link contacts support.
+The Invoices page reads settled paid credit grants as receipts, not downloadable tax invoices; the request-invoice link contacts support.
+My Subscription lists issued subscription-month credits but does not assert an active billing status.
+Credit Center reads bounded ledger entries, including grants, spends and refunds, scoped to the signed-in user.
+Apply `migrations/0005_account_history_indexes.sql` to each site's D1 before relying on indexed account-history and deletion lookups; the preview build does not apply remote migrations.
 Apply the migration before using the signed-in homepage on an existing D1.
 The landing page has a marketing navigation and hero.
 Pricing at `/{locale}/pricing` renders the localized monthly/yearly/credit-pack catalog, Max 1-5× preview, model list sourced from the video-tool config, and illustrative payment marks.

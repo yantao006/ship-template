@@ -43,7 +43,7 @@ test('landing and legacy links retain only valid referral codes through the same
 test('check-in renders the new share destinations without changing the separate invite card', () => {
   const render = (dialog: 'checkin' | 'invite') => renderToStaticMarkup(createElement(AccountDialogs, {
     dialog, onClose: () => {}, copy: en.account, labels: { credits: en.nav.availableCredits }, settings: site.account,
-    plans: [], activity, busy: false, error: '', notice: '', locale: 'en', dateLocale: 'en-US',
+    plans: [], pricing: en.pricing, activity, busy: false, error: '', notice: '', locale: 'en', dateLocale: 'en-US',
     siteUrl: site.url, brand: site.brand, icons: { checkin: createElement('svg'), share: createElement('svg'), invite: createElement('svg') },
     onCopyText: () => {}, onAction: async () => true,
   }));

@@ -5,6 +5,7 @@ import mail from './en/mail';
 import invites from './en/invites';
 import handoff from './en/handoff';
 import account from './en/account';
+import accountPages from './en/account-pages';
 import dashboard from './en/workspace';
 import credits from './en/credits';
 import pricing from './en/pricing';
@@ -23,5 +24,5 @@ export default {
     credits: 'Available credits',
   },
   nav: navigation,
-  footer, signIn, mail, invites, handoff, account, dashboard, credits, pricing, planCopy, videoTool,
+  footer, signIn, mail, invites, handoff, account, accountPages, dashboard, credits, pricing, planCopy, videoTool,
 };

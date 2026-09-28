@@ -55,13 +55,11 @@
 .account-contact{justify-items:center;text-align:center;padding:42px}
 .account-contact>svg{color:var(--dialog-accent)}
 .account-contact a{color:var(--dialog-accent);font-size:15px;font-weight:700}
-.account-tabs{display:flex;gap:4px;background:var(--dialog-elevated);border-radius:999px;padding:4px;justify-self:center}
-.account-tabs button{background:none;color:var(--dialog-muted);border:0;border-radius:999px;padding:9px 15px;font-size:13px;cursor:pointer}
-.account-tabs button.selected{background:var(--account-accent);color:var(--dialog-text)}
-.account-plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
-.account-plans a{display:grid;gap:9px;background:var(--dialog-panel);border:1px solid var(--dialog-border);padding:15px;border-radius:12px;color:var(--dialog-text);text-decoration:none}
-.account-plans strong{font-size:22px}
-.account-plans span{font-size:12px;color:var(--dialog-muted)}
+.account-dialog.account-feedback-dialog{width:min(448px,100%);border-radius:12px;background:var(--purchase-canvas);border-color:var(--purchase-line);color:var(--purchase-text)}
+.account-feedback-dialog>h2{padding:23px 52px 12px;text-align:center;background:none;border:0;font-size:18px;font-weight:800;letter-spacing:-.03em}
+.account-feedback-dialog .account-close{top:12px;right:12px;width:42px;height:42px;background:var(--purchase-canvas);color:var(--purchase-text);border:2px solid var(--purchase-muted);box-shadow:inset 0 0 0 2px var(--purchase-canvas)}
+.account-feedback-body{padding:18px 24px 28px;gap:16px}.account-feedback-body p{font-size:14px;line-height:1.4;color:var(--purchase-muted);margin:0}.account-feedback-body a{min-height:48px;display:grid;place-items:center;background:var(--purchase-panel);border-radius:9px;color:var(--purchase-text);text-decoration:none;font-weight:800;font-size:16px;overflow-wrap:anywhere;text-align:center;padding:8px}
+.account-feedback-body a:hover{background:var(--purchase-line)}
 .account-toast{position:fixed;z-index:300;bottom:24px;right:22px;background:var(--dialog-elevated);color:var(--dialog-text);border:1px solid #aa91d9;border-radius:9px;padding:11px 14px;display:flex;gap:10px;align-items:center}
 .account-toast button{background:none;border:0;color:inherit;display:grid;place-items:center;cursor:pointer}
 .account-error,.account-message{margin:0 34px 20px;padding:10px 12px;border-radius:8px;font-size:13px;color:var(--dialog-message-text);background:var(--dialog-message-bg)}
@@ -167,6 +165,21 @@
 @media(prefers-reduced-motion:reduce){.account-dialog{animation:none}.account-social-grid a,.account-checkin-body .account-primary{transition:none}}
 
 /* Both popovers share one row treatment; the ordered row data owns every separator and badge. */
+.account-popover.account-menu{background:linear-gradient(135deg,var(--popover-bg) 28%,var(--popover-menu-end));border-color:var(--popover-border);animation:none}
+.account-menu .account-profile{background:linear-gradient(115deg,var(--popover-header),transparent 88%)}
+.account-menu .account-row-checkin>a,.account-menu .account-row-checkin>button,.account-menu .account-row-share>a,.account-menu .account-row-share>button,.account-menu .account-row-invite>a,.account-menu .account-row-invite>button{border:1px solid var(--popover-line);background:color-mix(in srgb,var(--popover-bg) 85%,var(--popover-end));margin-bottom:6px;min-height:44px}
+.account-menu .account-row-share>a,.account-menu .account-row-share>button{background:color-mix(in srgb,var(--popover-bg) 87%,var(--account-tone-pink-box))}
+.account-menu :is(.account-row-checkin,.account-row-share,.account-row-invite) .account-row-icon{width:22px;height:22px;border:0;background:none;color:var(--account-tone-account)}
+.account-menu .account-row-share .account-row-icon{color:var(--account-tone-pink-box)}
+.account-menu .account-row-invite .account-row-icon{color:var(--account-tone-info-box)}
+.account-menu .account-row-license .account-row-icon{color:var(--account-tone-account);background:color-mix(in srgb,var(--account-tone-account-box) 12%,transparent);border-color:color-mix(in srgb,var(--account-tone-account-box) 22%,transparent)}
+.account-menu .account-row-contact .account-row-icon{color:var(--tone-info);background:color-mix(in srgb,var(--tone-info) 10%,transparent);border-color:color-mix(in srgb,var(--tone-info) 24%,transparent)}
+.account-menu :is(.account-row-account,.account-row-subscription,.account-row-invoices) .account-row-icon{color:var(--nav-muted);background:color-mix(in srgb,var(--popover-bg) 85%,var(--popover-end));border-color:var(--popover-line)}
+.account-menu .account-row-center .account-row-icon{color:var(--account-tone-info-box);background:color-mix(in srgb,var(--account-tone-info-box) 12%,transparent);border-color:color-mix(in srgb,var(--account-tone-info-box) 25%,transparent)}
+.account-menu .account-row-signout .account-row-icon{color:var(--account-tone-danger);background:color-mix(in srgb,var(--account-tone-danger-box) 12%,transparent);border-color:color-mix(in srgb,var(--account-tone-danger-box) 26%,transparent)}
+.account-menu :is(.account-row-checkin,.account-row-share,.account-row-invite) .account-row-icon svg{width:17px;height:17px}
+.account-menu .account-row-share .account-row-label{color:var(--text)}
+
 .account-credit-header{padding-bottom:12px;border-bottom:1px solid var(--popover-line)}
 .account-credit-header .account-balance{border-bottom:0}
 .account-credit-header .account-buy{width:calc(100% - 24px);margin:0 12px}

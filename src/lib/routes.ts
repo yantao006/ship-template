@@ -18,5 +18,5 @@ export const requestSiteShellHeader = 'x-site-shell';
 
 /** The first document response uses the public shell's default; client navigation never recomputes it. */
 export function isSiteShellPath(pathname: string) {
-  return pathname === '/' || pathname === '/invitation-landing' || site.languages.some(language => [...navigationIds, ...informationIds].some(id => routePath(language.code, id) === pathname));
+  return pathname === '/' || pathname === '/invitation-landing' || site.languages.some(language => [...navigationIds, ...informationIds, 'account', 'subscription', 'invoices', 'creditCenter', 'commercialLicense'].some(id => routePath(language.code, id as keyof typeof routes) === pathname));
 }

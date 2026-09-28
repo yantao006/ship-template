@@ -73,7 +73,8 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   ├── 0001_initial.sql             # Auth, credit ledger, and video task tables
 │   ├── 0002_invite_codes.sql        # Invitation inventory and redemption tables
 │   ├── 0003_account_rewards.sql     # Check-ins, shares, referral codes and claims
-│   └── 0004_referral_alias.sql      # Keeps a replaced 32-hex referral code claimable
+│   ├── 0004_referral_alias.sql      # Keeps a replaced 32-hex referral code claimable
+│   └── 0005_account_history_indexes.sql # User-scoped account record and deletion lookups
 ├── scripts/
 │   └── site-check.ts                 # Cross-checks site choices, bindings, auth switches, secrets
 ├── fixtures/second-site/             # Configuration-only reuse example
@@ -107,7 +108,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │   ├── robots.ts                 # Preview indexing policy and sitemap reference
 │   │   ├── sitemap.ts                # Locale-aware homepage URLs and alternates
 │   │   ├── [locale]/                 # Locale-aware marketing, workspace, and auth pages
-│   │   │   ├── (site)/               # Shared-shell layout; home, pricing, dashboard, credits and info pages
+│   │   │   ├── (site)/               # Shared-shell layout; home, pricing, account pages, legacy workspace and info pages
 │   │   │   ├── verify-email/page.tsx # Centered verification panel outside shared shell
 │   │   │   └── reset-password/page.tsx # Centered reset panel outside shared shell
 │   │   ├── admin/invites/page.tsx    # Session- and allow-list-gated invite administration
@@ -116,6 +117,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │       ├── auth/[...all]/route.ts         # Better-auth handler with invite/Turnstile checks
 │   │       ├── auth/desktop-handoff/route.ts # Same-origin session-token handoff
 │   │       ├── account/activity/route.ts     # Signed-in reward state and actions
+│   │       ├── account/delete/route.ts       # Same-origin, confirmed self-account deletion
 │   │       ├── checkout/route.ts             # Signed-in checkout handoff to the Waffo adapter
 │   │       ├── webhooks/payment/route.ts     # Verified payment callback
 │   │       ├── credits/balance/route.ts      # Session-scoped balance endpoint
@@ -130,7 +132,8 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │   ├── blocks/minimax-auth-card.css # Measured card styles and responsive layout
 │   │   ├── blocks/auth-6.tsx, auth-6.css # Scoped email OTP dialog adapted from licensed React Bits Pro block
 │   │   ├── blocks/account-popovers.tsx   # Signed-in account/credit menu data and actions
-│   │   ├── blocks/account-dialogs.tsx    # Seven account dialog bodies and shared dialog hero
+│   │   ├── blocks/account-dialogs.tsx    # Six account dialog bodies and shared dialog hero
+│   │   ├── blocks/buy-credits-dialog.tsx # Site-catalog plan chooser with verified checkout gating
 │   │   ├── blocks/account-profile.tsx    # Shared avatar trigger and profile header
 │   │   ├── blocks/account-gate-rows.tsx  # Invite-gated menu rows using route-table links
 │   │   ├── blocks/account-popover-card.tsx # Shared ordered-row popover shell and row presentation
@@ -153,7 +156,10 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │   ├── site-shell.tsx            # Persistent account-aware header and one footer for public pages
 │   │   ├── workspace-shell.tsx       # Workspace content layout with account sidebar and heading
 │   │   ├── information-page.tsx      # Shared localized about, privacy and terms content
-│   │   ├── workspace-content.tsx     # Session-scoped dashboard/credit data and rendering
+│   │   ├── workspace-content.tsx     # Legacy session-scoped dashboard/credit data and rendering
+│   │   ├── account-pages-content.tsx # Account, subscription grants, receipts and credit center in one shared layout
+│   │   ├── account-pages-controls.tsx # Sign-out, confirmed deletion and credit-record filter
+│   │   ├── commercial-license.tsx    # Preview-only commercial-use information and plan entry
 │   │   ├── invite-gate.tsx           # Client code redemption form
 │   │   ├── invite-admin.tsx          # Client code inventory and actions
 │   │   └── desktop-handoff.tsx       # Client app-return request and redirect
@@ -178,6 +184,9 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │       ├── invites.ts                # Invite eligibility, validation, redemption, admin match
 │       ├── ledger.ts                 # Atomic credits, source registry, paid-source policy and labels
 │       ├── credit-history.ts         # Bounded user credit-lot query
+│       ├── account-page-history.ts   # Bounded user credit-entry timeline with grant provenance
+│       ├── delete-account.ts         # Atomic self-account/ledger purge with auth FK cascades
+│       ├── delete-account-request.ts # Same-origin session and confirmation checks for deletion
 │       ├── account-rewards.ts        # Check-in/referral grants and pending share state
 │       ├── turnstile.ts              # Token verification and local test path
 │       ├── desktop-auth.ts           # Scheme validation and token-bearing app URL
@@ -192,7 +201,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
     ├── account-rewards.test.ts       # Reward persistence, concurrency and user scope
     ├── account-popover-state.test.ts # Seven-day completion and next UTC claim
     ├── account-popover-card.test.ts  # Row badges, dividers, shared profile and invite-gate destinations
-    ├── account-dialogs.test.ts       # Seven dialog bodies, shared hero and route destinations
+    ├── account-dialogs.test.ts       # Six dialog bodies, shared hero and route destinations
     ├── checkin-invite.test.ts        # Check-in invite payload, networks, and separate invite card
     ├── client-boundary.test.ts       # Client imports, singleton auth, localized props guards
     ├── auth-integration.test.ts      # Local better-auth signup and idempotent credits
@@ -200,6 +209,9 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
     ├── password-reset.test.ts        # Reset switch, mailed link, and reset page
     ├── config-email-auth.test.ts     # Second-site wiring, mail adapters, Turnstile
     ├── credit-history.test.ts       # Signed-in and bounded account credit reads
+    ├── account-pages.test.ts        # Account route shell and ledger timeline user scope
+    ├── buy-credits-license.test.ts  # Configured plan chooser and preview-only license content
+    ├── delete-account.test.ts       # Local one-time account, confirmation, data purge and old login
     ├── ledger.test.ts               # Concurrent spend, refunds, and monthly grants
     ├── home-sections.test.ts        # Homepage section scaffold order and stable ids
     ├── theme-guards.test.ts         # Palette parity, legacy literal baseline, duplicate-selector guard
@@ -219,6 +231,7 @@ The current code uses responsibility-based files in `src/lib/`, not a formal plu
 App Router endpoints own request parsing, session and origin checks, HTTP status, and response serialization; library functions own reusable decisions and persistence.
 `src/lib/auth.ts` composes better-auth, `src/lib/invites.ts` and `src/lib/ledger.ts` around signup eligibility, while `src/lib/email.ts` demonstrates a provider interface selected from site configuration.
 `src/lib/request-context.ts` owns server session lookup, browser-write origin and cross-site checks, JSON reads, and the invited account snapshot with its read-time signup grant and balance; signed payment callbacks remain server-to-server.
+Self-deletion uses `readSession` without the invite gate so an uninvited account can still leave; it does not invoke the provider's signup grant while deleting.
 Presentation composition lives in `src/components/`, and external vendor response shapes can be translated inside future video or checkout adapters before reaching those components.
 A new capability can be a new `src/lib/` service called by an API endpoint, a server-rendered page, or a Worker event; the existing file layout is an example of responsibilities, not a naming restriction.
 
@@ -229,7 +242,7 @@ A new capability can be a new `src/lib/` service called by an API endpoint, a se
 `src/lib/config.ts` declares the site, auth, and database config contracts; site files use `satisfies` to check build-time choices, while `wrangler.jsonc` declares matching live resources.
 `scripts/site-check.ts` compares the Worker name, D1/R2/Queue names, auth shape, email binding, callback origin, and required secret names before publication.
 `site/messages/en.ts` and `site/messages/zh.ts` compose matching per-module copy under `site/messages/{en,zh}/`, including separate mail, sign-in, invites, handoff, account, workspace, credits, pricing, footer, and video-tool files; `src/app/[locale]/` and `src/components/language-control.tsx` select copy without duplicating business logic.
-`site/theme.config.ts` provides same-key light and dark palettes, paired top-bar/account-card/auth-card/dialog/video-tool/pricing colors, an email-only palette, row tones, mode defaults, and account colors; `src/lib/theme-tokens.ts` generates the CSS token stylesheet in `src/app/layout.tsx` instead of inline body styles.
+`site/theme.config.ts` provides same-key light and dark palettes, paired top-bar/account-card/auth-card/dialog/video-tool/pricing/purchase colors, an email-only palette, row tones, mode defaults, and account colors; `src/lib/theme-tokens.ts` generates the CSS token stylesheet in `src/app/layout.tsx` instead of inline body styles.
 The middleware marks whether the first route uses the public shell; the root layout applies that route's default through `data-mode="auto"`, and `ThemeModeInitializer` freezes it on `<html>` before client navigation. `ReplicaNavigation` reads the document mode and toggles it through `src/lib/theme-mode.ts`, preserving the selected mode across page changes.
 Header language changes use App Router navigation to preserve the document; `ReplicaNavigation` synchronizes `<html lang>` because the root layout persists across client-side transitions.
 `src/middleware.ts` forwards the route locale so the root layout sets matching `<html lang>` and metadata, including for the default-language `/` homepage.
@@ -255,6 +268,7 @@ When `email.passwordReset` is on, the forgot-password link is sent through `Emai
 
 `src/lib/ledger.ts` owns source IDs and paid-source membership, while `site/messages/` supplies localized names; `src/lib/plan-copy.ts` selects plan names by ID.
 `site/messages/{en,zh}/pricing.ts` owns tier feature lists, annual-only feature lines, and interpolated pack perks; pricing cards select those lists by tier or plan ID without reusing plan-name copy as features.
+`site/messages/{en,zh}/account-pages.ts` owns localized account-page headings, balance labels, records and empty states; each site's matching files retain the same message shape.
 `src/lib/ledger.ts` writes `credit_lot`, `credit_entry`, `credit_alloc`, and `video_task` with D1's own `prepare().bind()` statements and `batch()` for multi-step writes, preserving atomic reservations under concurrent requests.
 Grant source IDs, entry idempotency keys, and task state transitions make retries observable. A verified annual payment calls `grantSubscriptionMonth` for the current calendar month only. There is no separate billing scheduler.
 `src/lib/email.ts` chooses Cloudflare Email or Resend behind `EmailProvider`, requires Cloudflare's acknowledgement ID, and `src/lib/notifications.ts` composes and escapes localized mail, including a site-branded six-digit sign-in code card, verification and password reset links.
@@ -264,11 +278,13 @@ The email OTP plugin in `src/lib/auth.ts` explicitly keeps the code valid for 15
 
 ### Current state and extension paths
 
-The homepage account popovers read the signed-in balance and profile and expose configured check-ins, referral sharing and a masked real-data leaderboard, pending share submissions, support links, plans and payment receipts.
+The homepage account popovers read the signed-in balance and profile and expose configured check-ins, referral sharing and a masked real-data leaderboard, pending share submissions, support links and plans; payment receipts now live on the Invoices page.
 `src/lib/use-dismissable-layer.ts` centralizes client dismissal, Escape and focus handling; `src/lib/use-referral-claim.ts` captures `ref` on home or `invite_code` on `/invitation-landing` through sign-in and redeems eligible claims, and `src/lib/json-request.ts` owns JSON writes.
 `src/lib/checkin-invite.ts` builds the check-in card's share payload from the site origin and current user's referral code; `/invitation-landing` renders the branded homepage with the existing referral capture, while the separate invite dialog retains its existing `ref` link.
 `src/components/blocks/account-popover-card.tsx` renders account menus from ordered rows with optional badges, one named tone, and per-row dividers.
-`account-profile.tsx` shares avatar and profile presentation across the full and invite-gated menus; `account-gate-rows.tsx` maps existing route-table links into shared rows, while `account-popovers.tsx` owns account actions and `account-dialogs.tsx` owns seven dialog bodies and their shared hero.
+`account-profile.tsx` shares avatar and profile presentation across the full and invite-gated menus; `account-gate-rows.tsx` maps existing route-table links into shared rows, while `account-popovers.tsx` owns account actions and `account-dialogs.tsx` owns six dialog bodies and their shared hero.
+The shared Buy Credits dialog uses `site.plans`, localized pricing features, and `productForPlan` availability rather than inventing prices or a countdown; unprovisioned plans remain unpayable, and the Max multiplier above 1 cannot checkout.
+`/commercial-license` offers a preview-only explanation because certificates are not yet issued; its View Plans opens that same dialog through the persistent shell. Feedback uses the site's contact address, with any reward subject to manual review rather than an automatic grant.
 `src/components/blocks/tags.css` shares semantic tag tones between row badges and video-model labels, while `src/components/video-tool/video-tool.css` owns the themed workbench.
 `replica-navigation.css` owns the shared popover shell, avatar and credit pill; `account-popovers.css` owns account-card content, while paired chrome tokens keep the light and dark surfaces synchronized.
 `docs/research/auth-card/source-spec.md` records the source-observed auth-card geometry, colors and motion, plus four source/preview comparison pairs in `docs/verification/auth-card/`.
@@ -276,7 +292,10 @@ The homepage account popovers read the signed-in balance and profile and expose 
 Receipts reflect settled credit ledger grants, not tax invoices; share submissions do not award credits until reviewed.
 The existing homepage, dashboard, and credit history are a preview; `src/lib/mock-services.ts` produces no generated media.
 `src/components/sections/HomePage.tsx` orders VideoHero, VideoToolSection, VideoShowcase, VideoFeatures, VideoPricing, and VideoFAQ inside page content; five non-tool sections remain empty with stable ids.
-The `(site)` route layouts use `src/components/site-shell.tsx` to keep one account-aware Header and Footer mounted across home, pricing, dashboard, credits, and localized about/privacy/terms pages; the workspace sidebar stays in the workspace content, while verification, password reset, desktop callback, and invite admin routes remain outside the shell.
+The `(site)` route layouts use `src/components/site-shell.tsx` to keep one account-aware Header and Footer mounted across home, pricing, account pages, legacy dashboard/credits, and localized about/privacy/terms pages; verification, password reset, desktop callback, and invite admin routes remain outside the shell.
+The avatar menu links Account, My Subscription, Invoices and Credit Center to localized `/account` routes rather than opening an invoice modal.
+`account-pages-content.tsx` scopes reads to the signed-in user and renders settled subscription grants and purchase receipts without claiming they are live subscription state or downloadable tax invoices; `account-page-history.ts` joins ledger entries to their grants so credit activity includes spending and refunds.
+The Account page has a confirmed delete action: `/api/account/delete` validates same-origin session and exact account email, then `delete-account.ts` batches ledger cleanup with user deletion; auth FK cascades remove sessions and account rewards. A delayed signed payment callback for a deleted user is acknowledged without granting credits. The legacy `/dashboard` and `/credits` previews remain for their existing navigation links.
 The footer takes identity and contact from `site/site.config.ts`, copy from `site/messages/{en,zh}/footer.ts`, links from `src/lib/route-paths.ts`, and its language row (including each configured flag) from `site.languages` through the same locale path helper as the header.
 `Header` passes localized brand, optional site logo, links, language choices, real signed-in credits and account controls to `blocks/replica-navigation.tsx`; the shell owns its account snapshot.
 `sections/VideoToolSection.tsx` binds one locale's tool copy and assets on the server and passes them to `src/components/video-tool/video-tool-section.tsx`.
@@ -320,7 +339,7 @@ Changes to these paths receive focused tests in `test/` and the verification com
 
 ## Database schema
 
-`migrations/0001_initial.sql` defines the auth and ledger foundation, `migrations/0002_invite_codes.sql` adds optional invitation state, `migrations/0003_account_rewards.sql` stores account rewards, and `migrations/0004_referral_alias.sql` keeps a replaced 32-hex referral code claimable.
+`migrations/0001_initial.sql` defines the auth and ledger foundation, `migrations/0002_invite_codes.sql` adds optional invitation state, `migrations/0003_account_rewards.sql` stores account rewards, `migrations/0004_referral_alias.sql` keeps a replaced 32-hex referral code claimable, and `migrations/0005_account_history_indexes.sql` indexes user-scoped ledger history and deletion lookups.
 
 | Table | Core columns and relationships | Owner and use |
 | --- | --- | --- |
@@ -339,7 +358,8 @@ Changes to these paths receive focused tests in `test/` and the verification com
 | `account_referral_code`, `account_referral_alias`, `account_referral` | One 8-character lowercase display code per user, optional previous 32-hex alias, and one claim per referred user | Idempotent referral grants; the next activity load replaces a 32-hex display code and keeps that code claimable. |
 
 `src/lib/auth.ts` uses Drizzle's D1 adapter for the four auth tables, while `src/lib/ledger.ts` and `src/lib/invites.ts` use prepared native D1 statements and batches for write-side invariants.
-`src/lib/account-rewards.ts` scopes reward reads and writes by user, owns the referral-code format, throws coded account reward errors, and grants check-in/referral credits through the ledger. Display codes are 8 lowercase alphanumeric characters; claim lookup also accepts an already issued 32-hex code.
+`src/lib/account-rewards.ts` scopes reward reads and writes by user, owns the referral-code format, throws coded account reward errors, and grants check-in/referral credits through the ledger.
+Display codes are 8 lowercase alphanumeric characters; claim lookup also accepts an already issued 32-hex code.
 `src/lib/credit-history.ts` limits history reads to 100 lots for the signed-in user, and `src/app/api/credits/balance/route.ts` validates the session and invite gate before reading a balance.
 Schema changes gain a new reviewed migration and matching service/query types and tests; a site applies those migrations to its own D1 before depending on the new shape.
 
@@ -366,7 +386,7 @@ Schema changes gain a new reviewed migration and matching service/query types an
 | `desktop.schemes` | Allow-listed app URL schemes for signed-in desktop handoff. |
 | `turnstile.onSignIn` | Applies Turnstile verification to sign-in requests supplied with a client token. |
 | `site/database.config.ts`: `binding`, `migrationsDir` | Site D1 binding name and migration directory. |
-| `site/theme.config.ts`: `light`, `dark`, `chrome`, `authCard`, `mail`, `pricing`, `rowTones`, `defaultMode`, `font`, `account`, `tones` | Paired semantic palettes and navigation/account-card/auth-card/pricing chrome, email-only palette, row tones, homepage/other-page defaults, and account accents; web tokens emitted through `src/lib/theme-tokens.ts`. |
+| `site/theme.config.ts`: `light`, `dark`, `chrome`, `authCard`, `mail`, `pricing`, `purchase`, `rowTones`, `defaultMode`, `font`, `account`, `tones` | Paired semantic palettes and navigation/account-card/auth-card/pricing chrome, email-only palette, row tones, homepage/other-page defaults, and account accents; web tokens emitted through `src/lib/theme-tokens.ts`. |
 | `site/video-tool.config.ts` | Landing tool media, workflows, models, fields, references, assets, and optional promo. |
 | `site/messages/en.ts`, `zh.ts`: `metadata`, `nav`, `hero`, `videoTool`, `account`, `dashboard`, `credits`, `pricing`, `planCopy` | Localized strings for metadata, navigation, credit sources, plan names and pricing features, the video tool, and content views. |
 

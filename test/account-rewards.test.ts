@@ -5,6 +5,7 @@ import { Miniflare } from 'miniflare';
 import type { Env } from '../src/lib/env';
 import { accountActivity, AccountRewardError, claimCheckIn, claimReferral, submitShare } from '../src/lib/account-rewards';
 import { grant } from '../src/lib/ledger';
+import { creditMovements } from '../src/lib/account-page-history';
 import en from '../site/messages/en';
 import zh from '../site/messages/zh';
 
@@ -104,6 +105,6 @@ test('claims accept a new short code and a previously issued 32 hex code, includ
 test('payment receipts reflect only settled user ledger entries, not unrelated grants', async () => {
   await grant(env.DB, { userId: 'alice', source: 'payment', sourceId: 'pay-one', credits: 100, now: 9000 });
   await grant(env.DB, { userId: 'bob', source: 'payment', sourceId: 'pay-two', credits: 50, now: 9000 });
-  assert.deepEqual((await accountActivity(env, 'alice', 9000)).purchases.map(item => item.source_id), ['pay-one']);
-  assert.deepEqual((await accountActivity(env, 'bob', 9000)).purchases.map(item => item.source_id), ['pay-two']);
+  assert.deepEqual((await creditMovements(env.DB, 'alice')).filter(item => item.source === 'payment').map(item => item.source_id), ['pay-one']);
+  assert.deepEqual((await creditMovements(env.DB, 'bob')).filter(item => item.source === 'payment').map(item => item.source_id), ['pay-two']);
 });

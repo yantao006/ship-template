@@ -1,0 +1,42 @@
+.account-dialog.account-plans-dialog{width:min(896px,calc(100vw - 24px));border-radius:18px;background:var(--purchase-canvas);color:var(--purchase-text);border-color:var(--purchase-line);max-height:min(90dvh,830px)}
+.account-plans-dialog>h2{position:absolute;width:1px;height:1px;padding:0;border:0;overflow:hidden;clip:rect(0,0,0,0)}
+.account-plans-dialog .account-close{background:var(--purchase-canvas);color:var(--purchase-text);border:1px solid var(--purchase-line);right:22px;top:16px;width:36px;height:36px}
+.buy-credits-content{padding:32px;color:var(--purchase-text)}
+.buy-credits-offer{text-align:center;display:grid;justify-items:center;gap:9px;margin-bottom:18px}
+.buy-credits-offer>span{display:flex;align-items:center;gap:8px;background:var(--purchase-offer-bg);color:var(--purchase-offer-text);padding:9px 18px;border:1px solid var(--purchase-offer-end);border-radius:99px;font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+.buy-credits-offer>strong{font-size:56px;letter-spacing:-.04em;line-height:1;color:var(--purchase-offer)}
+.buy-credits-offer>small{color:var(--purchase-muted);font-size:12px}
+.buy-credits-tabs{display:flex;width:max-content;max-width:100%;margin:0 auto;background:var(--purchase-panel);border:1px solid var(--purchase-line);border-radius:99px;padding:4px;gap:2px}
+.buy-credits-tabs button{border:0;border-radius:99px;background:none;color:var(--purchase-muted);padding:11px 22px;font-size:15px;font-weight:700;cursor:pointer;white-space:nowrap}
+.buy-credits-tabs button.selected{background:var(--purchase-accent);color:var(--purchase-text);box-shadow:0 8px 20px var(--purchase-glow)}
+.buy-credits-tabs small{color:var(--purchase-offer-bg);margin-left:7px}
+.buy-credits-cancel{display:flex;align-items:center;justify-content:center;gap:7px;color:var(--purchase-muted);font-size:14px;margin:17px 0 19px}
+.buy-credits-cancel svg,.buy-credits-included li svg{color:var(--purchase-success);flex:none}
+.buy-credits-columns{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+.buy-credits-included{border:1px solid var(--purchase-line);border-radius:24px;background:var(--purchase-panel);padding:32px;min-height:478px}
+.buy-credits-included h3{font-size:20px;margin:0 0 24px}
+.buy-credits-amount{border:1px solid var(--purchase-accent);background:linear-gradient(100deg,var(--purchase-glow),color-mix(in srgb,var(--purchase-panel) 88%,var(--purchase-pink)));border-radius:16px;min-height:58px;display:flex;align-items:center;gap:10px;padding:12px 16px;font-size:15px}
+.buy-credits-amount svg{border-radius:50%;box-sizing:content-box;background:var(--purchase-accent);padding:9px}
+.buy-credits-models{margin:15px 0}.buy-credits-models>div{border-bottom:1px solid var(--purchase-line)}
+.buy-credits-models button{width:100%;border:0;color:var(--purchase-text);background:none;display:flex;align-items:center;gap:8px;padding:12px 0;text-align:left;font-weight:700;cursor:pointer}
+.buy-credits-models button span{flex:1}.buy-credits-models p{font-size:12px;color:var(--purchase-muted);margin:0 0 12px}
+.buy-credits-included ul{list-style:none;padding:0;margin:18px 0 0;display:grid;gap:15px}.buy-credits-included li{display:flex;align-items:flex-start;gap:10px;font-size:14px;line-height:1.4}
+.buy-credits-content.packs .buy-credits-columns{margin-top:18px}
+.buy-credits-content.packs .buy-credits-included{min-height:344px;align-self:start}
+.buy-credits-options{min-width:0}.buy-credits-cards{display:grid;gap:11px}
+.buy-credits-card{position:relative;background:var(--purchase-panel);border:1px solid var(--purchase-line);border-radius:16px;min-height:70px}.buy-credits-card.selected{border-color:var(--purchase-accent);box-shadow:0 0 0 3px var(--purchase-glow)}
+.buy-credits-plan-choice{display:flex;align-items:center;justify-content:space-between;text-align:left;gap:12px;color:var(--purchase-text);background:none;border:0;width:100%;min-height:68px;padding:13px 16px;cursor:pointer}
+.buy-credits-plan-choice>span{display:flex;align-items:baseline;gap:8px}.buy-credits-plan-choice>span:last-child{justify-content:flex-end;flex-wrap:wrap}
+.buy-credits-plan-choice b{font-size:17px}.buy-credits-plan-choice small,.buy-credits-plan-choice del{color:var(--purchase-muted);font-size:12px}.buy-credits-plan-choice strong{font-size:21px}
+.buy-credits-discount{position:absolute;right:-9px;top:-10px;background:linear-gradient(95deg,var(--purchase-offer-end),var(--purchase-offer));color:var(--purchase-text);border-radius:99px;padding:5px 11px;font-size:10px;font-weight:800;pointer-events:none}
+.buy-credits-popular{position:absolute;left:13px;top:-10px;display:flex;align-items:center;gap:4px;background:var(--purchase-accent);color:var(--purchase-text);border-radius:99px;padding:5px 11px;font-size:10px;font-weight:800;letter-spacing:.08em;pointer-events:none}
+.buy-credits-multiplier{padding:0 16px 15px}.buy-credits-multiplier input{width:100%;accent-color:var(--purchase-accent)}.buy-credits-multiplier>div{display:flex;justify-content:space-between}
+.buy-credits-multiplier button{border:0;background:none;color:var(--purchase-muted);cursor:pointer;font-size:12px;padding:3px}.buy-credits-multiplier button.selected{color:var(--purchase-accent);font-weight:800}
+.buy-credits-start{width:100%;min-height:49px;margin-top:16px;border:0;border-radius:99px;background:linear-gradient(100deg,var(--purchase-accent),var(--purchase-pink),var(--purchase-peach));color:var(--purchase-text);font-size:15px;font-weight:800;cursor:pointer}
+.buy-credits-start:disabled{opacity:.6;cursor:wait}.buy-credits-error,.buy-credits-unavailable{color:var(--purchase-muted);font-size:12px;line-height:1.4;margin:11px 0 0}.buy-credits-error{color:var(--tone-danger)}
+.buy-credits-confetti{position:absolute;inset:0;z-index:3;overflow:hidden;pointer-events:none}.buy-credits-confetti i{position:absolute;top:-20px;width:7px;height:14px;background:var(--purchase-offer-end);opacity:0;animation:buy-confetti 1.7s cubic-bezier(.19,1,.22,1) both}
+.buy-credits-confetti i:nth-child(3n){background:var(--purchase-accent)}.buy-credits-confetti i:nth-child(4n){background:var(--purchase-peach)}
+@keyframes buy-confetti{0%{transform:translateY(-20px) rotate(0);opacity:1}70%{opacity:1}100%{transform:translate(var(--flight),var(--drop)) rotate(640deg);opacity:0}}
+.account-plans-dialog :where(button,input):focus-visible{outline:2px solid var(--purchase-accent);outline-offset:3px}
+@media(max-width:750px){.account-plans-dialog .buy-credits-content{padding:58px 16px 22px}.account-plans-dialog .buy-credits-columns{grid-template-columns:1fr;gap:16px}.account-plans-dialog .buy-credits-included{min-height:0;order:2;padding:20px}.account-plans-dialog .buy-credits-options{order:1}.account-plans-dialog .buy-credits-offer>strong{font-size:44px}.account-plans-dialog .buy-credits-tabs button{padding:10px;font-size:13px}.account-plans-dialog .buy-credits-plan-choice>span{display:grid;gap:2px}.account-plans-dialog .buy-credits-discount{right:3px}}
+@media(prefers-reduced-motion:reduce){.account-plans-dialog .buy-credits-confetti i{animation:none}}
