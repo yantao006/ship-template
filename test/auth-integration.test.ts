@@ -49,9 +49,11 @@ test('email OTP signs in with a six-digit code in the form, consumes it once, an
     assert.equal(sent.status, 200);
     assert.equal(mail.sent.length, 1);
     assert.equal(mail.sent[0].to, 'otp@example.com');
-    assert.equal(mail.sent[0].subject, `${site.brand} 登录验证码`);
     assert.doesNotMatch(mail.sent[0].text, /https?:\/\//);
     const code = mail.sent[0].text.match(/\b\d{6}\b/)?.[0];
+    assert.equal(mail.sent[0].subject, `${site.email.brand} 登录验证码：${code} - ${site.email.brand}`);
+    const stored = await db.prepare('SELECT created_at, expires_at FROM verification').first<{ created_at: number; expires_at: number }>();
+    assert.ok(Math.abs(stored!.expires_at - stored!.created_at - 15 * 60 * 1000) < 1000);
     assert.match(code ?? '', /^\d{6}$/);
     const wrong = await post('sign-in/email-otp', { email: 'otp@example.com', otp: '000000' });
     assert.equal(wrong.status, 400);

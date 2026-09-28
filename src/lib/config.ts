@@ -18,7 +18,7 @@ export type SiteConfig = {
   locales: readonly string[];
   defaultLocale: string;
   deploy: { worker: string; d1: string; r2: string; queue: string };
-  email: { provider: 'cloudflare' | 'resend'; from: string };
+  email: { provider: 'cloudflare' | 'resend'; from: string; brand?: string };
   signupCredits: number;
   account: {
     checkIn: { enabled: boolean; credits: number };
@@ -52,6 +52,7 @@ export type ThemeConfig = {
   chrome: Record<'light' | 'dark', Record<string, string>>;
   dialog: Record<'light' | 'dark', Record<string, string>>;
   authCard: Record<'light' | 'dark', Record<'canvas' | 'panel' | 'text' | 'row' | 'line' | 'muted' | 'faint' | 'icon' | 'button' | 'buttonHover' | 'onButton' | 'focus' | 'media' | 'error', string>>;
+  mail: Record<'canvas' | 'panel' | 'border' | 'text' | 'muted' | 'faint' | 'inset' | 'codeBorder' | 'code' | 'stripeStart' | 'stripeMiddle' | 'stripeEnd' | 'shadow', string>;
   videoTool: Record<'light' | 'dark', Record<string, string>>;
   pricing: Record<'light' | 'dark', Record<string, string>>;
   rowTones: Record<'light' | 'dark', Record<'account' | 'pink' | 'info' | 'danger', { text: string; box: string }>>;

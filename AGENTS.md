@@ -229,7 +229,7 @@ A new capability can be a new `src/lib/` service called by an API endpoint, a se
 `src/lib/config.ts` declares the site, auth, and database config contracts; site files use `satisfies` to check build-time choices, while `wrangler.jsonc` declares matching live resources.
 `scripts/site-check.ts` compares the Worker name, D1/R2/Queue names, auth shape, email binding, callback origin, and required secret names before publication.
 `site/messages/en.ts` and `site/messages/zh.ts` compose matching per-module copy under `site/messages/{en,zh}/`, including separate mail, sign-in, invites, handoff, account, workspace, credits, pricing, footer, and video-tool files; `src/app/[locale]/` and `src/components/language-control.tsx` select copy without duplicating business logic.
-`site/theme.config.ts` provides same-key light and dark palettes, paired top-bar/account-card/auth-card/dialog/video-tool/pricing colors and row tones, mode defaults, and account colors; `src/lib/theme-tokens.ts` generates the CSS token stylesheet in `src/app/layout.tsx` instead of inline body styles.
+`site/theme.config.ts` provides same-key light and dark palettes, paired top-bar/account-card/auth-card/dialog/video-tool/pricing colors, an email-only palette, row tones, mode defaults, and account colors; `src/lib/theme-tokens.ts` generates the CSS token stylesheet in `src/app/layout.tsx` instead of inline body styles.
 The middleware marks whether the first route uses the public shell; the root layout applies that route's default through `data-mode="auto"`, and `ThemeModeInitializer` freezes it on `<html>` before client navigation. `ReplicaNavigation` reads the document mode and toggles it through `src/lib/theme-mode.ts`, preserving the selected mode across page changes.
 Header language changes use App Router navigation to preserve the document; `ReplicaNavigation` synchronizes `<html lang>` because the root layout persists across client-side transitions.
 `src/middleware.ts` forwards the route locale so the root layout sets matching `<html lang>` and metadata, including for the default-language `/` homepage.
@@ -256,7 +256,8 @@ When `email.passwordReset` is on, the forgot-password link is sent through `Emai
 `site/messages/{en,zh}/pricing.ts` owns tier feature lists, annual-only feature lines, and interpolated pack perks; pricing cards select those lists by tier or plan ID without reusing plan-name copy as features.
 `src/lib/ledger.ts` writes `credit_lot`, `credit_entry`, `credit_alloc`, and `video_task` with D1's own `prepare().bind()` statements and `batch()` for multi-step writes, preserving atomic reservations under concurrent requests.
 Grant source IDs, entry idempotency keys, and task state transitions make retries observable. A verified annual payment calls `grantSubscriptionMonth` for the current calendar month only. There is no separate billing scheduler.
-`src/lib/email.ts` chooses Cloudflare Email or Resend behind `EmailProvider`, and `src/lib/notifications.ts` composes and escapes localized mail, including sign-in codes, verification and password reset links, independently of delivery.
+`src/lib/email.ts` chooses Cloudflare Email or Resend behind `EmailProvider`, and `src/lib/notifications.ts` composes and escapes localized mail, including a site-branded six-digit sign-in code card, verification and password reset links, independently of delivery.
+The email OTP plugin in `src/lib/auth.ts` explicitly keeps the code valid for 15 minutes, matching the dialog and mail copy; a successful binding send is not proof of final mailbox delivery.
 
 ### Current state and extension paths
 
@@ -350,7 +351,7 @@ Schema changes gain a new reviewed migration and matching service/query types an
 | `apex`, `url` | Canonical host and absolute base URL for authentication, callbacks, links, metadata, and site-check. |
 | `languages`, derived `locales`, `defaultLocale` | Code, native name, flag emoji, and date locale for every language; default homepage and request-locale document language. |
 | `deploy.worker`, `deploy.d1`, `deploy.r2`, `deploy.queue` | Expected per-site Worker, D1, R2, and Queue names compared with Wrangler. |
-| `email.provider`, `email.from` | Selects the email adapter and sender address. |
+| `email.provider`, `email.from`, optional `email.brand` | Selects the email adapter, sender address, and mail-specific display brand. |
 | `signupCredits` | Amount granted once to an eligible new account. |
 | `account` | Reward switches/amounts, submission cap, contact addresses, commercial-use link, icon and share-network choices. |
 | `plans` | Monthly and annual tiers plus credit packs; Worker `WAFFO_PRODUCTS` enables only matching test products. |
@@ -362,7 +363,7 @@ Schema changes gain a new reviewed migration and matching service/query types an
 | `desktop.schemes` | Allow-listed app URL schemes for signed-in desktop handoff. |
 | `turnstile.onSignIn` | Applies Turnstile verification to sign-in requests supplied with a client token. |
 | `site/database.config.ts`: `binding`, `migrationsDir` | Site D1 binding name and migration directory. |
-| `site/theme.config.ts`: `light`, `dark`, `chrome`, `authCard`, `pricing`, `rowTones`, `defaultMode`, `font`, `account`, `tones` | Paired semantic palettes and navigation/account-card/auth-card/pricing chrome, row tones, homepage/other-page defaults, and account accents emitted through `src/lib/theme-tokens.ts`. |
+| `site/theme.config.ts`: `light`, `dark`, `chrome`, `authCard`, `mail`, `pricing`, `rowTones`, `defaultMode`, `font`, `account`, `tones` | Paired semantic palettes and navigation/account-card/auth-card/pricing chrome, email-only palette, row tones, homepage/other-page defaults, and account accents; web tokens emitted through `src/lib/theme-tokens.ts`. |
 | `site/video-tool.config.ts` | Landing tool media, workflows, models, fields, references, assets, and optional promo. |
 | `site/messages/en.ts`, `zh.ts`: `metadata`, `nav`, `hero`, `videoTool`, `account`, `dashboard`, `credits`, `pricing`, `planCopy` | Localized strings for metadata, navigation, credit sources, plan names and pricing features, the video tool, and content views. |
 

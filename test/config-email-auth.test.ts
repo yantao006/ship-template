@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 import { check } from '../scripts/site-check';
 import { site, googleCallback, githubCallback } from '../src/lib/config';
 import { FakeEmail, createEmailProvider } from '../src/lib/email';
-import { notifyGenerationComplete, notifyCreditsExpiring, notifyRenewalFailed, notifyVerification } from '../src/lib/notifications';
+import { notifyGenerationComplete, notifyCreditsExpiring, notifyRenewalFailed, notifySignInCode, notifyVerification } from '../src/lib/notifications';
 import { verifyTurnstile } from '../src/lib/turnstile';
 
 test('second site only changes site, wrangler resource names and env, not business code', async () => {
@@ -55,6 +55,24 @@ test('verification mail selects callback language and escapes dynamic HTML once'
   assert.match(email.sent[0].html, /href="https:\/\/awesomejev.link\/api\/auth\/verify-email\?token=a&amp;callbackURL=/);
   assert.doesNotMatch(email.sent[0].html, /&amp;amp;/);
   assert.doesNotMatch(email.sent[0].html, /<Video & Co>/);
+});
+
+test('OTP mail uses the site email brand, 15-minute copy and escaped centered code card', async () => {
+  const email = new FakeEmail();
+  await notifySignInCode(email, site, 'user@example.com', '012345', 'en');
+  const message = email.sent[0];
+  assert.equal(message.from, site.email.from);
+  assert.equal(message.subject, 'Your Awesomejev verification code: 012345 - Awesomejev');
+  assert.match(message.text, /Sign in to Awesomejev[\s\S]*valid for 15 minutes:[\s\S]*012345[\s\S]*please ignore this email/);
+  assert.match(message.html, /linear-gradient\(90deg,#7863f2,#d45a9b,#56b3eb\)/);
+  assert.match(message.html, /Sign in to Awesomejev[\s\S]*border:1px dashed[\s\S]*letter-spacing:\.25em;color:#7161ed">012345/);
+  assert.doesNotMatch(message.html, /MiniMax|mail\.minimaxh3\.ai|\b5 minutes/);
+  await notifySignInCode(email, { ...site, email: { ...site.email, brand: '<Video & Co>' } }, 'user@example.com', '987654', 'en');
+  assert.match(email.sent[1].html, /Sign in to &lt;Video &amp; Co&gt;/);
+  assert.doesNotMatch(email.sent[1].html, /<Video & Co>/);
+  const secondSite = (await check(resolve('fixtures/second-site'))).config;
+  await notifySignInCode(email, secondSite, 'user@example.com', '456789', 'en');
+  assert.match(email.sent[2].subject, new RegExp(secondSite.brand));
 });
 
 test('provider selection fails closed and Resend propagates failure', async () => {

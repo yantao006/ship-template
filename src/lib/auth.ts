@@ -66,6 +66,7 @@ export function createAuth(env: Env, requestHostname?: string, settings: AuthSet
     plugins: [
       ...(settings.email.enabled ? [emailOTP({
         otpLength: 6,
+        expiresIn: 15 * 60,
         disableSignUp: auth.invite.required,
         async sendVerificationOTP({ email, otp, type }, ctx) {
           if (type !== 'sign-in') throw new APIError('BAD_REQUEST', { message: 'Unsupported OTP type' });

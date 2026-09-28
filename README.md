@@ -94,9 +94,10 @@ The Auth-4 original and Google sign-in remain unchanged.
 A successful send hides the email card and opens the independent wide dialog; Use a different email restores the card, while closing the code dialog exits sign-in entirely.
 Verification and resend call the existing better-auth email OTP methods.
 An ego-browser unsigned desktop and 390px mobile run confirmed the wide dialog without the login card behind it, copy, grouping, paste/auto-advance/backspace, resend cooldown, email-change return, and full sign-in close.
-No received code was entered, so this browser run did not prove a completed sign-in.
-Desktop and mobile captures and the detailed checklist are in [email OTP dialog verification](docs/verification/email-otp-dialog/README.md).
-Worker version `a17c646e-c744-4eef-bc32-d351bfa22a0f` was uploaded to the existing preview alias without deploying to the live hostname.
+A subsequent browser run submitted the authorized `yantao006@agent.qq.com` inbox, confirmed the redesigned message really arrived, entered its received code, and established a server-confirmed session.
+That run also found that the prior five-minute OTP lifetime contradicted the dialog's 15-minute claim; the plugin, mail copy, and dialog now agree on 15 minutes.
+Desktop and mobile captures, a safe sample of the redesigned email, and the delivery/login evidence are in [email OTP dialog verification](docs/verification/email-otp-dialog/README.md).
+Worker version `4d34c8a5-efda-4026-95f8-8c32242019a8` was uploaded to the existing preview alias after the delivery/login run, without deploying to the live hostname.
 
 ## Site and secret boundaries
 
