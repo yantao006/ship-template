@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, type CSSProperties } from 'react';
+import React, { useState } from 'react';
 import { Check, ChevronDown, Image as ImageIcon, Sparkles, Video } from 'lucide-react';
 import { requestJson } from '@/lib/json-request';
 import type { Copy as PricingCopy } from '../pricing/pricing-checkout';
@@ -9,10 +9,6 @@ import type { Plan, AccountCopy } from './account-dialogs';
 import { annualSavingsPercent, count, money, planDisplay, pricingFeatureLines } from '../pricing/plan-display';
 
 type Period = Plan['billing'];
-
-export function PurchaseConfetti() {
-  return <div className="buy-credits-confetti" aria-hidden="true">{Array.from({ length: 44 }, (_, i) => <i key={i} style={{ left: `${(i * 43) % 100}%`, animationDelay: `${(i % 8) * 50}ms`, '--flight': `${(i % 2 ? 1 : -1) * (60 + i * 9)}px`, '--drop': `${54 + (i % 4) * 10}vh` } as CSSProperties} />)}</div>;
-}
 
 export function defaultPurchaseSelection(plans: Plan[]): Record<Period, string> {
   const packs = plans.filter(plan => plan.billing === 'once');

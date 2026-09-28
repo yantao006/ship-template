@@ -1,9 +1,4 @@
 .pricing-experience { background: var(--pricing-canvas); color: var(--pricing-text); }
-.pricing-confetti { position: fixed; inset: 0; z-index: 100; overflow: hidden; pointer-events: none; }
-.pricing-confetti i { position: absolute; top: 60%; width: 8px; height: 14px; border-radius: 2px; background: var(--pricing-accent); opacity: 0; animation: pricing-burst 1.5s ease-out both; }
-.pricing-confetti i:nth-child(3n) { background: var(--pricing-success); }
-.pricing-confetti i:nth-child(4n) { background: var(--pricing-banner-accent); }
-@keyframes pricing-burst { 0% { transform: translateY(0) translateX(0) rotate(0); opacity: 0; } 18% { opacity: .9; } 100% { transform: translateY(-46vh) translateX(var(--drift)) rotate(520deg); opacity: 0; } }
 .pricing-experience :where(.pricing-banner, .pricing-page) :where(a, button, input):focus-visible { outline: 2px solid var(--pricing-accent); outline-offset: 3px; }
 .pricing-banner { min-height: 56px; display: flex; align-items: center; justify-content: center; gap: 20px; padding: 8px 24px; background: var(--pricing-banner); color: var(--pricing-banner-text); font-size: 16px; font-weight: 700; }
 .pricing-banner svg { color: var(--pricing-banner-accent); flex: none; }
@@ -109,5 +104,4 @@
 @media (prefers-reduced-motion: reduce) {
   .pricing-experience:where(.site-shell) .pricing-card-grid { animation: none; }
   .pricing-experience:where(.site-shell) .pricing-card { transition: none; }
-  .pricing-experience:where(.site-shell) .pricing-confetti i { animation: none; }
 }
