@@ -13,6 +13,6 @@ export default async function AccountLayout({ children, params }: { children: Re
   const items = sections.map(id => ({ id, href: routePath(locale, id), label: id === 'creditCenter' ? labels.credits : labels[id] }));
   return <div className="account-pages"><div className="account-pages-layout">
     <AccountSectionNav label={copy.dashboard.navigation} items={items} />
-    <main className="account-pages-main">{children}</main>
+    <div className="account-pages-main">{children}</div>
   </div></div>;
 }

@@ -8,7 +8,7 @@ test('marketing and workspace routes share persistent chrome while auth panels s
   const shell = read('src/components/site-shell.tsx');
   assert.match(shell, /accountSnapshot\(workerEnv\(\), await headers\(\)\)/);
   assert.match(shell, /<Header locale=\{locale\} userName=\{displayName\} userEmail=\{session\?\.user\.email\} userImage=\{session\?\.user\.image\} credits=\{credits\} \/>/);
-  assert.match(shell, /\{children\}\s*<Footer locale=\{locale\} \/>/);
+  assert.match(shell, /<main className="site-main">\{children\}<\/main>\s*<Footer locale=\{locale\} \/>/);
   assert.match(read('src/app/(site)/layout.tsx'), /<SiteShell/);
   assert.match(read('src/app/[locale]/(site)/layout.tsx'), /<SiteShell/);
   for (const route of ['page.tsx', 'pricing/page.tsx', '(workspace)/layout.tsx', '(workspace)/dashboard/page.tsx', '(workspace)/credits/page.tsx']) {
@@ -31,8 +31,9 @@ test('marketing and workspace routes share persistent chrome while auth panels s
   assert.doesNotMatch(workspace, /LanguageControl/);
   const pricingCss = read('src/components/pricing.css');
   assert.doesNotMatch(pricingCss, /\.site-nav|\.replica-topbar/);
-  assert.match(pricingCss, /\.pricing-experience \{[^}]*padding-top: 56px/);
+  assert.doesNotMatch(pricingCss, /\.pricing-experience \{[^}]*(?:min-height: 100dvh|padding-top: 56px)/);
   const globals = read('src/app/globals.css');
   assert.doesNotMatch(globals, /\.site-nav|\.nav-inner|\.marketing-links/);
-  assert.match(globals, /\.workspace-layout \{[^}]*padding-top: 56px/);
+  assert.match(globals, /\.site-main \{[^}]*flex: 1;[^}]*padding-top: 56px/);
+  assert.doesNotMatch(globals, /\.workspace-layout \{[^}]*100dvh/);
 });

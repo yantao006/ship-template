@@ -1,4 +1,4 @@
-.pricing-experience { min-height: 100dvh; padding-top: 56px; background: var(--pricing-canvas); color: var(--pricing-text); }
+.pricing-experience { background: var(--pricing-canvas); color: var(--pricing-text); }
 .pricing-confetti { position: fixed; inset: 0; z-index: 100; overflow: hidden; pointer-events: none; }
 .pricing-confetti i { position: absolute; top: 60%; width: 8px; height: 14px; border-radius: 2px; background: var(--pricing-accent); opacity: 0; animation: pricing-burst 1.5s ease-out both; }
 .pricing-confetti i:nth-child(3n) { background: var(--pricing-success); }

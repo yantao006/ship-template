@@ -90,7 +90,7 @@ export function PricingCheckout({ locale, plans, models, brand, copy }: { locale
   return <>
     <PricingConfetti />
     {banner && <div className="pricing-banner"><Sparkles size={18} /><span>{brand} · {copy.save}</span><button type="button" onClick={() => { setMode('year'); document.getElementById('pricing-plans')?.scrollIntoView({ behavior: 'smooth' }); }}>{copy.yearly}</button><button type="button" className="pricing-banner-close" aria-label="Close" onClick={() => setBanner(false)}><X size={16} /></button></div>}
-    <main className="pricing-page">
+    <div className="pricing-page">
       <div className="pricing-inner">
         <div className="pricing-launch"><strong>{copy.save}</strong><span>{brand} · {copy.yearlyHint}</span></div>
         <h1 id="pricing-title">{copy.title}</h1><p className="pricing-lead">{copy.lead}</p>
@@ -126,6 +126,6 @@ export function PricingCheckout({ locale, plans, models, brand, copy }: { locale
         <section className="pricing-payment" aria-labelledby="pricing-payment-heading"><h2 id="pricing-payment-heading"><ShieldCheck size={22} />{copy.paymentTitle}</h2><ul>{methods.map((method, index) => <li key={method}><img src={`/pricing/${method}.svg`} alt={methodNames[index]} width={68} height={38} /></li>)}<li className="pricing-link-mark">Link</li></ul><p>{copy.paymentNote}</p></section>
         {error && <p className="pricing-error" role="alert">{error}</p>}
       </div>
-    </main>
+    </div>
   </>;
 }
