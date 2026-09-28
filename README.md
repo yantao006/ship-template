@@ -70,25 +70,13 @@ The single **Language** selector is in the marketing navigation on home, or at t
 An unauthenticated request to `/api/credits/balance` returns 401.
 A successful first Google sign-in creates one user and one idempotent signup credit lot in this site's D1.
 
-### Auth-4 preview browser verification (2026-09-27)
+### Source-inspired auth card preview (2026-09-27)
 
 Preview alias:
 
 https://popovers-awesomejev-test.yantao006.workers.dev/en
 
-With ego-browser, Sign In opened one intact Auth-4 card without changing `/en`, and closing it preserved the prompt text.
-The card displayed Google and email but not disabled GitHub, with non-overlapping 44px controls and an opaque brand panel.
-On `/en/pricing`, Sign In and an unauthenticated plan selection both opened that same dialog without changing the URL or starting payment.
-Google login returned to `/en/pricing`, updated the header, and `/api/auth/get-session` returned a real session and the permitted test user.
-A second Google login from `/en` restored the entered prompt and History tab; its saved draft was consumed once after the server session check.
-No email password was added to the Google account; email sign-in is covered by local D1-backed integration tests, not this browser run.
-Desktop and mobile captures are at [desktop](docs/verification/auth-4-desktop.png) and [mobile](docs/verification/auth-4-mobile.png).
-The remote D1 still has unapplied `0003_account_rewards.sql`, so `/api/account/activity` returns 500 and the signed-in account card reports an activity error; migrate the remote database before relying on reward actions.
-This browser run did not apply that migration, submit a payment, or deploy the preview version to the live hostname.
-
-### Source-inspired auth card preview (2026-09-27)
-
-At the time of this browser run, the preview alias served the copied `minimax-auth-card.tsx` variant; `auth-4.tsx` is unchanged.
+At the time of this browser run, the preview alias served `minimax-auth-card.tsx`.
 The card keeps the site's brand, configured welcome credits and localized claims, and uses the existing email-code sign-in after the email action.
 The image is a site-local placeholder.
 At the time of this run, the email-code flow still used the card's inline code field, mobile bottom drawer and full-page reload.
@@ -98,8 +86,8 @@ The expanded email input follows the OR divider in a column flow with 12px of se
 
 ### Email OTP dialog preview (2026-09-28)
 
-The preview alias now serves `minimax-auth-card.tsx` for the email entry and the licensed Auth-6 adaptation in `src/components/blocks/auth-6.tsx` for the six-digit code.
-The Auth-4 original and Google sign-in remain unchanged.
+The preview alias now serves `minimax-auth-card.tsx` for the email entry and the licensed Auth-6 adaptation in `src/components/auth/auth-6.tsx` for the six-digit code.
+Google sign-in remains unchanged.
 A successful send hides the email card and opens the independent wide dialog; Use a different email restores the card, while closing the code dialog exits sign-in entirely.
 Verification and resend call the existing better-auth email OTP methods.
 An ego-browser unsigned desktop and 390px mobile run confirmed the wide dialog without the login card behind it, copy, grouping, paste/auto-advance/backspace, resend cooldown, email-change return, and full sign-in close.
