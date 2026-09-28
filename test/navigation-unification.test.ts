@@ -7,7 +7,7 @@ const read = (path: string) => readFileSync(new URL(`../${path}`, import.meta.ur
 test('marketing and workspace routes share persistent chrome while auth panels stay outside it', () => {
   const shell = read('src/components/site-shell.tsx');
   assert.match(shell, /accountSnapshot\(workerEnv\(\), await headers\(\)\)/);
-  assert.match(shell, /<Header locale=\{locale\} userName=\{session\?\.user\.name\} userEmail=\{session\?\.user\.email\} userImage=\{session\?\.user\.image\} credits=\{credits\} \/>/);
+  assert.match(shell, /<Header locale=\{locale\} userName=\{displayName\} userEmail=\{session\?\.user\.email\} userImage=\{session\?\.user\.image\} credits=\{credits\} \/>/);
   assert.match(shell, /\{children\}\s*<Footer locale=\{locale\} \/>/);
   assert.match(read('src/app/(site)/layout.tsx'), /<SiteShell/);
   assert.match(read('src/app/[locale]/(site)/layout.tsx'), /<SiteShell/);

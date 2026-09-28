@@ -46,7 +46,7 @@ test('homepage content composes six sections in order, with navigation and foote
   assert.match(readFileSync(new URL('../src/lib/request-context.ts', import.meta.url), 'utf8'), /await ensureSignupCredits\(env, session\.user\.id\)/);
   assert.doesNotMatch(home, /<Header|<Footer/);
   const shell = readFileSync(new URL('../src/components/site-shell.tsx', import.meta.url), 'utf8');
-  assert.match(shell, /<Header locale=\{locale\} userName=\{session\?\.user\.name\} userEmail=\{session\?\.user\.email\} userImage=\{session\?\.user\.image\} credits=\{credits\} \/>/);
+  assert.match(shell, /<Header locale=\{locale\} userName=\{displayName\} userEmail=\{session\?\.user\.email\} userImage=\{session\?\.user\.image\} credits=\{credits\} \/>/);
   assert.match(shell, /\{children\}\s*<Footer locale=\{locale\} \/>/);
   const header = section('Header');
   assert.match(header, /<section id="header">/);

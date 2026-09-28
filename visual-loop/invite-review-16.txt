@@ -1,0 +1,16 @@
+**独立视觉评分：8/10。必须先改的结构问题：无。** 我用 ego-browser 在 1440×900、两站深色主题下，从已登录账户菜单亲手打开了 Invite Friends，完成复制、粘贴核对、滚动、历史刷新及关闭叉操作；截图只用于记录。
+
+| 核对项 | 结果 |
+|---|---|
+| 标题与额度 | 两站均为「Invite Friends & Earn Credits」，邀请人 +6、朋友 +4。参考站在说明中额外突出「6 credits」。 |
+| 邀请链接与复制 | 两站均出现成功提示；实际粘贴内容与各自卡片展示一致。测试站链接：<br>https://awesomejev.link/invitation-landing?invite_code=cdu6be5g<br>参考站链接：<br>https://minimaxh3.ai/invitation-landing?invite_code=0af4xvq7 |
+| 五个分享按钮 | 均有 Facebook、X、WhatsApp、LinkedIn、Telegram，顺序及圆形图标形态接近。 |
+| 奖励规则与榜单 | 规则确实不同，不应照搬：测试站说明 24 小时领取、每账户一次等；参考站说明 Gmail、同 IP、每日上限等。测试站榜单为空，参考站显示真实的遮罩用户名及 47/28/23 次成功邀请；不将真实数据差异扣分。 |
+| 历史与关闭 | 滚动后两站邀请历史均为空，刷新后仍为空。两站关闭叉均已点击；测试站确认关闭，参考站点击后的即时快照尚在退场状态，未再次确认动画结束。 |
+
+**最大三类视觉差异：**
+1. **链接操作区**：测试站链接框与复制按钮连成一体；参考站为分离的输入框与按钮，层次更清楚。
+2. **材质与留白**：参考站紫色环境光、卡片渐变及历史空状态更丰富；测试站黑底和实色块略显平。
+3. **信息强调**：参考站额度有胶囊高亮；测试站说明文字较平，奖励规则的小字也偏紧凑。
+
+记录截图：`/tmp/invite-local-top.png`、`/tmp/invite-local-bottom.png`、`/tmp/invite-source-loaded.png`、`/tmp/invite-source-bottom.png`。

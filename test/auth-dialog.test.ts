@@ -87,6 +87,20 @@ test('source-inspired card uses site identity, localized benefits and configured
   assert.equal(theme.authCard.dark.button, '#7a5bff');
 });
 
+test('a positive session probe cannot dismiss a guest avatar dialog before the account menu renders', () => {
+  const provider = source('src/components/auth-dialog.tsx');
+  const shell = source('src/components/site-shell.tsx');
+  const immediate = provider.match(/if \(immediateAttempt !== null\) \{([\s\S]*?)\n        \}\n        options\.onSuccess/)?.[1];
+  assert.ok(immediate, 'the immediate avatar attempt must have its own session branch');
+  assert.match(immediate, /attempt\.current !== immediateAttempt\) return false/);
+  assert.match(immediate, /router\.refresh\(\)/);
+  assert.doesNotMatch(immediate, /setOpen\(false\)|closeAuth\(\)|active\.current = false/);
+  assert.match(shell, /accountMenuReady=\{Boolean\(session\)\}/);
+  assert.match(shell, /session\.user\.name\.trim\(\) \|\| session\.user\.email/);
+  assert.match(shell, /userName=\{displayName\}/);
+  assert.match(provider, /if \(accountMenuReady && active\.current\) closeAuth\(\)/);
+});
+
 test('Auth-4 loads Tailwind theme tokens without resetting the existing site', () => {
   const css = source('src/app/globals.css');
   assert.match(css, /@import "tailwindcss\/theme" layer\(theme\);[\s\S]*@import "tailwindcss\/utilities"/);
@@ -106,6 +120,10 @@ test('one shared Auth-4 dialog uses server session confirmation and does not rep
   assert.match(source('src/components/blocks/minimax-auth-card.tsx'), /onClose=\{onCloseAuth \?\? closeCode\}/);
   assert.match(provider, /\/api\/auth\/get-session/);
   assert.match(provider, /if \(!\(await serverHasSession\(\)\)\)/);
+  // The guest avatar renders the dialog before the session request can stall it.
+  assert.match(source('src/components/auth-control.tsx'), /className="replica-avatar"[\s\S]*?showImmediately: true/);
+  assert.match(provider, /const immediateAttempt = options\.showImmediately \? showDialog\(\) : null;[\s\S]*await serverHasSession\(\)/);
+  assert.match(provider, /attempt\.current !== immediateAttempt\) return false/);
   assert.match(auth4, /authClient\.emailOtp\.sendVerificationOtp/);
   assert.match(auth4, /authClient\.signIn\.emailOtp/);
   assert.match(source('src/app/api/auth/[...all]/route.ts'), /parsed\.body\.type !== 'sign-in'/);

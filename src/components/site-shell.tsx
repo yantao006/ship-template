@@ -12,8 +12,11 @@ import { Footer } from './sections/Footer';
 /** Persistent chrome for marketing and workspace routes in the same locale. */
 export async function SiteShell({ locale, children }: { locale: keyof typeof messages; children: ReactNode }) {
   const { session, credits } = await accountSnapshot(workerEnv(), await headers());
-  return <AuthDialogProvider copy={browserNavCopy(messages[locale])} card={messages[locale].signIn.card} signupCredits={site.signupCredits} brand={site.brand} logo={site.logo} supportEmail={site.account.contactEmail} methods={{ email: auth.email, google: auth.google, github: auth.github }} inviteRequired={auth.invite.required} locale={locale} callbackURL={routePath(locale, 'home')}>
-    <Header locale={locale} userName={session?.user.name} userEmail={session?.user.email} userImage={session?.user.image} credits={credits} />
+  // Email OTP can create a valid session with an empty name. Identity, not
+  // display copy, decides whether the guest sign-in trigger is shown.
+  const displayName = session ? session.user.name.trim() || session.user.email : undefined;
+  return <AuthDialogProvider accountMenuReady={Boolean(session)} copy={browserNavCopy(messages[locale])} card={messages[locale].signIn.card} signupCredits={site.signupCredits} brand={site.brand} logo={site.logo} supportEmail={site.account.contactEmail} methods={{ email: auth.email, google: auth.google, github: auth.github }} inviteRequired={auth.invite.required} locale={locale} callbackURL={routePath(locale, 'home')}>
+    <Header locale={locale} userName={displayName} userEmail={session?.user.email} userImage={session?.user.image} credits={credits} />
     {children}
     <Footer locale={locale} />
   </AuthDialogProvider>;
