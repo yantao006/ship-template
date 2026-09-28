@@ -1,5 +1,4 @@
 export default {
-  brand: 'Awesomejev',
   navigation: '主导航',
   lightMode: '切换为浅色模式',
   darkMode: '切换为深色模式',

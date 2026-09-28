@@ -20,11 +20,12 @@ export type MinimaxAuthCardProps = Auth4Props & {
     emailAction: string; or: string; agreement: string; terms: string; privacy: string; and: string;
   };
   signupCredits: number;
+  authMarketingImage?: string;
   onCodeOpenChange?: (open: boolean) => void;
   onCloseAuth?: () => void;
 };
 
-export function MinimaxAuthCard({ copy, card, signupCredits, brand, logo, methods, inviteRequired, locale, callbackURL, onAuthenticated, onOAuthStart, onOAuthFailure, onCodeOpenChange, onCloseAuth }: MinimaxAuthCardProps) {
+export function MinimaxAuthCard({ copy, card, signupCredits, brand, logo, authMarketingImage, methods, inviteRequired, locale, callbackURL, onAuthenticated, onOAuthStart, onOAuthFailure, onCodeOpenChange, onCloseAuth }: MinimaxAuthCardProps) {
   const [mode, setMode] = useState<'sign-in' | 'sign-up' | 'forgot' | 'verify'>('sign-in');
   const [emailExpanded, setEmailExpanded] = useState(false);
   const [email, setEmail] = useState('');
@@ -104,7 +105,7 @@ export function MinimaxAuthCard({ copy, card, signupCredits, brand, logo, method
 
   return <><div className="minimax-auth">
     <aside className="minimax-auth-media" aria-hidden="true">
-      <img className="minimax-auth-photo" src="/video-tool/professional-headshot.webp" alt="" />
+      {authMarketingImage && <img className="minimax-auth-photo" src={authMarketingImage} alt="" />}
       <div className="minimax-auth-media-top">{logo && <img src={logo.src} alt="" />}{brand}</div>
       <p className="minimax-auth-media-bottom">{card.mediaLines.map((line, index) => <span key={index}>{line}</span>)}</p>
     </aside>

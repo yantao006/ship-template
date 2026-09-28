@@ -8,7 +8,7 @@ export function Header({ locale, userName, userEmail, userImage, credits }: { lo
   const copy = messages[locale];
   return <section id="header">
     <ReplicaNavigation
-      brand={copy.nav.brand}
+      brand={site.brand}
       logo={site.logo}
       brandHref={routePath(locale, 'home')}
       navigationLabel={copy.nav.navigation}

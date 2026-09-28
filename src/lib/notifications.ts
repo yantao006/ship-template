@@ -27,7 +27,7 @@ async function send(provider: EmailProvider, site: SiteConfig, to: string, subje
 
 export function notifySignInCode(provider: EmailProvider, site: SiteConfig, to: string, code: string, locale = '') {
   const copy = messages[localeFor(locale)].mail;
-  const brand = site.email.brand ?? site.brand;
+  const brand = site.email.brand && site.email.brand !== site.brand ? site.email.brand : site.brand;
   const fields = { brand, code };
   const subject = fill(copy.signInCodeSubject, fields);
   const title = fill(copy.signInCodeTitle, fields);
@@ -54,7 +54,7 @@ export function notifyVerification(provider: EmailProvider, site: SiteConfig, to
 
 export function notifyPasswordReset(provider: EmailProvider, site: SiteConfig, to: string, url: string) {
   const copy = messages[mailLocale(url)].mail;
-  return send(provider, site, to, copy.resetMailSubject, copy.resetMailLead, url, copy.resetMailAction, copy.resetMailExpiry);
+  return send(provider, site, to, fill(copy.resetMailSubject, { brand: site.brand }), fill(copy.resetMailLead, { brand: site.brand }), url, copy.resetMailAction, copy.resetMailExpiry);
 }
 
 export function notifyGenerationComplete(provider: EmailProvider, site: SiteConfig, to: string, locale = '') {

@@ -1,6 +1,6 @@
 export default {
   title: 'Choose your plan', lead: 'Flexible credits for the way you create.',
-  monthly: 'Monthly', yearly: 'Yearly', packs: 'Credit Packs', save: 'Save up to 50%',
+  monthly: 'Monthly', yearly: 'Yearly', packs: 'Credit Packs', save: 'Save up to {percent}%',
   monthlyHint: 'Monthly price and credits', yearlyHint: 'Yearly total shown below each monthly rate', packHint: 'One-time credit purchase',
   popular: 'MOST POPULAR', off: 'Annual savings', perMonth: '/ month', perCredit: '/ credit', billedYearly: 'billed yearly',
   creditsMonth: 'credits / month', credits: 'credits', oneTime: 'one-time',

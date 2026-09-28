@@ -1,6 +1,6 @@
 export default {
-  resetMailSubject: 'Reset your password for Awesomejev',
-  resetMailLead: 'Open this link to choose a new password:',
+  resetMailSubject: 'Reset your password for {brand}',
+  resetMailLead: 'Open this link to choose a new password for {brand}:',
   resetMailAction: 'Reset password',
   resetMailExpiry: 'This link expires in 1 hour.',
   signInCodeSubject: 'Your {brand} verification code: {code} - {brand}',

@@ -89,6 +89,7 @@ const config: VideoToolStructure = {
   referenceKinds: [{ id: 'image', icon: frame }, { id: 'video', icon: film, mediaIds: ['video'] }, { id: 'audio', icon: note, mediaIds: ['video'] }],
   referenceLimits: { image: 9, video: 3, audio: 3 },
   quantity: { min: 1, max: 4, default: 1 },
+  prompt: { maxLength: 7000, maxLengthByMedia: { image: 20000 } },
   tabs: [{ id: 'use-cases' }, { id: 'history' }, { id: 'break' }],
   assets: [
     { id: 'lattice-pie', type: 'video', url: '/video-tool/video-case.mp4', poster: '/video-tool/video-poster.jpg', thumbnail: '/video-tool/video-thumb-1.webp', tabId: 'use-cases', mediaIds: ['video'], actionIds: useActions, links: useLinks },

@@ -24,13 +24,13 @@ export default {
       format: { jpeg: 'JPEG', png: 'PNG' },
     },
     references: {
-      title: 'Reference Assets', titleByWorkflow: { 'image-video': 'Image', 'image-edit': 'Input Images', 'multi-image': 'Input Images' }, uploadHint: 'Click or drag to upload images, videos, or audio', uploadHintByMedia: { image: 'Click or drag to upload reference images' }, hintsByWorkflow: { 'image-video': 'Add a first or last frame', 'image-edit': 'Click to upload (16 max)', 'multi-image': 'Click to upload (1 max)' }, startFrame: 'Start Frame', endFrame: 'End Frame', library: 'Use Asset Library', closeLibrary: 'Close library',
+      title: 'Reference Assets', titleByWorkflow: { 'image-video': 'Image', 'image-edit': 'Input Images', 'multi-image': 'Input Images' }, uploadHint: 'Click or drag to upload images, videos, or audio', uploadHintByMedia: { image: 'Click or drag to upload reference images' }, hintsByWorkflow: { 'image-video': 'Add a first or last frame', 'image-edit': 'Click to upload ({limit} max)', 'multi-image': 'Click to upload ({limit} max)' }, startFrame: 'Start Frame', endFrame: 'End Frame', library: 'Use Asset Library', closeLibrary: 'Close library',
       limits: { image: 'Images', video: 'Videos', audio: 'Audio' },
       candidates: { 'lattice-pie-photo': 'Lattice pie', 'fruit-tarts-photo': 'Fruit tarts', 'seeded-loaf-photo': 'Seeded loaf', 'layer-cake-photo': 'Layer cake', 'kitchen-video': 'Kitchen video', 'kitchen-audio': 'Kitchen audio' },
     },
-    prompt: { title: 'Prompt', titleByWorkflow: { 'multi-image': 'Decomposition instructions (optional)' }, placeholder: 'Describe what you want. Use @1, @2... to reference uploaded assets', placeholderByMedia: { image: 'Describe the image you want to generate...' }, placeholderByWorkflow: { 'multi-image': 'Leave blank for automatic decomposition, or specify the elements to separate...' }, maxLength: 7000, maxLengthByMedia: { image: 20000 }, assist: 'Generate with AI', suggestion: 'First-person kitchen baking vlog, slight wide lens, only hands and forearms in frame.' },
+    prompt: { title: 'Prompt', titleByWorkflow: { 'multi-image': 'Decomposition instructions (optional)' }, placeholder: 'Describe what you want. Use @1, @2... to reference uploaded assets', placeholderByMedia: { image: 'Describe the image you want to generate...' }, placeholderByWorkflow: { 'multi-image': 'Leave blank for automatic decomposition, or specify the elements to separate...' }, assist: 'Generate with AI', suggestion: 'First-person kitchen baking vlog, slight wide lens, only hands and forearms in frame.' },
     model: 'Model', workflowLabel: 'Workflow', parameters: 'Parameters', expand: 'Show parameters', collapse: 'Hide parameters', quantity: 'Quantity', quantityPrefix: 'x', create: 'Create',
-    promo: 'Annual plan: only 30 credits, save 30%', promoDismiss: 'Dismiss annual plan offer',
+    promo: 'Explore annual plans', promoDismiss: 'Dismiss annual plan offer',
     tabs: {
       'use-cases': { label: 'Use Cases', empty: 'No use cases yet.', labelByMedia: { image: 'Templates' } },
       history: { label: 'History', empty: 'No generations yet.' },

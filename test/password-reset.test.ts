@@ -56,7 +56,7 @@ test('password reset switch on sends one link and the reset page token sets a ne
     assert.equal(mail.sent.length, 1);
     assert.equal(mail.sent[0].from, site.email.from);
     assert.equal(mail.sent[0].to, 'on@example.com');
-    assert.equal(mail.sent[0].subject, messages.zh.mail.resetMailSubject);
+    assert.equal(mail.sent[0].subject, messages.zh.mail.resetMailSubject.replace('{brand}', site.brand));
     assert.match(mail.sent[0].text, /\/api\/auth\/reset-password\//);
     const link = mail.sent[0].text.match(/https?:\/\/\S+/)?.[0];
     assert.ok(link);

@@ -8,6 +8,7 @@ const languages = [
 export default {
   brand: 'Awesomejev Test Video',
   logo: { src: '/brand/logo.svg', alt: 'Awesomejev logo' },
+  authMarketingImage: '/video-tool/professional-headshot.webp',
   previewOnly: true,
   apex: 'awesomejev.link',
   url: 'https://awesomejev.link',
@@ -27,7 +28,6 @@ export default {
       { name: 'al***x', total: 47 }, { name: 'li***n', total: 28 }, { name: 'su***a', total: 23 },
     ] },
     contactEmail: 'support@awesomejev.link',
-    feedbackEmail: 'support@awesomejev.link',
     commercialUseHref: '/commercial-license',
     shareNetworks: ['Facebook', 'X', 'WhatsApp', 'LinkedIn', 'Telegram'] as const,
     sharePostNetworks: ['Reddit', 'X', 'Facebook', 'LinkedIn'] as const,

@@ -3,11 +3,11 @@
 import React, { useState } from 'react';
 import { Check, ChevronDown, Image as ImageIcon, Sparkles, Video } from 'lucide-react';
 import { requestJson } from '@/lib/json-request';
-import type en from '@site/messages/en';
+import type { Copy as PricingCopy } from '../pricing/pricing-checkout';
+export type { Copy as PricingCopy } from '../pricing/pricing-checkout';
 import type { Plan, AccountCopy } from './account-dialogs';
-import { count, money, planDisplay, pricingFeatureLines, hasAnnualOffer } from '../pricing/plan-display';
+import { annualSavingsPercent, count, money, planDisplay, pricingFeatureLines } from '../pricing/plan-display';
 
-export type PricingCopy = (typeof en)['pricing'];
 type Period = Plan['billing'];
 
 export function defaultPurchaseSelection(plans: Plan[]): Record<Period, string> {
@@ -29,7 +29,8 @@ export function BuyCreditsContent({ plans, copy, pricing, brand, locale }: { pla
   const [error, setError] = useState('');
   const visible = plans.filter(plan => plan.billing === period);
   const picked = visible.find(plan => plan.id === selectedByPeriod[period]) ?? visible[0];
-  const annual = hasAnnualOffer(plans);
+  const savings = annualSavingsPercent(plans);
+  const annual = savings > 0;
   const features = picked ? pricingFeatureLines(picked, period, pricing) : [];
 
   function changePeriod(value: Period) {
@@ -50,8 +51,8 @@ export function BuyCreditsContent({ plans, copy, pricing, brand, locale }: { pla
   }
 
   return <div className={`buy-credits-content${period === 'once' ? ' packs' : ''}`}>
-    {annual && <div className="buy-credits-offer"><span><Sparkles size={16}/>{brand} · {pricing.save}</span><strong>50% OFF</strong><small>{pricing.yearlyHint}</small></div>}
-    <div className="buy-credits-tabs" role="group" aria-label={copy.plansTitle}>{(['month', 'year', 'once'] as const).map(value => <button key={value} type="button" aria-pressed={period === value} className={period === value ? 'selected' : ''} onClick={() => changePeriod(value)}>{value === 'month' ? pricing.monthly : value === 'year' ? pricing.yearly : pricing.packs}{value === 'year' && annual && <small>-50%</small>}</button>)}</div>
+    {annual && <div className="buy-credits-offer"><span><Sparkles size={16}/>{brand} · {pricing.save.replace('{percent}', String(savings))}</span><strong>{savings}% OFF</strong><small>{pricing.yearlyHint}</small></div>}
+    <div className="buy-credits-tabs" role="group" aria-label={copy.plansTitle}>{(['month', 'year', 'once'] as const).map(value => <button key={value} type="button" aria-pressed={period === value} className={period === value ? 'selected' : ''} onClick={() => changePeriod(value)}>{value === 'month' ? pricing.monthly : value === 'year' ? pricing.yearly : pricing.packs}{value === 'year' && annual && <small>-{savings}%</small>}</button>)}</div>
     {period !== 'once' && <p className="buy-credits-cancel"><Check size={16}/>{copy.cancelAnytime}</p>}
     <div className="buy-credits-columns">
       <section className="buy-credits-included" aria-labelledby="buy-credits-included-heading"><h3 id="buy-credits-included-heading">{copy.whatsIncluded}</h3>
@@ -61,7 +62,7 @@ export function BuyCreditsContent({ plans, copy, pricing, brand, locale }: { pla
       </section>
       <section className="buy-credits-options" aria-label={copy.plansTitle}>
         <div className="buy-credits-cards">{visible.map(plan => { const isPicked = picked?.id === plan.id; const { price, total, previousPrice, discount } = planDisplay(plan, plans, multiple);
-          return <div key={plan.id} className={`buy-credits-card${isPicked ? ' selected' : ''}`}><button type="button" className="buy-credits-plan-choice" aria-pressed={isPicked} onClick={() => { setSelected(plan.id); setError(''); }}><span><b>{plan.name}</b>{period === 'year' && <small>{money(total)} {pricing.billedYearly}</small>}</span><span>{period === 'year' && previousPrice && <del>{money(previousPrice)}</del>}<strong>{money(price)}</strong>{period !== 'once' && <small>{pricing.perMonth}</small>}</span></button>{discount > 0 && <span className="buy-credits-discount">{discount}% OFF</span>}{plan.tier === 'standard' && <span className="buy-credits-popular"><Sparkles size={12}/>{pricing.popular}</span>}
+          return <div key={plan.id} className={`buy-credits-card${isPicked ? ' selected' : ''}`}><button type="button" className="buy-credits-plan-choice" aria-pressed={isPicked} onClick={() => { setSelected(plan.id); setError(''); }}><span><b>{plan.name}</b>{period === 'year' && <small>{money(total, plan.currency, locale)} {pricing.billedYearly}</small>}</span><span>{period === 'year' && previousPrice && <del>{money(previousPrice, plan.currency, locale)}</del>}<strong>{money(price, plan.currency, locale)}</strong>{period !== 'once' && <small>{pricing.perMonth}</small>}</span></button>{discount > 0 && <span className="buy-credits-discount">{discount}% OFF</span>}{plan.tier === 'standard' && <span className="buy-credits-popular"><Sparkles size={12}/>{pricing.popular}</span>}
             {plan.tier === 'max' && <div className="buy-credits-multiplier"><input type="range" min="1" max="5" value={multiple} aria-label={pricing.maxMultiplier} onChange={event => { setMultiple(Number(event.target.value)); setSelected(plan.id); setError(''); }} /><div>{[1,2,3,4,5].map(n => <button type="button" key={n} className={multiple === n ? 'selected' : ''} onClick={() => { setMultiple(n); setSelected(plan.id); setError(''); }}>{n}x</button>)}</div></div>}
           </div> })}</div>
         <button type="button" className="buy-credits-start" disabled={pending || !picked} onClick={() => void checkout()}>{pending ? pricing.wait : copy.getStarted}</button>
