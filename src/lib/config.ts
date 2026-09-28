@@ -24,6 +24,7 @@ export type SiteConfig = {
     checkIn: { enabled: boolean; credits: number };
     share: { enabled: boolean; credits: number; maxSubmissions: number };
     referral: { enabled: boolean; inviterCredits: number; friendCredits: number; claimWindowHours: number };
+    leaderboardDemo?: { viewerEmail: string; entries: readonly { name: string; total: number }[] };
     contactEmail: string; feedbackEmail: string; commercialUseHref: string;
     shareNetworks: readonly ShareNetworkName[];
     sharePostNetworks: readonly ShareNetworkName[];
