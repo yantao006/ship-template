@@ -128,7 +128,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   ├── components/                   # Feature-level UI composition and client controls
 │   │   ├── account/                  # Account pages, sidebar, profile, menus, purchase dialog, header account adapter
 │   │   ├── auth/                     # Sign-in, OTP, recovery, handoff, shared headless flows
-│   │   │   └── minimax-auth-card.tsx  # Live email-code sign-in card; password fallback remains separate
+│   │   │   └── minimax-auth-card.tsx  # Live email-code sign-in card and shared Copy type
 │   │   ├── pricing/                  # Pricing page, checkout, commercial license, shared plan-display.ts rules
 │   │   ├── workspace/                # Persistent dashboard/credits sidebar and workspace content
 │   │   ├── home/                     # Session-aware home entry and referral capture
@@ -241,7 +241,7 @@ On each request, production login accepts the Worker `SITE_URL` only when it equ
 `src/lib/invites.ts` owns invite code format, normalization, inventory reads, creation, and revocation.
 `src/components/shell/site-shell.tsx` mounts one `AuthDialogProvider` for public pages; `auth/auth-control.tsx` triggers the live source-inspired card in `auth/minimax-auth-card.tsx`.
 Below 768px the shared card uses the existing bottom drawer; email sign-in sends a mailed six-digit code and replaces the visible card with a wide Auth-6 dialog only after a successful send; the back action restores the card while close exits sign-in, and successful code sign-in follows the existing full-page reload.
-The standalone desktop callback keeps `sign-in-card.tsx` as a fallback outside that shell.
+Outside the shared shell, including the standalone desktop callback, `auth-control.tsx` opens the same `minimax-auth-card.tsx` and Auth-6 email-code flow instead of a password sign-in form.
 `src/lib/auth-client.ts` owns the browser auth client, and `src/lib/browser-nav-copy.ts` assembles navigation and auth copy without sending mail strings to client props.
 When `email.passwordReset` is on, the forgot-password link is sent through `EmailProvider`; `src/components/auth/verify-email.tsx` provides the verification waiting and resend page; `src/components/auth/reset-password.tsx` accepts the new password; desktop handoff uses `src/lib/desktop-auth.ts` to validate a configured app scheme before `/api/auth/desktop-handoff` issues a session-bearing return URL.
 
@@ -319,7 +319,7 @@ Vendor-specific request and callback formats stay in adapters, while the page, t
 | --- | --- |
 | Change copy or switches | Edit `site/messages/en.ts` and `site/messages/zh.ts` together for text, or `site/site.config.ts` and `site/auth.config.ts` for site choices; connect new switches to their `src/components/` view, `src/lib/` or `src/app/api/` server gate, and `scripts/site-check.ts` when bindings change. |
 | Add a page section | Implement or extend a section in `src/components/home/sections/` and compose it from `HomePage.tsx`; supply localized content from `site/messages/` and tokens from `site/theme.config.ts` and `src/app/globals.css`. Public page routes belong under the `(site)` layouts and must join the initial shell route classification in `src/lib/routes.ts`; the shared chrome is in `site-shell.tsx`. |
-| Add a sign-in method | Extend `site/auth.config.ts`, the method selection in `src/lib/auth.ts`, the public card in `src/components/auth/minimax-auth-card.tsx` and desktop fallback in `src/components/auth/sign-in-card.tsx`, and the callback or guard in `src/app/api/auth/[...all]/route.ts`; declare credentials in `src/lib/env.ts`, `wrangler.jsonc`, and `scripts/site-check.ts`, with auth tests under `test/`. |
+| Add a sign-in method | Extend `site/auth.config.ts`, the method selection in `src/lib/auth.ts`, the shared `src/components/auth/minimax-auth-card.tsx` (also rendered by `auth-control.tsx` without a dialog provider), and the callback or guard in `src/app/api/auth/[...all]/route.ts`; declare credentials in `src/lib/env.ts`, `wrangler.jsonc`, and `scripts/site-check.ts`, with auth tests under `test/`. |
 | Add a table | Add the next SQL file in `migrations/`, then update `src/lib/auth-schema.ts` for better-auth tables or native D1 queries and types in the owning `src/lib/` service; expose user-scoped reads through `src/app/` and test the migration and operation. |
 | Add an upstream | Put provider-specific calls and response mapping behind an adapter in `src/lib/`; connect it through a validated `src/app/api/` endpoint and, for long-running work, `worker.ts`, `src/lib/ledger.ts`, and a progress-aware component; add its Worker secret names to `src/lib/env.ts`, `wrangler.jsonc`, and `scripts/site-check.ts`. |
 | Replicate a site | Use `fixtures/second-site/` as the shape example, then create the new `site/` choices and matching `wrangler.jsonc`, provision that site's D1, R2, Queue, hostname, and secrets, apply `migrations/` to its D1, and run `pnpm site-check` against the new site. |

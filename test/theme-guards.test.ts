@@ -72,7 +72,7 @@ test('light and dark palettes have the same six semantic keys', () => {
   const css = read('src/app/globals.css');
   assert.doesNotMatch(css, /\.auth-panel\s*\{/);
   assert.match(read('src/components/styles/controls.css'), /\.auth-button \{[^}]*--control-text: var\(--bg\)/);
-  assert.match(read('src/components/auth/sign-in-card.tsx'), /ui-button-solid auth-button/);
+  assert.match(read('src/components/auth/auth-control.tsx'), /ui-button-solid auth-button/);
   assert.match(css, /body \{[^}]*background: var\(--bg\); color: var\(--text\)/);
 });
 

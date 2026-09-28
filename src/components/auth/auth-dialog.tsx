@@ -27,7 +27,7 @@ export function safeReturnPath(path: string, origin: string) {
   catch { return '/'; }
 }
 
-async function serverHasSession() {
+export async function serverHasSession() {
   const response = await fetch('/api/auth/get-session', { credentials: 'same-origin', cache: 'no-store' });
   if (!response.ok) return false;
   const session = await response.json() as { session?: { id: string }; user?: { id: string } } | null;

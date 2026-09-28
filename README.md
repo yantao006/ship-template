@@ -3,7 +3,7 @@
 Next.js App Router + OpenNext on Cloudflare Workers, with a D1-backed better-auth account, a native-batch credit ledger, and two mail adapters.
 The reference site is live at [awesomejev.link](https://awesomejev.link/).
 Navigation, hero, workspace and credits copy live in `site/messages/en.ts` and `site/messages/zh.ts`; brand and resource names live in `site/site.config.ts`, while colors live in `site/theme.config.ts`.
-`site/auth.config.ts` selects email/password, Google, and GitHub sign-in independently; the live configuration enables email and Google but leaves GitHub off.
+`site/auth.config.ts` selects email-code, Google, and GitHub sign-in independently; the live configuration enables email and Google but leaves GitHub off.
 Google login uses the existing dedicated Google Cloud project and exact callback `https://awesomejev.link/api/auth/callback/google`.
 The Google consent app is in Testing mode; only the configured Google test users can finish sign-in until its branding and audience are published.
 
@@ -61,7 +61,7 @@ Apply migrations `0001` through `0003` locally for a preview with account reward
 Do not use production credentials in local preview configs.
 Google OAuth additionally needs real local credentials and that exact origin's `/api/auth/callback/google` registered on the OAuth client; fake credentials can only test the sign-in start, not complete the callback.
 Never commit that preview config or `.dev.vars`.
-Email/password signup and email-code sign-in use the same site's D1-backed better-auth session and account tables.
+Email/password signup and email-code sign-in use the same site's D1-backed better-auth session and account tables; the desktop callback opens the same email-code card and six-digit verification dialog when outside the public shell.
 Email verification, password reset, and account recovery are not configured; do not use a valuable password for this preview site.
 Do not use localhost as acceptance evidence for the public Google flow.
 The live verification is to open [awesomejev.link](https://awesomejev.link/), click **Sign In** in the top navigation, then choose **Continue with Google** inside the single card, select a permitted test account, consent, and confirm the navigation shows your name and the workspace shows 30 credits.

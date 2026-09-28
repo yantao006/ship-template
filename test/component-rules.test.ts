@@ -28,13 +28,16 @@ test('pricing restores only selection after auth and never initiates checkout on
   assert.doesNotMatch(restore, /checkout\(|paymentUrl|location\.assign/);
 });
 
-test('browser auth flow functions are shared without changing password and OTP boundaries', () => {
+test('browser auth flow shares social and invite helpers, while sign-in only uses email OTP', () => {
   const flow = readFileSync('src/components/auth/flows.ts', 'utf8');
-  const password = readFileSync('src/components/auth/sign-in-card.tsx', 'utf8');
-  const otp = readFileSync('src/components/auth/minimax-auth-card.tsx', 'utf8');
+  const card = readFileSync('src/components/auth/minimax-auth-card.tsx', 'utf8');
+  const control = readFileSync('src/components/auth/auth-control.tsx', 'utf8');
   assert.match(flow, /authClient\.signIn\.social/);
   assert.match(flow, /\/api\/invites\/validate/);
   assert.match(flow, /type: 'sign-in'/);
-  assert.match(password, /authClient\.signIn\.email\(\{ email, password \}\)/);
-  assert.match(otp, /sendSignInCode\(email\)/);
+  assert.match(card, /sendSignInCode\(email\)/);
+  assert.doesNotMatch(card, /authClient\.signIn\.email\(/);
+  assert.match(card, /authClient\.signUp\.email\(/);
+  assert.match(control, /<MinimaxAuthCard/);
+  assert.doesNotMatch(control, /SignInCard|authClient\.signIn\.email\(/);
 });
