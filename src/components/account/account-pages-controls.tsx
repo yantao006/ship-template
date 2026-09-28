@@ -29,17 +29,17 @@ export function AccountActions({ labels, email, locale }: { labels: Pick<Labels,
       window.location.replace(routePath(locale, 'home'));
     } catch { setError(labels.deleteFailed); setBusy(false); }
   }
-  return <><div className="account-page-actions"><button type="button" disabled={busy} onClick={async () => {
+  return <><div className="account-page-actions"><button type="button" className="ui-nav-item" disabled={busy} onClick={async () => {
     setBusy(true); setError('');
     try { const result = await authClient.signOut(); if (result.error) throw new Error(); router.refresh(); }
     catch { setError(labels.signOutFailed); setBusy(false); }
-  }}><LogOut size={16} aria-hidden="true"/>{labels.signOut}</button><button ref={deleteTrigger} type="button" className="account-page-delete" disabled={busy} onClick={() => { setError(''); setConfirming(true); }}><Trash2 size={16} aria-hidden="true"/>{labels.deleteAccount}</button></div>
+  }}><LogOut size={16} aria-hidden="true"/>{labels.signOut}</button><button ref={deleteTrigger} type="button" className="account-page-delete ui-nav-item" disabled={busy} onClick={() => { setError(''); setConfirming(true); }}><Trash2 size={16} aria-hidden="true"/>{labels.deleteAccount}</button></div>
     {error && !confirming && <p className="account-page-action-error" role="alert">{error}</p>}
     {confirming && <div className="account-delete-overlay" ref={backdrop}><div className="account-delete-dialog" role="dialog" aria-modal="true" aria-labelledby="account-delete-title" aria-describedby="account-delete-warning" ref={dialog}>
       <button type="button" className="account-delete-close" aria-label={labels.deleteCancel} disabled={busy} onClick={() => setConfirming(false)}><X size={18}/></button>
       <h2 id="account-delete-title">{labels.deleteTitle}</h2><p id="account-delete-warning">{labels.deleteWarning}</p>
       {error && <p className="account-page-action-error" role="alert">{error}</p>}
-      <div className="account-delete-buttons"><button type="button" disabled={busy} onClick={() => setConfirming(false)}>{labels.deleteCancel}</button><button type="button" disabled={busy} onClick={() => void deleteAccount()}>{busy ? labels.deleting : labels.deleteConfirm}</button></div>
+      <div className="account-delete-buttons"><button type="button" className="ui-button-outline" disabled={busy} onClick={() => setConfirming(false)}>{labels.deleteCancel}</button><button type="button" className="ui-button-solid" disabled={busy} onClick={() => void deleteAccount()}>{busy ? labels.deleting : labels.deleteConfirm}</button></div>
     </div></div>}
   </>;
 }
@@ -49,7 +49,7 @@ export function CreditRecords({ entries, labels, locale, sourceLabels }: { entri
   const visible = entries.filter(entry => filter === 'all' || (filter === 'earned' ? entry.amount > 0 : entry.amount < 0));
   const date = (time: number, withTime = false) => new Intl.DateTimeFormat(locale, { dateStyle: 'medium', ...(withTime ? { timeStyle: 'short' as const } : {}), timeZone: 'UTC' }).format(time);
   return <>
-    <label className="account-page-filter">{labels.changeType}<select value={filter} onChange={event => setFilter(event.target.value)}><option value="all">{labels.allRecords}</option><option value="earned">{labels.earned}</option><option value="spent">{labels.spent}</option></select></label>
+    <label className="account-page-filter">{labels.changeType}<select className="ui-input" value={filter} onChange={event => setFilter(event.target.value)}><option value="all">{labels.allRecords}</option><option value="earned">{labels.earned}</option><option value="spent">{labels.spent}</option></select></label>
     {visible.length ? <ul className="account-page-records">{visible.map(entry => <li key={entry.id}>
       <span className={`account-page-record-icon ${entry.amount > 0 ? 'positive' : ''}`} aria-hidden="true">{entry.amount > 0 ? '+' : '−'}</span>
       <span className="account-page-record-detail"><strong>{entry.source ? (sourceLabels[entry.source] ?? entry.source) : entry.kind === 'refund' ? labels.earned : labels.spent}</strong><small>{date(entry.created_at, true)}</small>{entry.source && <small>{entry.expires_at ? labels.expires.replace('{date}', date(entry.expires_at)) : labels.noExpiry}</small>}</span>

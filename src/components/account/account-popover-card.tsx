@@ -23,7 +23,7 @@ export function AccountPopoverRow({ row, itemRole }: { row: PopoverRow; itemRole
 }
 
 export function AccountPopoverCard({ header, rows, role, label, className }: { header: ReactNode; rows: readonly PopoverRow[]; role: 'dialog' | 'menu'; label: string; className?: string }) {
-  return <div className={`account-popover${className ? ` ${className}` : ''}`} role={role} aria-label={label}>
+  return <div className={`account-popover ui-enter-rise${className ? ` ${className}` : ''}`} role={role} aria-label={label}>
     {header}
     <div className="account-rows">{rows.map(row => <AccountPopoverRow key={row.id} row={row} itemRole={role === 'menu' ? 'menuitem' : undefined} />)}</div>
   </div>;

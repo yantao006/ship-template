@@ -23,7 +23,7 @@ test('dashboard and credits share a persistent layout with pathname-aware client
 });
 
 test('account, video tool and auth internal entries navigate with Link while external mail remains an anchor', () => {
-  assert.match(source('account/account-pages-content'), /<Link href=\{routePath\(locale, 'pricing'\)\}/);
+  assert.match(source('account/account-pages-content'), /<Link className="ui-button-solid" href=\{routePath\(locale, 'pricing'\)\}/);
   assert.match(source('account/account-pages-content'), /<a[^>]+mailto:/);
   for (const file of ['video-tool/composer', 'video-tool/stage']) {
     const content = source(file);

@@ -74,7 +74,7 @@ export function ReplicaNavigation({ brand, logo, brandHref, navigationLabel, lin
         <button className="replica-icon" type="button" aria-label={light ? darkLabel : lightLabel} onClick={toggleMode}>{light ? <Moon size={19} /> : <Sun size={19} />}</button>
         <div className="replica-action-wrap" ref={languageArea}>
           <button ref={languageRef} className={`replica-icon ${open === 'language' ? 'selected' : ''}`} type="button" aria-label={languageLabel} aria-expanded={open === 'language'} aria-haspopup="menu" onClick={() => toggle('language')}><Globe2 size={19} /></button>
-          {open === 'language' && <div className="replica-popover replica-language-menu" role="menu" aria-label={languageLabel}>
+          {open === 'language' && <div className="replica-popover replica-language-menu ui-enter-rise" role="menu" aria-label={languageLabel}>
             {locales.map(item => <button key={item.code} type="button" role="menuitemradio" aria-checked={locale === item.code} className={locale === item.code ? 'current' : ''} onClick={() => { setOpen(null); if (item.code !== locale) router.push(pathForLocale(pathname, item.code, locales.map(language => language.code))); }}><span className="replica-language-dot" />{item.name}</button>)}
           </div>}
         </div>

@@ -11,7 +11,7 @@ The current example has site-local accounts, invitation primitives, configurable
 - **One language per file:** `site/messages/en.ts` and `site/messages/zh.ts` compose matching per-module message files in `site/messages/en/` and `site/messages/zh/`; locale-aware pages select one set at a time.
   `site/site.config.ts` owns language entries; `src/lib/routes.ts` owns server navigation metadata, while `src/lib/route-paths.ts` holds client-safe route paths.
 - **One navigation path per purpose:** the navigation has one language control and one sign-in entry; its sign-in card lists only the methods enabled in `site/auth.config.ts`.
-- **Theme owns color:** `site/theme.config.ts` assembles `site/theme/` foundation and region palettes; `src/lib/theme-tokens.ts` generates the stylesheet in `src/app/layout.tsx`.
+- **Theme owns color:** `site/theme.config.ts` assembles `site/theme/` foundation and region palettes; `src/lib/theme-tokens.ts` generates color and semantic spacing/type/radius/motion tokens in `src/app/layout.tsx`. `src/components/styles/controls.css`, imported by `globals.css`, owns shared navigation items, solid/outline buttons, inputs and entrance motion; feature CSS retains surface colors and layout.
   `src/lib/theme-mode.ts` owns the root mode transitions; the layout freezes the first page's default and the shared header toggles the root mode without resetting it on client navigation, while legacy CSS surfaces still await migration.
 - **Pages compose sections:** `src/components/home/sections/HomePage.tsx` orders six content sections; five remain empty scaffolds, and the video tool renders its existing implementation. `src/components/shell/site-shell.tsx` owns one persistent header, flexible `main.site-main`, footer, and shared source-inspired login dialog for home, pricing, dashboard, and credits; the licensed Auth-4 fallback retains its original layout while its internal verification link uses client navigation.
 - **Long-running work is observable:** video generation uses an asynchronous task and progress flow, while the server validates costs and records credit movements in the ledger.
@@ -136,7 +136,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │   ├── shell/                    # Shared header, footer, navigation, language suggestion and theme controls
 │   │   ├── information/              # About, privacy and terms view
 │   │   ├── invites/                  # Invite redemption and administration views
-│   │   ├── styles/tags.css           # Shared account/video-model badge tones, imported once by app layout
+│   │   ├── styles/                   # Shared controls.css (via globals.css) and tags.css (via app layout)
 │   │   └── video-tool/               # Existing tool flat layout plus internal view-model.ts types
 │   └── lib/                          # Business logic, config exports, and integration seams
 │       ├── config.ts                 # Compiled choices, stable type re-exports and helpers
@@ -223,7 +223,7 @@ A new capability can be a new `src/lib/` service called by an API endpoint, a se
 `site.brand` and optional `site.logo` own visible identity; `site.authMarketingImage` owns the optional login background, while optional `account.feedbackEmail` falls back to `contactEmail` and `email.from` remains independent.
 `scripts/site-check.ts` compares the Worker name, D1/R2/Queue names, auth shape, email binding, callback origin, and required secret names before publication.
 `site/messages/en.ts` and `site/messages/zh.ts` compose matching per-module copy under `site/messages/{en,zh}/`, including separate mail, sign-in, invites, handoff, account, workspace, credits, pricing, footer, and video-tool files; `src/app/[locale]/` and `src/components/shell/language-control.tsx` select copy without duplicating business logic.
-`site/theme.config.ts` assembles the foundation and paired region palettes in `site/theme/`, plus the single email-only palette; `src/lib/theme-tokens.ts` generates the CSS token stylesheet in `src/app/layout.tsx` instead of inline body styles.
+`site/theme.config.ts` assembles the foundation and paired region palettes in `site/theme/`, plus the single email-only palette; `src/lib/theme-tokens.ts` generates the CSS token stylesheet in `src/app/layout.tsx` instead of inline body styles; `src/components/styles/controls.css` owns reusable control states and entrance keyframes, while region CSS assigns surface-specific colors and geometry.
 The middleware marks whether the first route uses the public shell; the root layout applies that route's default through `data-mode="auto"`, and `ThemeModeInitializer` freezes it on `<html>` before client navigation. `ReplicaNavigation` reads the document mode and toggles it through `src/lib/theme-mode.ts`, preserving the selected mode across page changes.
 Header language changes use App Router navigation to preserve the document; `ReplicaNavigation` synchronizes `<html lang>` because the root layout persists across client-side transitions.
 `src/middleware.ts` forwards the route locale so the root layout sets matching `<html lang>` and metadata, including for the default-language `/` homepage.

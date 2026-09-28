@@ -2,6 +2,7 @@
    the existing site CSS retains ownership of base element styles. */
 @import "tailwindcss/theme" layer(theme);
 @import "tailwindcss/utilities";
+@import "../components/styles/controls.css";
 @import "../components/auth/minimax-auth-card.css";
 @import "../components/auth/auth-6.css";
 @custom-variant dark (&:where(html[data-mode="dark"] *, html[data-mode="auto"][data-default-mode="dark"] *));
@@ -106,9 +107,7 @@ html:is([data-mode="dark"], [data-mode="auto"][data-default-mode="dark"]) .auth-
 .workspace-layout { display: grid; flex: 1; grid-template-columns: 245px minmax(0, 1fr); }
 .workspace-sidebar { display: flex; flex-direction: column; gap: 26px; padding: 35px 20px; border-right: 1px solid var(--line); background: var(--surface); }
 .workspace-sidebar nav { display: grid; gap: 5px; }
-.workspace-sidebar nav a { display: block; padding: 11px 12px; border-radius: 7px; color: var(--muted); text-decoration: none; font-size: 14px; }
-.workspace-sidebar nav a:hover, .workspace-sidebar nav a.active { background: var(--hover); color: var(--text); }
-.workspace-sidebar nav a.active { font-weight: 650; }
+.workspace-sidebar nav a { display: block; padding: 11px 12px; }
 .sidebar-footnote { margin: auto 12px 0; color: var(--muted); font-size: 12px; }
 .workspace-main { min-width: 0; width: min(100%, 1050px); padding: 46px clamp(20px, 4vw, 64px) 80px; }
 .workspace-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 32px; }
@@ -150,7 +149,7 @@ html:is([data-mode="dark"], [data-mode="auto"][data-default-mode="dark"]) .auth-
   .workspace-layout { display: block; }
   .workspace-sidebar { padding: 12px 16px; border-right: 0; border-bottom: 1px solid var(--line); }
   .workspace-sidebar nav { display: flex; gap: 8px; }
-  .workspace-sidebar nav a { padding: 8px 10px; font-size: 12px; }
+  .workspace-sidebar nav a { padding: 8px 10px; font-size: var(--text-12); }
   .sidebar-footnote { display: none; }
   .workspace-main { padding: 28px 16px 60px; }
   .credits-card-head { align-items: flex-start; flex-direction: column; padding: 20px; }

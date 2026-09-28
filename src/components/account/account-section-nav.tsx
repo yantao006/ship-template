@@ -11,6 +11,6 @@ export function AccountSectionNav({ label, items }: { label: string; items: read
   return <aside className="account-pages-sidebar"><nav aria-label={label}>{items.map(item => {
     const Icon = icons[item.id];
     const current = pathname === item.href;
-    return <Link key={item.id} href={item.href} className={current ? 'active' : undefined} aria-current={current ? 'page' : undefined}>{Icon && <Icon size={16} aria-hidden="true" />}{item.label}</Link>;
+    return <Link key={item.id} href={item.href} className={`ui-nav-item${current ? ' active' : ''}`} aria-current={current ? 'page' : undefined}>{Icon && <Icon size={16} aria-hidden="true" />}{item.label}</Link>;
   })}</nav></aside>;
 }
