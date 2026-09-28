@@ -8,7 +8,7 @@ import { MinimaxAuthCard, type MinimaxAuthCardProps } from './blocks/minimax-aut
 import { useDismissableLayer } from '@/lib/use-dismissable-layer';
 
 const storageKey = 'site-auth-return';
-export type AuthIntent = { source?: string; intent?: 'stay' | 'open-history' | 'restore-draft' | 'resume-checkout'; draftId?: string; onSuccess?: () => void };
+export type AuthIntent = { source?: string; intent?: 'stay' | 'open-history' | 'restore-draft' | 'resume-checkout'; draftId?: string; onSuccess?: () => void; showImmediately?: boolean };
 type AuthContextValue = { openAuth: (options?: AuthIntent) => Promise<boolean>; closeAuth: () => void };
 const Context = createContext<AuthContextValue | null>(null);
 
@@ -91,16 +91,34 @@ export function AuthDialogProvider({ children, ...auth }: Omit<MinimaxAuthCardPr
 
   const openAuth = useCallback(async (options: AuthIntent = {}) => {
     if (active.current || opening.current) return false;
-    opening.current = true;
+    const showDialog = () => {
+      trigger.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+      const id = ++attempt.current;
+      setIntent(options);
+      active.current = true;
+      setOpen(true);
+      return id;
+    };
+    // The guest avatar should react to the click, not wait on a session probe.
+    // Other entry points still confirm the session before showing sign-in.
+    const immediateAttempt = options.showImmediately ? showDialog() : null;
+    if (immediateAttempt === null) opening.current = true;
     try {
-      if (await serverHasSession()) { options.onSuccess?.(); router.refresh(); return true; }
+      if (await serverHasSession()) {
+        // A dismissed dialog (or a newer attempt) cannot be closed by a late probe.
+        if (immediateAttempt !== null) {
+          if (!active.current || attempt.current !== immediateAttempt) return false;
+          active.current = false;
+          setOpen(false);
+          setIntent({});
+        }
+        options.onSuccess?.();
+        router.refresh();
+        return true;
+      }
     } catch { /* Network failures leave the form available for retry. */ }
-    finally { opening.current = false; }
-    trigger.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    attempt.current += 1;
-    setIntent(options);
-    active.current = true;
-    setOpen(true);
+    finally { if (immediateAttempt === null) opening.current = false; }
+    if (immediateAttempt === null) showDialog();
     return false;
   }, [router]);
 
