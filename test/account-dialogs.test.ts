@@ -5,15 +5,15 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import messages from '../site/messages/en';
 import site from '../site/site.config';
-import { AccountDialogs, shareRecommendationText, type Dialog } from '../src/components/blocks/account-dialogs';
+import { AccountDialogs, shareRecommendationText, type Activity, type Dialog } from '../src/components/blocks/account-dialogs';
 
 const copy = messages.account;
 const dialogs = ['checkin', 'share', 'invite', 'contact', 'feedback', 'plans', 'invoices'] as const satisfies readonly NonNullable<Dialog>[];
-const activity = { balance: 10, referralCode: '0123456789abcdef0123456789abcdef', checkInDays: [], submissions: [], referralCount: 0, purchases: [], leaderboard: [], referralHistory: [] };
-const render = (dialog: NonNullable<Dialog>) => renderToStaticMarkup(createElement(AccountDialogs, {
+const activity: Activity = { balance: 10, referralCode: '0123456789abcdef0123456789abcdef', checkInDays: [], submissions: [], referralCount: 0, purchases: [], leaderboard: [], referralHistory: [] };
+const render = (dialog: NonNullable<Dialog>, options: { viewerEmail?: string; activity?: Activity | null } = {}) => renderToStaticMarkup(createElement(AccountDialogs, {
   dialog, onClose: () => {}, copy, labels: { credits: messages.nav.availableCredits }, settings: site.account,
-  plans: site.plans.map(plan => ({ ...plan, name: plan.id, checkoutEnabled: false })), pricing: messages.pricing, activity, busy: false, error: '', notice: '',
-  locale: 'en', dateLocale: 'en-US', siteUrl: site.url, brand: site.brand,
+  plans: site.plans.map(plan => ({ ...plan, name: plan.id, checkoutEnabled: false })), pricing: messages.pricing, activity: options.activity === undefined ? activity : options.activity, busy: false, error: '', notice: '',
+  locale: 'en', dateLocale: 'en-US', siteUrl: site.url, brand: site.brand, viewerEmail: options.viewerEmail ?? 'other@example.com',
   icons: { checkin: createElement('svg'), share: createElement('svg'), invite: createElement('svg') },
   onCopyText: () => {}, onAction: async () => true, onRefresh: () => {},
 }));
@@ -56,6 +56,25 @@ test('invite card uses the official claim link, true empty data and configured r
   assert.match(markup, /Refresh referral history/);
   assert.match(markup, /TOP 3/);
   assert.doesNotMatch(markup, /Gmail|daily cap|IP address/);
+});
+
+test('illustrative leaderboard is scoped to the configured viewer and never replaces real referrals', () => {
+  const demo = render('invite', { viewerEmail: site.account.leaderboardDemo.viewerEmail.toUpperCase() });
+  assert.match(demo, /data-demo="true"/);
+  assert.match(demo, /Illustrative preview only - not recorded invitations/);
+  assert.match(demo, /lucide-crown/);
+  assert.equal((demo.match(/lucide-medal/g) ?? []).length, 3);
+  assert.match(demo, /47 successful invites/);
+  assert.match(demo, /Total earned credits<b>0<\/b>/);
+  assert.match(demo, /You haven&#x27;t referred any friends yet!/);
+  const pending = render('invite', { viewerEmail: site.account.leaderboardDemo.viewerEmail, activity: null });
+  assert.doesNotMatch(pending, /data-demo|47 successful invites/);
+  const other = render('invite', { viewerEmail: 'someone-else@example.com' });
+  assert.doesNotMatch(other, /data-demo|47 successful invites/);
+  assert.match(other, /No rewarded referrals yet/);
+  const real = render('invite', { viewerEmail: site.account.leaderboardDemo.viewerEmail, activity: { ...activity, leaderboard: [{ name: 're***l', total: 2 }] } });
+  assert.match(real, /re\*\*\*l/);
+  assert.doesNotMatch(real, /data-demo|47 successful invites/);
 });
 
 test('invite social hover and keyboard focus share the same scoped, reduced-motion-aware treatment', () => {

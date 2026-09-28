@@ -22,6 +22,10 @@ export default {
     checkIn: { enabled: true, credits: 1 },
     share: { enabled: true, credits: 40, maxSubmissions: 3 },
     referral: { enabled: true, inviterCredits: 6, friendCredits: 4, claimWindowHours: 24 },
+    // An illustrative leaderboard for this preview account only; it never enters D1 or rewards.
+    leaderboardDemo: { viewerEmail: 'yantao006@gmail.com', entries: [
+      { name: 'al***x', total: 47 }, { name: 'li***n', total: 28 }, { name: 'su***a', total: 23 },
+    ] },
     contactEmail: 'support@awesomejev.link',
     feedbackEmail: 'support@awesomejev.link',
     commercialUseHref: '/commercial-license',

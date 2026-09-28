@@ -44,7 +44,7 @@ test('check-in and invite render the same official claim destination', () => {
   const render = (dialog: 'checkin' | 'invite') => renderToStaticMarkup(createElement(AccountDialogs, {
     dialog, onClose: () => {}, copy: en.account, labels: { credits: en.nav.availableCredits }, settings: site.account,
     plans: [], pricing: en.pricing, activity, busy: false, error: '', notice: '', locale: 'en', dateLocale: 'en-US',
-    siteUrl: site.url, brand: site.brand, icons: { checkin: createElement('svg'), share: createElement('svg'), invite: createElement('svg') },
+    siteUrl: site.url, brand: site.brand, viewerEmail: 'other@example.com', icons: { checkin: createElement('svg'), share: createElement('svg'), invite: createElement('svg') },
     onCopyText: () => {}, onAction: async () => true, onRefresh: () => {},
   }));
   const checkin = render('checkin');
