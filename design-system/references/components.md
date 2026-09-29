@@ -1,6 +1,6 @@
 # 组件库
 
-> 51个经过验证的可复用组件。直接复制代码使用。
+> 53个经过验证的可复用组件。直接复制代码使用。
 
 ## 📌 场景索引（先查这里，再去找具体代码）
 
@@ -20,6 +20,8 @@
 | **动效/滑动** | #4 Scroll Reveal、#28 手风琴、#31 翻转卡片、#30 堆叠卡片、#26 横向滑动 |
 | **日历/时间** | #17 日历网格、#41 横向时间线 |
 | **旅行/生活** | #21 机票卡片、#22 住宿卡片 |
+| **落地页/场景亮点** | #53 亮点四卡 |
+| **落地页/视频编辑** | #54 分栏编辑示例 |
 
 > 🚨 组件选择原则：
 > - **连贯性 > 多样性。** 一个页面的视觉语言应该统一，不是“组件展览会”。同类内容用同一种组件样式，不要每个 section 都换一种全新的视觉形式。
@@ -4577,3 +4579,142 @@ document.querySelectorAll('[data-sparkle-colors]').forEach(el => {
 ```
 
 ⚠️ 旋转速度12s一圈。文字颜色用松针绿。中心圆用琥珀金。文字末尾加空格或符号分隔。
+
+---
+
+## 53. 亮点四卡
+
+适用场景：`落地页` `场景亮点` `四项能力`。
+源自 MiniMax H3 首页 Where MiniMax H3 Shines 区块，独立暗色区块，不改动原有组件。
+四张卡片按图标、标题、正文、标签顺序组成。
+图标采用内联 SVG，不依赖 React 或图标包。
+
+```html
+<section class="mm-shine" aria-labelledby="mm-shine-title">
+  <div class="mm-intro">
+    <h2 id="mm-shine-title">Where MiniMax H3 Shines</h2>
+    <p>MiniMax H3 was built for real production work, not just pretty demos.
+    It handles on-screen text, subtitles, brand marks, UI motion, and product detail with the quality real creative teams need.
+    These are the scenes where the MiniMax H3 video generator consistently delivers commercial-grade results.</p>
+  </div>
+  <div class="mm-grid">
+    <article class="mm-card">
+      <span class="mm-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 12h4m-2-2v4m7-2h.01M18 10h.01M6.5 6h11a4 4 0 0 1 3.9 3.1l1.1 5.1a3 3 0 0 1-4.7 3l-2.3-1.7h-7L6.2 17.2a3 3 0 0 1-4.7-3l1.1-5.1A4 4 0 0 1 6.5 6Z"/></svg></span>
+      <h3>Game Content</h3>
+      <p>Generate game CG, first-person gameplay shots, character PVs, and animated UI demos.
+      H3 keeps HUD elements, menus, and character designs consistent from frame to frame.</p>
+      <div class="mm-tags"><span>Game CG</span><span>UI Demos</span><span>Character PV</span></div>
+    </article>
+    <article class="mm-card">
+      <span class="mm-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18h1a2 2 0 0 0 1.6-3.2 2 2 0 0 1 1.6-3.2H18a3 3 0 0 0 3-3A9 9 0 0 0 12 3Z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="15" cy="7" r="1"/><circle cx="18" cy="11" r="1"/></svg></span>
+      <h3>Stylized Animation</h3>
+      <p>From claymation and pixel art to anime and 3D fantasy styles, MiniMax H3 holds a look across every shot.
+      Bring a style reference and your characters stay on-model.</p>
+      <div class="mm-tags"><span>Anime</span><span>Claymation</span><span>3D Styles</span></div>
+    </article>
+    <article class="mm-card">
+      <span class="mm-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 8h16l-1 13H5L4 8Zm4 0V6a4 4 0 0 1 8 0v2"/></svg></span>
+      <h3>Product &amp; E-commerce</h3>
+      <p>Turn product photos into polished showcase videos, feature explainers, and ad creatives.
+      H3 renders brand text, packaging, and product details accurately.</p>
+      <div class="mm-tags"><span>Product Demos</span><span>Ad Creatives</span><span>Brand Films</span></div>
+    </article>
+    <article class="mm-card">
+      <span class="mm-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 11h18v10H3zM3 7l17-4 1 4-17 4-1-4ZM7 7l3 3m3-5 3 3m2-4 3 3"/></svg></span>
+      <h3>Cinematic Films</h3>
+      <p>Direct trailers, brand films, and short dramas with real camera language — rack focus, hard cuts, title cards, and synced sound design, all generated in one pass.</p>
+      <div class="mm-tags"><span>Trailers</span><span>Brand Films</span><span>Short Drama</span></div>
+    </article>
+  </div>
+</section>
+```
+
+```css
+.mm-shine{padding:80px 24px;background:#0a0a0b;color:#fafafa;font-family:Inter,Arial,sans-serif;line-height:1.5}
+.mm-shine *{box-sizing:border-box}
+.mm-shine .mm-intro{text-align:center;max-width:810px;margin:0 auto 55px}
+.mm-shine h2{margin:0;font-size:36px;line-height:1.25;letter-spacing:-1px;font-weight:750;background:linear-gradient(95deg,#f134a5,#9630ff);background-clip:text;-webkit-background-clip:text;color:transparent}
+.mm-shine .mm-intro p{margin:20px 0 0;color:#a8a8b1;font-size:17px;line-height:1.65}
+.mm-shine .mm-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;max-width:1232px;margin:auto}
+.mm-shine .mm-card{min-width:0;padding:24px;border:1px solid #29292d;border-radius:17px;background:#151517}
+.mm-shine .mm-icon{width:46px;height:46px;display:grid;place-items:center;border-radius:13px;background:#2a233b;color:#ae8fff}
+.mm-shine .mm-icon svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.mm-shine .mm-card:nth-child(2) .mm-icon{background:#382032;color:#ef8bc9}
+.mm-shine .mm-card:nth-child(3) .mm-icon{background:#193341;color:#68cbfb}
+.mm-shine .mm-card:nth-child(4) .mm-icon{background:#42320e;color:#ffc329}
+.mm-shine h3{margin:20px 0 0;font-size:18px;line-height:1.3;color:#fafafa}
+.mm-shine .mm-card p{margin:12px 0 0;color:#adaeb7;font-size:14px;line-height:1.65}
+.mm-shine .mm-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:17px}
+.mm-shine .mm-tags span{padding:2px 7px;border:1px solid #5c3b8c;border-radius:7px;color:#c4abff;font-size:11px}
+.mm-shine .mm-card:nth-child(2) .mm-tags span{color:#f7a3cf;border-color:#793657}
+.mm-shine .mm-card:nth-child(3) .mm-tags span{color:#79d7ff;border-color:#287097}
+.mm-shine .mm-card:nth-child(4) .mm-tags span{color:#ffcf40;border-color:#9e7200}
+@media(max-width:900px){.mm-shine .mm-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.mm-shine{padding:72px 16px}.mm-shine h2{font-size:30px}.mm-shine .mm-intro p{font-size:15px}.mm-shine .mm-grid{grid-template-columns:1fr;gap:16px}}
+```
+
+## 54. 分栏编辑示例
+
+适用场景：`落地页` `输入输出对照` `视频编辑`。
+源自 MiniMax H3 首页 MiniMax H3 Lets You Edit Any Part of Your Video 区块。
+此纯 HTML 标本固定展示 Swap Outfit，另外两个标签只展示结构，不切换内容；接入真实交互时需补齐对应资源、键盘切换和状态管理。
+把下列五个资源放在 HTML 同目录的 `assets/edit-any-part/`：`input-image-1.jpeg`、`input-video-1.mp4`、`input-video-1.poster.jpg`、`output.mp4`、`poster.jpg`。
+
+```html
+<section class="mm-edit" aria-labelledby="mm-edit-title">
+  <div class="mm-wrap">
+    <div class="mm-intro">
+      <h2 id="mm-edit-title">MiniMax H3 Lets You Edit Any Part of Your Video</h2>
+      <p>Change anything without re-shooting.
+      MiniMax H3 can swap characters and objects, replace backgrounds, relight a scene, rewrite dialogue, and clone voices — all from a plain-language instruction.
+      Turn day into night, replace a green screen with a fairytale forest, or hand a character new lines in the same voice.
+      Everything you didn't touch stays stable, so you can iterate on a video shot by shot like a director giving notes.</p>
+    </div>
+    <div class="mm-tabs" role="tablist" aria-label="Video editing examples">
+      <button type="button" role="tab" aria-selected="true">Swap Outfit</button>
+      <button type="button" role="tab" aria-selected="false">Swap Character</button>
+      <button type="button" role="tab" aria-selected="false">Swap Product</button>
+    </div>
+    <div class="mm-frame">
+      <div class="mm-input">
+        <strong>Input</strong>
+        <div class="mm-inputs">
+          <div class="mm-tile"><img src="assets/edit-any-part/input-image-1.jpeg" alt="Outfit reference image"><span>Image 1</span></div>
+          <div class="mm-tile"><video src="assets/edit-any-part/input-video-1.mp4" poster="assets/edit-any-part/input-video-1.poster.jpg" autoplay loop muted playsinline preload="metadata" controls aria-label="Input video 1"></video><span>Video 1</span></div>
+        </div>
+      </div>
+      <div class="mm-output">
+        <strong>Output</strong>
+        <div class="mm-result"><video src="assets/edit-any-part/output.mp4" poster="assets/edit-any-part/poster.jpg" autoplay loop muted playsinline preload="metadata" controls aria-label="Edited output video"></video></div>
+      </div>
+    </div>
+    <p class="mm-prompt">Prompt: Replace the outfit worn by the runway model in <mark>▣ @Video 1</mark> with the clothing shown in <mark class="mm-image">▧ @Image 1</mark>, ensuring natural fit, consistent fabric behavior, and seamless integration with the model’s movement, lighting, and original camera motion.</p>
+  </div>
+</section>
+```
+
+```css
+.mm-edit{padding:56px 24px 80px;background:#09090b;color:#fafafa;font-family:Inter,Arial,sans-serif;line-height:1.5}
+.mm-edit *{box-sizing:border-box}
+.mm-edit .mm-wrap{max-width:1280px;padding:0 24px;margin:auto}
+.mm-edit .mm-intro{text-align:center;margin:0 auto 20px}
+.mm-edit h2{margin:0;font-size:36px;line-height:1.25;letter-spacing:-1px;font-weight:750;background:linear-gradient(95deg,#f134a5,#9630ff);background-clip:text;-webkit-background-clip:text;color:transparent}
+.mm-edit .mm-intro p{max-width:768px;margin:16px auto 0;font-size:18px;line-height:1.58;color:#a8a8b1}
+.mm-edit .mm-tabs{display:flex;width:max-content;max-width:100%;margin:24px auto 20px;padding:6px;border:1px solid #303035;border-radius:99px;background:#202023}
+.mm-edit .mm-tabs button{min-width:0;padding:10px 20px;border:1px solid transparent;border-radius:22px;background:transparent;color:#a6a6ad;font:700 14px Inter,Arial,sans-serif;white-space:nowrap}
+.mm-edit .mm-tabs button[aria-selected="true"]{border-color:#9665ff;background:#7936f3;color:#fff;box-shadow:0 6px 18px #7c3aed55}
+.mm-edit .mm-tabs button:focus-visible{outline:2px solid #c6a9ff;outline-offset:2px}
+.mm-edit .mm-frame{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);gap:16px;padding:16px;border:1px solid #2e2e31;border-radius:16px;background:#19191b}
+.mm-edit .mm-input,.mm-edit .mm-output{min-width:0}
+.mm-edit .mm-input>strong,.mm-edit .mm-output>strong{display:block;margin:5px 4px 12px;font-size:16px}
+.mm-edit .mm-inputs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.mm-edit .mm-tile,.mm-edit .mm-result{position:relative;min-width:0;overflow:hidden;border-radius:12px;background:#141729}
+.mm-edit .mm-tile{aspect-ratio:4/3}
+.mm-edit img,.mm-edit video{display:block;width:100%;height:100%;object-fit:cover}
+.mm-edit .mm-tile>span{position:absolute;top:10px;left:10px;padding:7px 10px;border-radius:8px;background:#252631d9;color:#fff;font-size:13px;font-weight:600}
+.mm-edit .mm-result{height:380px}
+.mm-edit .mm-prompt{margin:20px 0 0;padding:15px 20px;border:1px solid #2d2d2f;border-radius:12px;background:#202022;color:#bbb;font-size:14px;line-height:1.75}
+.mm-edit .mm-prompt mark{display:inline-block;padding:2px 6px;border-radius:5px;background:#f0e8ff;color:#7c3aed;font-weight:700;line-height:1.4}
+.mm-edit .mm-prompt mark.mm-image{background:#e3f5ff;color:#2582c3}
+@media(max-width:767px){.mm-edit{padding:70px 16px}.mm-edit .mm-wrap{padding:0}.mm-edit h2{font-size:29px}.mm-edit .mm-intro p{font-size:15px}.mm-edit .mm-tabs button{padding:9px 11px;font-size:12px}.mm-edit .mm-frame{grid-template-columns:1fr;padding:12px}.mm-edit .mm-result{height:auto;aspect-ratio:16/9}}
+```
