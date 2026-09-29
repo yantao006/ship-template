@@ -1,7 +1,14 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 import site from '../site/site.config';
+import en from '../site/messages/en';
+import zh from '../site/messages/zh';
+import fixtureEn from '../fixtures/second-site/site/messages/en';
+import fixtureZh from '../fixtures/second-site/site/messages/zh';
+import { WhereItShines } from '../src/components/home/sections/WhereItShines';
 
 const sectionNames = [
   ['VideoHero', 'video-hero'],
@@ -14,10 +21,40 @@ const sectionNames = [
 
 const section = (name: string) => readFileSync(new URL(`../src/components/${name === 'Header' ? 'shell' : 'home/sections'}/${name}.tsx`, import.meta.url), 'utf8');
 
-test('unfinished sections are empty with stable ids', () => {
-  for (const [name, id] of sectionNames.filter(([name]) => name !== 'VideoToolSection')) {
+test('unfinished sections remain empty; the features slot renders the shine cards', () => {
+  for (const [name, id] of sectionNames.filter(([name]) => !['VideoToolSection', 'VideoFeatures'].includes(name))) {
     assert.match(section(name), new RegExp(`return <section id="${id}" \\/>`));
     assert.deepEqual([...section(name).matchAll(/export function (\w+)/g)].map(match => match[1]), [name]);
+  }
+  const features = section('VideoFeatures');
+  assert.match(features, /export function VideoFeatures/);
+  assert.match(features, /<section id="video-features"><WhereItShines locale=\{locale\} \/><\/section>/);
+  assert.match(section('HomePage'), /<VideoFeatures locale=\{locale\} \/>/);
+  const shines = section('WhereItShines');
+  assert.match(shines, /Gamepad2, Palette, ShoppingBag, Clapperboard/);
+  assert.match(shines, /messages\[locale\]\.shines/);
+  assert.match(shines, /site\.brand/);
+  assert.doesNotMatch(shines, /MiniMax|minimaxh3\.ai|\bH3\b/);
+});
+
+test('shine cards render four localized use cases with the site brand and matching tag categories', () => {
+  for (const [locale, copy] of [['en', en], ['zh', zh]] as const) {
+    const html = renderToStaticMarkup(createElement(WhereItShines, { locale }));
+    assert.match(html, new RegExp(site.brand));
+    assert.equal((html.match(/class="video-shines__card"/g) ?? []).length, 4);
+    assert.equal((html.match(/class="video-shines__tags"/g) ?? []).length, 4);
+    assert.equal(copy.shines.items.length, 4);
+    assert.deepEqual(copy.shines.items.map(item => item.tags.length), [3, 3, 3, 3]);
+    for (const item of copy.shines.items) {
+      assert.ok(html.includes(item.title));
+      for (const tag of item.tags) assert.ok(html.includes(tag));
+    }
+    assert.doesNotMatch(JSON.stringify(copy.shines), /MiniMax|minimaxh3\.ai|\bH3\b/i);
+  }
+  for (const copy of [fixtureEn, fixtureZh]) {
+    assert.equal(copy.shines.items.length, 4);
+    assert.match(copy.shines.title, /\{brand\}/);
+    assert.doesNotMatch(JSON.stringify(copy.shines), /MiniMax|minimaxh3\.ai|\bH3\b/i);
   }
 });
 

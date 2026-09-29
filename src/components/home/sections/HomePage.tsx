@@ -11,7 +11,7 @@ export function HomePage({ locale }: { locale: keyof typeof messages }) {
     <VideoHero />
     <VideoToolSection locale={locale} />
     <VideoShowcase />
-    <VideoFeatures />
+    <VideoFeatures locale={locale} />
     <VideoPricing />
     <VideoFAQ />
   </div>;
