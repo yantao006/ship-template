@@ -1,268 +1,96 @@
 # SaaS block layout catalog
 
-These are structural specimens of the fetched React Bits Pro blocks, in the requested composition order.
-The recipe is an ordering guide, not a source of replacement product claims.
-Use `preview.html` for the single white type, color, and motion system.
-The HTML below shows section scaffolds; repeated children are specified in `component.md`.
-All geometry is plain CSS and all visual tokens are references to the shared preview.
+The directory structure follows the catalog only.
+Each block keeps its own source geometry, controls, imagery, and sample English copy in `../preview.html`.
+Tokens and all presentation live in that file's `:root` and block-scoped CSS.
+The source is the registry component, not the documentation page's toolbar or tabs.
 
 ## navigation-1
 
-The source has a brand, two dropdown groups, a pricing link, notification and sign-in actions, and a primary action; the compact view replaces the desktop links with a disclosure menu.
-
-```html
-<nav id="navigation-1" class="nav block" aria-label="Primary">
-  <div class="wrap nav-row">
-    <a class="brand" href="#hero-1">Flowbase</a>
-    <div class="nav-links"><!-- two nav groups and Pricing --></div>
-    <div class="nav-actions"><!-- notifications, sign in, primary action --></div>
-    <details class="nav-mobile"><summary>Menu</summary><!-- groups and actions --></details>
-  </div>
-</nav>
-```
-
-```css
-.nav { border-bottom: 1px solid var(--line); padding: 16px 0; }
-.nav-row { display: flex; align-items: center; justify-content: space-between; gap: 32px; }
-.nav-links, .nav-actions { display: flex; align-items: center; gap: 12px; }
-.nav-mobile { display: none; }
-@media (max-width: 900px) { .nav-links, .nav-actions { display: none; } .nav-mobile { display: block; } }
-```
+A full-width bottom-bordered navigation holds a 1400px container with the Flowbase wordmark, Products and Solutions dropdowns, Pricing, a notification icon, Sign In, and Try it FREE.
+The desktop row has a 32px group gap, and the dropdown panels measure 320px across.
+Below the large-screen breakpoint, a 40px square black menu control opens a viewport-covering panel with vertically stacked groups and bottom actions.
 
 ## hero-1
 
-The preview label sits above the block and is not part of the source composition.
-The copy column contains an announcement, headline, lead, two actions, and avatar proof; the other column contains a real photograph with a concave corner control.
-The columns stack below 1024px and split evenly from 1024px, with a 32px gap that grows to 48px and then 64px from 1280px.
-The photograph frame has a minimum height of 250px, increasing to 500px from 640px, and a 32px radius.
-
-```html
-<section id="hero-1" class="block">
-  <div class="wrap">
-    <span class="block-label">hero-1 · announcement, split hero and avatar proof</span>
-    <div class="hero-grid">
-      <div class="hero-copy"><!-- announcement, h1, lead, actions, avatar row --></div>
-      <div class="hero-visual"><div class="hero-photo"><!-- image and corner notch --></div></div>
-    </div>
-  </div>
-</section>
-```
+The preview label is outside the source composition.
+The copy column contains the announcement, headline, lead, two independent actions, and avatar proof.
+The second column holds a real photograph inside a 32px frame, with a concave bottom-right corner formed by two 40px SVG curves around a 96px pad.
+The two columns split at 1024px and stack below that breakpoint.
+The photograph has a 250px minimum height below 640px and a 500px minimum height above it.
 
 ## social-proof-1
 
-A centered trust line precedes six logo tiles in a bordered grid.
-
-```html
-<section id="social-proof-1" class="block logos">
-  <div class="wrap"><h2>Trusted by the most innovative companies in the world</h2>
-    <div class="logo-grid"><!-- six logo tiles --></div>
-  </div>
-</section>
-```
-
-```css
-.logos h2 { text-align: center; margin: 0 0 40px; }
-.logo-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); border: 1px solid var(--line); }
-@media (max-width: 900px) { .logo-grid { grid-template-columns: repeat(3, 1fr); } }
-@media (max-width: 540px) { .logo-grid { grid-template-columns: repeat(2, 1fr); } }
-```
+A centered trust statement precedes a single bordered six-cell grid.
+The grid becomes three columns at medium widths and one column on small screens.
+Each cell has 32px padding and contains a stand-in name because the original logo files are not bundled with the registry response.
 
 ## features-2
 
-The source is a split section: eyebrow, heading, lead and three selectable rows on the left; a portrait image with an overlaid status dashboard on the right.
-
-```html
-<section id="features-2" class="block">
-  <div class="wrap split">
-    <div><header class="intro"><!-- eyebrow, h2, lead --></header>
-      <div class="feature-tabs"><!-- three selectors --></div>
-    </div>
-    <div class="feature-visual photo-placeholder"><!-- status dashboard --></div>
-  </div>
-</section>
-```
-
-```css
-.split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 64px; align-items: center; }
-.feature-tabs { display: grid; gap: 12px; border-top: 1px solid var(--line); padding-top: 24px; }
-.feature-visual { display: grid; place-items: center; min-height: 600px; padding: 24px; }
-@media (max-width: 900px) { .split { grid-template-columns: 1fr; gap: 36px; } .feature-visual { min-height: 440px; } }
-```
+A left copy column contains an eyebrow, heading, lead, separator, and three selectable icon rows.
+The right column is a 3:4 photograph with a 24px rounded edge and a centrally overlaid nested dashboard card.
+The two columns split equally from 1024px and stack below it.
+The overlay sits inside a 10px inset and has its own 16px outer and 12px inner radii.
 
 ## features-1
 
-This is the existing specimen folded into the shared catalog: eyebrow, title and lead above an eight-item icon grid, one column on narrow screens, two from 640px and four from 1024px.
-
-```html
-<section id="features-1" class="block f1">
-  <div class="wrap">
-    <header class="intro"><p class="eyebrow">Enterprise Security Platform</p>
-      <h2>Protect what matters most</h2><p class="lead">Comprehensive cybersecurity solutions that protect your business from evolving threats while ensuring complete compliance.</p>
-    </header>
-    <div class="f1-grid"><!-- f1-item × 8 --></div>
-  </div>
-</section>
-```
-
-```css
-.f1-grid { display: grid; grid-template-columns: 1fr; column-gap: 24px; row-gap: 32px; }
-@media (min-width: 640px) { .f1-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (min-width: 768px) { .f1-grid { column-gap: 32px; row-gap: 48px; } }
-@media (min-width: 1024px) { .f1-grid { grid-template-columns: repeat(4, 1fr); } }
-```
+An eyebrow, heading, and lead sit above eight icon-title-description units.
+The units form four columns on large screens, two from 640px, and one below 640px.
+Each icon frame measures 40px square on small screens and 48px square from 640px; descriptions stay below the corresponding icon-title row.
 
 ## how-it-works-1
 
-The source has a heading with a right-hand button, three numbered slide articles with two overlapping photo panels per step, and previous/next plus dot controls.
-The static specimen keeps all three steps visible so a catalog reader does not have to operate a carousel to inspect them.
-
-```html
-<section id="how-it-works-1" class="block">
-  <div class="wrap"><header class="steps-heading"><!-- eyebrow, h2, action --></header>
-    <div class="steps-grid"><!-- numbered step × 3, each with overlapping photos --></div>
-    <nav class="step-controls" aria-label="Step navigation"><!-- previous, dots, next --></nav>
-  </div>
-</section>
-```
-
-```css
-.steps-heading { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 48px; }
-.steps-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
-.step-controls { display: flex; justify-content: center; gap: 12px; margin-top: 24px; }
-@media (max-width: 900px) { .steps-grid { grid-template-columns: 1fr; } .steps-heading { align-items: start; flex-direction: column; } }
-```
+The section starts with an eyebrow, heading, and independently rounded Get started control.
+A clipped horizontal carousel holds three numbered articles, with each article carrying two overlapping photographs.
+The desktop cards are at most 420px wide with a 124px gap; a narrow screen shows one card at a time with a 24px gap.
+Previous, three dot indicators, and next sit in a centered control row under the carousel.
+The first image occupies three quarters of the card width in height; the second is a 65% square overlapping the lower half.
 
 ## stats-3
 
-The actual source uses a centered introductory heading and lead, a thin vertical connector, then a two-column case-study panel: story and two statistics on the left, a photograph with geometric tile overlay on the right.
-It is not a generic four-number counter row.
-
-```html
-<section id="stats-3" class="block">
-  <div class="wrap"><header class="stats-intro"><h2>Monitor everything and prevent issues before they happen</h2><p class="lead">Our platform helps you track metrics across your entire infrastructure, identifying bottlenecks and optimization opportunities.</p></header>
-    <div class="stats-stem"></div>
-    <div class="stats-panel"><div><!-- case study heading, lead, two stats --></div><div class="photo-placeholder"><!-- geometric tiles --></div></div>
-  </div>
-</section>
-```
-
-```css
-.stats-intro { max-width: 650px; margin: 0 auto 40px; text-align: center; }
-.stats-stem { width: 1px; height: 64px; margin: 0 auto; background: var(--line); }
-.stats-panel { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border: 1px solid var(--line); }
-@media (max-width: 900px) { .stats-panel { grid-template-columns: 1fr; } }
-```
+A centered heading and description lead to a 64px vertical stem and a two-column black case-study panel.
+The left side holds the story and two statistics; the right side holds the source photograph and diagonal white tile columns.
+The panel has a 24px rounded outer edge and stacks below 1024px.
+The photograph region is at least 500px tall at desktop size and 400px tall on narrow screens.
 
 ## social-proof-8
 
-The original is one testimonial at a time, not a card grid: a square portrait at left, a large quote, attribution and three progress indicators at right.
-The shared preview shows the first quote as the representative state and lists the other quotes as additional inspectable states.
-
-```html
-<section id="social-proof-8" class="block">
-  <div class="wrap testimonial"><div class="portrait photo-placeholder"></div>
-    <div><blockquote><!-- quote --></blockquote><div class="testimonial-foot"><!-- attribution, three indicators --></div></div>
-  </div>
-</section>
-```
-
-```css
-.testimonial { display: grid; grid-template-columns: minmax(200px, 1fr) 2fr; gap: 32px; align-items: stretch; }
-.portrait { width: 100%; max-width: 260px; aspect-ratio: 1; }
-.testimonial-foot { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-top: 32px; }
-@media (max-width: 700px) { .testimonial { grid-template-columns: 1fr; } .testimonial-foot { flex-wrap: wrap; } }
-```
+One testimonial is visible at a time inside a two-column figure with a 260px square portrait on the left and a quotation on the right.
+The attribution and three progress tracks sit beneath the quote.
+The layout stacks on narrow screens.
+The catalog preserves the click or keyboard next-slide interaction instead of listing nonactive states under the figure.
 
 ## comparison-1
 
-The left column holds the comparison title, explanation and action; the right holds two brand names and five rows of paired yes/no cells, with each feature label repeated in both columns as in the source.
-
-```html
-<section id="comparison-1" class="block"><div class="wrap split">
-  <header><!-- h2, lead, action --></header>
-  <div class="comparison-table"><div class="comparison-head"><!-- two brands --></div><!-- five paired rows --></div>
-</div></section>
-```
-
-```css
-.comparison-table { min-width: 0; }
-.comparison-head, .comparison-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
-.comparison-row { border-top: 1px solid var(--line); }
-@media (max-width: 540px) { .comparison-row { gap: 8px; } }
-```
+The left column holds a title, explanation, and full-pill action; the right column holds two brand names and five feature rows.
+Each row has two cells with the same feature label, one for each brand.
+The two halves stack below 1024px, while the paired cells remain side by side.
 
 ## pricing-1
 
-A centered title and subtitle lead to a standalone free-plan banner, then three side-by-side plan cards with independent period toggles for Pro and Team.
-The middle Team card is visually emphasized, while Enterprise is contact-based.
-
-```html
-<section id="pricing-1" class="block"><div class="wrap">
-  <header class="pricing-intro"><h2>Secure Cloud Storage</h2><p class="lead">Store, sync, and share files securely</p></header>
-  <div class="free-banner"><!-- free offer and action --></div>
-  <div class="plan-grid"><!-- Pro, Team, Enterprise --></div>
-</div></section>
-```
-
-```css
-.pricing-intro { text-align: center; margin-bottom: 40px; }
-.free-banner { max-width: 580px; margin: 0 auto 48px; padding: 20px 24px; border: 1px solid var(--line); }
-.plan-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
-@media (max-width: 900px) { .plan-grid { grid-template-columns: 1fr; } }
-```
+A centered intro precedes a rounded free-plan banner and three 24px rounded plan cards.
+The free banner's inner face is inset within its outer border treatment.
+Pro and Team contain independent period controls, while Enterprise has no period control or price.
+The three cards stack below 1024px.
+The Team card keeps its distinct radial accent treatment rather than adopting either neighbor's surface.
 
 ## faq-1
 
-A narrow, optionally sticky heading column sits beside three disclosure rows; the first answer is open in the source.
-
-```html
-<section id="faq-1" class="block"><div class="wrap faq-grid">
-  <header><h2>FAQs</h2><p class="lead">Everything you need to know about our product and billing.</p></header>
-  <div><!-- details × 3 --></div>
-</div></section>
-```
-
-```css
-.faq-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 64px; align-items: start; }
-.faq-grid header { position: sticky; top: 24px; }
-@media (max-width: 900px) { .faq-grid { grid-template-columns: 1fr; gap: 32px; } .faq-grid header { position: static; } }
-```
+A one-third heading column sits beside a two-thirds column of three native disclosure rows.
+The left heading becomes sticky on wide screens, and the layout stacks below 1024px.
+The first row starts open, with a dividing rule above it and one below each row.
+The answers sit beneath their own question rows rather than in detached cards.
 
 ## cta-1
 
-The closing section centers a two-line heading, lead, username entry and login hint over six faint, floating portrait cards.
-The preview deliberately does not submit the specimen form.
-
-```html
-<section id="cta-1" class="block closing"><div class="cta-portraits" aria-hidden="true"><!-- six photo placeholders --></div>
-  <div class="wrap cta-content"><h2>Why settle for<br>algorithm chaos?</h2><p class="lead">Join the platform where creators connect authentically. Build your community without the algorithm chaos.</p>
-    <form><!-- username field and action --></form><p><!-- login hint --></p>
-  </div>
-</section>
-```
-
-```css
-.closing { position: relative; overflow: hidden; min-height: 540px; display: grid; place-items: center; }
-.cta-portraits { position: absolute; inset: 0; pointer-events: none; }
-.cta-content { position: relative; max-width: 720px; text-align: center; }
-@media (max-width: 700px) { .closing { min-height: 600px; } }
-```
+A centered two-line heading, description, username entry, and login hint are layered over six positioned portrait photographs.
+The input and inset full-pill action share one horizontal control at wider widths and stack below 640px.
+The portraits range from 128px on small screens to 192px on wider screens, with individual placement, rotation, and transparency.
+This remains a non-submitting preview form.
 
 ## footer-1
 
-The source closes with one identity column, three bordered link-group cards and a large decorative wordmark beneath the grid.
-
-```html
-<footer id="footer-1" class="block"><div class="wrap">
-  <div class="footer-grid"><div class="footer-identity"><!-- mark, tagline, caption --></div><!-- three link groups --></div>
-  <div class="footer-wordmark" aria-hidden="true">FITFORGE</div>
-</div></footer>
-```
-
-```css
-.footer-grid { display: grid; grid-template-columns: 1.2fr repeat(3, 1fr); }
-.footer-identity { display: flex; flex-direction: column; justify-content: space-between; padding: 24px; }
-.footer-wordmark { overflow: hidden; width: 100%; text-align: center; }
-@media (max-width: 900px) { .footer-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 540px) { .footer-grid { grid-template-columns: 1fr; } }
-```
+The first column holds the FITFORGE mark, tagline, and caption.
+Three bordered link cards follow it, each at least 300px high, with shared seams between adjacent cards.
+A full-width SVG wordmark using the registry's original path closes the section below the grid.
+The grid becomes two columns at medium widths and one column below 640px.
