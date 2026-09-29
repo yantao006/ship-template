@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hero Layout Playground · 英雄区布局预览</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;700&family=Noto+Serif+SC:wght@700&family=Noto+Sans+SC:wght@400;500;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --blue: #2F6F5E;
+      --yellow: #E8B86D;
+      --red: #C45C4A;
+      --cream: #fefcf6;
+      --ink: #1A1A2E;
+      --ink-faint: #8a8a9a;
+      --preview-bg: #FFF8E1;
+      --font-zh-title: 'Huiwen Mincho', 'Noto Serif SC', 'Songti SC', serif;
+      --font-body: 'DM Sans', 'Noto Sans SC', -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: auto; }
+    body { background: var(--cream); color: var(--ink); font-family: var(--font-body); line-height: 1.6; }
+    .tri-bar { height: 4px; display: flex; }
+    .tri-bar span:nth-child(1) { flex: 3; background: var(--blue); }
+    .tri-bar span:nth-child(2) { flex: 2; background: var(--yellow); }
+    .tri-bar span:nth-child(3) { flex: 1; background: var(--red); }
+    .top-nav {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 1rem 2rem;
+      background: var(--cream);
+      border-bottom: 1px solid rgba(26,26,46,0.08);
+    }
+    .top-nav::before { content: ''; width: 36px; height: 4px; border-radius: 2px; background: var(--blue); }
+    .top-nav::after { content: ''; width: 24px; height: 4px; margin-left: -8px; border-radius: 2px; background: var(--yellow); }
+    .top-nav h1 { margin-left: 4px; font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 700; }
+    .top-nav h1 span { margin-left: 8px; color: var(--ink-faint); font: 400 0.85rem var(--font-body); }
+    .page-container { max-width: 1000px; margin: 0 auto; padding: 3rem 2rem 6rem; }
+    .layout-header { margin-bottom: 1rem; }
+    .layout-header h2 {
+      display: inline;
+      padding: 0 4px;
+      background: linear-gradient(transparent 60%, var(--yellow) 60%);
+      font: 700 1.2rem var(--font-zh-title);
+    }
+    .layout-header .num { margin-right: 6px; color: var(--blue); font-family: 'Fraunces', serif; }
+    .preview-box {
+      overflow: hidden;
+      padding: clamp(1.5rem, 3vw, 2.5rem);
+      border: 1px solid rgba(232,184,109,0.3);
+      border-radius: 16px;
+      background: var(--preview-bg);
+    }
+    .scene-tag { display: flex; align-items: center; gap: 6px; margin-top: 0.75rem; color: var(--ink-faint); font-size: 0.8rem; }
+    .scene-tag::before {
+      content: '适用';
+      padding: 2px 6px;
+      border-radius: 3px;
+      background: var(--blue);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 600;
+      flex: none;
+    }
+    .ph-text { height: 10px; margin-bottom: 6px; border-radius: 4px; background: rgba(26,26,46,0.12); }
+    .ph-text.short { width: 60%; }
+    .ph-heading { width: 50%; height: 16px; margin-bottom: 8px; border-radius: 4px; background: var(--ink); }
+
+    /* 01. Hero 1 - placeholders describe geometry, not site copy. */
+    .mini-hero-1 {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: center;
+      gap: clamp(32px, 5vw, 56px);
+      min-height: 380px;
+    }
+    .mini-hero-1 .copy { min-width: 0; text-align: left; }
+    .mini-hero-1 .announcement {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      padding: 9px 12px;
+      margin-bottom: 28px;
+      border: 1px solid rgba(26,26,46,0.13);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.6);
+    }
+    .mini-hero-1 .announcement .mark { width: 9px; height: 9px; border-radius: 2px; background: var(--yellow); }
+    .mini-hero-1 .announcement .ph-text { width: 82px; height: 7px; margin: 0; }
+    .mini-hero-1 .ph-heading { width: 80%; height: 19px; margin-bottom: 22px; }
+    .mini-hero-1 .description .ph-text { width: 86%; }
+    .mini-hero-1 .description .ph-text.short { width: 60%; }
+    .mini-hero-1 .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+    .mini-hero-1 .action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      height: 43px;
+      padding: 0 18px;
+      border: 1px solid var(--ink);
+      border-radius: 999px;
+    }
+    .mini-hero-1 .action.solid { background: var(--ink); }
+    .mini-hero-1 .action.outline { background: transparent; }
+    .mini-hero-1 .action .bar { width: 56px; height: 7px; border-radius: 4px; background: #fefcf6; }
+    .mini-hero-1 .action.outline .bar { width: 65px; background: var(--ink); }
+    .mini-hero-1 .play-dot { display: grid; place-items: center; width: 20px; height: 20px; border: 1px solid var(--ink); border-radius: 50%; }
+    .mini-hero-1 .play-dot::after { content: ''; width: 4px; height: 4px; border-radius: 50%; background: var(--ink); }
+    .mini-hero-1 .proof { display: flex; align-items: center; gap: 12px; margin-top: 32px; }
+    .mini-hero-1 .avatars { display: flex; padding-left: 10px; flex: none; }
+    .mini-hero-1 .avatars span { width: 31px; height: 31px; margin-left: -10px; border: 2px solid var(--preview-bg); border-radius: 50%; background: #b3bab0; }
+    .mini-hero-1 .avatars span:nth-child(2) { background: #c8bba5; }
+    .mini-hero-1 .avatars span:nth-child(3) { background: #a9aca6; }
+    .mini-hero-1 .proof-copy { width: 125px; }
+    .mini-hero-1 .proof-copy .ph-text { height: 7px; margin-bottom: 5px; }
+    .mini-hero-1 .proof-copy .ph-text:last-child { width: 60%; margin-bottom: 0; }
+    .mini-hero-1 .photo {
+      position: relative;
+      height: 380px;
+      min-width: 0;
+      overflow: hidden;
+      border-radius: 32px;
+      background: #cbd0cb;
+    }
+    .mini-hero-1 .notch {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      display: grid;
+      place-items: center;
+      width: 96px;
+      height: 96px;
+      border-top-left-radius: 26px;
+      background: var(--preview-bg);
+    }
+    .mini-hero-1 .notch button {
+      display: grid;
+      place-items: center;
+      width: 58px;
+      height: 58px;
+      border: 0;
+      border-radius: 50%;
+      background: var(--ink);
+      color: var(--cream);
+      cursor: default;
+    }
+    .mini-hero-1 .notch svg { width: 22px; height: 22px; }
+    @media (max-width: 1023px) {
+      .mini-hero-1 { grid-template-columns: 1fr; gap: 32px; }
+      .mini-hero-1 .photo { height: 330px; }
+    }
+    @media (max-width: 639px) {
+      .top-nav { padding: 1rem 1.25rem; }
+      .top-nav h1 { font-size: 1.05rem; }
+      .top-nav h1 span { font-size: 0.72rem; }
+      .page-container { padding: 2rem 1.25rem 5rem; }
+      .mini-hero-1 { gap: 28px; min-height: 0; }
+      .mini-hero-1 .photo { height: 250px; }
+      .mini-hero-1 .proof { margin-top: 26px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="tri-bar"><span></span><span></span><span></span></div>
+  <nav class="top-nav"><h1>Hero Layout Playground<span>· 英雄区布局 · 目前 1 条，可按同样形状追加至 24 条</span></h1></nav>
+  <main class="page-container">
+    <section class="layout-block" id="hero-1" aria-labelledby="hero-1-title">
+      <div class="layout-header"><h2 id="hero-1-title"><span class="num">01</span>Hero分栏缺口型</h2></div>
+      <div class="preview-box">
+        <div class="mini-hero-1">
+          <div class="copy">
+            <div class="announcement" aria-label="公告占位"><span class="mark"></span><span class="ph-text"></span></div>
+            <div class="ph-heading" aria-label="标题占位"></div>
+            <div class="description" aria-label="说明占位"><div class="ph-text"></div><div class="ph-text short"></div></div>
+            <div class="actions" aria-label="操作占位">
+              <div class="action solid"><span class="bar"></span></div>
+              <div class="action outline"><span class="play-dot"></span><span class="bar"></span></div>
+            </div>
+            <div class="proof" aria-label="头像与证明占位">
+              <div class="avatars"><span></span><span></span><span></span></div>
+              <div class="proof-copy"><div class="ph-text"></div><div class="ph-text"></div></div>
+            </div>
+          </div>
+          <div class="photo" role="img" aria-label="灰色图像占位，右下角带缺口">
+            <div class="notch"><button type="button" aria-label="图像操作占位"><i data-lucide="arrow-up-right"></i></button></div>
+          </div>
+        </div>
+      </div>
+      <div class="scene-tag">产品落地页的分栏首屏，左边是说明和行动，右边是一张带缺口的图。</div>
+    </section>
+  </main>
+  <script src="https://unpkg.com/lucide@1.48.0/dist/umd/lucide.min.js"></script>
+  <script>lucide.createIcons();</script>
+</body>
+</html>
