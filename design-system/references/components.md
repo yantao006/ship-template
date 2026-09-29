@@ -4681,7 +4681,7 @@ document.querySelectorAll('[data-sparkle-colors]').forEach(el => {
         <div class="mm-result"><video src="https://lorem.media/video/seed/mm-edit-output/16x9" poster="https://picsum.photos/seed/mm-edit-output/1280/720.webp" autoplay loop muted playsinline preload="metadata" aria-label="Edited output video"></video><span>Output</span></div>
       </div>
     </div>
-    <p class="mm-prompt">Prompt: Replace the outfit worn by the runway model in <mark><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 3v18"/><path d="M3 7.5h4"/><path d="M3 12h18"/><path d="M3 16.5h4"/><path d="M17 3v18"/><path d="M17 7.5h4"/><path d="M17 16.5h4"/></svg>@Video 1</mark> with the clothing shown in <mark class="mm-image"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>@Image 1</mark>, ensuring natural fit, consistent fabric behavior, and seamless integration with the model’s movement, lighting, and original camera motion.</p>
+    <p class="mm-prompt">Prompt: Replace the outfit worn by the runway model in <span class="mm-ref"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 3v18"/><path d="M3 7.5h4"/><path d="M3 12h18"/><path d="M3 16.5h4"/><path d="M17 3v18"/><path d="M17 7.5h4"/><path d="M17 16.5h4"/></svg>@Video 1</span> with the clothing shown in <span class="mm-ref"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>@Image 1</span>, ensuring natural fit, consistent fabric behavior, and seamless integration with the model’s movement, lighting, and original camera motion.</p>
   </div>
 </section>
 ```
@@ -4705,11 +4705,10 @@ document.querySelectorAll('[data-sparkle-colors]').forEach(el => {
 .mm-edit .mm-tile{aspect-ratio:4/3}
 .mm-edit img,.mm-edit video{display:block;width:100%;height:100%;object-fit:cover}
 .mm-edit .mm-tile>span{position:absolute;top:10px;left:10px;display:flex;align-items:center;gap:5px;background:#252631ad;color:#fff;border-radius:8px;padding:7px 10px;font-size:13px;font-weight:600}
-.mm-edit .mm-tile>span svg,.mm-edit .mm-prompt mark svg{flex:none;width:14px;height:14px}
+.mm-edit .mm-tile>span svg,.mm-edit .mm-prompt .mm-ref svg{flex:none;width:14px;height:14px}
 .mm-edit .mm-result{height:380px}
 .mm-edit .mm-result>span{position:absolute;top:15px;right:12px;left:auto;background:#252631ad;color:#fff;border-radius:8px;padding:7px 10px;font-size:16px;font-weight:600}
 .mm-edit .mm-prompt{margin:20px 0 0;padding:15px 20px;border:1px solid color-mix(in srgb, var(--ink) 14%, transparent);border-radius:12px;background:#fff;line-height:1.75}
-.mm-edit .mm-prompt mark{display:inline-flex;align-items:center;gap:5px;padding:2px 6px;border-radius:5px;background:#efe6ff;color:#7425f5;font-weight:700;line-height:1.4;vertical-align:middle}
-.mm-edit .mm-prompt mark.mm-image{background:#e8f3ff;color:#2b6cb0}
+.mm-edit .mm-prompt .mm-ref{display:inline-flex;align-items:center;gap:5px;vertical-align:middle}
 @media(max-width:767px){.mm-edit{padding:70px 16px}.mm-edit .mm-wrap{padding:0}.mm-edit .mm-tabs{width:100%}.mm-edit .mm-tabs button{flex:1;padding:9px 4px;white-space:normal}.mm-edit .mm-frame{grid-template-columns:1fr;padding:12px}.mm-edit .mm-result{height:auto;aspect-ratio:16/9}}
 ```
