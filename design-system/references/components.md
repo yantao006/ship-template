@@ -4599,28 +4599,28 @@ document.querySelectorAll('[data-sparkle-colors]').forEach(el => {
   </div>
   <div class="mm-grid">
     <article class="mm-card">
-      <span class="mm-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 12h4m-2-2v4m7-2h.01M18 10h.01M6.5 6h11a4 4 0 0 1 3.9 3.1l1.1 5.1a3 3 0 0 1-4.7 3l-2.3-1.7h-7L6.2 17.2a3 3 0 0 1-4.7-3l1.1-5.1A4 4 0 0 1 6.5 6Z"/></svg></span>
+      <span class="mm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="6" x2="10" y1="11" y2="11"/><line x1="8" x2="8" y1="9" y2="13"/><line x1="15" x2="15.01" y1="12" y2="12"/><line x1="18" x2="18.01" y1="10" y2="10"/><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.151A4 4 0 0 0 17.32 5z"/></svg></span>
       <h3>Game Content</h3>
       <p>Generate game CG, first-person gameplay shots, character PVs, and animated UI demos.
       H3 keeps HUD elements, menus, and character designs consistent from frame to frame.</p>
       <div class="mm-tags"><span>Game CG</span><span>UI Demos</span><span>Character PV</span></div>
     </article>
     <article class="mm-card">
-      <span class="mm-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18h1a2 2 0 0 0 1.6-3.2 2 2 0 0 1 1.6-3.2H18a3 3 0 0 0 3-3A9 9 0 0 0 12 3Z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="15" cy="7" r="1"/><circle cx="18" cy="11" r="1"/></svg></span>
+      <span class="mm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z"/><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/></svg></span>
       <h3>Stylized Animation</h3>
       <p>From claymation and pixel art to anime and 3D fantasy styles, MiniMax H3 holds a look across every shot.
       Bring a style reference and your characters stay on-model.</p>
       <div class="mm-tags"><span>Anime</span><span>Claymation</span><span>3D Styles</span></div>
     </article>
     <article class="mm-card">
-      <span class="mm-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 8h16l-1 13H5L4 8Zm4 0V6a4 4 0 0 1 8 0v2"/></svg></span>
+      <span class="mm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 10a4 4 0 0 1-8 0"/><path d="M3.103 6.034h17.794"/><path d="M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z"/></svg></span>
       <h3>Product &amp; E-commerce</h3>
       <p>Turn product photos into polished showcase videos, feature explainers, and ad creatives.
       H3 renders brand text, packaging, and product details accurately.</p>
       <div class="mm-tags"><span>Product Demos</span><span>Ad Creatives</span><span>Brand Films</span></div>
     </article>
     <article class="mm-card">
-      <span class="mm-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 11h18v10H3zM3 7l17-4 1 4-17 4-1-4ZM7 7l3 3m3-5 3 3m2-4 3 3"/></svg></span>
+      <span class="mm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12.296 3.464 3.02 3.956"/><path d="M20.2 6 3 11l-.9-2.4c-.3-1.1.3-2.2 1.3-2.5l13.5-4c1.1-.3 2.2.3 2.5 1.3z"/><path d="M3 11h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="m6.18 5.276 3.1 3.899"/></svg></span>
       <h3>Cinematic Films</h3>
       <p>Direct trailers, brand films, and short dramas with real camera language — rack focus, hard cuts, title cards, and synced sound design, all generated in one pass.</p>
       <div class="mm-tags"><span>Trailers</span><span>Brand Films</span><span>Short Drama</span></div>
@@ -4638,7 +4638,7 @@ document.querySelectorAll('[data-sparkle-colors]').forEach(el => {
 .mm-shine .mm-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;max-width:1232px;margin:auto}
 .mm-shine .mm-card{min-width:0;padding:24px;border:1px solid color-mix(in srgb, var(--ink) 14%, transparent);border-radius:17px;background:#fff}
 .mm-shine .mm-icon{width:46px;height:46px;display:grid;place-items:center;border-radius:13px;border:1px solid color-mix(in srgb, var(--ink) 14%, transparent)}
-.mm-shine .mm-icon svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.mm-shine .mm-icon svg{width:21px;height:21px}
 .mm-shine h3{margin:20px 0 0;line-height:1.3}
 .mm-shine .mm-card p{margin:12px 0 0;line-height:1.65}
 .mm-shine .mm-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:17px}
@@ -4671,18 +4671,17 @@ document.querySelectorAll('[data-sparkle-colors]').forEach(el => {
     </div>
     <div class="mm-frame">
       <div class="mm-input">
-        <strong>Input</strong>
+        <span>Input</span>
         <div class="mm-inputs">
-          <div class="mm-tile"><img src="https://picsum.photos/seed/mm-edit-input/960/720.webp" alt="Outfit reference image"><span>Image 1</span></div>
-          <div class="mm-tile"><video src="https://lorem.media/video/seed/mm-edit-input/16x9" poster="https://picsum.photos/seed/mm-edit-input-video/960/540.webp" autoplay loop muted playsinline preload="metadata" controls aria-label="Input video 1"></video><span>Video 1</span></div>
+          <div class="mm-tile"><img src="https://picsum.photos/seed/mm-edit-input/960/720.webp" alt="Outfit reference image" loading="lazy"><span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>Image 1</span></div>
+          <div class="mm-tile"><video src="https://lorem.media/video/seed/mm-edit-input/16x9" poster="https://picsum.photos/seed/mm-edit-input-video/960/540.webp" autoplay loop muted playsinline preload="metadata" aria-label="Input video 1"></video><span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 3v18"/><path d="M3 7.5h4"/><path d="M3 12h18"/><path d="M3 16.5h4"/><path d="M17 3v18"/><path d="M17 7.5h4"/><path d="M17 16.5h4"/></svg>Video 1</span></div>
         </div>
       </div>
       <div class="mm-output">
-        <strong>Output</strong>
-        <div class="mm-result"><video src="https://lorem.media/video/seed/mm-edit-output/16x9" poster="https://picsum.photos/seed/mm-edit-output/1280/720.webp" autoplay loop muted playsinline preload="metadata" controls aria-label="Edited output video"></video></div>
+        <div class="mm-result"><video src="https://lorem.media/video/seed/mm-edit-output/16x9" poster="https://picsum.photos/seed/mm-edit-output/1280/720.webp" autoplay loop muted playsinline preload="metadata" aria-label="Edited output video"></video><span>Output</span></div>
       </div>
     </div>
-    <p class="mm-prompt">Prompt: Replace the outfit worn by the runway model in <mark>▣ @Video 1</mark> with the clothing shown in <mark class="mm-image">▧ @Image 1</mark>, ensuring natural fit, consistent fabric behavior, and seamless integration with the model’s movement, lighting, and original camera motion.</p>
+    <p class="mm-prompt">Prompt: Replace the outfit worn by the runway model in <mark><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 3v18"/><path d="M3 7.5h4"/><path d="M3 12h18"/><path d="M3 16.5h4"/><path d="M17 3v18"/><path d="M17 7.5h4"/><path d="M17 16.5h4"/></svg>@Video 1</mark> with the clothing shown in <mark class="mm-image"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>@Image 1</mark>, ensuring natural fit, consistent fabric behavior, and seamless integration with the model’s movement, lighting, and original camera motion.</p>
   </div>
 </section>
 ```
@@ -4700,14 +4699,17 @@ document.querySelectorAll('[data-sparkle-colors]').forEach(el => {
 .mm-edit .mm-tabs button:focus-visible{outline:2px solid currentColor;outline-offset:2px}
 .mm-edit .mm-frame{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);gap:16px;padding:16px;border:1px solid color-mix(in srgb, var(--ink) 14%, transparent);border-radius:16px;background:#fff}
 .mm-edit .mm-input,.mm-edit .mm-output{min-width:0}
-.mm-edit .mm-input>strong,.mm-edit .mm-output>strong{display:block;margin:5px 4px 12px}
+.mm-edit .mm-input>span{display:block;margin:5px 4px 12px;font-size:1em}
 .mm-edit .mm-inputs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .mm-edit .mm-tile,.mm-edit .mm-result{position:relative;min-width:0;overflow:hidden;border-radius:12px;background:#fff}
 .mm-edit .mm-tile{aspect-ratio:4/3}
 .mm-edit img,.mm-edit video{display:block;width:100%;height:100%;object-fit:cover}
-.mm-edit .mm-tile>span{position:absolute;top:10px;left:10px;padding:7px 10px;border-radius:8px;background:#fff}
+.mm-edit .mm-tile>span{position:absolute;top:10px;left:10px;display:flex;align-items:center;gap:5px;background:#252631ad;color:#fff;border-radius:8px;padding:7px 10px;font-size:13px;font-weight:600}
+.mm-edit .mm-tile>span svg,.mm-edit .mm-prompt mark svg{flex:none;width:14px;height:14px}
 .mm-edit .mm-result{height:380px}
+.mm-edit .mm-result>span{position:absolute;top:15px;right:12px;left:auto;background:#252631ad;color:#fff;border-radius:8px;padding:7px 10px;font-size:16px;font-weight:600}
 .mm-edit .mm-prompt{margin:20px 0 0;padding:15px 20px;border:1px solid color-mix(in srgb, var(--ink) 14%, transparent);border-radius:12px;background:#fff;line-height:1.75}
-.mm-edit .mm-prompt mark{display:inline-block;padding:2px 6px;border-radius:5px;background:transparent;color:inherit;font-weight:700;line-height:1.4}
+.mm-edit .mm-prompt mark{display:inline-flex;align-items:center;gap:5px;padding:2px 6px;border-radius:5px;background:#efe6ff;color:#7425f5;font-weight:700;line-height:1.4;vertical-align:middle}
+.mm-edit .mm-prompt mark.mm-image{background:#e8f3ff;color:#2b6cb0}
 @media(max-width:767px){.mm-edit{padding:70px 16px}.mm-edit .mm-wrap{padding:0}.mm-edit .mm-tabs{width:100%}.mm-edit .mm-tabs button{flex:1;padding:9px 4px;white-space:normal}.mm-edit .mm-frame{grid-template-columns:1fr;padding:12px}.mm-edit .mm-result{height:auto;aspect-ratio:16/9}}
 ```
