@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SaaS block catalog - shared preview</title>
+<style>
+:root {
+  --font: Arial, Helvetica, sans-serif;
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --text: #18181b;
+  --muted: #5b606b;
+  --accent: #334155;
+  --line: #e4e4e7;
+  --text-h2: clamp(1.875rem, 1.05rem + 2.6vw, 3.75rem);
+  --type-step: 1.25;
+  --text-h1: calc(var(--text-h2) * var(--type-step));
+  --text-h3: 1.125rem;
+  --text-lead: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+  --text-body: clamp(0.75rem, 0.68rem + 0.3vw, 1rem);
+  --text-eyebrow: clamp(0.875rem, 0.84rem + 0.15vw, 1rem);
+  --text-metric: clamp(2.25rem, 1.8rem + 1.5vw, 3.5rem);
+  --weight-h2: 400;
+  --weight-h3: 500;
+  --weight-lead: 400;
+  --weight-body: 400;
+  --weight-eyebrow: 400;
+  --leading-h2: 1.08;
+  --leading-h3: 1.25;
+  --leading-lead: 1.5;
+  --leading-body: 1.625;
+  --leading-eyebrow: 1.5;
+  --tracking-tight: -0.025em;
+  --radius-panel: 20px;
+  --radius-control: 10px;
+  --radius-icon: 12px;
+  --icon-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --motion-duration: .45s;
+  --motion-ease: ease-out;
+  --motion-distance: 16px;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font); font-size: var(--text-body); line-height: var(--leading-body); }
+button, input { font: inherit; }
+button { cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+a:hover { text-decoration: underline; }
+a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+h1, h2, h3, p, blockquote, figure { margin: 0; }
+h1 { font-size: var(--text-h1); font-weight: var(--weight-h2); line-height: var(--leading-h2); letter-spacing: var(--tracking-tight); }
+h2 { font-size: var(--text-h2); font-weight: var(--weight-h2); line-height: var(--leading-h2); letter-spacing: var(--tracking-tight); }
+h3 { font-size: var(--text-h3); font-weight: var(--weight-h3); line-height: var(--leading-h3); }
+p { line-height: var(--leading-body); }
+svg.icon { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.wrap { max-width: 1400px; margin-inline: auto; width: 100%; }
+.block { padding: 76px 32px; border-bottom: 1px solid var(--line); background: var(--bg); }
+.block-label { display: block; margin-bottom: 28px; color: var(--muted); font-size: var(--text-eyebrow); line-height: var(--leading-eyebrow); }
+.note { max-width: 1400px; margin: auto; padding: 28px 32px 0; color: var(--muted); }
+.eyebrow { color: var(--muted); font-size: var(--text-eyebrow); font-weight: var(--weight-eyebrow); line-height: var(--leading-eyebrow); }
+.lead { color: var(--muted); font-size: var(--text-lead); font-weight: var(--weight-lead); line-height: var(--leading-lead); max-width: 58ch; }
+.intro { display: grid; gap: 16px; margin-bottom: 48px; }
+.button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 10px 20px; border: 1px solid var(--accent); border-radius: var(--radius-control); background: var(--accent); color: var(--bg); font-size: var(--text-body); white-space: nowrap; text-align: center; }
+.button:hover { text-decoration: none; opacity: .84; }
+.button.secondary { background: var(--surface); color: var(--accent); }
+.button.small { min-height: 38px; padding: 7px 14px; }
+.photo-placeholder { display: grid; place-items: center; border: 1px solid var(--line); background: var(--surface); color: var(--muted); text-align: center; border-radius: var(--radius-panel); }
+.photo-placeholder span { max-width: 18ch; padding: 12px; }
+.split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: center; gap: 64px; }
+/* navigation-1 */
+.nav { padding-block: 18px; }
+.nav .block-label { margin-bottom: 12px; }
+.nav-row, .nav-links, .nav-actions { display: flex; align-items: center; }
+.nav-row { justify-content: space-between; gap: 32px; }
+.nav-links { gap: 16px; margin-right: auto; }
+.nav-actions { gap: 14px; }
+.brand { font-size: var(--text-h3); font-weight: 700; }
+.nav-group { position: relative; }
+.nav-group summary { display: flex; align-items: center; gap: 4px; padding: 8px; cursor: pointer; list-style: none; }
+.nav-group summary::-webkit-details-marker, .nav-mobile > summary::-webkit-details-marker { display: none; }
+.nav-group .icon { width: 16px; height: 16px; }
+.nav-list { position: absolute; top: 100%; left: 0; z-index: 10; display: grid; min-width: 230px; padding: 8px; border: 1px solid var(--line); border-radius: var(--radius-control); background: var(--surface); box-shadow: var(--icon-shadow); }
+.nav-list a { padding: 7px 10px; }
+.nav-mobile { display: none; }
+.nav-mobile > summary { display: flex; align-items: center; gap: 6px; cursor: pointer; list-style: none; }
+.nav-mobile .nav-list { left: auto; right: 0; min-width: min(300px, 85vw); }
+.nav-mobile .nav-group .nav-list { position: static; border: 0; box-shadow: none; min-width: 0; padding: 0 0 0 12px; }
+/* hero-1 */
+.hero-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: center; gap: 48px; }
+.hero-copy { display: flex; flex-direction: column; align-items: start; gap: 24px; }
+.announcement { display: flex; align-items: center; gap: 10px; border: 1px solid var(--line); border-radius: 100px; padding: 4px 16px 4px 4px; }
+.chip { background: var(--accent); color: var(--bg); border-radius: 100px; padding: 3px 12px; }
+.actions, .avatar-row, .avatars { display: flex; align-items: center; gap: 12px; }
+.avatar-row strong { color: var(--text); }
+.avatar-row p { color: var(--muted); }
+.avatars span { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; border: 3px solid var(--bg); background: var(--accent); color: var(--bg); }
+.avatars span + span { margin-left: -20px; }
+.hero-visual { position: relative; min-height: 500px; }
+.corner-action { position: absolute; right: 0; bottom: 0; width: 82px; height: 82px; border: 12px solid var(--bg); border-radius: var(--radius-panel) 0 0 0; display: grid; place-items: center; background: var(--accent); color: var(--bg); }
+/* social-proof-1 */
+.logos h2 { text-align: center; margin-bottom: 40px; }
+.logo-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); border: 1px solid var(--line); }
+.logo-tile { min-height: 96px; display: grid; place-items: center; padding: 16px; border-right: 1px solid var(--line); color: var(--muted); font-size: var(--text-h3); text-align: center; }
+.logo-tile:last-child { border-right: 0; }
+/* features-2 */
+.feature-tabs { display: grid; gap: 8px; border-top: 1px solid var(--line); padding-top: 24px; }
+.feature-tab { display: flex; align-items: center; gap: 12px; width: 100%; padding: 14px; border: 1px solid transparent; background: transparent; color: var(--muted); border-radius: var(--radius-control); text-align: left; }
+.feature-tab[aria-pressed="true"] { border-color: var(--line); background: var(--surface); color: var(--text); box-shadow: var(--icon-shadow); }
+.feature-visual { min-height: 610px; padding: 24px; }
+.dashboard { width: min(100%, 390px); padding: 24px; border: 1px solid var(--line); background: var(--surface); color: var(--text); border-radius: var(--radius-panel); box-shadow: var(--icon-shadow); text-align: left; }
+.dashboard h3 { margin-bottom: 16px; }
+.alert-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; border-top: 1px solid var(--line); padding: 12px 0; }
+.alert-row span:first-child { flex-basis: 100%; }
+.status { border: 1px solid var(--line); padding: 0 6px; border-radius: 4px; }
+.alert-row small { color: var(--muted); }
+/* features-1: folded specimen */
+.f1-grid { display: grid; grid-template-columns: 1fr; column-gap: 24px; row-gap: 32px; }
+.f1-item { display: flex; flex-direction: column; }
+.f1-head { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.f1-icon { display: grid; place-items: center; flex: 0 0 40px; width: 40px; height: 40px; border: 1px solid var(--line); border-radius: var(--radius-icon); background: var(--surface); box-shadow: var(--icon-shadow); }
+.f1-icon .icon { width: 20px; height: 20px; }
+.f1-item h3, .f1-item p { letter-spacing: var(--tracking-tight); }
+.f1-item p { display: -webkit-box; max-width: 20ch; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; color: var(--muted); }
+/* how-it-works-1 */
+.steps-heading { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 48px; }
+.steps-heading > div { display: grid; gap: 16px; }
+.steps-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+.step { min-width: 0; }
+.step h3 { margin: 8px 0; }
+.step p { color: var(--muted); }
+.step-images { position: relative; height: 300px; margin-top: 24px; }
+.step-images > :first-child { width: 100%; height: 72%; }
+.step-images > :last-child { position: absolute; width: 65%; height: 60%; left: 18%; top: 40%; box-shadow: var(--icon-shadow); }
+.step-controls { display: flex; justify-content: center; gap: 12px; margin-top: 24px; }
+.step-controls a { padding: 4px; color: var(--accent); }
+/* stats-3 */
+.stats-intro { max-width: 650px; margin: 0 auto 40px; text-align: center; display: grid; gap: 20px; }
+.stats-stem { width: 1px; height: 64px; background: var(--line); margin: 0 auto; }
+.stats-panel { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border: 1px solid var(--line); border-radius: var(--radius-panel); overflow: hidden; }
+.stats-story { display: flex; flex-direction: column; justify-content: center; gap: 24px; padding: 48px; }
+.metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-top: 24px; }
+.metric { display: flex; flex-direction: column; gap: 4px; }
+.metric strong { font-size: var(--text-metric); font-weight: 500; line-height: 1.1; }
+.metric span { color: var(--muted); }
+.stats-photo { min-height: 420px; position: relative; overflow: hidden; }
+.tiles { position: absolute; inset: 12%; display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; transform: rotate(-20deg); opacity: .45; }
+.tiles span { border: 1px solid var(--line); background: var(--bg); border-radius: 6px; }
+/* social-proof-8 */
+.testimonial { max-width: 1100px; display: grid; grid-template-columns: minmax(200px, 1fr) 2fr; gap: 32px; }
+.portrait { max-width: 260px; width: 100%; aspect-ratio: 1; }
+.testimonial blockquote { font-size: var(--text-h2); line-height: var(--leading-h2); letter-spacing: var(--tracking-tight); }
+.testimonial-foot { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-top: 32px; }
+.testimonial-foot p, .other-quotes { color: var(--muted); }
+.quote-progress { display: flex; gap: 10px; }
+.quote-progress span { width: 48px; height: 3px; background: var(--line); }
+.quote-progress span:first-child { background: var(--accent); }
+.other-quotes { margin-top: 20px; }
+.other-quotes summary { cursor: pointer; }
+.other-quotes p { padding-top: 12px; }
+/* comparison-1 */
+.comparison header { align-self: start; display: grid; gap: 24px; }
+.comparison-head, .comparison-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.comparison-head { margin-bottom: 24px; font-size: var(--text-h3); font-weight: 700; }
+.comparison-row { border-top: 1px solid var(--line); }
+.comparison-cell { display: flex; align-items: center; gap: 10px; padding: 12px 0; min-width: 0; }
+.check { display: grid; place-items: center; flex: 0 0 24px; width: 24px; height: 24px; border: 1px solid var(--accent); border-radius: 5px; color: var(--accent); }
+.check.empty { border-color: var(--line); }
+/* pricing-1 */
+.pricing-intro { text-align: center; margin-bottom: 40px; }
+.pricing-intro .lead { margin: 12px auto 0; }
+.free-banner { display: flex; justify-content: space-between; align-items: center; gap: 24px; max-width: 580px; margin: 0 auto 48px; padding: 20px 24px; border: 1px solid var(--line); border-radius: var(--radius-panel); }
+.plan-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+.plan { display: flex; flex-direction: column; gap: 16px; min-height: 440px; padding: 24px; border: 1px solid var(--line); border-radius: var(--radius-panel); background: var(--surface); }
+.plan.highlight { border-color: var(--accent); box-shadow: var(--icon-shadow); }
+.plan-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.plan-top label { display: flex; align-items: center; gap: 6px; }
+.plan p { color: var(--muted); }
+.plan .price { color: var(--text); font-size: var(--text-metric); line-height: 1.1; }
+.plan .price small { color: var(--muted); font-size: var(--text-body); }
+.plan ul { margin: auto 0 0; padding: 24px 0 0; list-style: none; }
+.plan li { display: flex; align-items: start; gap: 10px; padding: 6px 0; }
+.plan li .icon { color: var(--accent); }
+.plan .button { width: 100%; }
+/* faq-1 */
+.faq-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 64px; align-items: start; }
+.faq-grid header { position: sticky; top: 24px; display: grid; gap: 12px; }
+.faq-item { border-top: 1px solid var(--line); padding: 24px 0; }
+.faq-item:last-child { border-bottom: 1px solid var(--line); }
+.faq-item summary { display: flex; align-items: start; justify-content: space-between; gap: 16px; cursor: pointer; list-style: none; font-size: var(--text-h3); }
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item[open] summary .icon { transform: rotate(180deg); }
+.faq-item p { max-width: 64ch; margin-top: 16px; color: var(--muted); }
+/* cta-1 */
+.closing { position: relative; overflow: hidden; display: grid; place-items: center; min-height: 580px; }
+.cta-portraits { position: absolute; inset: 0; pointer-events: none; }
+.cta-portraits .photo-placeholder { position: absolute; width: 120px; height: 120px; opacity: .5; transform: rotate(-9deg); }
+.cta-portraits .photo-placeholder:nth-child(1) { top: 7%; left: 5%; }
+.cta-portraits .photo-placeholder:nth-child(2) { top: 9%; right: 10%; transform: rotate(8deg); }
+.cta-portraits .photo-placeholder:nth-child(3) { top: 37%; left: 17%; transform: rotate(13deg); }
+.cta-portraits .photo-placeholder:nth-child(4) { bottom: 8%; right: 12%; }
+.cta-portraits .photo-placeholder:nth-child(5) { top: 39%; right: 24%; }
+.cta-portraits .photo-placeholder:nth-child(6) { bottom: 9%; left: 8%; }
+.cta-content { position: relative; z-index: 1; max-width: 720px; text-align: center; display: grid; justify-items: center; gap: 20px; }
+.cta-content .lead { max-width: 52ch; }
+.cta-content form { width: 100%; max-width: 540px; }
+.cta-content label { display: block; text-align: left; margin-bottom: 8px; }
+.cta-entry { display: flex; align-items: center; gap: 8px; padding: 7px; border: 1px solid var(--line); border-radius: 100px; background: var(--surface); }
+.cta-entry > span { padding-left: 12px; color: var(--muted); }
+.cta-entry input { flex: 1; min-width: 0; border: 0; outline: none; background: transparent; color: var(--text); }
+.cta-entry .button { border-radius: 100px; }
+/* footer-1 */
+.footer-grid { display: grid; grid-template-columns: 1.2fr repeat(3, 1fr); }
+.footer-identity { display: flex; flex-direction: column; justify-content: space-between; gap: 24px; padding: 24px; }
+.footer-identity p { color: var(--muted); }
+.footer-card { min-height: 300px; padding: 28px; border: 1px solid var(--line); margin-left: -1px; }
+.footer-card ul { display: grid; gap: 12px; margin: 24px 0 0; padding: 0; list-style: none; color: var(--muted); }
+.footer-wordmark { width: 100%; overflow: hidden; margin-top: 48px; border-top: 1px solid var(--line); color: var(--line); font-size: clamp(3rem, 14vw, 12rem); line-height: 1; font-weight: 700; letter-spacing: -.08em; text-align: center; }
+@media (min-width: 640px) { .f1-icon { flex-basis: 48px; width: 48px; height: 48px; } .f1-icon .icon { width: 24px; height: 24px; } }
+@media (min-width: 640px) and (max-width: 1023px) { .f1-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .f1-grid { grid-template-columns: repeat(4, 1fr); column-gap: 32px; row-gap: 48px; } }
+@media (max-width: 900px) {
+  .nav-links, .nav-actions { display: none; } .nav-mobile { display: block; }
+  .hero-grid, .split, .stats-panel, .faq-grid { grid-template-columns: 1fr; gap: 36px; }
+  .hero-visual { min-height: 320px; } .feature-visual { min-height: 440px; }
+  .logo-grid { grid-template-columns: repeat(3, 1fr); }
+  .logo-tile { border-bottom: 1px solid var(--line); }
+  .steps-grid, .plan-grid { grid-template-columns: 1fr; }
+  .steps-heading { align-items: start; flex-direction: column; }
+  .faq-grid header { position: static; }
+  .footer-grid { grid-template-columns: repeat(2, 1fr); }
+  .footer-card { margin-left: 0; }
+}
+@media (max-width: 700px) { .testimonial { grid-template-columns: 1fr; } .testimonial-foot { flex-wrap: wrap; } }
+@media (max-width: 540px) {
+  .block { padding: 56px 20px; } .note { padding: 20px 20px 0; }
+  .logo-grid { grid-template-columns: repeat(2, 1fr); }
+  .logo-tile:nth-child(even) { border-right: 0; }
+  .actions { align-items: stretch; flex-direction: column; width: 100%; }
+  .free-banner { align-items: start; flex-direction: column; }
+  .metrics { grid-template-columns: 1fr; }
+  .comparison-head, .comparison-row { gap: 8px; }
+  .comparison-cell { align-items: start; flex-direction: column; }
+  .cta-portraits .photo-placeholder { width: 80px; height: 80px; }
+  .cta-entry { flex-wrap: wrap; border-radius: var(--radius-control); }
+  .cta-entry .button { width: 100%; }
+  .footer-grid { grid-template-columns: 1fr; }
+  .footer-wordmark { letter-spacing: -.09em; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .nav-row, .hero-copy, .hero-visual { animation: entrance var(--motion-duration) var(--motion-ease) both; }
+  .hero-visual { animation-delay: .12s; }
+  .reveal.in-view { animation: entrance var(--motion-duration) var(--motion-ease) both; }
+}
+@keyframes entrance { from { opacity: 0; transform: translateY(var(--motion-distance)); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" aria-hidden="true" style="position:absolute"><symbol id="chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol><symbol id="arrow" viewBox="0 0 24 24"><path d="M5 12h14m-7-7 7 7-7 7"/></symbol><symbol id="play" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7z"/></symbol><symbol id="shield" viewBox="0 0 24 24"><path d="M12 2 20 6v6c0 5-3 8-8 10-5-2-8-5-8-10V6z"/></symbol><symbol id="lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="11" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol><symbol id="eye" viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></symbol><symbol id="database" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 4 18 4 18 0V5M3 12c0 4 18 4 18 0"/></symbol><symbol id="alert" viewBox="0 0 24 24"><path d="M12 2 2 21h20zM12 9v5m0 3v1"/></symbol><symbol id="file" viewBox="0 0 24 24"><path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zM15 2v5h5m-12 8 2 2 5-5"/></symbol><symbol id="finger" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 18 0M6 17v-5a6 6 0 0 1 12 0v5M9 20v-8a3 3 0 0 1 6 0v8m-3-9v11"/></symbol><symbol id="check" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></symbol><symbol id="bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 8-3 9h18c0-1-3-2-3-9zM10 21h4"/></symbol></svg>
+<div class="note"><p>These English sentences and names are sample content from the individual blocks, not this site's product claims, verified customer endorsements, prices or working services. Photographs are bordered placeholders. This one page illustrates all thirteen specimens.</p></div>
+<nav id="navigation-1" class="block nav" aria-label="Primary"><div class="wrap"><span class="block-label">navigation-1 · brand, dropdown groups and actions</span><div class="nav-row"><a class="brand" href="#hero-1">Flowbase</a><div class="nav-links"><details class="nav-group"><summary>Products <svg class="icon"><use href="#chevron"/></svg></summary><div class="nav-list"><a href="#features-2">Analytics Dashboard</a><a href="#features-1">Marketing Suite</a><a href="#features-1">CRM Platform</a><a href="#features-2">Email Automation</a><a href="#stats-3">Sales Tracking</a><a href="#how-it-works-1">Team Collaboration</a><a href="#comparison-1">Project Management</a></div></details><details class="nav-group"><summary>Solutions <svg class="icon"><use href="#chevron"/></svg></summary><div class="nav-list"><a href="#hero-1">For Startups</a><a href="#comparison-1">For Enterprise</a><a href="#pricing-1">For Agencies</a><a href="#cta-1">For Freelancers</a><a href="#social-proof-8">For E-commerce</a></div></details><a href="#pricing-1">Pricing</a></div><div class="nav-actions"><button type="button" aria-label="Notifications" class="button secondary small"><svg class="icon" aria-hidden="true"><use href="#bell"/></svg></button><a href="#cta-1" class="button secondary small">Sign In</a><a href="#cta-1" class="button small">Try it FREE</a></div><details class="nav-mobile"><summary>Menu <svg class="icon"><use href="#chevron"/></svg></summary><div class="nav-list"><details class="nav-group"><summary>Products <svg class="icon"><use href="#chevron"/></svg></summary><div class="nav-list"><a href="#features-2">Analytics Dashboard</a><a href="#features-1">Marketing Suite</a><a href="#features-1">CRM Platform</a><a href="#features-2">Email Automation</a><a href="#stats-3">Sales Tracking</a><a href="#how-it-works-1">Team Collaboration</a><a href="#comparison-1">Project Management</a></div></details><details class="nav-group"><summary>Solutions <svg class="icon"><use href="#chevron"/></svg></summary><div class="nav-list"><a href="#hero-1">For Startups</a><a href="#comparison-1">For Enterprise</a><a href="#pricing-1">For Agencies</a><a href="#cta-1">For Freelancers</a><a href="#social-proof-8">For E-commerce</a></div></details><a href="#pricing-1">Pricing</a><a href="#cta-1">Sign In</a><a href="#cta-1">Try it FREE</a></div></details></div></div></nav>
+<main>
+<section id="hero-1" class="block"><div class="wrap"><span class="block-label">hero-1 · announcement, split hero and avatar proof</span><div class="hero-grid"><div class="hero-copy"><div class="announcement"><span class="chip">New</span><span>AI-powered design systems</span></div><h1>Transform your product with intelligent design</h1><p class="lead">Get component libraries, design tokens, and expert tooling. Ship your design systems faster &amp; smarter.</p><div class="actions"><a class="button" href="#features-2">Start Building</a><a class="button secondary" href="#how-it-works-1">Watch Demo <svg class="icon" aria-hidden="true"><use href="#play"/></svg></a></div><div class="avatar-row"><div class="avatars" aria-hidden="true"><span>JD</span><span>SK</span><span>AL</span></div><p><strong>50k+</strong><br>Engineers shipping products daily.</p></div></div><div class="hero-visual photo-placeholder" role="img" aria-label="Hero photograph placeholder"><span>Hero photograph placeholder</span><a class="corner-action" href="#features-2" aria-label="Explore features"><svg class="icon"><use href="#arrow"/></svg></a></div></div></div></section>
+<section id="social-proof-1" class="block logos reveal"><div class="wrap"><span class="block-label">social-proof-1 · six logo tiles</span><h2>Trusted by the most innovative companies in the world</h2><div class="logo-grid" aria-label="Sample company marks"><div class="logo-tile">Acme Corp</div><div class="logo-tile">Galileo</div><div class="logo-tile">Layers</div><div class="logo-tile">Capsule</div><div class="logo-tile">Luminous</div><div class="logo-tile">Quotient</div></div></div></section>
+<section id="features-2" class="block reveal"><div class="wrap"><span class="block-label">features-2 · three selectable tasks and dashboard overlay</span><div class="split"><div><header class="intro"><p class="eyebrow">Security</p><h2>Advanced protection for your business</h2><p class="lead">Let AI handle security tasks and alert you when intervention is needed.</p></header><div class="feature-tabs" aria-label="Example tasks"><button class="feature-tab" type="button" aria-pressed="true" data-dashboard="0"><svg class="icon"><use href="#shield"/></svg>Automate work</button><button class="feature-tab" type="button" aria-pressed="false" data-dashboard="1"><svg class="icon"><use href="#lock"/></svg>Stay in control</button><button class="feature-tab" type="button" aria-pressed="false" data-dashboard="2"><svg class="icon"><use href="#eye"/></svg>Surface new insights</button></div></div><div class="feature-visual photo-placeholder" role="group" aria-label="Portrait photograph placeholder and sample dashboard"><div class="dashboard" aria-live="polite"><h3 id="dashboard-title">Security Dashboard</h3><div id="dashboard-rows"><div class="alert-row"><span>Threat detected in Network A</span><span class="status">Critical</span><small>2 min ago</small></div><div class="alert-row"><span>Firewall update required</span><span class="status">Warning</span><small>15 min ago</small></div><div class="alert-row"><span>Security scan completed</span><span class="status">Success</span><small>1 hour ago</small></div></div></div></div></div></div></section>
+<section id="features-1" class="block reveal"><div class="wrap"><span class="block-label">features-1 · existing eight-item icon-grid specimen</span><header class="intro"><p class="eyebrow">Enterprise Security Platform</p><h2>Protect what matters most</h2><p class="lead">Comprehensive cybersecurity solutions that protect your business from evolving threats while ensuring complete compliance.</p></header><div class="f1-grid"><article class="f1-item"><div class="f1-head"><span class="f1-icon"><svg class="icon" aria-hidden="true"><use href="#shield"/></svg></span><h3>Threat Detection</h3></div><p>Real-time monitoring for suspicious activities.</p></article><article class="f1-item"><div class="f1-head"><span class="f1-icon"><svg class="icon" aria-hidden="true"><use href="#lock"/></svg></span><h3>Data Encryption</h3></div><p>End-to-end encryption for sensitive data.</p></article><article class="f1-item"><div class="f1-head"><span class="f1-icon"><svg class="icon" aria-hidden="true"><use href="#eye"/></svg></span><h3>Security Monitoring</h3></div><p>24/7 surveillance of your infrastructure.</p></article><article class="f1-item"><div class="f1-head"><span class="f1-icon"><svg class="icon" aria-hidden="true"><use href="#database"/></svg></span><h3>Secure Backups</h3></div><p>Automated backups with instant recovery.</p></article><article class="f1-item"><div class="f1-head"><span class="f1-icon"><svg class="icon" aria-hidden="true"><use href="#alert"/></svg></span><h3>Breach Prevention</h3></div><p>Proactive defense against cyber attacks.</p></article><article class="f1-item"><div class="f1-head"><span class="f1-icon"><svg class="icon" aria-hidden="true"><use href="#file"/></svg></span><h3>Compliance Management</h3></div><p>GDPR, SOC 2, and ISO compliance tools.</p></article><article class="f1-item"><div class="f1-head"><span class="f1-icon"><svg class="icon" aria-hidden="true"><use href="#finger"/></svg></span><h3>Identity Protection</h3></div><p>Multi-factor authentication and access control.</p></article><article class="f1-item"><div class="f1-head"><span class="f1-icon"><svg class="icon" aria-hidden="true"><use href="#check"/></svg></span><h3>Vulnerability Scanning</h3></div><p>Continuous scanning to identify security gaps.</p></article></div></div></section>
+<section id="how-it-works-1" class="block reveal"><div class="wrap"><span class="block-label">how-it-works-1 · numbered steps and overlapping photographs</span><header class="steps-heading"><div><p class="eyebrow">How it works</p><h2>Get started in three simple steps right now</h2></div><a class="button" href="#cta-1">Get started</a></header><div class="steps-grid"><article class="step" id="step-1"><span class="eyebrow">1</span><h3>Create your account</h3><p>Sign up in seconds with your email or social accounts. No credit card required to get started.</p><div class="step-images"><div class="photo-placeholder"><span>Photo 1 placeholder</span></div><div class="photo-placeholder"><span>Photo 2 placeholder</span></div></div></article><article class="step" id="step-2"><span class="eyebrow">2</span><h3>Customize your workspace</h3><p>Set up your dashboard with the tools and integrations that fit your workflow perfectly.</p><div class="step-images"><div class="photo-placeholder"><span>Photo 1 placeholder</span></div><div class="photo-placeholder"><span>Photo 2 placeholder</span></div></div></article><article class="step" id="step-3"><span class="eyebrow">3</span><h3>Launch and scale</h3><p>Go live with confidence. Our platform grows with you from startup to enterprise.</p><div class="step-images"><div class="photo-placeholder"><span>Photo 1 placeholder</span></div><div class="photo-placeholder"><span>Photo 2 placeholder</span></div></div></article></div><nav class="step-controls" aria-label="Step navigation"><a href="#step-1" aria-label="Step 1">←</a><a href="#step-1" aria-label="Go to step 1">●</a><a href="#step-2" aria-label="Go to step 2">●</a><a href="#step-3" aria-label="Go to step 3">●</a><a href="#step-3" aria-label="Step 3">→</a></nav></div></section>
+<section id="stats-3" class="block reveal"><div class="wrap"><span class="block-label">stats-3 · case-study panel with two metrics and a photo</span><header class="stats-intro"><h2>Monitor everything and prevent issues before they happen</h2><p class="lead">Our platform helps you track metrics across your entire infrastructure, identifying bottlenecks and optimization opportunities.</p></header><div class="stats-stem" aria-hidden="true"></div><div class="stats-panel"><div class="stats-story"><h3>Reducing downtime by 94% with ease</h3><p class="lead">How a fintech startup scaled from 10 to 1000 servers while maintaining peak performance.</p><div class="metrics"><div class="metric"><strong>12x</strong><span>Faster deployments</span></div><div class="metric"><strong>99.99</strong><span>Uptime percentage</span></div></div></div><div class="stats-photo photo-placeholder" role="img" aria-label="Customer service representative photograph placeholder with geometric overlay"><span>Customer service representative photograph placeholder</span><div class="tiles" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div></div></div></div></section>
+<section id="social-proof-8" class="block reveal"><div class="wrap"><span class="block-label">social-proof-8 · one portrait and active quote with progress marks</span><figure class="testimonial"><div class="portrait photo-placeholder" role="img" aria-label="Imani Olowe portrait placeholder"><span>Portrait placeholder</span></div><figcaption><blockquote>“The scalability and performance have been game-changing for our organization. We've seen a 50% improvement in response times.”</blockquote><div class="testimonial-foot"><div><h3>Imani Olowe</h3><p>VP of Engineering at Nexus</p></div><div class="quote-progress" aria-label="Quote 1 of 3"><span></span><span></span><span></span></div></div></figcaption></figure><details class="other-quotes"><summary>View the other two sample quote states</summary><p>“A simplified workflow that actually works. It has transformed how our cross-functional teams collaborate on daily tasks.” - David Park, Product Manager at Suralink</p><p>“The insights we gain from the analytics dashboard are invaluable. We can now make data-driven decisions with confidence.” - Sofia Davis, CMO at BrightWave</p></details></div></section>
+<section id="comparison-1" class="block comparison reveal"><div class="wrap"><span class="block-label">comparison-1 · two-brand check matrix</span><div class="split"><header><h2>Skyvault vs. Cloudbox</h2><p class="lead">SkyVault and CloudBox are both cloud storage solutions for your files and data, but SkyVault includes unlimited storage, unlimited uploads, and advanced encryption on all plans.</p><a class="button" href="#pricing-1">Try Skyvault Free</a></header><div class="comparison-table" role="table" aria-label="Sample comparison"><div class="comparison-head" role="row"><span role="columnheader">SkyVault</span><span role="columnheader">CloudBox</span></div><div class="comparison-row" role="row"><div class="comparison-cell" role="cell"><span class="check" aria-label="Yes"><svg class="icon"><use href="#check"/></svg></span>Unlimited storage</div><div class="comparison-cell" role="cell"><span class="check empty" aria-label="No"></span>Unlimited storage</div></div><div class="comparison-row" role="row"><div class="comparison-cell" role="cell"><span class="check" aria-label="Yes"><svg class="icon"><use href="#check"/></svg></span>Unlimited uploads</div><div class="comparison-cell" role="cell"><span class="check empty" aria-label="No"></span>Unlimited uploads</div></div><div class="comparison-row" role="row"><div class="comparison-cell" role="cell"><span class="check" aria-label="Yes"><svg class="icon"><use href="#check"/></svg></span>Advanced encryption</div><div class="comparison-cell" role="cell"><span class="check empty" aria-label="No"></span>Advanced encryption</div></div><div class="comparison-row" role="row"><div class="comparison-cell" role="cell"><span class="check" aria-label="Yes"><svg class="icon"><use href="#check"/></svg></span>Team collaboration</div><div class="comparison-cell" role="cell"><span class="check" aria-label="Yes"><svg class="icon"><use href="#check"/></svg></span>Team collaboration</div></div><div class="comparison-row" role="row"><div class="comparison-cell" role="cell"><span class="check" aria-label="Yes"><svg class="icon"><use href="#check"/></svg></span>Mobile sync</div><div class="comparison-cell" role="cell"><span class="check" aria-label="Yes"><svg class="icon"><use href="#check"/></svg></span>Mobile sync</div></div></div></div></div></section>
+<section id="pricing-1" class="block reveal"><div class="wrap"><span class="block-label">pricing-1 · free banner and three plan cards</span><header class="pricing-intro"><h2>Secure Cloud Storage</h2><p class="lead">Store, sync, and share files securely</p></header><div class="free-banner"><div><h3>Start free</h3><p>10 GB storage included</p></div><a class="button" href="#cta-1">Get Started</a></div><div class="plan-grid"><article class="plan"><div class="plan-top"><h3>Pro</h3><label><span class="period-label">Yearly</span><input class="period-toggle" type="checkbox" checked aria-label="Pro yearly billing"></label></div><p>Individual storage for</p><p class="price"><span class="amount" data-yearly="$16" data-monthly="$20">$16</span> <small>per seat /month</small></p><ul><li><svg class="icon" aria-hidden="true"><use href="#check"/></svg>100 GB secure storage</li><li><svg class="icon" aria-hidden="true"><use href="#check"/></svg>File versioning</li><li><svg class="icon" aria-hidden="true"><use href="#check"/></svg>2FA security</li></ul><a class="button" href="#cta-1">Get Pro</a></article><article class="plan highlight"><div class="plan-top"><h3>Team</h3><label><span class="period-label">Yearly</span><input class="period-toggle" type="checkbox" checked aria-label="Team yearly billing"></label></div><p>Team collaboration for</p><p class="price"><span class="amount" data-yearly="$48" data-monthly="$60">$48</span> <small>per seat /month</small></p><ul><li>Everything in Pro, plus:</li><li><svg class="icon" aria-hidden="true"><use href="#check"/></svg>1 TB team storage</li></ul><a class="button" href="#cta-1">Get Team Plan</a></article><article class="plan"><h3>Enterprise</h3><p>Unlimited storage with advanced admin controls</p><ul><li><svg class="icon" aria-hidden="true"><use href="#check"/></svg>Unlimited storage</li><li><svg class="icon" aria-hidden="true"><use href="#check"/></svg>Advanced permissions</li><li><svg class="icon" aria-hidden="true"><use href="#check"/></svg>24/7 priority support</li></ul><a class="button" href="#cta-1">Schedule a call</a></article></div></div></section>
+<section id="faq-1" class="block reveal"><div class="wrap"><span class="block-label">faq-1 · three native disclosures</span><div class="faq-grid"><header><h2>FAQs</h2><p class="lead">Everything you need to know about our product and billing.</p></header><div><details class="faq-item" open><summary>What payment methods do you accept? <svg class="icon" aria-hidden="true"><use href="#chevron"/></svg></summary><p>We accept all major credit cards (Visa, MasterCard, American Express), PayPal, and bank transfers for annual plans. All payments are processed securely through our encrypted payment gateway.</p></details><details class="faq-item"><summary>Can I change my plan later? <svg class="icon" aria-hidden="true"><use href="#chevron"/></svg></summary><p>Yes, you can upgrade or downgrade your plan at any time. When upgrading, you'll be charged the prorated difference. When downgrading, the credit will be applied to your next billing cycle.</p></details><details class="faq-item"><summary>Is there a free trial available? <svg class="icon" aria-hidden="true"><use href="#chevron"/></svg></summary><p>We offer a 14-day free trial for all our plans. No credit card required. You'll have full access to all features during the trial period, and you can cancel anytime before it ends.</p></details></div></div></div></section>
+<section id="cta-1" class="block closing reveal"><div class="cta-portraits" aria-hidden="true"><div class="photo-placeholder"><span>Portrait placeholder</span></div><div class="photo-placeholder"><span>Portrait placeholder</span></div><div class="photo-placeholder"><span>Portrait placeholder</span></div><div class="photo-placeholder"><span>Portrait placeholder</span></div><div class="photo-placeholder"><span>Portrait placeholder</span></div><div class="photo-placeholder"><span>Portrait placeholder</span></div></div><div class="wrap cta-content"><span class="block-label">cta-1 · username form and floating portraits</span><h2>Why settle for<br>algorithm chaos?</h2><p class="lead">Join the platform where creators connect authentically. Build your community without the algorithm chaos.</p><form id="specimen-form"><label for="username">Enter your username</label><div class="cta-entry"><span>spark.social/</span><input id="username" name="username" placeholder="yourname" autocomplete="off"><button class="button" type="submit">Claim Profile</button></div></form><p class="eyebrow">Already have an account? <a href="#navigation-1">Log in</a></p></div></section>
+</main>
+<footer id="footer-1" class="block reveal"><div class="wrap"><span class="block-label">footer-1 · identity, bordered link cards and oversized wordmark</span><div class="footer-grid"><div class="footer-identity"><div class="brand">▣ FITFORGE</div><h3>Transform your body,<br>elevate your life</h3><p>Premium fitness coaching since 2019</p></div><div class="footer-card"><h3>Programs</h3><ul><li><a href="#features-1">Personal Training</a></li><li><a href="#features-2">Nutrition Coaching</a></li><li><a href="#how-it-works-1">Group Classes</a></li><li><a href="#pricing-1">Online Membership</a></li></ul></div><div class="footer-card"><h3>Resources</h3><ul><li><a href="#hero-1">About Us</a></li><li><a href="#social-proof-8">Blog</a></li><li><a href="#social-proof-8">Success Stories ↗</a></li></ul></div><div class="footer-card"><h3>Support</h3><ul><li><a href="#cta-1">Contact</a></li><li><a href="#navigation-1">Member Portal ↗</a></li><li><a href="#faq-1">FAQ</a></li><li><a href="#footer-1">Privacy Policy</a></li></ul></div></div><div class="footer-wordmark" aria-hidden="true">FITFORGE</div></div></footer>
+<script>
+const dashboards = [
+  { title: 'Security Dashboard', rows: [['Threat detected in Network A', 'Critical', '2 min ago'], ['Firewall update required', 'Warning', '15 min ago'], ['Security scan completed', 'Success', '1 hour ago']] },
+  { title: 'Access Control', rows: [['Admin privileges updated', 'Active', '5 min ago'], ['New user authentication', 'Pending', '12 min ago'], ['Password policy enforced', 'Complete', '2 hours ago']] },
+  { title: 'Analytics Monitor', rows: [['Traffic spike detected', 'Review', '3 min ago'], ['Unusual login patterns', 'Alert', '20 min ago'], ['System health optimal', 'Normal', '45 min ago']] }
+];
+document.querySelectorAll('.feature-tab').forEach(tab => tab.addEventListener('click', () => {
+  document.querySelectorAll('.feature-tab').forEach(button => button.setAttribute('aria-pressed', String(button === tab)));
+  const data = dashboards[Number(tab.dataset.dashboard)];
+  document.querySelector('#dashboard-title').textContent = data.title;
+  const rows = document.querySelector('#dashboard-rows');
+  rows.replaceChildren(...data.rows.map(([label, status, time]) => {
+    const row = document.createElement('div'); row.className = 'alert-row';
+    const name = document.createElement('span'); name.textContent = label;
+    const badge = document.createElement('span'); badge.className = 'status'; badge.textContent = status;
+    const clock = document.createElement('small'); clock.textContent = time;
+    row.append(name, badge, clock); return row;
+  }));
+}));
+document.querySelectorAll('.period-toggle').forEach(toggle => toggle.addEventListener('change', () => {
+  const card = toggle.closest('.plan');
+  card.querySelector('.period-label').textContent = toggle.checked ? 'Yearly' : 'Monthly';
+  const amount = card.querySelector('.amount');
+  amount.textContent = toggle.checked ? amount.dataset.yearly : amount.dataset.monthly;
+}));
+document.querySelector('#specimen-form').addEventListener('submit', event => event.preventDefault());
+if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  const observer = new IntersectionObserver(entries => entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('in-view'); observer.unobserve(entry.target); } }), { rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(section => observer.observe(section));
+} else document.querySelectorAll('.reveal').forEach(section => section.classList.add('in-view'));
+</script>
+</body>
+</html>
