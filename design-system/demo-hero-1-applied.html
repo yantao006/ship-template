@@ -62,8 +62,11 @@
     .hero-1-image { min-height: 500px; overflow: hidden; border-radius: 32px; background: #cbd0cb; }
     .hero-1-image img { display: block; width: 100%; height: 500px; object-fit: cover; }
     .hero-1-notch { position: absolute; right: 0; bottom: 0; display: grid; place-items: center; width: 96px; height: 96px; border-top-left-radius: 26px; background: var(--page-surface); }
-    .hero-1-notch button { display: grid; place-items: center; width: 58px; height: 58px; border: 0; border-radius: 50%; background: var(--ink); color: var(--cream); cursor: pointer; transition: transform .2s, background-color .2s; }
-    .hero-1-notch button:hover { transform: rotate(45deg); background: var(--blue); }
+    .hero-1-notch::before, .hero-1-notch::after { content: ''; position: absolute; width: 32px; height: 32px; pointer-events: none; background: radial-gradient(circle at left top, transparent 31px, var(--page-surface) 32px); }
+    .hero-1-notch::before { right: 0; top: -32px; }
+    .hero-1-notch::after { left: -32px; bottom: 0; }
+    .hero-1-notch button { display: grid; place-items: center; width: 58px; height: 58px; border: 0; border-radius: 18px; background: var(--ink); color: var(--cream); cursor: pointer; transition: transform .2s, background-color .2s; }
+    .hero-1-notch button:hover { transform: scale(1.04); background: var(--blue); }
     .hero-1-notch svg { width: 22px; height: 22px; }
     @media (max-width: 1023px) {
       .hero-1 { grid-template-columns: 1fr; gap: 36px; }

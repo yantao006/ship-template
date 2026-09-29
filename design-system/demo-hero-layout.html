@@ -36,7 +36,7 @@
     .top-nav::after { content: ''; width: 24px; height: 4px; margin-left: -8px; border-radius: 2px; background: var(--yellow); }
     .top-nav h1 { margin-left: 4px; font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 700; }
     .top-nav h1 span { margin-left: 8px; color: var(--ink-faint); font: 400 0.85rem var(--font-body); }
-    .page-container { max-width: 1000px; margin: 0 auto; padding: 3rem 2rem 6rem; }
+    .page-container { max-width: 1000px; margin: 0 auto; padding: 3rem 2rem max(6rem, 100vh); }
     .layout-header { margin-bottom: 1rem; }
     .layout-header h2 {
       display: inline;
@@ -136,13 +136,20 @@
       border-top-left-radius: 26px;
       background: var(--preview-bg);
     }
+    /* Two exterior concave joins keep the large photo corner continuous around the cutout. */
+    .mini-hero-1 .notch::before, .mini-hero-1 .notch::after {
+      content: ''; position: absolute; width: 32px; height: 32px; pointer-events: none;
+      background: radial-gradient(circle at left top, transparent 31px, var(--preview-bg) 32px);
+    }
+    .mini-hero-1 .notch::before { right: 0; top: -32px; }
+    .mini-hero-1 .notch::after { left: -32px; bottom: 0; }
     .mini-hero-1 .notch button {
       display: grid;
       place-items: center;
       width: 58px;
       height: 58px;
       border: 0;
-      border-radius: 50%;
+      border-radius: 18px;
       background: var(--ink);
       color: var(--cream);
       cursor: default;
@@ -156,7 +163,7 @@
       .top-nav { padding: 1rem 1.25rem; }
       .top-nav h1 { font-size: 1.05rem; }
       .top-nav h1 span { font-size: 0.72rem; }
-      .page-container { padding: 2rem 1.25rem 5rem; }
+      .page-container { padding: 2rem 1.25rem max(5rem, 100vh); }
       .mini-hero-1 { gap: 28px; min-height: 0; }
       .mini-hero-1 .photo { height: 250px; }
       .mini-hero-1 .proof { margin-top: 26px; }
@@ -205,8 +212,10 @@
     .mini-hero-4 .copy .ph-heading { width: 70%; margin: 12px auto; }
     .mini-hero-4 .copy .ph-text { width: 58%; margin: 0 auto 6px; }
     .mini-hero-4 .spec-actions { justify-content: center; }
-    .mini-hero-4 .track { display: flex; gap: 14px; overflow-x: auto; }
-    .mini-hero-4 .video { position: relative; flex: 0 0 38%; min-width: 170px; height: 185px; display: grid; place-items: center; border-radius: 19px; }
+    .mini-hero-4 .marquee { overflow: hidden; mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent); }
+    .mini-hero-4 .track { display: flex; gap: 14px; width: max-content; animation: hero-marquee 18s linear infinite; }
+    .mini-hero-4 .marquee:hover .track { animation-play-state: paused; }
+    .mini-hero-4 .video { position: relative; flex: 0 0 clamp(170px, 38vw, 360px); height: 185px; display: grid; place-items: center; border-radius: 19px; }
     .mini-hero-4 .dots { position: absolute; left: 14px; bottom: 12px; display: flex; gap: 5px; }
     .mini-hero-4 .dots span { width: 5px; height: 5px; border-radius: 50%; background: var(--ink); }
     .mini-hero-5 { position: relative; overflow: hidden; padding-top: 38px; }
@@ -233,9 +242,17 @@
     .mini-hero-7 .copy .ph-heading { width: 50%; margin: 0 auto 15px; }
     .mini-hero-7 .copy .ph-text { width: 44%; margin: 0 auto; }
     .mini-hero-7 .spec-actions { justify-content: center; }
-    .mini-hero-7 .scene { height: 270px; display: flex; align-items: center; justify-content: center; gap: 16px; }
-    .mini-hero-7 .scene div { width: 28%; height: 53%; border-radius: 16px; }
-    .mini-hero-7 .scene div:nth-child(2) { height: 75%; transform: translateY(-12px); }
+    .mini-hero-7 .scene { position: relative; height: 270px; overflow: hidden; perspective: 850px; }
+    .mini-hero-7 .scene div { position: absolute; top: 20%; left: 37%; width: 26%; height: 60%; border-radius: 16px; backface-visibility: hidden; animation: hero-ring 9s linear infinite; }
+    .mini-hero-7 .scene div:first-child { animation-delay: -6s; }
+    .mini-hero-7 .scene div:nth-child(3) { animation-delay: -3s; }
+    .mini-hero-7 .scene::after { content: ''; position: absolute; z-index: 4; left: 49%; top: 18%; width: 2%; height: 65%; border-radius: 50%; background: linear-gradient(90deg, transparent, #f09de0, #fff, #f09de0, transparent); box-shadow: 0 0 18px 8px #e9a0e489; opacity: .65; pointer-events: none; animation: hero-glow 3s ease-in-out infinite alternate; }
+    @keyframes hero-ring {
+      0%, 100% { transform: translate3d(0, 0, 110px) rotateY(0) scale(1.07); z-index: 3; opacity: 1; }
+      33.33% { transform: translate3d(112%, 9%, -130px) rotateY(-42deg) scale(.82); z-index: 1; opacity: .72; }
+      66.66% { transform: translate3d(-112%, 9%, -130px) rotateY(42deg) scale(.82); z-index: 1; opacity: .72; }
+    }
+    @keyframes hero-glow { to { opacity: .25; box-shadow: 0 0 26px 14px #e9a0e477; } }
     .mini-hero-8 .lines { margin: 20px 0; }
     .mini-hero-8 .row { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 12px; }
     .mini-hero-8 .row .ph-heading { width: 19%; margin: 0; }
@@ -284,14 +301,15 @@
     .mini-hero-13 .spec-actions { justify-content: center; }
     .mini-hero-13 .proof { display: flex; justify-content: center; gap: 15px; margin-top: 14px; }
     .mini-hero-13 .stage { position: relative; max-width: 680px; height: 265px; margin: -4px auto 0; overflow: hidden; }
-    .mini-hero-13 .bar { position: absolute; bottom: 34px; left: 12%; width: 76%; height: 8px; border-radius: 99px; background: #888; }
+    .mini-hero-13 .bar { position: absolute; top: 28px; left: 49%; width: 8px; height: 230px; border-radius: 99px; background: #f5c3e9; box-shadow: 0 0 12px 6px #e6a8da; animation: hero-glow 3s ease-in-out infinite alternate; }
     .mini-hero-13 .floating { position: absolute; top: 74px; left: 29%; width: 48px; height: 48px; border-radius: 50%; }
     .mini-hero-13 .card { position: absolute; top: 65px; right: 10%; width: 28%; height: 75px; border-radius: 12px; }
     .mini-hero-13 .card:last-child { top: 150px; right: 15%; }
     .mini-hero-14 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: center; gap: 40px; min-height: 330px; }
     .mini-hero-14 .copy .ph-heading { width: 76%; margin-top: 20px; }
     .mini-hero-14 .copy .ph-text { width: 82%; }
-    .mini-hero-14 .copy .spec-pill .ph-text { width: 55px; }
+    .mini-hero-14 .copy .spec-pill .ph-text { width: 32px; }
+    .mini-hero-14 .spec-pill svg { width: 12px; height: 12px; }
     .mini-hero-14 .spec-input { margin: 25px 0 18px; }
     .mini-hero-14 .spec-input .spec-button { background: var(--ink); }
     .mini-hero-14 .spec-input .spec-button::after { background: var(--cream); }
@@ -332,6 +350,7 @@
     .mini-hero-18 .row { display: flex; align-items: center; gap: 9px; padding: 7px 14px; }
     .mini-hero-18 .row:first-child { background: #e3e3df; }
     .mini-hero-18 .row .ph-text { width: 60%; margin: 0; }
+    .mini-hero-18 .row svg { width: 15px; height: 15px; flex: none; }
     .mini-hero-18 .row kbd { margin-left: auto; }
     .mini-hero-18 .action { margin-top: 20px; display: flex; align-items: center; gap: 16px; }
     .mini-hero-19 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: center; gap: 55px; }
@@ -395,9 +414,9 @@
       .mini-hero-3 .bottom { align-items: start; flex-direction: column; }
       .mini-hero-3 .bottom .ph-heading { width: 75%; }
       .mini-hero-3 .links { width: 50%; }
-      .mini-hero-4 .video { flex-basis: 75%; }
+      .mini-hero-4 .video { flex-basis: 220px; }
       .mini-hero-5 .screen { height: 135px; }
-      .mini-hero-7 .scene div { width: 42%; }
+      .mini-hero-7 .scene div { left: 33%; width: 34%; }
       .mini-hero-8 .row { flex-wrap: wrap; justify-content: start; }
       .mini-hero-8 .row .ph-heading { width: 27%; }
       .mini-hero-8 .tile { width: 72px; height: 45px; }
@@ -416,6 +435,66 @@
       .mini-hero-18 .scopes { overflow-x: auto; } .mini-hero-18 .scopes span { flex: none; }
       .mini-hero-23 .frame { height: 220px; }
       .mini-hero-24 .copy { padding: 20px; }
+    }
+    /* Source-specific motion; dormant specimens do not spend animation frames off screen. */
+    .layout-block:not(.motion-active) *, .layout-block:not(.motion-active) *::before, .layout-block:not(.motion-active) *::after { animation-play-state: paused !important; }
+    .mini-hero-2 { position: relative; isolation: isolate; }
+    .mini-hero-2::before { content: ''; position: absolute; inset: 5% -10% 0; z-index: -1; opacity: .4; background: repeating-radial-gradient(ellipse at 50% 120%, transparent 0 18px, #adb3ac 19px 20px, transparent 21px 42px); animation: hero-waves 10s linear infinite; }
+    .mini-hero-2 .gallery .spec-media { transition: transform .35s ease; }
+    .mini-hero-2 .gallery .spec-media:hover { transform: rotateY(-9deg) translateY(-8px); }
+    .mini-hero-3 .scene { background: linear-gradient(115deg, #777b81, #b1adaf 38%, #9caabd 65%, #777b81); background-size: 240% 100%; animation: hero-flow 11s ease-in-out infinite alternate; }
+    .mini-hero-3 .frame { background: linear-gradient(90deg, #1a1a2e22, transparent); }
+    .mini-hero-3 .links { padding: 16px; border-top-left-radius: 28px; background: var(--preview-bg); }
+    .mini-hero-5 .orb { box-shadow: 0 0 0 20px #cbd0cb44; animation: hero-float 6s ease-in-out infinite alternate; }
+    .mini-hero-5 .browser { box-shadow: 0 0 0 2px #cbd0cb66; }
+    .mini-hero-5 .screen { background: linear-gradient(110deg, #cbd0cb, #bbb2c7, #cbd0cb); background-size: 220% 100%; animation: hero-flow 12s ease-in-out infinite alternate; }
+    .mini-hero-6 .rail span, .mini-hero-6 .mobile-rail span { animation: hero-progress 9s steps(1) infinite; }
+    .mini-hero-6 .rail span:nth-child(2), .mini-hero-6 .mobile-rail span:nth-child(2) { animation-delay: -3s; }
+    .mini-hero-6 .rail span:nth-child(3), .mini-hero-6 .mobile-rail span:nth-child(3) { animation-delay: -6s; }
+    .mini-hero-6 .image { animation: hero-slide 9s steps(1) infinite; }
+    .mini-hero-8 .tile { animation: hero-tile 10s steps(1) infinite; }
+    .mini-hero-8 .row:nth-child(2) .tile { animation-delay: -5s; }
+    .mini-hero-9 .video { background: linear-gradient(120deg, #abaeb3, #79878c, #cbd0cb, #abaeb3); background-size: 300% 100%; animation: hero-flow 8s linear infinite alternate; }
+    .mini-hero-9 .video::after { content: ''; position: absolute; inset: 0; background: linear-gradient(transparent 45%, #1a1a2e44); pointer-events: none; }
+    .mini-hero-12 .head > div { position: relative; }
+    .mini-hero-12 .head > div::after { content: ''; position: absolute; top: 0; right: -30px; width: 30px; height: 30px; background: radial-gradient(circle at right bottom, transparent 30px, var(--preview-bg) 31px); }
+    .mini-hero-13 .floating { display: grid; place-items: center; animation: hero-float 4s ease-in-out infinite alternate; }
+    .mini-hero-13 .floating svg, .mini-hero-13 .card svg { width: 20px; height: 20px; }
+    .mini-hero-13 .card { display: flex; align-items: center; gap: 12px; padding: 12px; }
+    .mini-hero-13 .card .ph-text { width: 60%; height: 7px; margin: 0; }
+    .mini-hero-13 .card { animation: hero-float 5s ease-in-out infinite alternate-reverse; }
+    .mini-hero-18 .row:first-child { position: relative; overflow: hidden; }
+    .mini-hero-18 .row:first-child::after { content: ''; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 25%, #fff8 50%, transparent 75%); transform: translateX(-100%); animation: hero-shimmer 4s ease-in-out infinite; pointer-events: none; }
+    .mini-hero-19 .panel, .mini-hero-19 .float { transition: transform .5s cubic-bezier(.16,1,.3,1); }
+    .mini-hero-19 .stage:hover .panel { transform: translate(5px, -5px); }
+    .mini-hero-19 .stage:hover .float.top { transform: translate(-8px, 6px); }
+    .mini-hero-19 .stage:hover .float.bottom { transform: translate(8px, -6px); }
+    .mini-hero-21 .field { background: radial-gradient(ellipse at 48% 35%, #c7d2fe, #d5d0e6 42%, #cbd0cb 72%); background-size: 160% 160%; animation: hero-flow 14s ease-in-out infinite alternate; }
+    .mini-hero-21 .orb { position: relative; border: 0; background: conic-gradient(#c7d2fe, #f5d0fe, #a5f3fc, #c7d2fe); animation: hero-orbit 26s linear infinite; }
+    .mini-hero-21 .orb::before { content: ''; position: absolute; inset: 12px; border-radius: 50%; background: var(--preview-bg); }
+    .mini-hero-21 .orb .spec-dot { position: relative; }
+    .mini-hero-22 .field { background: radial-gradient(ellipse at 20% 30%, #aeb9d4, transparent 55%), radial-gradient(ellipse at 75% 65%, #c6a8c6, transparent 60%), #cbd0cb; background-size: 160% 160%; animation: hero-mesh 10s ease-in-out infinite alternate; }
+    .mini-hero-23 .frame .spec-media { background: repeating-radial-gradient(ellipse at 50% 30%, #8298a7 0 12px, #b0c0c6 22px 36px, #809cb1 45px 60px); background-size: 150% 150%; animation: hero-water 8s ease-in-out infinite alternate; }
+    .mini-hero-24 .field { background: repeating-radial-gradient(ellipse at 80% 55%, transparent 0 10px, #778d9c88 11px 12px, transparent 13px 30px), linear-gradient(90deg, #cbd0cb, #aebac2); background-size: 140% 150%; animation: hero-neuro 8s ease-in-out infinite alternate; }
+    .mini-hero-24 .copy { background: linear-gradient(90deg, var(--preview-bg) 0%, #fff8e1dd 60%, transparent); }
+    .mini-hero-24 .spec-pill .spec-dot, .mini-hero-23 .live .spec-dot { animation: hero-ping 2s ease-in-out infinite; }
+    @keyframes hero-waves { to { background-position: 0 42px; } }
+    @keyframes hero-marquee { to { transform: translateX(calc(-50% - 7px)); } }
+    @keyframes hero-flow { to { background-position: 100% 0; } }
+    @keyframes hero-mesh { to { background-position: 100% 100%; } }
+    @keyframes hero-water { to { background-position: 70% 80%; } }
+    @keyframes hero-neuro { to { background-position: 100% 60%; } }
+    @keyframes hero-float { to { transform: translate3d(8px, -12px, 0); } }
+    @keyframes hero-orbit { to { transform: rotate(360deg); } }
+    @keyframes hero-shimmer { 50%, 100% { transform: translateX(100%); } }
+    @keyframes hero-ping { 50% { box-shadow: 0 0 0 7px #8895a144; } }
+    @keyframes hero-progress { 0%, 33% { background: var(--ink); } 33.34%, 100% { background: #cbd0cb; } }
+    @keyframes hero-slide { 0%, 33% { background: #cbd0cb; } 33.34%, 66% { background: #b7c1c9; } 66.34%, 100% { background: #a9adb9; } }
+    @keyframes hero-tile { 0%, 49% { background: #cbd0cb; } 50%, 100% { background: #aaaebc; } }
+    @media (prefers-reduced-motion: reduce) {
+      .layout-block *, .layout-block *::before, .layout-block *::after { animation: none !important; transition: none !important; }
+      .mini-hero-7 .scene div:first-child { transform: translateX(-110%) scale(.82); }
+      .mini-hero-7 .scene div:nth-child(3) { transform: translateX(110%) scale(.82); }
     }
   </style>
 </head>
@@ -461,7 +540,7 @@
     </section>
     <section class="layout-block" id="hero-4" aria-labelledby="hero-4-title">
       <div class="layout-header"><h2 id="hero-4-title"><span class="num">04</span>Hero视频跑马廊型</h2></div>
-      <div class="preview-box"><div class="mini-hero-4"><div class="copy"><span class="spec-pill"><span class="spec-dot"></span><span class="ph-text"></span></span><div class="ph-heading"></div><div class="ph-text"></div><div class="spec-actions"><span class="spec-button"></span></div></div><div class="track" aria-label="视频静态画框"><div class="video spec-media"><span class="spec-play"></span><span class="dots"><span></span><span></span></span></div><div class="video spec-media"><span class="spec-play"></span></div><div class="video spec-media"><span class="spec-play"></span></div></div></div></div>
+      <div class="preview-box"><div class="mini-hero-4"><div class="copy"><span class="spec-pill"><span class="spec-dot"></span><span class="ph-text"></span></span><div class="ph-heading"></div><div class="ph-text"></div><div class="spec-actions"><span class="spec-button"></span></div></div><div class="marquee"><div class="track" aria-label="循环视频画框"><div class="video spec-media"><span class="spec-play"></span><span class="dots"><span></span><span></span></span></div><div class="video spec-media"><span class="spec-play"></span></div><div class="video spec-media"><span class="spec-play"></span></div><div class="video spec-media" aria-hidden="true"><span class="spec-play"></span><span class="dots"><span></span><span></span></span></div><div class="video spec-media" aria-hidden="true"><span class="spec-play"></span></div><div class="video spec-media" aria-hidden="true"><span class="spec-play"></span></div></div></div></div></div>
       <div class="scene-tag">居中大字下方是横向连续的视频画框。</div>
     </section>
     <section class="layout-block" id="hero-5" aria-labelledby="hero-5-title">
@@ -476,8 +555,8 @@
     </section>
     <section class="layout-block" id="hero-7" aria-labelledby="hero-7-title">
       <div class="layout-header"><h2 id="hero-7-title"><span class="num">07</span>Hero三维环形画廊型</h2></div>
-      <div class="preview-box"><div class="mini-hero-7"><div class="copy"><div class="ph-heading"></div><div class="ph-text"></div><div class="spec-actions"><span class="spec-button"></span></div></div><div class="scene" role="img" aria-label="环形画廊三帧占位"><div class="spec-media"></div><div class="spec-media"></div><div class="spec-media"></div></div></div></div>
-      <div class="scene-tag">上方居中文字，下方是前中后三帧画廊。</div>
+      <div class="preview-box"><div class="mini-hero-7"><div class="copy"><div class="ph-heading"></div><div class="ph-text"></div><div class="spec-actions"><span class="spec-button"></span></div></div><div class="scene" role="img" aria-label="三幅占位图循环旋转的环形画廊"><div class="spec-media"></div><div class="spec-media"></div><div class="spec-media"></div></div></div></div>
+      <div class="scene-tag">上方居中文字，下方画框循环转动；原作还有粉色光带和粒子，此处保留轻量光带。</div>
     </section>
     <section class="layout-block" id="hero-8" aria-labelledby="hero-8-title">
       <div class="layout-header"><h2 id="hero-8-title"><span class="num">08</span>Hero字间媒体嵌片型</h2></div>
@@ -506,12 +585,12 @@
     </section>
     <section class="layout-block" id="hero-13" aria-labelledby="hero-13-title">
       <div class="layout-header"><h2 id="hero-13-title"><span class="num">13</span>Hero浮标信息层型</h2></div>
-      <div class="preview-box"><div class="mini-hero-13"><div class="copy"><div class="ph-heading"></div><div class="ph-text"></div><div class="spec-actions"><span class="spec-button"></span><span class="spec-button"></span></div><div class="proof"><span>● ● ● ●</span><span>★★★★★</span></div></div><div class="stage" role="img" aria-label="静态浮标和信息卡占位"><div class="bar"></div><div class="floating spec-media"></div><div class="card spec-media"></div><div class="card spec-media"></div></div></div></div>
+      <div class="preview-box"><div class="mini-hero-13"><div class="copy"><div class="ph-heading"></div><div class="ph-text"></div><div class="spec-actions"><span class="spec-button"></span><span class="spec-button"></span></div><div class="proof"><span>● ● ● ●</span><span>★★★★★</span></div></div><div class="stage" role="img" aria-label="浮标和信息卡占位"><div class="bar"></div><div class="floating spec-media"><i data-lucide="terminal" aria-hidden="true"></i></div><div class="card spec-media"><i data-lucide="database" aria-hidden="true"></i><span class="ph-text"></span></div><div class="card spec-media"><i data-lucide="cloud" aria-hidden="true"></i><span class="ph-text"></span></div></div></div></div>
       <div class="scene-tag">社交证明下方有光条、浮标和叠放的信息卡。</div>
     </section>
     <section class="layout-block" id="hero-14" aria-labelledby="hero-14-title">
       <div class="layout-header"><h2 id="hero-14-title"><span class="num">14</span>Hero邮箱表单分栏型</h2></div>
-      <div class="preview-box"><div class="mini-hero-14"><div class="copy"><div class="spec-pill"><span class="spec-dot"></span><span class="ph-text"></span></div><div class="ph-heading"></div><div class="ph-text"></div><div class="ph-text short"></div><div class="spec-input"><span class="ph-text"></span><span class="spec-button"></span></div><div class="ph-text short"></div></div><div class="image spec-media" role="img" aria-label="画面占位"></div></div></div>
+      <div class="preview-box"><div class="mini-hero-14"><div class="copy"><div class="spec-pill"><i data-lucide="star" aria-hidden="true"></i><strong>5 stars</strong><span class="ph-text"></span><strong>3,000+</strong></div><div class="ph-heading"></div><div class="ph-text"></div><div class="ph-text short"></div><div class="spec-input"><span class="ph-text"></span><span class="spec-button"></span></div><div class="ph-text short"></div></div><div class="image spec-media" role="img" aria-label="画面占位"></div></div></div>
       <div class="scene-tag">左评分和邮箱表单，右侧单张 4:3 画面。</div>
     </section>
     <section class="layout-block" id="hero-15" aria-labelledby="hero-15-title">
@@ -531,7 +610,7 @@
     </section>
     <section class="layout-block" id="hero-18" aria-labelledby="hero-18-title">
       <div class="layout-header"><h2 id="hero-18-title"><span class="num">18</span>Hero指令面板型</h2></div>
-      <div class="preview-box"><div class="mini-hero-18"><div class="copy"><span class="spec-pill"><kbd>⌘K</kbd><span class="ph-text"></span></span><div class="ph-heading"></div><div class="ph-text"></div></div><div class="panel"><div class="query"><i data-lucide="search" aria-hidden="true"></i><span class="ph-text"></span><kbd>esc</kbd></div><div class="scopes"><span>范围 12</span><span>范围 8</span><span>范围 4</span></div><div class="rows"><div class="row"><span class="spec-dot"></span><span class="ph-text"></span><kbd>↵</kbd></div><div class="row"><span class="spec-dot"></span><span class="ph-text"></span></div><div class="row"><span class="spec-dot"></span><span class="ph-text"></span></div></div><div class="keys"><kbd>↑</kbd><kbd>↓</kbd><kbd>↵</kbd></div></div><div class="action"><span class="spec-button"></span><kbd>⌘ K</kbd></div></div></div>
+      <div class="preview-box"><div class="mini-hero-18"><div class="copy"><span class="spec-pill"><kbd>⌘K</kbd><span class="ph-text"></span></span><div class="ph-heading"></div><div class="ph-text"></div></div><div class="panel"><div class="query"><i data-lucide="search" aria-hidden="true"></i><span class="ph-text"></span><kbd>esc</kbd></div><div class="scopes"><span>范围 24</span><span>范围 9</span><span>范围 6</span><span>范围 3</span></div><div class="rows"><div class="row"><i data-lucide="file-text" aria-hidden="true"></i><span class="ph-text"></span><kbd>↵</kbd></div><div class="row"><i data-lucide="git-pull-request" aria-hidden="true"></i><span class="ph-text"></span></div><div class="row"><i data-lucide="users" aria-hidden="true"></i><span class="ph-text"></span></div><div class="row"><i data-lucide="sparkles" aria-hidden="true"></i><span class="ph-text"></span></div></div><div class="keys"><kbd>↑</kbd><kbd>↓</kbd><kbd>↵</kbd></div></div><div class="action"><span class="spec-button"></span><kbd>⌘ K</kbd></div></div></div>
       <div class="scene-tag">指令面板保留搜索行、范围计数、结果和键帽。</div>
     </section>
     <section class="layout-block" id="hero-19" aria-labelledby="hero-19-title">
@@ -541,7 +620,7 @@
     </section>
     <section class="layout-block" id="hero-20" aria-labelledby="hero-20-title">
       <div class="layout-header"><h2 id="hero-20-title"><span class="num">20</span>Hero口号标志指标型</h2></div>
-      <div class="preview-box"><div class="mini-hero-20"><div class="ph-heading"></div><div class="ph-text"></div><div class="spec-actions"><span class="spec-button"></span><span class="spec-button"></span></div><div class="logos" aria-label="标志占位"><span class="spec-logo"></span><span class="spec-logo"></span><span class="spec-logo"></span><span class="spec-logo"></span></div><div class="metrics"><div><strong>01</strong><span class="ph-text"></span></div><div><strong>02</strong><span class="ph-text"></span></div><div><strong>03</strong><span class="ph-text"></span></div><div><strong>04</strong><span class="ph-text"></span></div></div></div></div>
+      <div class="preview-box"><div class="mini-hero-20"><div class="ph-heading"></div><div class="ph-text"></div><div class="spec-actions"><span class="spec-button"></span><span class="spec-button"></span></div><div class="logos" aria-label="六个标志占位"><span class="spec-logo"></span><span class="spec-logo"></span><span class="spec-logo"></span><span class="spec-logo"></span><span class="spec-logo"></span><span class="spec-logo"></span></div><div class="metrics"><div><strong>4.2B</strong><span class="ph-text"></span></div><div><strong>38ms</strong><span class="ph-text"></span></div><div><strong>99.99%</strong><span class="ph-text"></span></div><div><strong>3,100+</strong><span class="ph-text"></span></div></div></div></div>
       <div class="scene-tag">居中主张之后是一行标志与四格数字指标。</div>
     </section>
     <section class="layout-block" id="hero-21" aria-labelledby="hero-21-title">
@@ -566,6 +645,12 @@
     </section>
   </main>
   <script src="https://unpkg.com/lucide@1.48.0/dist/umd/lucide.min.js"></script>
-  <script>lucide.createIcons();</script>
+  <script>
+    lucide.createIcons();
+    const observer = new IntersectionObserver(entries => {
+      for (const entry of entries) entry.target.classList.toggle('motion-active', entry.isIntersecting);
+    });
+    document.querySelectorAll('.layout-block').forEach(block => observer.observe(block));
+  </script>
 </body>
 </html>

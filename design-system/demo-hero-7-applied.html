@@ -39,13 +39,21 @@
     .hero-7-action:hover { transform: translateY(-2px); background: var(--blue); border-color: var(--blue); }
     .hero-7-action:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
     .hero-7-action svg { width: 19px; height: 19px; }
-    .hero-7-scene { display: flex; align-items: center; justify-content: center; gap: 18px; height: 420px; margin-top: 48px; overflow: hidden; }
-    .hero-7-frame { flex: 0 0 28%; height: 76%; min-width: 0; overflow: hidden; border-radius: 26px; background: #cbd0cb; }
-    .hero-7-frame:nth-child(2) { position: relative; z-index: 1; height: 96%; transform: translateY(-8px); }
+    .hero-7-scene { position: relative; height: 420px; margin-top: 48px; overflow: hidden; perspective: 1100px; }
+    .hero-7-frame { position: absolute; left: 36%; top: 14%; width: 28%; height: 72%; overflow: hidden; border-radius: 26px; background: #cbd0cb; backface-visibility: hidden; animation: hero-ring 9s linear infinite; }
+    .hero-7-frame:first-child { animation-delay: -6s; }
+    .hero-7-frame:nth-child(3) { animation-delay: -3s; }
     .hero-7-frame img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .hero-7-scene::after { content: ''; position: absolute; z-index: 4; top: 18%; left: 49%; width: 2%; height: 64%; border-radius: 50%; background: linear-gradient(90deg, transparent, #f09de0, #fff, #f09de0, transparent); box-shadow: 0 0 24px 12px #e9a0e480; opacity: .65; pointer-events: none; animation: hero-glow 3s ease-in-out infinite alternate; }
+    @keyframes hero-ring {
+      0%, 100% { transform: translate3d(0, 0, 140px) rotateY(0) scale(1.07); z-index: 3; opacity: 1; }
+      33.33% { transform: translate3d(112%, 9%, -160px) rotateY(-42deg) scale(.82); z-index: 1; opacity: .72; }
+      66.66% { transform: translate3d(-112%, 9%, -160px) rotateY(42deg) scale(.82); z-index: 1; opacity: .72; }
+    }
+    @keyframes hero-glow { to { opacity: .25; box-shadow: 0 0 32px 18px #e9a0e477; } }
     @media (max-width: 1023px) {
       .hero-7-scene { height: 300px; margin-top: 36px; }
-      .hero-7-frame { flex-basis: 32%; }
+      .hero-7-frame { width: 32%; left: 34%; }
     }
     @media (max-width: 639px) {
       .top-nav { padding: 1rem 1.25rem; }
@@ -55,11 +63,10 @@
       .hero-7 h1 { max-width: 350px; margin-bottom: 18px; font-size: clamp(36px, 9.5vw, 43px); }
       .hero-7-copy p { font-size: 15px; }
       .hero-7-action { min-height: 46px; margin-top: 24px; padding: 9px 19px; font-size: 14px; }
-      .hero-7-scene { height: 260px; gap: 10px; margin-top: 30px; }
-      .hero-7-frame { flex: 0 0 35%; height: 76%; border-radius: 17px; }
-      .hero-7-frame:nth-child(2) { height: 96%; }
+      .hero-7-scene { height: 260px; margin-top: 30px; }
+      .hero-7-frame { left: 32%; width: 36%; border-radius: 17px; }
     }
-    @media (prefers-reduced-motion: reduce) { .hero-7-action { transition: none; } }
+    @media (prefers-reduced-motion: reduce) { .hero-7-action { transition: none; } .hero-7-frame, .hero-7-scene::after { animation: none; } .hero-7-frame:first-child { transform: translateX(-108%) scale(.82); } .hero-7-frame:nth-child(3) { transform: translateX(108%) scale(.82); } }
   </style>
 </head>
 <body>
