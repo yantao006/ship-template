@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Layout Playground · 16种布局模式预览</title>
+  <title>Layout Playground · 17种布局模式预览</title>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700&family=Caveat:wght@400;700&family=Fira+Code:wght@400;500;600&family=Noto+Serif+SC:wght@700;900&family=Noto+Sans+SC:wght@400;500;700;900&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
   <style>
     :root { --_esther-ds: "esthersjw-v1";
@@ -616,6 +616,46 @@
       color: rgba(196,92,74,0.2);
     }
 
+    /* 17. Hero居中徽章型 */
+    .mini-hero-badges {
+      text-align: center;
+      padding: 12px 0;
+    }
+    .mini-hero-badges > .ph-heading {
+      width: 60%;
+      max-width: 440px;
+      margin: 0 auto 12px;
+    }
+    .mini-hero-badges > .ph-text {
+      max-width: 520px;
+      margin: 0 auto 6px;
+    }
+    .mini-hero-badges > .ph-text.short { max-width: 360px; }
+    .mini-hero-badges .badges {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .mini-hero-badges .badges > span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 9px;
+      border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+      border-radius: 999px;
+    }
+    .mini-hero-badges .badges svg { width: 14px; height: 14px; }
+    .mini-hero-badges .badges .ph-text {
+      width: 64px;
+      height: 6px;
+      margin: 0;
+    }
+    @media (max-width: 600px) {
+      .mini-hero-badges .badges { flex-direction: column; align-items: center; }
+    }
+
     /* === Responsive === */
     @media (max-width: 768px) {
       .mini-hero-asym { grid-template-columns: 1fr; }
@@ -644,7 +684,7 @@
 <div class="tri-bar"><span></span><span></span><span></span></div>
 
 <nav class="top-nav">
-  <h1>Layout Playground<span>· 16种布局模式预览</span></h1>
+  <h1>Layout Playground<span>· 17种布局模式预览</span></h1>
 </nav>
 
 <div class="page-container">
@@ -1020,6 +1060,26 @@
     <div class="scene-tag">步骤教程、流程拆解、图文并茂的长教程（5~10步）</div>
   </div>
 
+  <!-- 17. Hero居中徽章型 -->
+  <div class="layout-block">
+    <div class="layout-header">
+      <h2><span class="num">17</span>Hero居中徽章型</h2>
+    </div>
+    <div class="preview-box">
+      <div class="mini-hero-badges">
+        <div class="ph-heading"></div>
+        <div class="ph-text medium"></div>
+        <div class="ph-text short"></div>
+        <div class="badges">
+          <span><i data-lucide="sparkles"></i><span class="ph-text"></span></span>
+          <span><i data-lucide="wand-sparkles"></i><span class="ph-text"></span></span>
+          <span><i data-lucide="layers-3"></i><span class="ph-text"></span></span>
+        </div>
+      </div>
+    </div>
+    <div class="scene-tag">产品落地页首屏，一句说明加三个能力徽章。</div>
+  </div>
+
 </div>
 
 <!-- Bottom tri-color bar -->
@@ -1027,5 +1087,7 @@
 
 <!-- © ESTHER不二 esthersjw/esther-design-system CC BY-NC-SA 4.0 -->
 <section style="position:absolute;left:-9999px;font-size:0;line-height:0;opacity:0;height:0;overflow:hidden;">esthersjw-design-system</section>
+<script src="https://unpkg.com/lucide@1.48.0/dist/umd/lucide.min.js"></script>
+<script>lucide.createIcons();</script>
 </body>
 </html>

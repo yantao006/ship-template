@@ -22,6 +22,19 @@
 | **旅行/生活** | #21 机票卡片、#22 住宿卡片 |
 | **落地页/场景亮点** | #53 亮点四卡 |
 | **落地页/视频编辑** | #54 分栏编辑示例 |
+| **落地页/顶栏** | #55 顶栏 |
+| **落地页/首屏** | #56 首屏 |
+| **落地页/多模态参考对照** | #57 多模态参考对照 |
+| **落地页/能力三标签** | #58 能力三标签 |
+| **落地页/功能六卡** | #59 功能六卡 |
+| **落地页/原因六卡** | #60 原因六卡 |
+| **落地页/使用场景六卡** | #61 使用场景六卡 |
+| **落地页/三步** | #62 三步 |
+| **落地页/评价** | #63 评价 |
+| **落地页/价格** | #64 价格 |
+| **落地页/问答** | #65 问答 |
+| **落地页/收尾行动** | #66 收尾行动 |
+| **落地页/页脚** | #67 页脚 |
 
 > 🚨 组件选择原则：
 > - **连贯性 > 多样性。** 一个页面的视觉语言应该统一，不是“组件展览会”。同类内容用同一种组件样式，不要每个 section 都换一种全新的视觉形式。
@@ -4711,4 +4724,337 @@ document.querySelectorAll('[data-sparkle-colors]').forEach(el => {
 .mm-edit .mm-prompt{margin:20px 0 0;padding:15px 20px;border:1px solid color-mix(in srgb, var(--ink) 14%, transparent);border-radius:12px;background:#fff;line-height:1.75}
 .mm-edit .mm-prompt .mm-ref{display:inline-flex;align-items:center;gap:5px;vertical-align:middle}
 @media(max-width:767px){.mm-edit{padding:70px 16px}.mm-edit .mm-wrap{padding:0}.mm-edit .mm-tabs{width:100%}.mm-edit .mm-tabs button{flex:1;padding:9px 4px;white-space:normal}.mm-edit .mm-frame{grid-template-columns:1fr;padding:12px}.mm-edit .mm-result{height:auto;aspect-ratio:16/9}}
+```
+
+
+## 55. 顶栏
+
+适用场景：`落地页区块` `响应式导航`。
+源自 MiniMax H3 首页对应区块；独立标本，复用预览页已有的 Lucide 脚本与页面主题。
+所有菜单保持收起；主题按钮仅展示结构，不改预览页主题。
+
+```html
+<section class="mm-header" aria-label="顶栏">
+<div class="mm-bar"><a class="mm-brand" href="#">MiniMax H3</a><nav class="mm-nav" aria-label="Primary navigation"><a href="#" aria-current="page">Home</a><a href="#">AI Video</a><a href="#">AI Image</a><a href="#"><i data-lucide="sparkles"></i>Explore</a><button type="button" aria-expanded="false">More</button><a href="#">Pricing</a></nav><div class="mm-actions"><button type="button" aria-label="Theme preview (local only)"><i data-lucide="sun"></i></button><button type="button" aria-label="Switch language" aria-expanded="false"><i data-lucide="globe-2"></i></button><button type="button" class="mm-credits" aria-label="4 Available Credits" aria-expanded="false"><i data-lucide="coins"></i>4</button><button type="button" class="mm-avatar" aria-label="Account menu for Alex Chen, alex@example.com" aria-expanded="false">AC</button></div></div><nav class="mm-mobile" aria-label="Mobile navigation"><a href="#" aria-current="page"><i data-lucide="sparkles"></i>Home</a><a href="#"><i data-lucide="globe-2"></i>Explore</a><a href="#"><i data-lucide="wallet"></i>Assets</a><a href="#"><i data-lucide="crown"></i>VIP</a></nav>
+</section>
+```
+
+```css
+.mm-header{padding:0;line-height:1.5}
+.mm-header *{box-sizing:border-box}
+.mm-header .mm-bar{max-width:1280px;margin:auto;min-height:72px;padding:12px 24px;display:flex;align-items:center;gap:30px}
+.mm-header a,.mm-header button{color:inherit;text-decoration:none;font:inherit}
+.mm-header .mm-brand{font-size:1.22rem;font-weight:800;white-space:nowrap}
+.mm-header .mm-nav,.mm-header .mm-actions{display:flex;align-items:center;gap:18px}
+.mm-header .mm-nav{flex:1}
+.mm-header .mm-nav a,.mm-header .mm-nav button{white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
+.mm-header button{border:0;background:transparent;cursor:pointer}
+.mm-header .mm-actions{gap:8px}
+.mm-header .mm-actions button{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:38px;padding:6px;border-radius:20px}
+.mm-header .mm-actions .mm-credits{padding:6px 12px;border:1px solid color-mix(in srgb,var(--ink) 14%,transparent)}
+.mm-header .mm-actions .mm-avatar{width:38px;border:1px solid color-mix(in srgb,var(--ink) 14%,transparent);font-size:.8rem;font-weight:700}
+.mm-header .lucide{width:19px;height:19px}
+.mm-header .mm-mobile{display:none}
+.mm-header :is(a,button):focus-visible{outline:2px solid currentColor;outline-offset:3px}
+@media(max-width:900px){.mm-header .mm-bar{flex-wrap:wrap;gap:10px}.mm-header .mm-nav{order:3;width:100%;overflow:auto}.mm-header .mm-actions{margin-left:auto}}
+@media(max-width:600px){.mm-header .mm-bar{padding:12px 16px}.mm-header .mm-nav{display:none}.mm-header .mm-mobile{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid color-mix(in srgb,var(--ink) 14%,transparent)}.mm-header .mm-mobile a{display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 2px;font-size:.75rem}}
+```
+
+
+## 56. 首屏
+
+适用场景：`落地页区块` `标题与徽章`。
+源自 MiniMax H3 首页对应区块；独立标本，复用预览页已有的 Lucide 脚本与页面主题。
+
+```html
+<section class="mm-hero" aria-label="首屏">
+<div class="mm-wrap"><h1>MiniMax H3 AI Video Generator</h1><p>Turn text, images, audio, and clips into cinematic videos with native sound. MiniMax H3 understands all your references in one pass. Start free — no skills needed.</p><div class="mm-badges"><span><i data-lucide="sparkles"></i>2K Video · 4–15s</span><span><i data-lucide="wand-sparkles"></i>Conversational In-Chat Editing</span><span><i data-lucide="layers-3"></i>Locked Character Continuity</span></div></div>
+</section>
+```
+
+```css
+.mm-hero{padding:96px 24px 76px;line-height:1.5}
+.mm-hero *{box-sizing:border-box}
+.mm-hero .mm-wrap{max-width:1050px;margin:auto;text-align:center}
+.mm-hero h1{line-height:1.12;margin:0}
+.mm-hero p{max-width:780px;margin:22px auto 0}
+.mm-hero .mm-badges{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin-top:32px}
+.mm-hero .mm-badges span{display:inline-flex;align-items:center;gap:8px;padding:9px 13px;border:1px solid color-mix(in srgb,var(--ink) 14%,transparent);border-radius:99px}
+.mm-hero .lucide{width:18px;height:18px;flex:none}
+@media(max-width:600px){.mm-hero{padding:72px 16px}.mm-hero .mm-badges{align-items:center;flex-direction:column}}
+```
+
+
+## 57. 多模态参考对照
+
+适用场景：`落地页区块` `输入输出对照`。
+源自 MiniMax H3 首页对应区块；独立标本，复用预览页已有的 Lucide 脚本与页面主题。
+箭头保留结构，仅展示首个案例；引用图标继承提示词颜色。
+
+```html
+<section class="mm-reference" aria-label="多模态参考对照">
+<div class="mm-wrap"><div class="mm-intro mm-centered"><h2>MiniMax H3 Supports Image, Video, and Audio Input</h2><p>MiniMax H3 is a truly multimodal AI video generator. Mix up to 9 images, 3 video clips, and 3 audio tracks in a single request. H3 reads your characters, motion, camera moves, voices, and style together, then blends them into one coherent video with native stereo sound. Reference a face to keep it consistent, a dance clip to copy its choreography, or a voice sample to clone its tone — all at the same time.</p></div><div class="mm-carousel"><button type="button" aria-label="Previous case"><i data-lucide="chevron-left"></i></button><div class="mm-frame"><div class="mm-input"><strong>Input</strong><div class="mm-assets"><div class="mm-images"><div><img src="https://picsum.photos/seed/mm-reference-image-1/500/350.webp" alt="Image 1" loading="lazy"><img src="https://picsum.photos/seed/mm-reference-image-2/500/350.webp" alt="Image 2" loading="lazy"><img src="https://picsum.photos/seed/mm-reference-image-3/500/350.webp" alt="Image 3" loading="lazy"></div><span><i data-lucide="image"></i>Image ×3</span></div><div class="mm-tile"><video src="https://lorem.media/video/seed/mm-reference-input-video/16x9" poster="https://picsum.photos/seed/mm-reference-input-poster/1280/720.webp" autoplay loop muted playsinline preload="metadata" aria-label="Input video 1"></video><span><i data-lucide="film"></i>Video 1</span></div><div class="mm-audio"><span><i data-lucide="music-2"></i>Audio 1</span><div aria-label="Audio waveform" class="mm-wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div></div></div><div class="mm-output"><video src="https://lorem.media/video/seed/mm-reference-output/16x9" poster="https://picsum.photos/seed/mm-reference-output-poster/1280/720.webp" autoplay loop muted playsinline preload="metadata" aria-label="Reference generation output"></video><span>Output</span></div></div><button type="button" aria-label="Next case"><i data-lucide="chevron-right"></i></button></div><p class="mm-prompt">Prompt: Using the character actions and camera language from <span class="mm-ref"><i data-lucide="film"></i>@Video 1</span>, generate a combat sequence featuring the characters from <span class="mm-ref"><i data-lucide="image"></i>@Image 1</span> and <span class="mm-ref"><i data-lucide="image"></i>@Image 2</span>, set against the background of <span class="mm-ref"><i data-lucide="image"></i>@Image 3</span>. The fight choreography and visual style should emulate the pixel-art, side-scrolling combat of the classic game Contra, including retro movement rhythms and arcade-style impact beats. Apply the background music from <span class="mm-ref"><i data-lucide="music-2"></i>@Audio 1</span>, and synchronize additional combat sound effects—hits, jumps, and weapon actions—with the on-screen fighting motions to enhance intensity and immersion.</p></div>
+</section>
+```
+
+```css
+.mm-reference{padding:72px 24px;line-height:1.5}
+.mm-reference *{box-sizing:border-box}
+.mm-reference .mm-wrap{max-width:1280px;margin:auto}
+.mm-reference .mm-intro{text-align:center;max-width:860px;margin:0 auto 30px}
+.mm-reference h2{margin:0;line-height:1.2}.mm-reference .mm-intro p{margin:16px 0 0}
+.mm-reference .mm-carousel{display:grid;grid-template-columns:40px minmax(0,1fr) 40px;align-items:center;gap:10px}
+.mm-reference button{width:40px;height:40px;display:grid;place-items:center;border:1px solid color-mix(in srgb,var(--ink) 14%,transparent);border-radius:50%;background:#fff;color:inherit;cursor:pointer}
+.mm-reference .mm-frame{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);gap:16px;padding:16px;border:1px solid color-mix(in srgb,var(--ink) 14%,transparent);border-radius:16px;background:#fff;min-width:0}
+.mm-reference .mm-input,.mm-reference .mm-output{min-width:0}.mm-reference .mm-input>strong{display:block;margin:2px 0 12px}
+.mm-reference .mm-assets{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.mm-reference .mm-images,.mm-reference .mm-tile,.mm-reference .mm-output{position:relative;overflow:hidden;border-radius:10px}
+.mm-reference .mm-images>div{display:grid;grid-template-columns:repeat(3,1fr);height:155px}.mm-reference .mm-images img{width:100%;height:100%;object-fit:cover}
+.mm-reference .mm-tile{height:155px}.mm-reference video{display:block;width:100%;height:100%;object-fit:cover}
+.mm-reference .mm-images>span,.mm-reference .mm-tile>span,.mm-reference .mm-output>span{position:absolute;top:10px;left:10px;display:inline-flex;align-items:center;gap:5px;padding:6px 9px;border-radius:8px;background:#252631ad;color:#fff;font-size:13px}
+.mm-reference .mm-output{height:380px}.mm-reference .mm-output>span{left:auto;right:10px}
+.mm-reference .mm-audio{grid-column:1/-1;min-height:92px;padding:12px;border:1px solid color-mix(in srgb,var(--ink) 14%,transparent);border-radius:10px}
+.mm-reference .mm-audio>span{display:inline-flex;align-items:center;gap:6px}
+.mm-reference .mm-wave{display:flex;align-items:center;justify-content:center;gap:4px;height:37px}.mm-reference .mm-wave i{width:3px;height:24px;background:currentColor;border-radius:4px}.mm-reference .mm-wave i:nth-child(3n){height:13px}.mm-reference .mm-wave i:nth-child(4n){height:32px}
+.mm-reference .lucide{width:15px;height:15px;flex:none}.mm-reference .mm-prompt{padding:16px 20px;margin:20px 50px 0;border:1px solid color-mix(in srgb,var(--ink) 14%,transparent);border-radius:12px;background:#fff;line-height:1.8}
+.mm-reference .mm-ref{display:inline-flex;align-items:center;gap:4px;vertical-align:middle}
+.mm-reference button:focus-visible{outline:2px solid currentColor;outline-offset:2px}
+@media(max-width:767px){.mm-reference{padding:60px 16px}.mm-reference .mm-carousel{grid-template-columns:32px minmax(0,1fr) 32px;gap:3px}.mm-reference button{width:32px;height:32px}.mm-reference .mm-frame{grid-template-columns:1fr;padding:10px}.mm-reference .mm-assets{grid-template-columns:1fr}.mm-reference .mm-images>div,.mm-reference .mm-tile{height:150px}.mm-reference .mm-output{height:auto;aspect-ratio:16/9}.mm-reference .mm-prompt{margin:18px 0 0;padding:14px}}
+```
+
+
+## 58. 能力三标签
+
+适用场景：`落地页区块` `标签切换`。
+源自 MiniMax H3 首页对应区块；独立标本，复用预览页已有的 Lucide 脚本与页面主题。
+三项标签切换对应图文；未选中面板隐藏。
+
+```html
+<section class="mm-inside" aria-label="能力三标签">
+<div class="mm-intro mm-centered"><span class="mm-eyebrow">Inside MiniMax H3</span><h2>MiniMax H3 turns any input into a finished scene.</h2><p>MiniMax H3 is built around three strengths — mix any reference into one shot, edit with a single sentence, and ship commercial-grade output in crisp 1440p with native stereo audio.</p></div><div class="mm-tabs" role="tablist" aria-label="MiniMax H3 capabilities"><button type="button" role="tab" aria-selected="true" data-inside="0"><i data-lucide="layers-3"></i>Multimodal references</button><button type="button" role="tab" aria-selected="false" data-inside="1"><i data-lucide="layers-3"></i>Precise editing</button><button type="button" role="tab" aria-selected="false" data-inside="2"><i data-lucide="layers-3"></i>Commercial-grade output</button></div><div class="mm-media" data-inside-panel="0"><img src="https://picsum.photos/seed/mm-inside-1/1024/570.webp" alt="Multimodal references" loading="lazy"><div class="mm-copy"><h3>Blend any input into one take.</h3><p>Combine up to 9 images, 3 clips, and 3 audio tracks into a single coherent, cinematic shot.</p><a href="#" aria-label="Blend any input into one take."><i data-lucide="arrow-right"></i></a></div></div><div class="mm-media" data-inside-panel="1" hidden><img src="https://picsum.photos/seed/mm-inside-2/1024/570.webp" alt="Precise editing" loading="lazy"><div class="mm-copy"><h3>Change one thing, keep the rest.</h3><p>Swap a character, relight a scene, or rewrite a line of dialogue — everything else stays untouched.</p><a href="#" aria-label="Change one thing, keep the rest."><i data-lucide="arrow-right"></i></a></div></div><div class="mm-media" data-inside-panel="2" hidden><img src="https://picsum.photos/seed/mm-inside-3/1024/570.webp" alt="Commercial-grade output" loading="lazy"><div class="mm-copy"><h3>Text, logos, and UI stay accurate.</h3><p>Product labels, on-screen text, and brand marks render cleanly, ready for ads and e-commerce.</p><a href="#" aria-label="Text, logos, and UI stay accurate."><i data-lucide="arrow-right"></i></a></div></div>
+</section>
+```
+
+```css
+.mm-inside{padding:80px 24px;line-height:1.5}
+.mm-inside *{box-sizing:border-box}
+.mm-inside .mm-intro{max-width:820px;text-align:center;margin:0 auto 30px}
+.mm-inside .mm-eyebrow{display:block;margin-bottom:10px;font-weight:700}.mm-inside h2{margin:0;line-height:1.2}.mm-inside .mm-intro p{margin:16px 0 0}
+.mm-inside .mm-tabs{display:flex;max-width:1150px;margin:0 auto 20px;gap:8px;justify-content:center;flex-wrap:wrap}
+.mm-inside button{display:flex;align-items:center;gap:8px;padding:10px 16px;border:1px solid color-mix(in srgb,var(--ink) 14%,transparent);border-radius:99px;background:#fff;color:inherit;font:inherit;cursor:pointer}
+.mm-inside button[aria-selected="true"]{border-color:currentColor;font-weight:700}
+.mm-inside .mm-media{max-width:1150px;margin:auto;display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:25px;align-items:center;border:1px solid color-mix(in srgb,var(--ink) 14%,transparent);border-radius:16px;background:#fff;overflow:hidden}
+.mm-inside [hidden]{display:none!important}.mm-inside img{width:100%;height:350px;object-fit:cover}
+.mm-inside .mm-copy{padding:24px}.mm-inside h3{margin:0}.mm-inside .mm-copy p{margin:16px 0}.mm-inside .mm-copy a{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border:1px solid color-mix(in srgb,var(--ink) 14%,transparent);border-radius:50%;color:inherit}
+.mm-inside .lucide{width:18px;height:18px}.mm-inside :is(button,a):focus-visible{outline:2px solid currentColor;outline-offset:2px}
+@media(max-width:767px){.mm-inside{padding:60px 16px}.mm-inside .mm-tabs{flex-direction:column}.mm-inside .mm-media{grid-template-columns:1fr}.mm-inside img{height:auto;aspect-ratio:16/9}.mm-inside .mm-copy{padding:20px}}
+```
+
+
+## 59. 功能六卡
+
+适用场景：`落地页区块` `功能网格`。
+源自 MiniMax H3 首页对应区块；独立标本，复用预览页已有的 Lucide 脚本与页面主题。
+
+```html
+<section class="mm-features" aria-label="功能六卡">
+<div class="mm-wrap"><div class="mm-intro"><span class="mm-eyebrow">FEATURES</span><h2>Everything an AI Video Generator Should Do</h2><p>MiniMax H3 unifies generation, reference, and editing in one model, so you never juggle three tools to finish one video. Here is what you can do with it today — all free to try.</p></div><div class="mm-grid"><article class="mm-card"><div class="mm-card-top"><span class="mm-icon"><i data-lucide="layers-3"></i></span></div><h3>Text to Video</h3><p>Write a prompt up to 7,000 characters and MiniMax H3 turns it into a complete video with visuals, motion, and sound. Great for storyboards, trailers, and social content.</p></article><article class="mm-card"><div class="mm-card-top"><span class="mm-icon"><i data-lucide="wand-sparkles"></i></span></div><h3>Image to Video</h3><p>Animate any photo or illustration. Use first and last frame images to control exactly where a shot starts and ends, while H3 fills in natural motion between them.</p></article><article class="mm-card"><div class="mm-card-top"><span class="mm-icon"><i data-lucide="clapperboard"></i></span></div><h3>Reference Everything</h3><p>Bring a character photo, a motion clip, and a style frame together. H3 keeps faces on-model, copies choreography, and matches the visual style you point at.</p></article><article class="mm-card"><div class="mm-card-top"><span class="mm-icon"><i data-lucide="audio-lines"></i></span></div><h3>Native Audio &amp; Voice Clone</h3><p>Every generation includes stereo sound — ambience, effects, music, and dialogue. Provide a voice sample and H3 makes your character speak new lines in that voice.</p></article><article class="mm-card"><div class="mm-card-top"><span class="mm-icon"><i data-lucide="palette"></i></span></div><h3>Instruction-Based Editing</h3><p>Replace subjects, remove objects, swap backgrounds, relight scenes, and change dialogue with one sentence. Unedited parts of your video stay pixel-stable.</p></article><article class="mm-card"><div class="mm-card-top"><span class="mm-icon"><i data-lucide="lock-keyhole"></i></span></div><h3>Any Aspect Ratio</h3><p>Generate in 21:9, 16:9, 4:3, 1:1, 3:4, or 9:16 — or let MiniMax H3 pick the best frame automatically. One model covers cinema screens and phone feeds alike.</p></article></div></div>
+</section>
+```
+
+```css
+.mm-features{padding:80px 24px;line-height:1.5}
+.mm-features *{box-sizing:border-box}
+.mm-features .mm-wrap{max-width:1232px;margin:auto}
+.mm-features .mm-intro{max-width:810px;margin:0 0 40px;text-align:left}
+.mm-features .mm-eyebrow{display:block;margin-bottom:12px;font-weight:700}
+.mm-features h2{margin:0;line-height:1.2} .mm-features .mm-intro p{margin:16px 0 0;line-height:1.65}
+.mm-features .mm-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.mm-features .mm-card{min-width:0;padding:24px;border:1px solid color-mix(in srgb,var(--ink) 14%,transparent);border-radius:17px;background:#fff}
+.mm-features .mm-card-top{display:flex;align-items:center;justify-content:space-between}
+.mm-features .mm-icon{display:grid;place-items:center;width:46px;height:46px;border:1px solid color-mix(in srgb,var(--ink) 14%,transparent);border-radius:13px}
+.mm-features .lucide{width:21px;height:21px} .mm-features h3{margin:20px 0 0;line-height:1.3} .mm-features .mm-card p{margin:12px 0 0;line-height:1.65}
+@media(max-width:900px){.mm-features .mm-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.mm-features{padding:60px 16px}.mm-features .mm-grid{grid-template-columns:1fr;gap:16px}}
+```
+
+
+## 60. 原因六卡
+
+适用场景：`落地页区块` `编号卡片`。
+源自 MiniMax H3 首页对应区块；独立标本，复用预览页已有的 Lucide 脚本与页面主题。
+
+```html
+<section class="mm-why" aria-label="原因六卡">
+<div class="mm-wrap"><div class="mm-intro mm-centered"><span class="mm-eyebrow">WHAT IT&#x27;S GOOD AT</span><h2>Why Creators Choose MiniMax H3</h2><p>Most AI video tools do one trick. MiniMax H3 is an open, general-purpose multimodal model that understands your whole creative intent — text, images, sound, and video together — and turns it into finished, watchable content. It moves beyond single-task generation toward one model that can create, reference, and edit in the same conversation.</p></div><div class="mm-grid"><article class="mm-card"><div class="mm-card-top"><span class="mm-icon"><i data-lucide="layers-3"></i></span><b>01</b></div><h3>True Multimodal Understanding</h3><p>Feed MiniMax H3 up to 12 files at once — images, video clips, and audio. It understands the people, motion, emotion, camera work, and style inside each one, then merges them into a single coherent video.</p></article><article class="mm-card"><div class="mm-card-top"><span class="mm-icon"><i data-lucide="wand-sparkles"></i></span><b>02</b></div><h3>Precise Video Editing</h3><p>Swap a cat for a dog, change a green screen into a fairytale forest, turn day into night, or rewrite a line of dialogue. H3 follows detailed edit instructions while keeping the rest of your footage untouched.</p></article><article class="mm-card"><div class="mm-card-top"><span class="mm-icon"><i data-lucide="clapperboard"></i></span><b>03</b></div><h3>Voices That Stay in Character</h3><p>Every MiniMax H3 video ships with native stereo audio. Clone a voice from a reference clip, give characters new lines, and keep dialogue synced to lips and emotion automatically.</p></article><article class="mm-card"><div class="mm-card-top"><span class="mm-icon"><i data-lucide="audio-lines"></i></span><b>04</b></div><h3>Real Camera Language</h3><p>Rack focus, handheld shake, hard cuts, match cuts, title cards — describe the shot like a director and MiniMax H3 executes it. Your videos feel filmed, not generated.</p></article><article class="mm-card"><div class="mm-card-top"><span class="mm-icon"><i data-lucide="palette"></i></span><b>05</b></div><h3>Commercial-Grade Output</h3><p>Up to 1440p resolution at 24 FPS with accurate on-screen text, logos, and product details. H3 output is clean enough for ads, e-commerce listings, and brand films.</p></article><article class="mm-card"><div class="mm-card-top"><span class="mm-icon"><i data-lucide="lock-keyhole"></i></span><b>06</b></div><h3>Free to Start</h3><p>Try the MiniMax H3 AI video generator for free. No credit card, no editing skills, no software to install. Type an idea and get a finished video with sound in minutes. Upgrade only when you are ready to scale.</p></article></div></div>
+</section>
+```
+
+```css
+.mm-why{padding:80px 24px;line-height:1.5}
+.mm-why *{box-sizing:border-box}
+.mm-why .mm-wrap{max-width:1232px;margin:auto}
+.mm-why .mm-intro{max-width:810px;margin:0 auto 40px;text-align:center}
+.mm-why .mm-eyebrow{display:block;margin-bottom:12px;font-weight:700}
+.mm-why h2{margin:0;line-height:1.2} .mm-why .mm-intro p{margin:16px 0 0;line-height:1.65}
+.mm-why .mm-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.mm-why .mm-card{min-width:0;padding:24px;border:1px solid color-mix(in srgb,var(--ink) 14%,transparent);border-radius:17px;background:#fff}
+.mm-why .mm-card-top{display:flex;align-items:center;justify-content:space-between}
+.mm-why .mm-icon{display:grid;place-items:center;width:46px;height:46px;border:1px solid color-mix(in srgb,var(--ink) 14%,transparent);border-radius:13px}
+.mm-why .lucide{width:21px;height:21px} .mm-why h3{margin:20px 0 0;line-height:1.3} .mm-why .mm-card p{margin:12px 0 0;line-height:1.65}
+@media(max-width:900px){.mm-why .mm-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.mm-why{padding:60px 16px}.mm-why .mm-grid{grid-template-columns:1fr;gap:16px}}
+```
+
+
+## 61. 使用场景六卡
+
+适用场景：`落地页区块` `场景网格`。
+源自 MiniMax H3 首页对应区块；独立标本，复用预览页已有的 Lucide 脚本与页面主题。
+
+```html
+<section class="mm-uses" aria-label="使用场景六卡">
+<div class="mm-wrap"><div class="mm-intro"><span class="mm-eyebrow">USE CASES</span><h2>Built for Every Kind of Creator</h2><p>Whether you make content for fun or for a living, the MiniMax H3 video generator fits into how you already work — no new pipeline, no steep learning curve, just faster output.</p></div><div class="mm-grid"><article class="mm-card"><div class="mm-card-top"><span class="mm-icon"><i data-lucide="layers-3"></i></span></div><h3>Content Creators</h3><p>Produce scroll-stopping shorts for TikTok, Reels, and YouTube daily. Generate vertical 9:16 videos with sound in minutes instead of editing for hours.</p></article><article class="mm-card"><div class="mm-card-top"><span class="mm-icon"><i data-lucide="wand-sparkles"></i></span></div><h3>Marketers &amp; Agencies</h3><p>Test ten ad concepts before lunch. MiniMax H3 renders brand text and product shots accurately, so creative validation happens in hours, not weeks.</p></article><article class="mm-card"><div class="mm-card-top"><span class="mm-icon"><i data-lucide="clapperboard"></i></span></div><h3>E-commerce Sellers</h3><p>Turn flat product photos into listing videos that convert. Show your product in real scenes, with motion and sound, without booking a studio.</p></article><article class="mm-card"><div class="mm-card-top"><span class="mm-icon"><i data-lucide="audio-lines"></i></span></div><h3>Filmmakers &amp; Studios</h3><p>Previsualize scenes, pitch with moving storyboards, and explore looks before a single day on set. H3 speaks real camera language.</p></article><article class="mm-card"><div class="mm-card-top"><span class="mm-icon"><i data-lucide="palette"></i></span></div><h3>Game &amp; App Teams</h3><p>Create game CG, character PVs, and animated UI walkthroughs. Keep characters and interface elements consistent across every shot.</p></article><article class="mm-card"><div class="mm-card-top"><span class="mm-icon"><i data-lucide="lock-keyhole"></i></span></div><h3>Hobbyists &amp; Storytellers</h3><p>No skills required. If you can describe it, MiniMax H3 can film it. Start free and turn the ideas in your head into videos worth sharing.</p></article></div></div>
+</section>
+```
+
+```css
+.mm-uses{padding:80px 24px;line-height:1.5}
+.mm-uses *{box-sizing:border-box}
+.mm-uses .mm-wrap{max-width:1232px;margin:auto}
+.mm-uses .mm-intro{max-width:810px;margin:0 0 40px;text-align:left}
+.mm-uses .mm-eyebrow{display:block;margin-bottom:12px;font-weight:700}
+.mm-uses h2{margin:0;line-height:1.2} .mm-uses .mm-intro p{margin:16px 0 0;line-height:1.65}
+.mm-uses .mm-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.mm-uses .mm-card{min-width:0;padding:24px;border:1px solid color-mix(in srgb,var(--ink) 14%,transparent);border-radius:17px;background:#fff}
+.mm-uses .mm-card-top{display:flex;align-items:center;justify-content:space-between}
+.mm-uses .mm-icon{display:grid;place-items:center;width:46px;height:46px;border:1px solid color-mix(in srgb,var(--ink) 14%,transparent);border-radius:13px}
+.mm-uses .lucide{width:21px;height:21px} .mm-uses h3{margin:20px 0 0;line-height:1.3} .mm-uses .mm-card p{margin:12px 0 0;line-height:1.65}
+@media(max-width:900px){.mm-uses .mm-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.mm-uses{padding:60px 16px}.mm-uses .mm-grid{grid-template-columns:1fr;gap:16px}}
+```
+
+
+## 62. 三步
+
+适用场景：`落地页区块` `流程步骤`。
+源自 MiniMax H3 首页对应区块；独立标本，复用预览页已有的 Lucide 脚本与页面主题。
+
+```html
+<section class="mm-steps" aria-label="三步">
+<div class="mm-wrap"><div class="mm-intro"><span class="mm-eyebrow">HOW IT WORKS</span><h2>How to Create Videos with MiniMax H3</h2><p>From idea to finished video with sound in three simple steps. No timeline, no plugins, no experience needed — if you can write a sentence, you can direct MiniMax H3.</p></div><div class="mm-grid"><article><strong class="mm-number">01</strong><small>STEP 01</small><h3>Describe or Upload</h3><p>Type what you want to see, or add reference images, video clips, and audio. MiniMax H3 accepts up to 9 images, 3 videos, and 3 audio tracks in one request.</p></article><article><strong class="mm-number">02</strong><small>STEP 02</small><h3>Generate</h3><p>Pick your aspect ratio — from 21:9 cinematic to 9:16 vertical — and hit Generate. H3 creates a 5–15 second video with native stereo sound in one pass.</p></article><article><strong class="mm-number">03</strong><small>STEP 03</small><h3>Refine and Download</h3><p>Not perfect yet? Tell H3 what to change in plain language and it edits the video while keeping everything else stable. Download in up to 1440p and share anywhere.</p></article></div></div>
+</section>
+```
+
+```css
+.mm-steps{padding:80px 24px;line-height:1.5}
+.mm-steps *{box-sizing:border-box}.mm-steps .mm-wrap{max-width:1232px;margin:auto}
+.mm-steps .mm-intro{max-width:810px;margin:0 0 40px}.mm-steps .mm-eyebrow{display:block;margin-bottom:12px;font-weight:700}.mm-steps h2{margin:0;line-height:1.2}.mm-steps .mm-intro p{margin:16px 0 0}
+.mm-steps .mm-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.mm-steps article{min-width:0;padding:25px;border:1px solid color-mix(in srgb,var(--ink) 14%,transparent);border-radius:17px;background:#fff}
+.mm-steps .mm-number{display:block;font-size:3.5rem;line-height:1.1}.mm-steps small{display:block;margin-top:16px}.mm-steps h3{margin:12px 0}.mm-steps article p{margin:0}
+@media(max-width:767px){.mm-steps{padding:60px 16px}.mm-steps .mm-grid{grid-template-columns:1fr}}
+```
+
+
+## 63. 评价
+
+适用场景：`落地页区块` `评价墙`。
+源自 MiniMax H3 首页对应区块；独立标本，复用预览页已有的 Lucide 脚本与页面主题。
+14 位原始人物各出现一次，静态三列，无滚动复制。
+
+```html
+<section class="mm-reviews" aria-label="评价">
+<div class="mm-wrap"><div class="mm-intro mm-centered"><span class="mm-eyebrow">FIELD REPORTS</span><h2>What Creators Say About MiniMax H3</h2><p>Thousands of creators, marketers, and studios use the MiniMax H3 AI video generator every day — for ads, game content, brand films, and daily social video. Here is what they are making with it, in their own words.</p></div><div class="mm-stats"><div><strong>1M+</strong><small>CREATORS</small></div><div><strong>40M+</strong><small>VIDEOS RENDERED</small></div><div><strong>180+</strong><small>COUNTRIES</small></div><div><strong>4.9</strong><small>/5 AVG. RATING</small></div></div><div class="mm-wall"><div class="mm-column"><article class="mm-card"><div class="mm-profile"><span class="mm-avatar">M</span><div><strong>Marcus Deleon</strong><small>Indie Game Developer</small></div><i data-lucide="quote"></i></div><div class="mm-stars" aria-label="5 out of 5 stars"><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i></div><p>I made a full character PV for my game with MiniMax H3 in one afternoon. The menu UI stayed readable in every frame and the character never went off-model. That used to cost me a contractor and three weeks.</p></article><article class="mm-card"><div class="mm-profile"><span class="mm-avatar">A</span><div><strong>Aiko Tanabe</strong><small>Animation Studio Lead</small></div><i data-lucide="quote"></i></div><div class="mm-stars" aria-label="5 out of 5 stars"><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i></div><p>We tested every AI video generator on the market for stylized work. H3 is the only one that held our anime style across cuts. We now use it for pitch reels and animatics on every project.</p></article><article class="mm-card"><div class="mm-profile"><span class="mm-avatar">C</span><div><strong>Chen Wei</strong><small>Product Marketing Director</small></div><i data-lucide="quote"></i></div><div class="mm-stars" aria-label="5 out of 5 stars"><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i></div><p>Our team validates ad concepts with H3 before briefing the agency. We test ten directions in a day for basically nothing. The winners go to production; the rest never waste budget again.</p></article><article class="mm-card"><div class="mm-profile"><span class="mm-avatar">E</span><div><strong>Elena Vasquez</strong><small>Brand Strategist</small></div><i data-lucide="quote"></i></div><div class="mm-stars" aria-label="5 out of 5 stars"><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i></div><p>We made a full brand film with MiniMax H3 using our style frames as references. It kept our color story and typography treatment consistent through every scene. Free to start made it a no-brainer to try.</p></article><article class="mm-card"><div class="mm-profile"><span class="mm-avatar">H</span><div><strong>Hugo Fontaine</strong><small>Ad Creative Director</small></div><i data-lucide="quote"></i></div><div class="mm-stars" aria-label="5 out of 5 stars"><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i></div><p>The instruction-following is scary good. I asked for a 60% suspense, 40% jazz title sequence with specific transitions, and H3 delivered exactly that — sound included. It&#x27;s a real creative partner.</p></article></div><div class="mm-column"><article class="mm-card"><div class="mm-profile"><span class="mm-avatar">P</span><div><strong>Priya Raghavan</strong><small>E-commerce Brand Owner</small></div><i data-lucide="quote"></i></div><div class="mm-stars" aria-label="5 out of 5 stars"><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i></div><p>I uploaded four product photos and got a listing video with music and a voiceover the same day. My click-through rate on the new listings is up 38%. H3 even got the label text on my packaging right.</p></article><article class="mm-card"><div class="mm-profile"><span class="mm-avatar">D</span><div><strong>Danielle Whitfield</strong><small>Social Media Manager</small></div><i data-lucide="quote"></i></div><div class="mm-stars" aria-label="5 out of 5 stars"><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i></div><p>I ship five vertical videos a week for three brands. MiniMax H3 gets me from brief to draft in under an hour, with sound already synced. My old workflow needed a videographer and two review rounds.</p></article><article class="mm-card"><div class="mm-profile"><span class="mm-avatar">S</span><div><strong>Sofia Marchetti</strong><small>Creative Agency Producer</small></div><i data-lucide="quote"></i></div><div class="mm-stars" aria-label="5 out of 5 stars"><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i></div><p>Clients stopped asking &#x27;can you show me first?&#x27; because now we always can. MiniMax H3 turns a mood board into a moving, sounding proof of concept overnight. It changed how we pitch.</p></article><article class="mm-card"><div class="mm-profile"><span class="mm-avatar">N</span><div><strong>Noah Lindqvist</strong><small>Motion Designer</small></div><i data-lucide="quote"></i></div><div class="mm-stars" aria-label="5 out of 5 stars"><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i></div><p>I feed H3 a UI screenshot and get back a polished product walkthrough with scroll animations and hover states. My clients think I doubled my team. It&#x27;s just MiniMax H3 and me.</p></article><article class="mm-card"><div class="mm-profile"><span class="mm-avatar">M</span><div><strong>Mia Kowalski</strong><small>Handmade Shop Owner</small></div><i data-lucide="quote"></i></div><div class="mm-stars" aria-label="5 out of 5 stars"><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i></div><p>I&#x27;m not technical at all. I typed a description of my candles in a cozy winter scene and MiniMax H3 gave me a video I was proud to post. My first try, free, and it looked professional.</p></article></div><div class="mm-column"><article class="mm-card"><div class="mm-profile"><span class="mm-avatar">T</span><div><strong>Tomás Herrera</strong><small>Freelance Video Editor</small></div><i data-lucide="quote"></i></div><div class="mm-stars" aria-label="5 out of 5 stars"><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i></div><p>The editing side is what sold me. A client wanted the background of an interview changed — I typed one sentence into MiniMax H3 and the lighting on the subject matched the new scene automatically.</p></article><article class="mm-card"><div class="mm-profile"><span class="mm-avatar">O</span><div><strong>Oliver Bennett</strong><small>Film Student</small></div><i data-lucide="quote"></i></div><div class="mm-stars" aria-label="5 out of 5 stars"><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i></div><p>I previsualized my entire short film in MiniMax H3 before we shot a single frame. Rack focus, match cuts, even the title cards — it understands director language, not just keywords.</p></article><article class="mm-card"><div class="mm-profile"><span class="mm-avatar">J</span><div><strong>Jamal Carter</strong><small>YouTube Creator</small></div><i data-lucide="quote"></i></div><div class="mm-stars" aria-label="5 out of 5 stars"><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i></div><p>The native audio is the killer feature. Every clip comes out with ambience and effects already in place. I dropped my sound design plugin subscription the week I started using H3.</p></article><article class="mm-card"><div class="mm-profile"><span class="mm-avatar">R</span><div><strong>Rachel Okafor</strong><small>Startup Founder</small></div><i data-lucide="quote"></i></div><div class="mm-stars" aria-label="5 out of 5 stars"><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i></div><p>We launched with a MiniMax H3 demo video instead of hiring a production company. Investors watched a 15-second cinematic product story that cost us almost nothing to make.</p></article></div></div></div>
+</section>
+```
+
+```css
+.mm-reviews{padding:80px 24px;line-height:1.5}
+.mm-reviews *{box-sizing:border-box}.mm-reviews .mm-wrap{max-width:1232px;margin:auto}.mm-reviews .mm-intro{text-align:center;max-width:800px;margin:0 auto 40px}.mm-reviews .mm-eyebrow{display:block;margin-bottom:12px;font-weight:700}.mm-reviews h2{margin:0;line-height:1.2}.mm-reviews .mm-intro p{margin:16px 0 0}
+.mm-reviews .mm-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:35px;text-align:center}.mm-reviews .mm-stats strong{display:block;font-size:2rem}.mm-reviews .mm-stats small{display:block}
+.mm-reviews .mm-wall{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;padding:0;line-height:inherit}.mm-reviews .mm-column{display:flex;flex-direction:column;gap:16px;min-width:0}
+.mm-reviews .mm-card{padding:22px;border:1px solid color-mix(in srgb,var(--ink) 14%,transparent);border-radius:16px;background:#fff}.mm-reviews .mm-profile{display:flex;align-items:center;gap:10px}.mm-reviews .mm-avatar{width:38px;height:38px;display:grid;place-items:center;flex:none;border:1px solid color-mix(in srgb,var(--ink) 14%,transparent);border-radius:50%}.mm-reviews .mm-profile div{min-width:0;flex:1}.mm-reviews .mm-profile small{display:block}.mm-reviews .lucide{width:16px;height:16px;flex:none}.mm-reviews .mm-profile>.lucide{width:22px;height:22px}.mm-reviews .mm-stars{display:flex;gap:3px;margin:16px 0}.mm-reviews .mm-card p{margin:0}
+@media(max-width:900px){.mm-reviews .mm-wall{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.mm-reviews{padding:60px 16px}.mm-reviews .mm-wall{grid-template-columns:1fr}.mm-reviews .mm-stats{grid-template-columns:repeat(2,1fr)}}
+```
+
+
+## 64. 价格
+
+适用场景：`落地页区块` `方案与次数包`。
+源自 MiniMax H3 首页对应区块；独立标本，复用预览页已有的 Lucide 脚本与页面主题。
+切换展示 Monthly、Yearly 与 Credit Packs 静态方案；支付链接均为 #。倒计时和 Max 1x 都是静态展示。
+
+```html
+<section class="mm-pricing" aria-label="价格">
+<div class="mm-wrap"><div class="mm-offer"><b>50% OFF</b><span><i data-lucide="party-popper"></i> You've unlocked launch pricing on MiniMax H3</span><small>ENDS IN　07 H : 57 M : 19 S</small></div><h2>Choose Your MiniMax H3 Plan</h2><div class="mm-switch" role="tablist" aria-label="Pricing period"><button type="button" role="tab" data-price="Monthly" aria-selected="false">Monthly</button><button type="button" role="tab" data-price="Yearly" aria-selected="true">Yearly<small> Save 50%</small></button><button type="button" role="tab" data-price="Credit Packs" aria-selected="false">Credit Packs</button></div><p class="mm-note" data-note-plan>Cancel anytime</p><p class="mm-note" data-note-pack hidden>One-time purchase · Credits never expire</p><div class="mm-grid" data-price-panel="Monthly" hidden><article class="mm-card"><div class="mm-plan-title"><h3>Lite</h3></div><small>0.050 / credit</small><div class="mm-amount"><strong>$29.9</strong></div><a class="mm-pay" href="#">Pay Now</a><div class="mm-credits"><i data-lucide="sparkles"></i>600 credits/month</div><details><summary>Video Models</summary><p>MiniMax · Seedance · Wan · Grok Imagine · Kling</p></details><details><summary>Image Models</summary><p>Seedream · GPT Image · Nano Banana</p></details><ul><li>MiniMax H3 + all premium models included</li><li>Up to 1 batch generation task</li><li>Standard generation speed</li><li>Commercial Use License</li></ul></article><article class="mm-card"><div class="mm-popular">MOST POPULAR</div><div class="mm-plan-title"><h3>Standard</h3></div><small>0.033 / credit</small><div class="mm-amount"><strong>$49.9</strong></div><a class="mm-pay" href="#">Pay Now</a><div class="mm-credits"><i data-lucide="sparkles"></i>1,500 credits/month</div><details><summary>Video Models</summary><p>MiniMax · Seedance · Wan · Grok Imagine · Kling</p></details><details><summary>Image Models</summary><p>Seedream · GPT Image · Nano Banana</p></details><ul><li>MiniMax H3 + all premium models included</li><li>30% off MiniMax models</li><li>Up to 4 batch generation tasks</li><li>Priority generation speed</li><li>Commercial Use License</li></ul></article><article class="mm-card"><div class="mm-plan-title"><h3>Pro</h3></div><small>0.028 / credit</small><div class="mm-amount"><strong>$99.9</strong></div><a class="mm-pay" href="#">Pay Now</a><div class="mm-credits"><i data-lucide="sparkles"></i>3,600 credits/month</div><details><summary>Video Models</summary><p>MiniMax · Seedance · Wan · Grok Imagine · Kling</p></details><details><summary>Image Models</summary><p>Seedream · GPT Image · Nano Banana</p></details><ul><li>MiniMax H3 + all premium models included</li><li>30% off MiniMax models</li><li>Up to 10 batch generation tasks</li><li>Priority generation speed</li><li>Commercial Use License</li></ul></article><article class="mm-card"><div class="mm-plan-title"><h3>Max</h3></div><small>0.025 / credit</small><div class="mm-amount"><strong>$199.9</strong></div><div class="mm-multiplier">Max multiplier · 1x</div><a class="mm-pay" href="#">Pay Now</a><div class="mm-credits"><i data-lucide="sparkles"></i>8,000 credits/month</div><details><summary>Video Models</summary><p>MiniMax · Seedance · Wan · Grok Imagine · Kling</p></details><details><summary>Image Models</summary><p>Seedream · GPT Image · Nano Banana</p></details><ul><li>MiniMax H3 + all premium models included</li><li>30% off MiniMax models</li><li>Up to 10 batch generation tasks</li><li>Priority generation speed</li><li>Commercial Use License</li></ul></article></div><div class="mm-grid" data-price-panel="Yearly"><article class="mm-card"><div class="mm-plan-title"><h3>Lite</h3><b>50% OFF</b></div><small>0.025 / credit</small><div class="mm-amount"><del>$29.9</del><strong>$14.9</strong><span>50% OFF</span></div><p>$178.8 billed yearly · Save $180</p><a class="mm-pay" href="#">Pay Now</a><div class="mm-credits"><i data-lucide="sparkles"></i>600 credits/month</div><details><summary>Video Models</summary><p>MiniMax · Seedance · Wan · Grok Imagine · Kling</p></details><details><summary>Image Models</summary><p>Seedream · GPT Image · Nano Banana</p></details><ul><li>MiniMax H3 + all premium models included</li><li>Up to 1 batch generation task</li><li>Standard generation speed</li><li>Commercial Use License</li></ul></article><article class="mm-card"><div class="mm-popular">MOST POPULAR</div><div class="mm-plan-title"><h3>Standard</h3><b>50% OFF</b></div><small>0.017 / credit</small><div class="mm-amount"><del>$49.9</del><strong>$24.9</strong><span>50% OFF</span></div><p>$298.8 billed yearly · Save $300</p><a class="mm-pay" href="#">Pay Now</a><div class="mm-credits"><i data-lucide="sparkles"></i>1,500 credits/month</div><details><summary>Video Models</summary><p>MiniMax · Seedance · Wan · Grok Imagine · Kling</p></details><details><summary>Image Models</summary><p>Seedream · GPT Image · Nano Banana</p></details><ul><li>MiniMax H3 + all premium models included</li><li>30% off MiniMax models</li><li>Up to 4 batch generation tasks</li><li>Priority generation speed</li><li>Commercial Use License</li></ul></article><article class="mm-card"><div class="mm-plan-title"><h3>Pro</h3><b>50% OFF</b></div><small>0.014 / credit</small><div class="mm-amount"><del>$99.9</del><strong>$49.9</strong><span>50% OFF</span></div><p>$598.8 billed yearly · Save $600</p><a class="mm-pay" href="#">Pay Now</a><div class="mm-credits"><i data-lucide="sparkles"></i>3,600 credits/month</div><details><summary>Video Models</summary><p>MiniMax · Seedance · Wan · Grok Imagine · Kling</p></details><details><summary>Image Models</summary><p>Seedream · GPT Image · Nano Banana</p></details><ul><li>MiniMax H3 + all premium models included</li><li>30% off MiniMax models</li><li>Up to 10 batch generation tasks</li><li>Priority generation speed</li><li>Commercial Use License</li></ul></article><article class="mm-card"><div class="mm-plan-title"><h3>Max</h3><b>50% OFF</b></div><small>0.012 / credit</small><div class="mm-amount"><del>$199.9</del><strong>$99.9</strong><span>50% OFF</span></div><p>$1,198.8 billed yearly · Save $1,200</p><div class="mm-multiplier">Max multiplier · 1x</div><a class="mm-pay" href="#">Pay Now</a><div class="mm-credits"><i data-lucide="sparkles"></i>8,000 credits/month</div><details><summary>Video Models</summary><p>MiniMax · Seedance · Wan · Grok Imagine · Kling</p></details><details><summary>Image Models</summary><p>Seedream · GPT Image · Nano Banana</p></details><ul><li>MiniMax H3 + all premium models included</li><li>30% off MiniMax models</li><li>Up to 10 batch generation tasks</li><li>Priority generation speed</li><li>Commercial Use License</li></ul></article></div><div class="mm-grid" data-price-panel="Credit Packs" hidden><article class="mm-card"><h3>Starter Pack</h3><small>0.050 / credit</small><div class="mm-amount"><strong>$39.9</strong></div><a class="mm-pay" href="#">Pay Now</a><ul><li>800 credits</li><li>Credits valid for 1 year</li><li>Unlocks all features; premium perks require an active subscription</li></ul></article><article class="mm-card"><h3>Value Pack</h3><small>0.040 / credit</small><div class="mm-amount"><strong>$79.9</strong></div><a class="mm-pay" href="#">Pay Now</a><ul><li>2,000 credits</li><li>Credits valid for 1 year</li><li>Unlocks all features; premium perks require an active subscription</li></ul></article><article class="mm-card"><h3>Pro Pack</h3><small>0.027 / credit</small><div class="mm-amount"><strong>$199.9</strong></div><a class="mm-pay" href="#">Pay Now</a><ul><li>7,500 credits</li><li>Credits valid for 1 year</li><li>Unlocks all features; premium perks require an active subscription</li></ul></article><article class="mm-card"><h3>Bulk Pack</h3><small>0.020 / credit</small><div class="mm-amount"><strong>$999.9</strong></div><a class="mm-pay" href="#">Pay Now</a><ul><li>50,000 credits</li><li>Credits valid for 1 year</li><li>Unlocks all features; premium perks require an active subscription</li></ul></article></div><div class="mm-models"><span>MINIMAX H3 CREATIVE SUITE</span><h2>MiniMax H3 + More Leading Models</h2><p>Standard, Pro, and Max yearly plans use 30% fewer credits on premium video models.</p><div class="mm-model-grid"><article><h3>VIDEO MODELS</h3><div class="mm-row"><strong>MiniMax H3</strong><small>30+ credits</small></div><div class="mm-row"><strong>Seedance 2.5</strong><small>40+ credits</small></div><div class="mm-row"><strong>Seedance 2.0</strong><small>17+ credits</small></div><div class="mm-row"><strong>Seedance 2.0 Mini</strong><small>6+ credits</small></div><div class="mm-row"><strong>Seedance 1.5 Pro</strong><small>4+ credits</small></div></article><article><h3>IMAGE MODELS</h3><div class="mm-row"><strong>GPT Image 2</strong><small>1K/2K/4K = 3/5/8 credits per image</small></div><div class="mm-row"><strong>Seedream 5 Lite</strong><small>Premium annual 3 · Others 4.5 credits per image</small></div><div class="mm-row"><strong>Seedream 4.5</strong><small>4 credits per image</small></div><div class="mm-row"><strong>Seedream V4</strong><small>3 credits per image</small></div><div class="mm-row"><strong>Nano Banana 2</strong><small>1K 3 · 2K 4 · 4K 6 credits per image</small></div><div class="mm-row"><strong>Nano Banana Pro</strong><small>1K/2K 4 · 4K 8 credits per image</small></div><div class="mm-row"><strong>Nano Banana</strong><small>2 credits per image</small></div></article></div><p>MiniMax H3 and Seedance 2.0 video and GPT Image 2 rates shown are yearly-plan prices. On monthly plans, premium video is billed at 1.4x and GPT Image 2 at 4.5/7.5/11 credits per image.</p></div><p class="mm-secure">Pay safely and securely with　 Mastercard　 Visa　 American Express　 Apple Pay　 Google Pay</p></div>
+</section>
+```
+
+```css
+.mm-pricing{padding:72px 24px;line-height:1.5}
+.mm-pricing *{box-sizing:border-box}.mm-pricing .mm-wrap{max-width:1300px;margin:auto}.mm-pricing .mm-offer{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;padding:12px;border:1px solid color-mix(in srgb,var(--ink) 14%,transparent);border-radius:12px}.mm-pricing h2{text-align:center;line-height:1.2;margin:35px 0 24px}
+.mm-pricing .mm-offer span{display:inline-flex;align-items:center;gap:5px}.mm-pricing .mm-offer .lucide{width:16px;height:16px}.mm-pricing .mm-switch{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}.mm-pricing button{padding:9px 16px;border:1px solid color-mix(in srgb,var(--ink) 14%,transparent);border-radius:99px;background:#fff;color:inherit;font:inherit;cursor:pointer}.mm-pricing button[aria-selected="true"]{border-color:currentColor;font-weight:700}.mm-pricing .mm-note{text-align:center;margin:14px 0 28px}
+.mm-pricing [hidden]{display:none!important}.mm-pricing .mm-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.mm-pricing .mm-card{position:relative;min-width:0;padding:23px 17px;border:1px solid color-mix(in srgb,var(--ink) 14%,transparent);border-radius:16px;background:#fff;overflow:hidden}.mm-pricing .mm-popular{margin:-23px -17px 18px;padding:8px;text-align:center;border-bottom:1px solid color-mix(in srgb,var(--ink) 14%,transparent);font-weight:700}.mm-pricing .mm-plan-title{display:flex;justify-content:space-between;gap:5px;align-items:start;flex-wrap:wrap}.mm-pricing h3{margin:0 0 8px}.mm-pricing .mm-card small{display:block}.mm-pricing .mm-amount{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;margin:18px 0}.mm-pricing .mm-amount strong{font-size:2rem}.mm-pricing .mm-card p{margin:10px 0}.mm-pricing .mm-multiplier{padding:9px 0}.mm-pricing .mm-pay{display:block;padding:10px;text-align:center;text-decoration:none;border:1px solid currentColor;border-radius:9px;color:inherit}.mm-pricing .mm-credits{display:flex;align-items:center;gap:5px;margin-top:20px;font-weight:700}.mm-pricing .lucide{width:17px;height:17px}.mm-pricing details{padding:12px 0;border-bottom:1px solid color-mix(in srgb,var(--ink) 14%,transparent)}.mm-pricing summary{cursor:pointer}.mm-pricing ul{margin:18px 0 0;padding-left:20px}.mm-pricing li{margin:8px 0}
+.mm-pricing .mm-models{margin-top:56px;padding:25px;border:1px solid color-mix(in srgb,var(--ink) 14%,transparent);border-radius:16px;background:#fff}.mm-pricing .mm-models h2{text-align:left;margin:10px 0}.mm-pricing .mm-model-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.mm-pricing .mm-model-grid article{min-width:0}.mm-pricing .mm-row{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:8px 0;border-bottom:1px solid color-mix(in srgb,var(--ink) 14%,transparent)}.mm-pricing .mm-secure{text-align:center;margin:28px auto 0}.mm-pricing button:focus-visible,.mm-pricing a:focus-visible{outline:2px solid currentColor;outline-offset:2px}
+@media(max-width:950px){.mm-pricing .mm-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.mm-pricing{padding:60px 16px}.mm-pricing .mm-grid,.mm-pricing .mm-model-grid{grid-template-columns:1fr}.mm-pricing .mm-offer{flex-direction:column;text-align:center}.mm-pricing .mm-switch button{padding:9px 10px}}
+```
+
+
+## 65. 问答
+
+适用场景：`落地页区块` `手风琴`。
+源自 MiniMax H3 首页对应区块；独立标本，复用预览页已有的 Lucide 脚本与页面主题。
+第一项默认展开；原生 details 支持键盘，切换时只保留一个展开项。
+
+```html
+<section class="mm-faq" aria-label="问答">
+<div class="mm-wrap"><div class="mm-intro mm-centered"><span class="mm-eyebrow">FAQ</span><h2>MiniMax H3 Frequently Asked Questions</h2><p>Everything you need to know about the MiniMax H3 AI video generator — from inputs and resolution to editing, licensing, and how to get the best results from your prompts.</p></div><div class="mm-list"><details open><summary>What is MiniMax H3?<i data-lucide="plus"></i></summary><p>MiniMax H3 is a new-generation general-purpose multimodal video model. Instead of treating image, video, and audio tasks separately, H3 understands text, images, video clips, and audio together as one creative context, then generates coherent videos with native stereo sound. It handles generation, reference-based creation, and precise editing in a single model — a step from specialized task models toward general multimodal intelligence. In practice, that means you describe an outcome once and MiniMax H3 handles the visuals, motion, camera, and sound as one job.</p></details><details><summary>Is MiniMax H3 free to use?<i data-lucide="plus"></i></summary><p>Yes. You can try the MiniMax H3 AI video generator for free — no credit card required. Free credits on signup let you test text to video, image to video, and instruction-based editing with the full model, not a watered-down version. When you need more generations, longer queues, or commercial rights, paid plans unlock additional credits and faster processing.</p></details><details><summary>How do I create a video with MiniMax H3?<i data-lucide="plus"></i></summary><p>Type a description of your video, or upload reference images, clips, and audio. Choose an aspect ratio, click Generate, and H3 delivers a finished video with sound in minutes. You can then refine it with plain-language edit instructions until it&#x27;s exactly right.</p></details><details><summary>What inputs does MiniMax H3 support?<i data-lucide="plus"></i></summary><p>H3 accepts text prompts up to 7,000 characters, up to 9 reference images, up to 3 video clips (15 seconds total), and up to 3 audio tracks — with a combined cap of 12 files per request. Supported formats include JPG, PNG, WEBP, HEIC for images, H.264/H.265 for video, and WAV/MP3 for audio.</p></details><details><summary>How long and what quality are MiniMax H3 videos?<i data-lucide="plus"></i></summary><p>Each generation produces a 5 to 15 second video at 24 FPS. Output goes up to 1440p — for a 21:9 frame that&#x27;s roughly 2976×1248 pixels. Every video includes native two-channel stereo audio.</p></details><details><summary>Does MiniMax H3 really generate sound automatically?<i data-lucide="plus"></i></summary><p>Yes. Unlike most AI video generators that output silent clips, every MiniMax H3 result ships with native stereo audio — ambience, sound effects, music, and synced dialogue. You can also provide a reference audio clip to clone a voice for your characters.</p></details><details><summary>What aspect ratios can I generate?<i data-lucide="plus"></i></summary><p>MiniMax H3 supports 21:9, 16:9, 4:3, 1:1, 3:4, and 9:16. In reference mode you can also let H3 choose the best ratio automatically. With first/last frame images, output follows your input image&#x27;s original ratio.</p></details><details><summary>Can I turn a photo into a video?<i data-lucide="plus"></i></summary><p>Yes. Image to video is a core H3 workflow. Upload one image as a starting frame, or two images as first and last frames, and H3 animates natural motion between them. You can also use up to 9 images as identity and style references.</p></details><details><summary>Can MiniMax H3 edit an existing video?<i data-lucide="plus"></i></summary><p>Yes, and this is where H3 stands apart. Upload a clip and describe your change: swap a character, remove an object, replace the background, change the lighting to night, or rewrite a line of dialogue. H3 applies the edit precisely while keeping everything else stable.</p></details><details><summary>Can I use MiniMax H3 videos commercially?<i data-lucide="plus"></i></summary><p>Videos you generate on a paid plan come with commercial usage rights, suitable for ads, e-commerce listings, social campaigns, brand films, and client work. MiniMax H3 was designed for commercial-grade output — accurate brand text, product details, and UI elements — so the license matches how teams actually use it. Check our commercial license page for full details.</p></details><details><summary>How is MiniMax H3 different from other AI video generators?<i data-lucide="plus"></i></summary><p>Three things: true multimodal input (mix images, video, and audio in one request), native audio on every output, and instruction-based editing that keeps unedited content stable. Most tools do one of these; the MiniMax H3 video generator does all three in a single model.</p></details><details><summary>How do I write better prompts for MiniMax H3?<i data-lucide="plus"></i></summary><p>Be specific about subject, action, camera, lighting, and sound. H3 responds to real film language — &#x27;rack focus&#x27;, &#x27;handheld&#x27;, &#x27;hard cut&#x27;, &#x27;title card fades in&#x27;. Longer, structured prompts (up to 7,000 characters) produce more controlled results. Reference files reduce how much you need to describe.</p></details><details><summary>How long does a generation take?<i data-lucide="plus"></i></summary><p>Most MiniMax H3 videos are ready within a few minutes, depending on length, resolution, and queue load. A 5-second 16:9 clip typically finishes faster than a 15-second 1440p cinematic shot. Paid plans get priority processing for faster turnaround, which matters when you are iterating on a deadline.</p></details><details><summary>Do I need video editing experience?<i data-lucide="plus"></i></summary><p>No. There is no timeline, no keyframes, and no software to learn. If you can describe what you want in a sentence, you can direct MiniMax H3. Refinements are also plain language — just say what to change and the model handles the rest. Beginners get watchable results on their first try, and professionals get precise control when they push deeper.</p></details><details><summary>What scenes does MiniMax H3 handle best?<i data-lucide="plus"></i></summary><p>H3 is especially strong at game content, stylized animation, product and e-commerce marketing, and cinematic film work. It renders on-screen text, brand marks, UI elements, and product details accurately — which matters for real commercial use.</p></details><details><summary>Where do I start?<i data-lucide="plus"></i></summary><p>Click Generate Free on this page, type your first idea, and watch MiniMax H3 turn it into a video with sound. Start simple — one subject, one action, one camera move — then layer in references and edits as you get comfortable. Your free credits are waiting: no download, no setup, no card.</p></details></div><p class="mm-contact">Contact MiniMax H3 at <a href="mailto:support@minimaxh3.ai">support@minimaxh3.ai</a></p></div>
+</section>
+```
+
+```css
+.mm-faq{padding:80px 24px;line-height:1.5}
+.mm-faq *{box-sizing:border-box}.mm-faq .mm-wrap{max-width:980px;margin:auto}.mm-faq .mm-intro{text-align:center;margin:0 auto 36px}.mm-faq .mm-eyebrow{display:block;margin-bottom:12px;font-weight:700}.mm-faq h2{margin:0;line-height:1.2}.mm-faq .mm-intro p{margin:16px 0 0}.mm-faq details{margin-bottom:10px;padding:18px 20px;border:1px solid color-mix(in srgb,var(--ink) 14%,transparent);border-radius:12px;background:#fff}.mm-faq summary{display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;font-weight:700;list-style:none}.mm-faq summary::-webkit-details-marker{display:none}.mm-faq details[open] summary .lucide{transform:rotate(45deg)}.mm-faq summary .lucide{width:18px;height:18px;flex:none}.mm-faq details p{margin:14px 0 0}.mm-faq .mm-contact{text-align:center;margin:28px 0 0}.mm-faq a{color:inherit}.mm-faq summary:focus-visible{outline:2px solid currentColor;outline-offset:3px}
+@media(max-width:600px){.mm-faq{padding:60px 16px}}
+```
+
+
+## 66. 收尾行动
+
+适用场景：`落地页区块` `行动召唤`。
+源自 MiniMax H3 首页对应区块；独立标本，复用预览页已有的 Lucide 脚本与页面主题。
+示例提示和链接只演示结构，不触发生成。
+
+```html
+<section class="mm-closing" aria-label="收尾行动">
+<div class="mm-wrap"><span class="mm-eyebrow">Start creating</span><h2>Create Your First MiniMax H3 Video <em>Today</em></h2><p>Join creators, marketers, and studios using the MiniMax H3 AI video generator to turn ideas into cinematic videos with sound. Type your first prompt, add a reference image if you like, and watch H3 direct the shot for you. Free credits on signup — no card required, no software to install.</p><div class="mm-input"><span>15s product showcase of matte-black wireless headphones, studio lighting…</span><span>Video</span><a href="#">Generate Free Now <i data-lucide="arrow-right"></i></a></div><div class="mm-perks"><span>Free credits on signup</span><span>Native audio on every video</span><span>Up to 1440p cinematic output</span></div></div>
+</section>
+```
+
+```css
+.mm-closing{padding:90px 24px;line-height:1.5}
+.mm-closing *{box-sizing:border-box}.mm-closing .mm-wrap{max-width:900px;margin:auto;text-align:center}.mm-closing .mm-eyebrow{font-weight:700}.mm-closing h2{line-height:1.16;margin:16px 0}.mm-closing h2 em{font-style:normal;text-decoration:underline;text-underline-offset:6px}.mm-closing p{margin:0 auto 30px;max-width:750px}.mm-closing .mm-input{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid color-mix(in srgb,var(--ink) 14%,transparent);border-radius:14px;background:#fff;text-align:left}.mm-closing .mm-input>span:first-child{flex:1;min-width:0}.mm-closing .mm-input a{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;padding:10px;border:1px solid currentColor;border-radius:9px;text-decoration:none;color:inherit}.mm-closing .lucide{width:18px;height:18px}.mm-closing .mm-perks{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-top:22px}.mm-closing a:focus-visible{outline:2px solid currentColor;outline-offset:2px}
+@media(max-width:600px){.mm-closing{padding:65px 16px}.mm-closing .mm-input{flex-direction:column;align-items:stretch}.mm-closing .mm-input a{justify-content:center}}
+```
+
+
+## 67. 页脚
+
+适用场景：`落地页区块` `多语言链接`。
+源自 MiniMax H3 首页对应区块；独立标本，复用预览页已有的 Lucide 脚本与页面主题。
+
+```html
+<section class="mm-footer" aria-label="页脚">
+<div class="mm-wrap"><div class="mm-main"><div class="mm-brand"><h3>MiniMax H3</h3><p>MiniMax H3 is an open, general-purpose multimodal AI video generator. Turn text, images, audio, and video into cinematic content with native sound — free to start.</p><small>© 2026 minimaxh3.ai · All rights reserved.</small></div><div class="mm-links"><div><h4>Features</h4><a href="#">MiniMax H3 Max</a><a href="#">MiniMax H3 Prompts</a></div><div><h4>About</h4><a href="#">About Us</a><a href="#">Contact Us — support@minimaxh3.ai</a><a href="#">Privacy Policy</a><a href="#">Terms and Conditions</a></div></div></div><div class="mm-languages" aria-label="Languages"><a href="#" aria-current="page">🇺🇸 English</a><a href="#">🇯🇵 日本語</a><a href="#">🇸🇦 العربية</a><a href="#">🇫🇷 Français</a><a href="#">🇨🇳 中文</a><a href="#">繁體中文</a><a href="#">🇪🇸 Español</a><a href="#">🇵🇹 Português</a><a href="#">🇰🇷 한국어</a><a href="#">🇩🇪 Deutsch</a><a href="#">🇮🇩 Bahasa Indonesia</a><a href="#">🇷🇺 Русский</a><a href="#">🇮🇹 Italiano</a><a href="#">🇹🇷 Türkçe</a></div></div>
+</section>
+```
+
+```css
+.mm-footer{padding:65px 24px 30px;line-height:1.5}
+.mm-footer *{box-sizing:border-box}.mm-footer .mm-wrap{max-width:1232px;margin:auto}.mm-footer .mm-main{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:70px}.mm-footer .mm-brand h3{margin:0 0 12px}.mm-footer .mm-brand p{max-width:500px;margin:0 0 20px}.mm-footer .mm-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.mm-footer .mm-links h4{margin:0 0 16px}.mm-footer a{display:block;color:inherit;text-decoration:none;margin-bottom:9px;overflow-wrap:anywhere}.mm-footer .mm-languages{display:flex;gap:10px 20px;flex-wrap:wrap;margin-top:45px;padding-top:22px;border-top:1px solid color-mix(in srgb,var(--ink) 14%,transparent)}.mm-footer .mm-languages a[aria-current="page"]{font-weight:700;text-decoration:underline;text-underline-offset:4px}.mm-footer a:focus-visible{outline:2px solid currentColor;outline-offset:2px}
+@media(max-width:767px){.mm-footer{padding:55px 16px 30px}.mm-footer .mm-main{grid-template-columns:1fr;gap:30px}.mm-footer .mm-links{gap:14px}}
 ```

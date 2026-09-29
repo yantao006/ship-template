@@ -1,6 +1,6 @@
 # 布局模式库
 
-> 16种经过验证的布局模式，按使用频率排序。每个section选不同的布局，组合使用。
+> 17种经过验证的布局模式，按使用频率排序。每个section选不同的布局，组合使用。
 
 ---
 
@@ -735,3 +735,61 @@ document.querySelectorAll('.step-observe').forEach(el => stepObserver.observe(el
 ```
 
 ⚠️ 注意：步骤5~10个最合适。超过10个太长，少于5个用横向Step连接线（#7）更紧凑。大图是关键——每一步都必须有一张占满宽度的配图。编号三色轮换（松针绿/琥珀金/陶土红）保持节奏。移动端侧栏隐藏，变成纯纵向滚动。
+
+---
+
+## 17. Hero居中徽章型
+
+**适用**: 产品落地页首屏，一句说明加三个能力徽章。
+
+```html
+<section class="hero-badges">
+  <div class="hero-badges-inner">
+    <h1>标题</h1>
+    <p>一句说明</p>
+    <div class="hero-badges-list">
+      <span><i data-lucide="sparkles"></i>徽章</span>
+      <span><i data-lucide="wand-sparkles"></i>徽章</span>
+      <span><i data-lucide="layers-3"></i>徽章</span>
+    </div>
+  </div>
+</section>
+```
+
+```css
+.hero-badges {
+  padding: 96px 24px 76px;
+  text-align: center;
+}
+.hero-badges-inner {
+  max-width: 1050px;
+  margin: 0 auto;
+}
+.hero-badges h1 { margin: 0; }
+.hero-badges p {
+  max-width: 780px;
+  margin: 22px auto 0;
+}
+.hero-badges-list {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 32px;
+}
+.hero-badges-list span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 13px;
+  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+  border-radius: 999px;
+}
+.hero-badges-list svg { width: 18px; height: 18px; }
+@media (max-width: 600px) {
+  .hero-badges { padding: 72px 16px; }
+  .hero-badges-list { flex-direction: column; align-items: center; }
+}
+```
+
+⚠️ 注意：居中徽章首屏只用一次，后续区块回到左对齐。
