@@ -161,11 +161,267 @@
       .mini-hero-1 .photo { height: 250px; }
       .mini-hero-1 .proof { margin-top: 26px; }
     }
+    /* Shared neutral specimen parts; every scene below owns its geometry. */
+    .layout-block + .layout-block { margin-top: 4rem; }
+    .mini-hero-2 .ph-heading, .mini-hero-3 .ph-heading, .mini-hero-4 .ph-heading,
+    .mini-hero-5 .ph-heading, .mini-hero-6 .ph-heading, .mini-hero-7 .ph-heading,
+    .mini-hero-8 .ph-heading, .mini-hero-9 .ph-heading, .mini-hero-10 .ph-heading,
+    .mini-hero-11 .ph-heading, .mini-hero-12 .ph-heading, .mini-hero-13 .ph-heading,
+    .mini-hero-14 .ph-heading, .mini-hero-15 .ph-heading, .mini-hero-16 .ph-heading,
+    .mini-hero-17 .ph-heading, .mini-hero-18 .ph-heading, .mini-hero-19 .ph-heading,
+    .mini-hero-20 .ph-heading, .mini-hero-21 .ph-heading, .mini-hero-22 .ph-heading,
+    .mini-hero-23 .ph-heading, .mini-hero-24 .ph-heading { height: 22px; margin-bottom: 16px; }
+    .spec-pill { display: inline-flex; align-items: center; gap: 7px; height: 27px; padding: 0 12px; border: 1px solid #bbb; border-radius: 999px; }
+    .spec-pill .ph-text { width: 55px; height: 6px; margin: 0; }
+    .spec-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ink); flex: none; }
+    .spec-actions { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 22px; }
+    .spec-button { display: grid; place-items: center; width: 106px; height: 35px; border: 1px solid var(--ink); border-radius: 999px; }
+    .spec-button::after { content: ''; width: 55%; height: 7px; border-radius: 4px; background: var(--ink); }
+    .spec-button:first-child { background: var(--ink); }
+    .spec-button:first-child::after { background: var(--cream); }
+    .spec-media { background: #cbd0cb; }
+    .spec-play { display: grid; place-items: center; width: 38px; height: 38px; border: 2px solid var(--ink); border-radius: 50%; }
+    .spec-play::after { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--ink); }
+    .spec-input { display: flex; align-items: center; gap: 8px; min-height: 43px; padding: 5px 6px 5px 15px; border: 1px solid #bbb; border-radius: 999px; }
+    .spec-input .ph-text { width: 50%; height: 7px; margin: 0 auto 0 0; }
+    .spec-input .spec-button { height: 32px; width: 83px; flex: none; }
+    .spec-logo { display: inline-block; width: 68px; height: 12px; border-radius: 3px; background: #adb3ac; }
+    .mini-hero-2 .copy { display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 30px; }
+    .mini-hero-2 .ph-heading { width: 65%; } .mini-hero-2 .ph-text { width: 55%; }
+    .mini-hero-2 .spec-actions { justify-content: center; }
+    .mini-hero-2 .gallery { display: flex; align-items: end; justify-content: center; gap: 10px; overflow-x: auto; }
+    .mini-hero-2 .gallery > * { flex: 0 0 18%; min-width: 95px; }
+    .mini-hero-2 .stack { display: grid; gap: 10px; }
+    .mini-hero-2 .gallery .spec-media { border-radius: 13px; }
+    .mini-hero-2 .tall { height: 150px; } .mini-hero-2 .slim { height: 28px; }
+    .mini-hero-2 .square { aspect-ratio: 1; }
+    .mini-hero-3 { position: relative; min-height: 370px; overflow: hidden; border-radius: 24px; }
+    .mini-hero-3 .scene { position: absolute; inset: 0; }
+    .mini-hero-3 .frame { position: relative; display: flex; flex-direction: column; justify-content: space-between; min-height: 370px; padding: 24px; }
+    .mini-hero-3 .top, .mini-hero-3 .bottom { display: flex; align-items: end; justify-content: space-between; gap: 20px; }
+    .mini-hero-3 .top { align-items: start; } .mini-hero-3 .bottom .ph-heading { width: 48%; }
+    .mini-hero-3 .links { width: 22%; } .mini-hero-3 .links .ph-text { background: var(--ink); }
+    .mini-hero-4 .copy { max-width: 550px; margin: 0 auto 35px; text-align: center; }
+    .mini-hero-4 .copy .ph-heading { width: 70%; margin: 12px auto; }
+    .mini-hero-4 .copy .ph-text { width: 58%; margin: 0 auto 6px; }
+    .mini-hero-4 .spec-actions { justify-content: center; }
+    .mini-hero-4 .track { display: flex; gap: 14px; overflow-x: auto; }
+    .mini-hero-4 .video { position: relative; flex: 0 0 38%; min-width: 170px; height: 185px; display: grid; place-items: center; border-radius: 19px; }
+    .mini-hero-4 .dots { position: absolute; left: 14px; bottom: 12px; display: flex; gap: 5px; }
+    .mini-hero-4 .dots span { width: 5px; height: 5px; border-radius: 50%; background: var(--ink); }
+    .mini-hero-5 { position: relative; overflow: hidden; padding-top: 38px; }
+    .mini-hero-5 .orb { position: absolute; top: 8px; right: 15%; width: 68px; height: 68px; border-radius: 50%; }
+    .mini-hero-5 .copy { position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; }
+    .mini-hero-5 .ph-heading { width: 70%; margin-top: 20px; }
+    .mini-hero-5 .copy .ph-text { width: 55%; } .mini-hero-5 .spec-actions { justify-content: center; }
+    .mini-hero-5 .browser { max-width: 670px; margin: 32px auto 0; overflow: hidden; border: 1px solid #aaa; border-radius: 16px 16px 0 0; }
+    .mini-hero-5 .toolbar { height: 31px; padding: 9px; border-bottom: 1px solid #aaa; }
+    .mini-hero-5 .toolbar span { display: inline-block; width: 7px; height: 7px; margin-right: 5px; border-radius: 50%; background: #888; }
+    .mini-hero-5 .screen { height: 210px; }
+    .mini-hero-6 { display: grid; grid-template-columns: minmax(0, 1fr) 4px minmax(0, 1fr); align-items: center; gap: 30px; min-height: 330px; }
+    .mini-hero-6 .copy .ph-heading { width: 75%; } .mini-hero-6 .copy .ph-text { width: 82%; }
+    .mini-hero-6 .spec-input { margin-top: 24px; }
+    .mini-hero-6 .spec-input .spec-button { background: var(--ink); }
+    .mini-hero-6 .spec-input .spec-button::after { background: var(--cream); }
+    .mini-hero-6 .rail { display: grid; gap: 7px; height: 270px; }
+    .mini-hero-6 .rail span { background: #cbd0cb; border-radius: 4px; }
+    .mini-hero-6 .rail span:first-child { background: var(--ink); }
+    .mini-hero-6 .image { height: 290px; border-radius: 20px; }
+    .mini-hero-6 .mobile-rail { display: none; }
+    .mini-hero-7 { position: relative; min-height: 390px; overflow: hidden; }
+    .mini-hero-7 .copy { position: relative; z-index: 1; text-align: center; }
+    .mini-hero-7 .copy .ph-heading { width: 50%; margin: 0 auto 15px; }
+    .mini-hero-7 .copy .ph-text { width: 44%; margin: 0 auto; }
+    .mini-hero-7 .spec-actions { justify-content: center; }
+    .mini-hero-7 .scene { height: 270px; display: flex; align-items: center; justify-content: center; gap: 16px; }
+    .mini-hero-7 .scene div { width: 28%; height: 53%; border-radius: 16px; }
+    .mini-hero-7 .scene div:nth-child(2) { height: 75%; transform: translateY(-12px); }
+    .mini-hero-8 .lines { margin: 20px 0; }
+    .mini-hero-8 .row { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 12px; }
+    .mini-hero-8 .row .ph-heading { width: 19%; margin: 0; }
+    .mini-hero-8 .tile { width: 100px; height: 60px; border-radius: 9px; flex: none; }
+    .mini-hero-8 .description .ph-text { width: 55%; margin: 0 auto 6px; }
+    .mini-hero-8 .wide { height: 220px; margin-top: 28px; border-radius: 18px; }
+    .mini-hero-9 { position: relative; display: flex; align-items: end; min-height: 360px; overflow: hidden; border-radius: 22px; }
+    .mini-hero-9 .video { position: absolute; inset: 0; display: grid; place-items: center; }
+    .mini-hero-9 .bottom { position: relative; width: 100%; padding: 24px; display: flex; align-items: end; justify-content: space-between; gap: 30px; }
+    .mini-hero-9 .bottom > div { width: 50%; }
+    .mini-hero-9 .ph-heading { width: 80%; } .mini-hero-9 .ph-text { width: 70%; background: #6b706b; }
+    .mini-hero-10 .copy { max-width: 620px; margin: 0 auto 45px; text-align: center; }
+    .mini-hero-10 .copy .ph-heading { width: 68%; margin: 0 auto 18px; }
+    .mini-hero-10 .copy .ph-text { width: 54%; margin: 0 auto 6px; }
+    .mini-hero-10 .spec-actions { justify-content: center; }
+    .mini-hero-10 .cards { display: flex; align-items: end; justify-content: center; padding: 20px 0 5px; }
+    .mini-hero-10 .cards div { width: 28%; max-width: 220px; height: 170px; border-radius: 22px; }
+    .mini-hero-10 .cards div + div { margin-left: -30px; }
+    .mini-hero-10 .cards div:first-child { transform: rotate(-9deg); }
+    .mini-hero-10 .cards div:nth-child(2) { transform: translateY(-18px); z-index: 1; }
+    .mini-hero-10 .cards div:last-child { transform: rotate(9deg); }
+    .mini-hero-11 .copy { text-align: center; margin: 0 auto 40px; }
+    .mini-hero-11 .copy .ph-heading { width: 60%; margin: 18px auto; }
+    .mini-hero-11 .copy .ph-text { width: 52%; margin: 0 auto; }
+    .mini-hero-11 .spec-actions { justify-content: center; }
+    .mini-hero-11 .frame { position: relative; max-width: 670px; margin: auto; padding: 17px; }
+    .mini-hero-11 .frame .image { aspect-ratio: 16 / 9; }
+    .mini-hero-11 .corner { position: absolute; width: 29px; height: 29px; border: 2px solid var(--ink); }
+    .mini-hero-11 .tl { top: 0; left: 0; border-right: 0; border-bottom: 0; }
+    .mini-hero-11 .tr { top: 0; right: 0; border-left: 0; border-bottom: 0; }
+    .mini-hero-11 .bl { bottom: 0; left: 0; border-right: 0; border-top: 0; }
+    .mini-hero-11 .br { bottom: 0; right: 0; border-left: 0; border-top: 0; }
+    .mini-hero-12 { position: relative; height: 415px; overflow: hidden; border-radius: 24px; }
+    .mini-hero-12 .scene { position: absolute; inset: 0; }
+    .mini-hero-12 .head { position: relative; display: flex; flex-direction: column; align-items: start; }
+    .mini-hero-12 .head > div { width: 62%; padding: 13px 16px; border-bottom-right-radius: 30px; background: var(--preview-bg); }
+    .mini-hero-12 .head > div + div { width: 46%; }
+    .mini-hero-12 .head .ph-heading { width: 85%; margin: 0; }
+    .mini-hero-12 .action { position: absolute; right: 18px; top: 18px; }
+    .mini-hero-12 .card { position: absolute; right: 18px; bottom: 18px; width: 230px; padding: 8px; border-radius: 15px; background: var(--preview-bg); }
+    .mini-hero-12 .card .image { height: 90px; border-radius: 8px; }
+    .mini-hero-12 .card .ph-text { margin-top: 10px; }
+    .mini-hero-13 .copy { position: relative; z-index: 1; max-width: 630px; margin: 0 auto; text-align: center; }
+    .mini-hero-13 .copy .ph-heading { width: 65%; margin: 0 auto 16px; }
+    .mini-hero-13 .copy .ph-text { width: 57%; margin: 0 auto 6px; }
+    .mini-hero-13 .spec-actions { justify-content: center; }
+    .mini-hero-13 .proof { display: flex; justify-content: center; gap: 15px; margin-top: 14px; }
+    .mini-hero-13 .stage { position: relative; max-width: 680px; height: 265px; margin: -4px auto 0; overflow: hidden; }
+    .mini-hero-13 .bar { position: absolute; bottom: 34px; left: 12%; width: 76%; height: 8px; border-radius: 99px; background: #888; }
+    .mini-hero-13 .floating { position: absolute; top: 74px; left: 29%; width: 48px; height: 48px; border-radius: 50%; }
+    .mini-hero-13 .card { position: absolute; top: 65px; right: 10%; width: 28%; height: 75px; border-radius: 12px; }
+    .mini-hero-13 .card:last-child { top: 150px; right: 15%; }
+    .mini-hero-14 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: center; gap: 40px; min-height: 330px; }
+    .mini-hero-14 .copy .ph-heading { width: 76%; margin-top: 20px; }
+    .mini-hero-14 .copy .ph-text { width: 82%; }
+    .mini-hero-14 .copy .spec-pill .ph-text { width: 55px; }
+    .mini-hero-14 .spec-input { margin: 25px 0 18px; }
+    .mini-hero-14 .spec-input .spec-button { background: var(--ink); }
+    .mini-hero-14 .spec-input .spec-button::after { background: var(--cream); }
+    .mini-hero-14 .image { aspect-ratio: 4 / 3; border-radius: 20px; }
+    .mini-hero-15 { text-align: center; padding: 22px 0; }
+    .mini-hero-15 .ph-heading { width: 72%; height: 27px; margin: 35px auto 24px; transform: skew(-8deg); }
+    .mini-hero-15 .ph-text { width: 52%; margin: 0 auto 7px; }
+    .mini-hero-15 .spec-pill .ph-text { width: 55px; margin: 0; }
+    .mini-hero-15 .spec-actions { justify-content: center; }
+    .mini-hero-15 .spec-input { width: min(100%, 560px); margin: 50px auto 14px; }
+    .mini-hero-15 .spec-input .send { width: 32px; height: 32px; flex: none; display: grid; place-items: center; border-radius: 50%; background: #cbd0cb; }
+    .mini-hero-16 { display: flex; flex-direction: column; min-height: 360px; padding: 18px; }
+    .mini-hero-16 .ph-heading { width: 74%; margin-top: 52px; }
+    .mini-hero-16 .bottom { display: flex; align-items: end; justify-content: space-between; gap: 26px; margin-top: auto; }
+    .mini-hero-16 .bottom .ph-text { width: 175px; }
+    .mini-hero-16 .spec-actions { flex-wrap: nowrap; flex: none; }
+    .mini-hero-16 .spec-actions .spec-button:last-child { width: 35px; }
+    .mini-hero-16 .spec-actions .spec-button:last-child::after { display: none; }
+    .mini-hero-17 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px; align-items: center; }
+    .mini-hero-17 .copy .ph-heading { width: 75%; margin-top: 25px; }
+    .mini-hero-17 .copy .ph-text { width: 80%; }
+    .mini-hero-17 .copy .spec-pill { width: fit-content; }
+    .mini-hero-17 .copy .spec-pill .ph-text { width: 55px; }
+    .mini-hero-17 .gallery .main { aspect-ratio: 16 / 10; border-radius: 16px; }
+    .mini-hero-17 .thumbs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin-top: 9px; }
+    .mini-hero-17 .thumbs div { aspect-ratio: 1; border-radius: 9px; }
+    .mini-hero-18 { display: flex; flex-direction: column; align-items: center; }
+    .mini-hero-18 .copy { text-align: center; width: 100%; }
+    .mini-hero-18 .copy .ph-heading { width: 65%; margin: 20px auto; }
+    .mini-hero-18 .copy .ph-text { width: 55%; margin: 0 auto 6px; }
+    .mini-hero-18 .panel { width: min(100%, 580px); margin: 30px 0 0; border: 1px solid #cbd0cb; border-radius: 18px; overflow: hidden; }
+    .mini-hero-18 .query, .mini-hero-18 .scopes, .mini-hero-18 .keys { display: flex; align-items: center; gap: 9px; padding: 10px 14px; }
+    .mini-hero-18 .query, .mini-hero-18 .keys { border-bottom: 1px solid #cbd0cb; }
+    .mini-hero-18 .query .ph-text { width: 55%; margin: 0; }
+    .mini-hero-18 kbd { border: 1px solid #aaa; border-radius: 5px; padding: 0 4px; font: inherit; }
+    .mini-hero-18 .query kbd { margin-left: auto; }
+    .mini-hero-18 .scopes span { border: 1px solid #bbb; border-radius: 7px; padding: 2px 6px; }
+    .mini-hero-18 .row { display: flex; align-items: center; gap: 9px; padding: 7px 14px; }
+    .mini-hero-18 .row:first-child { background: #e3e3df; }
+    .mini-hero-18 .row .ph-text { width: 60%; margin: 0; }
+    .mini-hero-18 .row kbd { margin-left: auto; }
+    .mini-hero-18 .action { margin-top: 20px; display: flex; align-items: center; gap: 16px; }
+    .mini-hero-19 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: center; gap: 55px; }
+    .mini-hero-19 .copy .ph-heading { width: 78%; margin: 22px 0; }
+    .mini-hero-19 .copy .ph-text { width: 80%; }
+    .mini-hero-19 .copy > .ph-text:last-child { margin-top: 20px; }
+    .mini-hero-19 .stage { position: relative; padding: 20px; }
+    .mini-hero-19 .panel { border: 1px solid #bbb; border-radius: 20px; padding: 16px; }
+    .mini-hero-19 .row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid #bbb; }
+    .mini-hero-19 .row .ph-text { width: 50%; margin: 0; }
+    .mini-hero-19 .row .spec-pill { margin-left: auto; }
+    .mini-hero-19 .metric { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 7px; margin-top: 12px; }
+    .mini-hero-19 .metric .bar { width: 78%; height: 6px; border-radius: 4px; background: var(--ink); }
+    .mini-hero-19 .float { position: absolute; padding: 7px; border: 1px solid #bbb; border-radius: 9px; background: var(--preview-bg); }
+    .mini-hero-19 .float.top { top: 0; right: 0; } .mini-hero-19 .float.bottom { bottom: 0; left: 0; }
+    .mini-hero-20 { text-align: center; }
+    .mini-hero-20 .ph-heading { width: 62%; margin: 0 auto 20px; }
+    .mini-hero-20 > .ph-text { width: 50%; margin: 0 auto 6px; }
+    .mini-hero-20 .spec-actions, .mini-hero-20 .logos { justify-content: center; }
+    .mini-hero-20 .logos { display: flex; gap: 18px; flex-wrap: wrap; margin: 40px 0 30px; }
+    .mini-hero-20 .metrics { display: grid; grid-template-columns: repeat(4, 1fr); border-block: 1px solid #bbb; padding: 18px 0; }
+    .mini-hero-20 .metrics > div { display: grid; gap: 5px; }
+    .mini-hero-20 .metrics > div + div { border-left: 1px solid #bbb; }
+    .mini-hero-20 .metrics .ph-text { width: 52%; margin: auto; }
+    .mini-hero-21, .mini-hero-22, .mini-hero-24 { position: relative; display: grid; place-items: center; min-height: 355px; overflow: hidden; border-radius: 20px; }
+    .mini-hero-21 .field, .mini-hero-22 .field, .mini-hero-24 .field { position: absolute; inset: 0; }
+    .mini-hero-21 .copy, .mini-hero-22 .copy { position: relative; text-align: center; width: min(100%, 620px); padding: 24px; }
+    .mini-hero-21 .orb { width: 68px; height: 68px; display: grid; place-items: center; margin: 0 auto 12px; border: 12px solid #aab1ab; border-radius: 50%; }
+    .mini-hero-21 .orb .spec-dot { width: 9px; height: 9px; }
+    .mini-hero-21 .ph-heading, .mini-hero-22 .ph-heading { width: 70%; margin: 18px auto; }
+    .mini-hero-21 .ph-text, .mini-hero-22 .ph-text { width: 60%; margin: 0 auto 6px; background: #666e68; }
+    .mini-hero-21 .spec-actions, .mini-hero-22 .spec-actions { justify-content: center; }
+    .mini-hero-23 .copy { text-align: center; }
+    .mini-hero-23 .ph-heading { width: 66%; margin: 16px auto; }
+    .mini-hero-23 .copy .ph-text { width: 53%; margin: 0 auto 6px; }
+    .mini-hero-23 .spec-actions { justify-content: center; }
+    .mini-hero-23 .frame { position: relative; height: 290px; margin-top: 34px; overflow: hidden; border-radius: 20px; }
+    .mini-hero-23 .frame .spec-media { position: absolute; inset: 0; }
+    .mini-hero-23 .live { position: absolute; top: 14px; left: 14px; }
+    .mini-hero-23 .caption { position: absolute; left: 16px; right: 16px; bottom: 16px; display: flex; justify-content: space-between; align-items: end; }
+    .mini-hero-23 .caption strong { font-size: 1.2rem; }
+    .mini-hero-24 { place-items: center start; }
+    .mini-hero-24 .copy { position: relative; width: min(100%, 540px); padding: 30px; text-align: left; }
+    .mini-hero-24 .ph-heading { width: 78%; margin: 20px 0; }
+    .mini-hero-24 .copy > .ph-text { width: 68%; background: #666e68; }
+    .mini-hero-24 .logos { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 32px; }
+    @media (max-width: 1023px) {
+      .mini-hero-6, .mini-hero-14, .mini-hero-17, .mini-hero-19 { grid-template-columns: 1fr; gap: 24px; }
+      .mini-hero-6 .rail { display: none; } .mini-hero-6 .image { height: 230px; }
+      .mini-hero-6 .mobile-rail { display: flex; justify-content: center; gap: 8px; }
+      .mini-hero-6 .mobile-rail span { width: 34px; height: 3px; background: #bbb; }
+      .mini-hero-6 .mobile-rail span:first-child { background: var(--ink); }
+      .mini-hero-9 .bottom, .mini-hero-16 .bottom { flex-direction: column; align-items: start; }
+      .mini-hero-9 .bottom > div { width: 100%; }
+      .mini-hero-19 .float { display: none; }
+      .mini-hero-20 .metrics { grid-template-columns: repeat(2, 1fr); row-gap: 14px; }
+      .mini-hero-20 .metrics > div:nth-child(3) { border-left: 0; }
+    }
+    @media (max-width: 639px) {
+      .mini-hero-2 .gallery { justify-content: flex-start; }
+      .mini-hero-3 .bottom { align-items: start; flex-direction: column; }
+      .mini-hero-3 .bottom .ph-heading { width: 75%; }
+      .mini-hero-3 .links { width: 50%; }
+      .mini-hero-4 .video { flex-basis: 75%; }
+      .mini-hero-5 .screen { height: 135px; }
+      .mini-hero-7 .scene div { width: 42%; }
+      .mini-hero-8 .row { flex-wrap: wrap; justify-content: start; }
+      .mini-hero-8 .row .ph-heading { width: 27%; }
+      .mini-hero-8 .tile { width: 72px; height: 45px; }
+      .mini-hero-8 .wide { height: 170px; }
+      .mini-hero-9 .bottom { padding: 18px; }
+      .mini-hero-10 .cards div { min-width: 90px; height: 110px; }
+      .mini-hero-10 .cards div + div { margin-left: -17px; }
+      .mini-hero-12 { height: 460px; }
+      .mini-hero-12 .head > div { width: 88%; } .mini-hero-12 .head > div + div { width: 68%; }
+      .mini-hero-12 .action { top: 130px; left: 16px; right: auto; }
+      .mini-hero-12 .card { left: 16px; right: 16px; bottom: 16px; width: auto; }
+      .mini-hero-14 .spec-input { flex-direction: column; align-items: stretch; border: 0; padding: 0; }
+      .mini-hero-14 .spec-input .ph-text { width: 100%; height: 35px; margin: 0; border: 1px solid #bbb; border-radius: 10px; background: #e5e5df; }
+      .mini-hero-14 .spec-input .spec-button { width: 100%; }
+      .mini-hero-16 .ph-heading { margin-top: 35px; }
+      .mini-hero-18 .scopes { overflow-x: auto; } .mini-hero-18 .scopes span { flex: none; }
+      .mini-hero-23 .frame { height: 220px; }
+      .mini-hero-24 .copy { padding: 20px; }
+    }
   </style>
 </head>
 <body>
   <div class="tri-bar"><span></span><span></span><span></span></div>
-  <nav class="top-nav"><h1>Hero Layout Playground<span>· 英雄区布局 · 目前 1 条，可按同样形状追加至 24 条</span></h1></nav>
+  <nav class="top-nav"><h1>Hero Layout Playground<span>· 英雄区布局 · 目前 24 条，可按同样形状继续追加</span></h1></nav>
   <main class="page-container">
     <section class="layout-block" id="hero-1" aria-labelledby="hero-1-title">
       <div class="layout-header"><h2 id="hero-1-title"><span class="num">01</span>Hero分栏缺口型</h2></div>
@@ -190,6 +446,123 @@
         </div>
       </div>
       <div class="scene-tag">产品落地页的分栏首屏，左边是说明和行动，右边是一张带缺口的图。</div>
+    </section>
+    <section class="layout-block" id="hero-2" aria-labelledby="hero-2-title">
+      <div class="layout-header"><h2 id="hero-2-title"><span class="num">02</span>Hero弧形拼贴型</h2></div>
+      <div class="preview-box"><div class="mini-hero-2">
+        <div class="copy"><div class="ph-heading"></div><div class="ph-text"></div><div class="spec-actions"><span class="spec-button"></span><span class="spec-button"></span></div></div>
+        <div class="gallery" aria-label="不等高画面占位"><div class="stack"><div class="spec-media tall"></div><div class="spec-media slim"></div></div><div class="spec-media tall"></div><div class="spec-media square"></div><div class="spec-media tall"></div><div class="stack"><div class="spec-media tall"></div><div class="spec-media slim"></div></div></div>
+      </div></div><div class="scene-tag">居中标题下方是五列高低错落的画廊。</div>
+    </section>
+    <section class="layout-block" id="hero-3" aria-labelledby="hero-3-title">
+      <div class="layout-header"><h2 id="hero-3-title"><span class="num">03</span>Hero框景着色器型</h2></div>
+      <div class="preview-box"><div class="mini-hero-3"><div class="scene spec-media" role="img" aria-label="画面占位"></div><div class="frame"><div class="top"><span class="spec-logo"></span><span class="spec-pill"><span class="ph-text"></span></span></div><div class="bottom"><div class="ph-heading"></div><div class="links"><div class="ph-text"></div><div class="ph-text"></div><div class="ph-text"></div></div></div></div></div></div>
+      <div class="scene-tag">大面积画面做背景，文字与入口沿边框排列。</div>
+    </section>
+    <section class="layout-block" id="hero-4" aria-labelledby="hero-4-title">
+      <div class="layout-header"><h2 id="hero-4-title"><span class="num">04</span>Hero视频跑马廊型</h2></div>
+      <div class="preview-box"><div class="mini-hero-4"><div class="copy"><span class="spec-pill"><span class="spec-dot"></span><span class="ph-text"></span></span><div class="ph-heading"></div><div class="ph-text"></div><div class="spec-actions"><span class="spec-button"></span></div></div><div class="track" aria-label="视频静态画框"><div class="video spec-media"><span class="spec-play"></span><span class="dots"><span></span><span></span></span></div><div class="video spec-media"><span class="spec-play"></span></div><div class="video spec-media"><span class="spec-play"></span></div></div></div></div>
+      <div class="scene-tag">居中大字下方是横向连续的视频画框。</div>
+    </section>
+    <section class="layout-block" id="hero-5" aria-labelledby="hero-5-title">
+      <div class="layout-header"><h2 id="hero-5-title"><span class="num">05</span>Hero浮球视窗型</h2></div>
+      <div class="preview-box"><div class="mini-hero-5"><div class="orb spec-media"></div><div class="copy"><span class="spec-pill"><span class="spec-dot"></span><span class="ph-text"></span></span><div class="ph-heading"></div><div class="ph-text"></div><div class="spec-actions"><span class="spec-button"></span><span class="spec-button"></span></div></div><div class="browser"><div class="toolbar"><span></span><span></span><span></span></div><div class="screen spec-media" role="img" aria-label="视窗画面占位"></div></div></div></div>
+      <div class="scene-tag">居中内容下方是浏览器视窗和静态浮球。</div>
+    </section>
+    <section class="layout-block" id="hero-6" aria-labelledby="hero-6-title">
+      <div class="layout-header"><h2 id="hero-6-title"><span class="num">06</span>Hero进度轮播分栏型</h2></div>
+      <div class="preview-box"><div class="mini-hero-6"><div class="copy"><div class="ph-heading"></div><div class="ph-text"></div><div class="ph-text short"></div><div class="spec-input"><span class="ph-text"></span><span class="spec-button"></span></div></div><div class="rail" aria-label="轮播竖进度"><span></span><span></span><span></span></div><div class="image spec-media" role="img" aria-label="当前轮播画面占位"></div><div class="mobile-rail" aria-label="轮播横进度"><span></span><span></span><span></span></div></div></div>
+      <div class="scene-tag">左文右图，中间进度线在窄屏移到图片下。</div>
+    </section>
+    <section class="layout-block" id="hero-7" aria-labelledby="hero-7-title">
+      <div class="layout-header"><h2 id="hero-7-title"><span class="num">07</span>Hero三维环形画廊型</h2></div>
+      <div class="preview-box"><div class="mini-hero-7"><div class="copy"><div class="ph-heading"></div><div class="ph-text"></div><div class="spec-actions"><span class="spec-button"></span></div></div><div class="scene" role="img" aria-label="环形画廊三帧占位"><div class="spec-media"></div><div class="spec-media"></div><div class="spec-media"></div></div></div></div>
+      <div class="scene-tag">上方居中文字，下方是前中后三帧画廊。</div>
+    </section>
+    <section class="layout-block" id="hero-8" aria-labelledby="hero-8-title">
+      <div class="layout-header"><h2 id="hero-8-title"><span class="num">08</span>Hero字间媒体嵌片型</h2></div>
+      <div class="preview-box"><div class="mini-hero-8"><div class="lines"><div class="row"><div class="ph-heading"></div><div class="tile spec-media"></div><div class="ph-heading"></div></div><div class="row"><div class="ph-heading"></div><div class="tile spec-media"></div><div class="ph-heading"></div></div></div><div class="description"><div class="ph-text"></div><div class="ph-text short"></div></div><div class="wide spec-media" role="img" aria-label="宽幅画面占位"></div></div></div>
+      <div class="scene-tag">两行文字之间各嵌媒体块，说明下方有宽幅画面。</div>
+    </section>
+    <section class="layout-block" id="hero-9" aria-labelledby="hero-9-title">
+      <div class="layout-header"><h2 id="hero-9-title"><span class="num">09</span>Hero沉底视频背景型</h2></div>
+      <div class="preview-box"><div class="mini-hero-9"><div class="video spec-media" role="img" aria-label="视频画面占位"><span class="spec-play"></span></div><div class="bottom"><div><div class="ph-heading"></div><span class="spec-pill"><span class="spec-dot"></span><span class="ph-text"></span></span></div><div><div class="ph-text"></div><div class="spec-actions"><span class="spec-button"></span><span class="spec-button"></span></div></div></div></div></div>
+      <div class="scene-tag">全幅视频灰面，标题和说明贴近画面底边。</div>
+    </section>
+    <section class="layout-block" id="hero-10" aria-labelledby="hero-10-title">
+      <div class="layout-header"><h2 id="hero-10-title"><span class="num">10</span>Hero三叠卡型</h2></div>
+      <div class="preview-box"><div class="mini-hero-10"><div class="copy"><div class="ph-heading"></div><div class="ph-text"></div><div class="spec-actions"><span class="spec-button"></span></div></div><div class="cards" role="img" aria-label="三张叠压画面占位"><div class="spec-media"></div><div class="spec-media"></div><div class="spec-media"></div></div></div></div>
+      <div class="scene-tag">居中引导文案下方是抬高中卡的三张叠卡。</div>
+    </section>
+    <section class="layout-block" id="hero-11" aria-labelledby="hero-11-title">
+      <div class="layout-header"><h2 id="hero-11-title"><span class="num">11</span>Hero线框角标型</h2></div>
+      <div class="preview-box"><div class="mini-hero-11"><div class="copy"><span class="spec-pill"><span class="ph-text"></span></span><div class="ph-heading"></div><div class="ph-text"></div><div class="spec-actions"><span class="spec-button"></span><span class="spec-button"></span></div></div><div class="frame"><div class="image spec-media" role="img" aria-label="画面占位"></div><i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i></div></div></div>
+      <div class="scene-tag">居中标题下方一张画面，四角有外置线框。</div>
+    </section>
+    <section class="layout-block" id="hero-12" aria-labelledby="hero-12-title">
+      <div class="layout-header"><h2 id="hero-12-title"><span class="num">12</span>Hero曲线贴片画面型</h2></div>
+      <div class="preview-box"><div class="mini-hero-12"><div class="scene spec-media" role="img" aria-label="大画面占位"></div><div class="head"><div><div class="ph-heading"></div></div><div><div class="ph-heading"></div></div></div><span class="action spec-button"></span><div class="card"><div class="image spec-media" role="img" aria-label="信息卡画面占位"></div><div class="ph-text"></div><div class="ph-text short"></div></div></div></div>
+      <div class="scene-tag">大画面上方是两层曲角标题贴片，底部另有信息卡。</div>
+    </section>
+    <section class="layout-block" id="hero-13" aria-labelledby="hero-13-title">
+      <div class="layout-header"><h2 id="hero-13-title"><span class="num">13</span>Hero浮标信息层型</h2></div>
+      <div class="preview-box"><div class="mini-hero-13"><div class="copy"><div class="ph-heading"></div><div class="ph-text"></div><div class="spec-actions"><span class="spec-button"></span><span class="spec-button"></span></div><div class="proof"><span>● ● ● ●</span><span>★★★★★</span></div></div><div class="stage" role="img" aria-label="静态浮标和信息卡占位"><div class="bar"></div><div class="floating spec-media"></div><div class="card spec-media"></div><div class="card spec-media"></div></div></div></div>
+      <div class="scene-tag">社交证明下方有光条、浮标和叠放的信息卡。</div>
+    </section>
+    <section class="layout-block" id="hero-14" aria-labelledby="hero-14-title">
+      <div class="layout-header"><h2 id="hero-14-title"><span class="num">14</span>Hero邮箱表单分栏型</h2></div>
+      <div class="preview-box"><div class="mini-hero-14"><div class="copy"><div class="spec-pill"><span class="spec-dot"></span><span class="ph-text"></span></div><div class="ph-heading"></div><div class="ph-text"></div><div class="ph-text short"></div><div class="spec-input"><span class="ph-text"></span><span class="spec-button"></span></div><div class="ph-text short"></div></div><div class="image spec-media" role="img" aria-label="画面占位"></div></div></div>
+      <div class="scene-tag">左评分和邮箱表单，右侧单张 4:3 画面。</div>
+    </section>
+    <section class="layout-block" id="hero-15" aria-labelledby="hero-15-title">
+      <div class="layout-header"><h2 id="hero-15-title"><span class="num">15</span>Hero斜体标题问答型</h2></div>
+      <div class="preview-box"><div class="mini-hero-15"><span class="spec-pill"><span class="ph-text"></span></span><div class="ph-heading"></div><div class="ph-text"></div><div class="ph-text short"></div><div class="spec-actions"><span class="spec-button"></span></div><div class="spec-input"><span class="ph-text"></span><span class="send"><i data-lucide="arrow-up" aria-hidden="true"></i></span></div><div class="ph-text short"></div></div></div>
+      <div class="scene-tag">居中斜体标题和两层说明，下方是问答输入条。</div>
+    </section>
+    <section class="layout-block" id="hero-16" aria-labelledby="hero-16-title">
+      <div class="layout-header"><h2 id="hero-16-title"><span class="num">16</span>Hero标志顶置叙事型</h2></div>
+      <div class="preview-box"><div class="mini-hero-16"><span class="spec-logo"></span><div class="ph-heading"></div><div class="bottom"><div><div class="ph-text"></div><div class="ph-text short"></div></div><div class="spec-actions"><span class="spec-button"></span><span class="spec-button"><i data-lucide="arrow-right" aria-hidden="true"></i></span></div></div></div></div>
+      <div class="scene-tag">顶部标志和大标题，底部左右分列说明与分体按钮。</div>
+    </section>
+    <section class="layout-block" id="hero-17" aria-labelledby="hero-17-title">
+      <div class="layout-header"><h2 id="hero-17-title"><span class="num">17</span>Hero商品主图三缩略型</h2></div>
+      <div class="preview-box"><div class="mini-hero-17"><div class="copy"><span class="spec-pill"><span class="ph-text"></span></span><div class="ph-heading"></div><div class="ph-text"></div><div class="ph-text short"></div><div class="spec-actions"><span class="spec-button"></span></div></div><div class="gallery"><div class="main spec-media" role="img" aria-label="主图占位"></div><div class="thumbs" aria-label="三张缩略图占位"><div class="spec-media"></div><div class="spec-media"></div><div class="spec-media"></div></div></div></div></div>
+      <div class="scene-tag">左边促销说明，右边一张主图和三张缩略图。</div>
+    </section>
+    <section class="layout-block" id="hero-18" aria-labelledby="hero-18-title">
+      <div class="layout-header"><h2 id="hero-18-title"><span class="num">18</span>Hero指令面板型</h2></div>
+      <div class="preview-box"><div class="mini-hero-18"><div class="copy"><span class="spec-pill"><kbd>⌘K</kbd><span class="ph-text"></span></span><div class="ph-heading"></div><div class="ph-text"></div></div><div class="panel"><div class="query"><i data-lucide="search" aria-hidden="true"></i><span class="ph-text"></span><kbd>esc</kbd></div><div class="scopes"><span>范围 12</span><span>范围 8</span><span>范围 4</span></div><div class="rows"><div class="row"><span class="spec-dot"></span><span class="ph-text"></span><kbd>↵</kbd></div><div class="row"><span class="spec-dot"></span><span class="ph-text"></span></div><div class="row"><span class="spec-dot"></span><span class="ph-text"></span></div></div><div class="keys"><kbd>↑</kbd><kbd>↓</kbd><kbd>↵</kbd></div></div><div class="action"><span class="spec-button"></span><kbd>⌘ K</kbd></div></div></div>
+      <div class="scene-tag">指令面板保留搜索行、范围计数、结果和键帽。</div>
+    </section>
+    <section class="layout-block" id="hero-19" aria-labelledby="hero-19-title">
+      <div class="layout-header"><h2 id="hero-19-title"><span class="num">19</span>Hero账单悬浮卡分栏型</h2></div>
+      <div class="preview-box"><div class="mini-hero-19"><div class="copy"><div class="ph-text short"></div><div class="ph-heading"></div><div class="ph-text"></div><div class="spec-actions"><span class="spec-button"></span><span class="spec-button"></span></div><div class="ph-text short"></div></div><div class="stage"><div class="float top">✓ <span class="ph-text short"></span></div><div class="panel"><div class="row"><span class="spec-dot"></span><span class="ph-text"></span><span class="spec-pill"><span class="spec-dot"></span></span></div><div class="row"><span class="spec-dot"></span><span class="ph-text"></span><span class="spec-pill"></span></div><div class="row"><span class="spec-dot"></span><span class="ph-text"></span><span class="spec-pill"></span></div><div class="metric"><span class="ph-text short"></span><strong>78%</strong><span class="bar"></span></div></div><div class="float bottom">○ <span class="ph-text short"></span></div></div></div></div>
+      <div class="scene-tag">左文右账单，面板外叠两张提示卡。</div>
+    </section>
+    <section class="layout-block" id="hero-20" aria-labelledby="hero-20-title">
+      <div class="layout-header"><h2 id="hero-20-title"><span class="num">20</span>Hero口号标志指标型</h2></div>
+      <div class="preview-box"><div class="mini-hero-20"><div class="ph-heading"></div><div class="ph-text"></div><div class="spec-actions"><span class="spec-button"></span><span class="spec-button"></span></div><div class="logos" aria-label="标志占位"><span class="spec-logo"></span><span class="spec-logo"></span><span class="spec-logo"></span><span class="spec-logo"></span></div><div class="metrics"><div><strong>01</strong><span class="ph-text"></span></div><div><strong>02</strong><span class="ph-text"></span></div><div><strong>03</strong><span class="ph-text"></span></div><div><strong>04</strong><span class="ph-text"></span></div></div></div></div>
+      <div class="scene-tag">居中主张之后是一行标志与四格数字指标。</div>
+    </section>
+    <section class="layout-block" id="hero-21" aria-labelledby="hero-21-title">
+      <div class="layout-header"><h2 id="hero-21-title"><span class="num">21</span>Hero极光光环型</h2></div>
+      <div class="preview-box"><div class="mini-hero-21"><div class="field spec-media" role="img" aria-label="极光画面占位"></div><div class="copy"><div class="orb"><span class="spec-dot"></span></div><span class="spec-logo"></span><div class="ph-heading"></div><div class="ph-text"></div><div class="spec-actions"><span class="spec-button"></span><span class="spec-button"></span></div></div></div></div>
+      <div class="scene-tag">居中光环标记和文字置于静态背景画面之前。</div>
+    </section>
+    <section class="layout-block" id="hero-22" aria-labelledby="hero-22-title">
+      <div class="layout-header"><h2 id="hero-22-title"><span class="num">22</span>Hero网格流光居中型</h2></div>
+      <div class="preview-box"><div class="mini-hero-22"><div class="field spec-media" role="img" aria-label="流光画面占位"></div><div class="copy"><span class="spec-pill"><span class="spec-dot"></span><span class="ph-text"></span></span><div class="ph-heading"></div><div class="ph-text"></div><div class="spec-actions"><span class="spec-button"></span><span class="spec-button"></span></div></div></div></div>
+      <div class="scene-tag">公告、标题和双行动居中叠在一块画面上。</div>
+    </section>
+    <section class="layout-block" id="hero-23" aria-labelledby="hero-23-title">
+      <div class="layout-header"><h2 id="hero-23-title"><span class="num">23</span>Hero水纹画框型</h2></div>
+      <div class="preview-box"><div class="mini-hero-23"><div class="copy"><span class="spec-pill"><span class="spec-dot"></span><span class="ph-text"></span></span><div class="ph-heading"></div><div class="ph-text"></div><div class="spec-actions"><span class="spec-button"></span><span class="spec-button"></span></div></div><div class="frame"><div class="spec-media" role="img" aria-label="水纹画面占位"></div><span class="live spec-pill"><span class="spec-dot"></span><span class="ph-text"></span></span><div class="caption"><strong>60 fps</strong><span class="spec-pill"><span class="ph-text"></span></span></div></div></div></div>
+      <div class="scene-tag">居中文字下方是带实时状态与帧率的宽画框。</div>
+    </section>
+    <section class="layout-block" id="hero-24" aria-labelledby="hero-24-title">
+      <div class="layout-header"><h2 id="hero-24-title"><span class="num">24</span>Hero神经线场左文型</h2></div>
+      <div class="preview-box"><div class="mini-hero-24"><div class="field spec-media" role="img" aria-label="线场画面占位"></div><div class="copy"><span class="spec-pill"><span class="spec-dot"></span><span class="ph-text"></span></span><div class="ph-heading"></div><div class="ph-text"></div><div class="spec-actions"><span class="spec-button"></span><span class="spec-button"></span></div><div class="logos" aria-label="标志占位"><span class="spec-logo"></span><span class="spec-logo"></span><span class="spec-logo"></span></div></div></div></div>
+      <div class="scene-tag">状态芯片、左侧说明和标志行覆盖整块画面。</div>
     </section>
   </main>
   <script src="https://unpkg.com/lucide@1.48.0/dist/umd/lucide.min.js"></script>
