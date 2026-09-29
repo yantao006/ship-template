@@ -4630,27 +4630,21 @@ document.querySelectorAll('[data-sparkle-colors]').forEach(el => {
 ```
 
 ```css
-.mm-shine{padding:80px 24px;background:#0a0a0b;color:#fafafa;font-family:Inter,Arial,sans-serif;line-height:1.5}
+.mm-shine{padding:80px 24px;line-height:1.5}
 .mm-shine *{box-sizing:border-box}
 .mm-shine .mm-intro{text-align:center;max-width:810px;margin:0 auto 55px}
-.mm-shine h2{margin:0;font-size:36px;line-height:1.25;letter-spacing:-1px;font-weight:750;background:linear-gradient(95deg,#f134a5,#9630ff);background-clip:text;-webkit-background-clip:text;color:transparent}
-.mm-shine .mm-intro p{margin:20px 0 0;color:#a8a8b1;font-size:17px;line-height:1.65}
+.mm-shine h2{margin:0;line-height:1.25}
+.mm-shine .mm-intro p{margin:20px 0 0;line-height:1.65}
 .mm-shine .mm-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;max-width:1232px;margin:auto}
-.mm-shine .mm-card{min-width:0;padding:24px;border:1px solid #29292d;border-radius:17px;background:#151517}
-.mm-shine .mm-icon{width:46px;height:46px;display:grid;place-items:center;border-radius:13px;background:#2a233b;color:#ae8fff}
+.mm-shine .mm-card{min-width:0;padding:24px;border:1px solid color-mix(in srgb, var(--ink) 14%, transparent);border-radius:17px;background:#fff}
+.mm-shine .mm-icon{width:46px;height:46px;display:grid;place-items:center;border-radius:13px;border:1px solid color-mix(in srgb, var(--ink) 14%, transparent)}
 .mm-shine .mm-icon svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.mm-shine .mm-card:nth-child(2) .mm-icon{background:#382032;color:#ef8bc9}
-.mm-shine .mm-card:nth-child(3) .mm-icon{background:#193341;color:#68cbfb}
-.mm-shine .mm-card:nth-child(4) .mm-icon{background:#42320e;color:#ffc329}
-.mm-shine h3{margin:20px 0 0;font-size:18px;line-height:1.3;color:#fafafa}
-.mm-shine .mm-card p{margin:12px 0 0;color:#adaeb7;font-size:14px;line-height:1.65}
+.mm-shine h3{margin:20px 0 0;line-height:1.3}
+.mm-shine .mm-card p{margin:12px 0 0;line-height:1.65}
 .mm-shine .mm-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:17px}
-.mm-shine .mm-tags span{padding:2px 7px;border:1px solid #5c3b8c;border-radius:7px;color:#c4abff;font-size:11px}
-.mm-shine .mm-card:nth-child(2) .mm-tags span{color:#f7a3cf;border-color:#793657}
-.mm-shine .mm-card:nth-child(3) .mm-tags span{color:#79d7ff;border-color:#287097}
-.mm-shine .mm-card:nth-child(4) .mm-tags span{color:#ffcf40;border-color:#9e7200}
+.mm-shine .mm-tags span{padding:2px 7px;border:1px solid color-mix(in srgb, var(--ink) 14%, transparent);border-radius:7px}
 @media(max-width:900px){.mm-shine .mm-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:600px){.mm-shine{padding:72px 16px}.mm-shine h2{font-size:30px}.mm-shine .mm-intro p{font-size:15px}.mm-shine .mm-grid{grid-template-columns:1fr;gap:16px}}
+@media(max-width:600px){.mm-shine{padding:72px 16px}.mm-shine .mm-grid{grid-template-columns:1fr;gap:16px}}
 ```
 
 ## 54. 分栏编辑示例
@@ -4658,7 +4652,7 @@ document.querySelectorAll('[data-sparkle-colors]').forEach(el => {
 适用场景：`落地页` `输入输出对照` `视频编辑`。
 源自 MiniMax H3 首页 MiniMax H3 Lets You Edit Any Part of Your Video 区块。
 此纯 HTML 标本固定展示 Swap Outfit，另外两个标签只展示结构，不切换内容；接入真实交互时需补齐对应资源、键盘切换和状态管理。
-把下列五个资源放在 HTML 同目录的 `assets/edit-any-part/`：`input-image-1.jpeg`、`input-video-1.mp4`、`input-video-1.poster.jpg`、`output.mp4`、`poster.jpg`。
+示例图片与视频使用远程占位资源，无需在 HTML 同目录放置本地媒体文件。
 
 ```html
 <section class="mm-edit" aria-labelledby="mm-edit-title">
@@ -4679,13 +4673,13 @@ document.querySelectorAll('[data-sparkle-colors]').forEach(el => {
       <div class="mm-input">
         <strong>Input</strong>
         <div class="mm-inputs">
-          <div class="mm-tile"><img src="assets/edit-any-part/input-image-1.jpeg" alt="Outfit reference image"><span>Image 1</span></div>
-          <div class="mm-tile"><video src="assets/edit-any-part/input-video-1.mp4" poster="assets/edit-any-part/input-video-1.poster.jpg" autoplay loop muted playsinline preload="metadata" controls aria-label="Input video 1"></video><span>Video 1</span></div>
+          <div class="mm-tile"><img src="https://picsum.photos/seed/mm-edit-input/960/720.webp" alt="Outfit reference image"><span>Image 1</span></div>
+          <div class="mm-tile"><video src="https://lorem.media/video/seed/mm-edit-input/16x9" poster="https://picsum.photos/seed/mm-edit-input-video/960/540.webp" autoplay loop muted playsinline preload="metadata" controls aria-label="Input video 1"></video><span>Video 1</span></div>
         </div>
       </div>
       <div class="mm-output">
         <strong>Output</strong>
-        <div class="mm-result"><video src="assets/edit-any-part/output.mp4" poster="assets/edit-any-part/poster.jpg" autoplay loop muted playsinline preload="metadata" controls aria-label="Edited output video"></video></div>
+        <div class="mm-result"><video src="https://lorem.media/video/seed/mm-edit-output/16x9" poster="https://picsum.photos/seed/mm-edit-output/1280/720.webp" autoplay loop muted playsinline preload="metadata" controls aria-label="Edited output video"></video></div>
       </div>
     </div>
     <p class="mm-prompt">Prompt: Replace the outfit worn by the runway model in <mark>▣ @Video 1</mark> with the clothing shown in <mark class="mm-image">▧ @Image 1</mark>, ensuring natural fit, consistent fabric behavior, and seamless integration with the model’s movement, lighting, and original camera motion.</p>
@@ -4694,27 +4688,26 @@ document.querySelectorAll('[data-sparkle-colors]').forEach(el => {
 ```
 
 ```css
-.mm-edit{padding:56px 24px 80px;background:#09090b;color:#fafafa;font-family:Inter,Arial,sans-serif;line-height:1.5}
+.mm-edit{padding:56px 24px 80px;line-height:1.5}
 .mm-edit *{box-sizing:border-box}
 .mm-edit .mm-wrap{max-width:1280px;padding:0 24px;margin:auto}
 .mm-edit .mm-intro{text-align:center;margin:0 auto 20px}
-.mm-edit h2{margin:0;font-size:36px;line-height:1.25;letter-spacing:-1px;font-weight:750;background:linear-gradient(95deg,#f134a5,#9630ff);background-clip:text;-webkit-background-clip:text;color:transparent}
-.mm-edit .mm-intro p{max-width:768px;margin:16px auto 0;font-size:18px;line-height:1.58;color:#a8a8b1}
-.mm-edit .mm-tabs{display:flex;width:max-content;max-width:100%;margin:24px auto 20px;padding:6px;border:1px solid #303035;border-radius:99px;background:#202023}
-.mm-edit .mm-tabs button{min-width:0;padding:10px 20px;border:1px solid transparent;border-radius:22px;background:transparent;color:#a6a6ad;font:700 14px Inter,Arial,sans-serif;white-space:nowrap}
-.mm-edit .mm-tabs button[aria-selected="true"]{border-color:#9665ff;background:#7936f3;color:#fff;box-shadow:0 6px 18px #7c3aed55}
-.mm-edit .mm-tabs button:focus-visible{outline:2px solid #c6a9ff;outline-offset:2px}
-.mm-edit .mm-frame{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);gap:16px;padding:16px;border:1px solid #2e2e31;border-radius:16px;background:#19191b}
+.mm-edit h2{margin:0;line-height:1.25}
+.mm-edit .mm-intro p{max-width:768px;margin:16px auto 0;line-height:1.58}
+.mm-edit .mm-tabs{display:flex;width:max-content;max-width:100%;margin:24px auto 20px;padding:6px;border:1px solid color-mix(in srgb, var(--ink) 14%, transparent);border-radius:99px}
+.mm-edit .mm-tabs button{min-width:0;padding:10px 20px;border:1px solid transparent;border-radius:22px;background:transparent;color:inherit;font:inherit;white-space:nowrap}
+.mm-edit .mm-tabs button[aria-selected="true"]{border-color:currentColor}
+.mm-edit .mm-tabs button:focus-visible{outline:2px solid currentColor;outline-offset:2px}
+.mm-edit .mm-frame{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);gap:16px;padding:16px;border:1px solid color-mix(in srgb, var(--ink) 14%, transparent);border-radius:16px;background:#fff}
 .mm-edit .mm-input,.mm-edit .mm-output{min-width:0}
-.mm-edit .mm-input>strong,.mm-edit .mm-output>strong{display:block;margin:5px 4px 12px;font-size:16px}
+.mm-edit .mm-input>strong,.mm-edit .mm-output>strong{display:block;margin:5px 4px 12px}
 .mm-edit .mm-inputs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.mm-edit .mm-tile,.mm-edit .mm-result{position:relative;min-width:0;overflow:hidden;border-radius:12px;background:#141729}
+.mm-edit .mm-tile,.mm-edit .mm-result{position:relative;min-width:0;overflow:hidden;border-radius:12px;background:#fff}
 .mm-edit .mm-tile{aspect-ratio:4/3}
 .mm-edit img,.mm-edit video{display:block;width:100%;height:100%;object-fit:cover}
-.mm-edit .mm-tile>span{position:absolute;top:10px;left:10px;padding:7px 10px;border-radius:8px;background:#252631d9;color:#fff;font-size:13px;font-weight:600}
+.mm-edit .mm-tile>span{position:absolute;top:10px;left:10px;padding:7px 10px;border-radius:8px;background:#fff}
 .mm-edit .mm-result{height:380px}
-.mm-edit .mm-prompt{margin:20px 0 0;padding:15px 20px;border:1px solid #2d2d2f;border-radius:12px;background:#202022;color:#bbb;font-size:14px;line-height:1.75}
-.mm-edit .mm-prompt mark{display:inline-block;padding:2px 6px;border-radius:5px;background:#f0e8ff;color:#7c3aed;font-weight:700;line-height:1.4}
-.mm-edit .mm-prompt mark.mm-image{background:#e3f5ff;color:#2582c3}
-@media(max-width:767px){.mm-edit{padding:70px 16px}.mm-edit .mm-wrap{padding:0}.mm-edit h2{font-size:29px}.mm-edit .mm-intro p{font-size:15px}.mm-edit .mm-tabs button{padding:9px 11px;font-size:12px}.mm-edit .mm-frame{grid-template-columns:1fr;padding:12px}.mm-edit .mm-result{height:auto;aspect-ratio:16/9}}
+.mm-edit .mm-prompt{margin:20px 0 0;padding:15px 20px;border:1px solid color-mix(in srgb, var(--ink) 14%, transparent);border-radius:12px;background:#fff;line-height:1.75}
+.mm-edit .mm-prompt mark{display:inline-block;padding:2px 6px;border-radius:5px;background:transparent;color:inherit;font-weight:700;line-height:1.4}
+@media(max-width:767px){.mm-edit{padding:70px 16px}.mm-edit .mm-wrap{padding:0}.mm-edit .mm-tabs{width:100%}.mm-edit .mm-tabs button{flex:1;padding:9px 4px;white-space:normal}.mm-edit .mm-frame{grid-template-columns:1fr;padding:12px}.mm-edit .mm-result{height:auto;aspect-ratio:16/9}}
 ```
