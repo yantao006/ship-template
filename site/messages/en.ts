@@ -23,6 +23,32 @@ export default {
     openWorkspace: 'Open workspace',
     credits: 'Available credits',
   },
+  shines: {
+    title: 'Where {brand} Shines',
+    intro: 'From imagined game worlds to everyday objects in motion, explore four directions for your next video concept. Start with a scene, a feeling, or a story worth sharing.',
+    items: [
+      {
+        title: 'Game Worlds',
+        description: 'Give a new world its opening moment: a character reveal, a game-inspired scene, or an interface brought to life.',
+        tags: ['Game CG', 'UI Demos', 'Character PV'],
+      },
+      {
+        title: 'Stylized Animation',
+        description: 'Think in drawn lines, sculpted clay, or bold 3D shapes. Choose the visual language that fits the story you want to tell.',
+        tags: ['Anime', 'Claymation', '3D Styles'],
+      },
+      {
+        title: 'Products in Motion',
+        description: 'Put the details of an object in the spotlight, from a quiet product reveal to a lively idea for a shop campaign.',
+        tags: ['Product Demos', 'Ad Creatives', 'Brand Films'],
+      },
+      {
+        title: 'Cinematic Stories',
+        description: 'Frame a dramatic opening, a small character moment, or a memorable closing shot with the pace of a film.',
+        tags: ['Trailers', 'Brand Films', 'Short Drama'],
+      },
+    ],
+  },
   nav: navigation,
   footer, signIn, mail, invites, handoff, account, accountPages, dashboard, credits, pricing, planCopy, videoTool,
 };

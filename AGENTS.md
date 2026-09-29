@@ -13,7 +13,7 @@ The current example has site-local accounts, invitation primitives, configurable
 - **One navigation path per purpose:** the navigation has one language control and one sign-in entry; its sign-in card lists only the methods enabled in `site/auth.config.ts`.
 - **Theme owns color:** `site/theme.config.ts` assembles `site/theme/` foundation and region palettes; `src/lib/theme-tokens.ts` generates color and semantic spacing/type/radius/motion tokens in `src/app/layout.tsx`. `src/components/ui/controls.tsx` and `src/components/styles/controls.css`, imported by `globals.css`, own shared sidebar items, solid/outline buttons, inputs and dialog entrance motion; ordinary page layout lives in utility classes while feature CSS retains distinctive surface treatments.
   `src/lib/theme-mode.ts` owns the root mode transitions; the layout freezes the first page's default and the shared header toggles the root mode without resetting it on client navigation, while legacy CSS surfaces still await migration.
-- **Pages compose sections:** `src/components/home/sections/HomePage.tsx` orders six content sections; five remain empty scaffolds, and the video tool renders its existing implementation. `src/components/shell/site-shell.tsx` owns one persistent header, flexible `main.site-main`, footer, and shared source-inspired login dialog for home, pricing, dashboard, and credits.
+- **Pages compose sections:** `src/components/home/sections/HomePage.tsx` orders six content sections; four remain empty scaffolds, the video tool renders its existing implementation, and `VideoFeatures` renders the localized four-card `WhereItShines` use-case section. `src/components/shell/site-shell.tsx` owns one persistent header, flexible `main.site-main`, footer, and shared source-inspired login dialog for home, pricing, dashboard, and credits.
 - **Long-running work is observable:** video generation uses an asynchronous task and progress flow, while the server validates costs and records credit movements in the ledger.
 
 ## Overall tech stack
@@ -132,7 +132,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
 │   │   ├── pricing/                  # Pricing page, checkout, commercial license, shared plan-display.ts rules
 │   │   ├── workspace/                # Persistent dashboard/credits sidebar and workspace content
 │   │   ├── home/                     # Session-aware home entry and referral capture
-│   │   │   └── sections/             # Six ordered sections; five empty scaffolds remain
+│   │   │   └── sections/             # Six ordered sections; four empty scaffolds and WhereItShines inside VideoFeatures
 │   │   ├── shell/                    # Shared header, footer, navigation, language suggestion and theme controls
 │   │   ├── information/              # About, privacy and terms view
 │   │   ├── invites/                  # Invite redemption and administration views
@@ -193,7 +193,7 @@ The tree below describes tracked source files; `.next/`, `.open-next/`, `.wrangl
     ├── buy-credits-license.test.ts  # Configured plan chooser and preview-only license content
     ├── delete-account.test.ts       # Local one-time account, confirmation, data purge and old login
     ├── ledger.test.ts               # Concurrent spend, refunds, and monthly grants
-    ├── home-sections.test.ts        # Homepage section scaffold order and stable ids
+    ├── home-sections.test.ts        # Homepage section order, stable ids, localized shine cards
     ├── theme-guards.test.ts         # Palette parity, legacy literal baseline, duplicate-selector guard
     ├── site-directory-contract.test.ts # Template IDs, bilingual copy, local assets and plan invariants
     ├── payments.test.ts             # Waffo signature, one-time grant, monthly grant, and replay
@@ -278,7 +278,7 @@ The shared Buy Credits dialog uses `site.plans`, localized pricing features, and
 `docs/research/account-popovers/components/source-spec.md` records source-observed desktop/mobile metrics and click-state evidence; the implementation uses local site copy and capabilities rather than the reference site's product claims.
 Receipts reflect settled credit ledger grants, not tax invoices; share submissions do not award credits until reviewed.
 The existing homepage, dashboard, and credit history are a preview; `src/lib/mock-services.ts` produces no generated media.
-`src/components/home/sections/HomePage.tsx` orders VideoHero, VideoToolSection, VideoShowcase, VideoFeatures, VideoPricing, and VideoFAQ inside page content; five non-tool sections remain empty with stable ids.
+`src/components/home/sections/HomePage.tsx` orders VideoHero, VideoToolSection, VideoShowcase, VideoFeatures, VideoPricing, and VideoFAQ inside page content; `VideoFeatures` contains the localized `WhereItShines` cards, while the other four non-tool sections remain empty with stable ids.
 The `(site)` route layouts use `src/components/shell/site-shell.tsx` to keep one account-aware Header, flexible `main.site-main`, and Footer mounted across home, pricing, account pages, legacy dashboard/credits, and localized about/privacy/terms pages; `src/app/globals.css` owns fixed-header clearance and mobile-navigation footer clearance so short pages push the footer to the viewport bottom and long pages flow naturally. Verification, password reset, desktop callback, and invite admin routes remain outside the shell.
 The avatar menu links Account, My Subscription, Invoices and Credit Center to localized `/account` routes rather than opening an invoice modal.
 `src/app/[locale]/(site)/account/layout.tsx` keeps that sidebar mounted and `account-section-nav.tsx` renders the four entries with `next/link`, so switching sections reuses the locale shell.
