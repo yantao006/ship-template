@@ -1,12 +1,13 @@
 # 组件库
 
-> 51个经过验证的可复用组件。直接复制代码使用。
+> 52个经过验证的可复用组件。直接复制代码使用。
 
 ## 📌 场景索引（先查这里，再去找具体代码）
 
 | 场景 | 推荐组件（编号） |
 |------|------|
-| **Hero区/首屏大标题** | #44 Sparkles Text、#47 Typing Animation、#48 Kinetic Text、#45 Morphing Text |
+| **完整落地页首屏** | #53 Hero 1（公告、双栏、双按钮、头像与照片） |
+| **标题局部强调（可选）** | #44 Sparkles Text、#47 Typing Animation、#48 Kinetic Text、#45 Morphing Text；不能代替 #53 完整区块 |
 | **图片展示/头像** | #49 Pixel Image、#10 三列Chair卡片 |
 | **正文重点标注** | #50 Text Highlighter、#3 Key Insight、#6 Pull Quote |
 | **趣味/活动标题** | #51 Comic Text、#2 Section Header |
@@ -4577,3 +4578,134 @@ document.querySelectorAll('[data-sparkle-colors]').forEach(el => {
 ```
 
 ⚠️ 旋转速度12s一圈。文字颜色用松针绿。中心圆用琥珀金。文字末尾加空格或符号分隔。
+
+---
+
+## 53. Hero 1（完整落地页首屏）
+
+适用场景：产品或活动落地页的完整首屏，而不只是标题文字效果。
+保持独立的黑白变量，不继承 Esther 页面品牌色或衬线标题。
+复制整个 HTML 与 CSS；更换文案与锚点时保留公告、双按钮、头像、照片与双 SVG 内凹曲线。
+
+```html
+<section class="hero-1" id="hero-1">
+  <div class="hero-grid">
+    <div class="hero-copy">
+      <div class="announcement"><span class="chip">New</span><span>AI-powered design systems</span></div>
+      <h1>Transform your product with intelligent design</h1>
+      <p class="lead">Get component libraries, design tokens, and expert tooling. Ship your design systems faster &amp; smarter.</p>
+      <div class="actions">
+        <a class="hero-action primary" href="#features">Start Building</a>
+        <a class="hero-action secondary" href="#demo">Watch Demo <span class="play-circle" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m8 5 11 7-11 7z"/></svg></span></a>
+      </div>
+      <div class="avatar-row">
+        <div class="avatars" aria-hidden="true"><span>JD</span><span>SK</span><span>AL</span></div>
+        <div class="avatar-copy"><strong>50k+</strong><span>Engineers shipping products daily.</span></div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-photo">
+        <img src="https://images.unsplash.com/photo-1553877522-43269d4ea984?q=80&amp;w=1740&amp;auto=format&amp;fit=crop" alt="Team collaborating around a table">
+        <div class="corner-notch">
+          <svg class="corner-curve" viewBox="0 0 200 200" aria-hidden="true"><path d="M0 200C155.996 199.961 200.029 156.308 200 0V200H0Z"/></svg>
+          <div class="corner-pad">
+            <a class="corner-action" href="#features" aria-label="Explore features"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-7-7 7 7-7 7"/></svg></a>
+            <svg class="corner-curve" viewBox="0 0 200 200" aria-hidden="true"><path d="M0 200C155.996 199.961 200.029 156.308 200 0V200H0Z"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+```
+
+```css
+.hero-1 {
+  --hero-solid: #000000;
+  --hero-text: #171717;
+  --hero-muted: #525252;
+  --hero-line: #d4d4d4;
+  --hero-surface: #ffffff;
+  box-sizing: border-box;
+  padding: 48px 16px;
+  background: var(--hero-surface);
+  color: var(--hero-text);
+  font-family: Arial, Helvetica, sans-serif;
+  text-align: left;
+}
+.hero-1 *, .hero-1 *::before, .hero-1 *::after { box-sizing: border-box; }
+.hero-1 .hero-grid { display: grid; grid-template-columns: minmax(0, 1fr); align-items: center; gap: 32px; max-width: 1400px; margin-inline: auto; }
+.hero-1 .hero-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 24px; min-width: 0; }
+.hero-1 .announcement { display: flex; align-items: center; gap: 8px; width: fit-content; max-width: 100%; padding: 4px; border: 1px solid var(--hero-line); border-radius: 999px; color: var(--hero-text); font-size: 14px; line-height: 1.5; }
+.hero-1 .announcement:hover { border-color: var(--hero-muted); }
+.hero-1 .announcement .chip { display: inline-flex; align-items: center; flex: none; padding: 4px 12px; border-radius: 999px; background: var(--hero-solid); color: var(--hero-surface); font-size: 12px; font-weight: 500; }
+.hero-1 .announcement > span:last-child { margin-right: 8px; }
+.hero-1 h1 { margin: 0; color: var(--hero-text); font-family: Arial, Helvetica, sans-serif; font-size: 24px; font-weight: 500; line-height: 1.15; letter-spacing: -.025em; }
+.hero-1 .lead { max-width: 32rem; margin: 0; color: var(--hero-muted); font-size: 16px; line-height: 1.625; letter-spacing: -.025em; }
+.hero-1 .actions { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; width: 100%; }
+.hero-1 .hero-action { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 44px; border: 1px solid transparent; border-radius: 999px; font-size: 14px; font-weight: 500; line-height: 1.5; text-align: center; text-decoration: none; white-space: nowrap; cursor: pointer; }
+.hero-1 .hero-action.primary { padding: 10px 24px; background: var(--hero-solid); color: var(--hero-surface); }
+.hero-1 .hero-action.primary:hover { background: var(--hero-text); }
+.hero-1 .hero-action.secondary { padding: 10px 12px 10px 20px; border-color: var(--hero-line); background: var(--hero-surface); color: var(--hero-text); }
+.hero-1 .hero-action.secondary:hover { background: var(--hero-surface); border-color: var(--hero-muted); }
+.hero-1 .play-circle { display: grid; place-items: center; flex: none; width: 24px; height: 24px; border-radius: 50%; background: var(--hero-solid); }
+.hero-1 .play-circle svg { width: 12px; height: 12px; fill: var(--hero-surface); }
+.hero-1 .avatar-row { display: flex; align-items: center; gap: 12px; padding-top: 8px; user-select: none; }
+.hero-1 .avatars { display: flex; flex: none; }
+.hero-1 .avatars span { display: grid; place-items: center; width: 40px; height: 40px; border: 4px solid var(--hero-surface); border-radius: 50%; background: var(--hero-solid); color: var(--hero-surface); font-size: 12px; font-weight: 600; }
+.hero-1 .avatars span + span { margin-left: -8px; }
+.hero-1 .avatar-copy { display: flex; flex-direction: column; }
+.hero-1 .avatar-copy strong { color: var(--hero-text); font-size: 16px; font-weight: 600; line-height: 1.5; }
+.hero-1 .avatar-copy span { color: var(--hero-muted); font-size: 12px; line-height: 1.5; }
+.hero-1 .hero-visual { position: relative; width: 100%; }
+.hero-1 .hero-photo { position: relative; width: 100%; min-height: 250px; overflow: hidden; border-radius: 32px; background: var(--hero-line); }
+.hero-1 .hero-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: none; }
+.hero-1 .corner-notch { position: absolute; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: flex-end; }
+.hero-1 .corner-curve { display: block; width: 40px; height: 40px; fill: var(--hero-surface); }
+.hero-1 .corner-pad { position: relative; width: 96px; height: 96px; padding: 16px 0 0 16px; border-top-left-radius: 32px; background: var(--hero-surface); }
+.hero-1 .corner-action { display: grid; place-items: center; width: 100%; height: 100%; border-radius: 1.2em; background: var(--hero-solid); color: var(--hero-surface); }
+.hero-1 .corner-action svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transform: rotate(-45deg); }
+.hero-1 .corner-pad > .corner-curve { position: absolute; bottom: 0; left: -40px; }
+.hero-1 a:focus-visible { outline: 2px solid var(--hero-solid); outline-offset: 3px; }
+@media (min-width: 640px) {
+  .hero-1 { padding-inline: 24px; }
+  .hero-1 .hero-copy { gap: 32px; }
+  .hero-1 .announcement { gap: 12px; font-size: 16px; }
+  .hero-1 .announcement .chip { font-size: 14px; }
+  .hero-1 h1 { font-size: 30px; }
+  .hero-1 .lead { font-size: 18px; }
+  .hero-1 .actions { flex-direction: row; align-items: center; gap: 16px; }
+  .hero-1 .hero-action { width: auto; font-size: 16px; }
+  .hero-1 .avatar-row { gap: 16px; padding-top: 16px; }
+  .hero-1 .avatars span { width: 48px; height: 48px; font-size: 14px; }
+  .hero-1 .avatar-copy strong { font-size: 18px; }
+  .hero-1 .avatar-copy span { font-size: 14px; }
+  .hero-1 .hero-photo { min-height: 500px; }
+}
+@media (min-width: 768px) { .hero-1 h1 { font-size: 36px; } }
+@media (min-width: 1024px) {
+  .hero-1 { padding-inline: 32px; }
+  .hero-1 .hero-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 48px; }
+  .hero-1 h1 { font-size: 48px; }
+}
+@media (min-width: 1280px) { .hero-1 .hero-grid { gap: 64px; } }
+@media (prefers-reduced-motion: no-preference) {
+  .hero-1 .announcement { transition: border-color .2s; }
+  .hero-1 .hero-action { transition: background-color .2s, border-color .2s, transform .2s; }
+  .hero-1 .play-circle { transition: transform .3s; }
+  .hero-1 .corner-action { transition: opacity .2s; }
+  .hero-1 .hero-action:hover { transform: scale(1.02); }
+  .hero-1 .hero-action:active { transform: scale(.98); }
+  .hero-1 .hero-action.secondary:hover .play-circle { transform: rotate(90deg); }
+  .hero-1 .corner-action:hover { opacity: .9; }
+  .hero-1 .announcement, .hero-1 h1, .hero-1 .lead, .hero-1 .actions, .hero-1 .avatar-row { animation: hero-1-copy-enter .5s both; }
+  .hero-1 .announcement { animation-delay: .1s; }
+  .hero-1 h1 { animation-delay: .2s; }
+  .hero-1 .lead { animation-delay: .3s; }
+  .hero-1 .actions { animation-delay: .4s; }
+  .hero-1 .avatar-row { animation-delay: .5s; }
+  .hero-1 .hero-visual { animation: hero-1-photo-enter .6s .3s both; }
+}
+@keyframes hero-1-copy-enter { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+@keyframes hero-1-photo-enter { from { opacity: 0; transform: scale(.95); } to { opacity: 1; transform: scale(1); } }
+```

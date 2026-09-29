@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Esther Design System · 51组件预览</title>
+<title>Esther Design System · 52组件预览</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700&family=Caveat:wght@400;700&family=Fira+Code:wght@400;500;600&family=Noto+Serif+SC:wght@400;700;900&family=Noto+Sans+SC:wght@300;400;500;700;900&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Bangers&display=swap" rel="stylesheet">
 <style>
 :root{--blue:#2F6F5E;--blue-deep:#245A4C;--yellow:#E8B86D;--yellow-soft:#F7E8D0;--red:#C45C4A;--ink:#1A1A2E;--ink-light:#4A4A5A;--ink-faint:#8A8A9A;--cream:#fefcf6;--cream-dark:#faf6eb;--font-en-display:'Fraunces',Georgia,serif;--font-hand:'Caveat',cursive;--font-mono:'Fira Code',ui-monospace,monospace;--font-zh-title:'Huiwen Mincho','Noto Serif SC','Songti SC',serif;--font-body:'DM Sans','Noto Sans SC',-apple-system,'PingFang SC','Helvetica Neue',sans-serif}
@@ -400,12 +400,109 @@ img{display:block;max-width:100%}
 .user-sig{text-align:center;padding:20px}
 .user-sig .name{font-family: var(--font-zh-title);font-weight:900;font-size:1.3rem;margin-bottom:6px}
 .user-sig .line{font-size:.82rem;color:var(--ink-light);line-height:1.8}
+.hero-1-specimen{padding:0;border-radius:14px;background:#fff}
+.hero-1 {
+      --hero-solid: #000000; --hero-text: #171717; --hero-muted: #525252;
+      --hero-line: #d4d4d4; --hero-surface: #ffffff;
+      padding: 48px 16px; background: var(--hero-surface); color: var(--hero-text);
+      font-family: Arial, Helvetica, sans-serif; text-align: left;
+    }
+    .hero-1 *, .hero-1 *::before, .hero-1 *::after { box-sizing: border-box; }
+    .hero-1 .hero-grid { display: grid; grid-template-columns: minmax(0,1fr); align-items: center; gap: 32px; max-width: 1400px; margin-inline: auto; }
+    .hero-1 .hero-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 24px; min-width: 0; }
+    .hero-1 .announcement { display: flex; align-items: center; gap: 8px; width: fit-content; max-width: 100%; padding: 4px; border: 1px solid var(--hero-line); border-radius: 999px; color: var(--hero-text); font-size: 14px; line-height: 1.5; }
+    .hero-1 .announcement:hover { border-color: var(--hero-muted); }
+    .hero-1 .announcement .chip { display: inline-flex; align-items: center; flex: none; padding: 4px 12px; border-radius: 999px; background: var(--hero-solid); color: var(--hero-surface); font-size: 12px; font-weight: 500; }
+    .hero-1 .announcement > span:last-child { margin-right: 8px; }
+    .hero-1 h1 { margin: 0; color: var(--hero-text); font-family: Arial, Helvetica, sans-serif; font-size: 24px; font-weight: 500; line-height: 1.15; letter-spacing: -.025em; }
+    .hero-1 .lead { max-width: 32rem; margin: 0; color: var(--hero-muted); font-size: 16px; line-height: 1.625; letter-spacing: -.025em; }
+    .hero-1 .actions { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; width: 100%; }
+    .hero-1 .hero-action { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 44px; border: 1px solid transparent; border-radius: 999px; font-size: 14px; font-weight: 500; line-height: 1.5; text-align: center; text-decoration: none; white-space: nowrap; cursor: pointer; }
+    .hero-1 .hero-action.primary { padding: 10px 24px; background: var(--hero-solid); color: var(--hero-surface); }
+    .hero-1 .hero-action.primary:hover { background: var(--hero-text); }
+    .hero-1 .hero-action.secondary { padding: 10px 12px 10px 20px; border-color: var(--hero-line); background: var(--hero-surface); color: var(--hero-text); }
+    .hero-1 .hero-action.secondary:hover { border-color: var(--hero-muted); }
+    .hero-1 .play-circle { display: grid; place-items: center; flex: none; width: 24px; height: 24px; border-radius: 50%; background: var(--hero-solid); }
+    .hero-1 .play-circle svg { width: 12px; height: 12px; fill: var(--hero-surface); }
+    .hero-1 .avatar-row { display: flex; align-items: center; gap: 12px; padding-top: 8px; user-select: none; }
+    .hero-1 .avatars { display: flex; flex: none; }
+    .hero-1 .avatars span { display: grid; place-items: center; width: 40px; height: 40px; border: 4px solid var(--hero-surface); border-radius: 50%; background: var(--hero-solid); color: var(--hero-surface); font-size: 12px; font-weight: 600; }
+    .hero-1 .avatars span + span { margin-left: -8px; }
+    .hero-1 .avatar-copy { display: flex; flex-direction: column; }
+    .hero-1 .avatar-copy strong { color: var(--hero-text); font-size: 16px; font-weight: 600; line-height: 1.5; }
+    .hero-1 .avatar-copy span { color: var(--hero-muted); font-size: 12px; line-height: 1.5; }
+    .hero-1 .hero-visual { position: relative; width: 100%; }
+    .hero-1 .hero-photo { position: relative; width: 100%; min-height: 250px; overflow: hidden; border-radius: 32px; background: var(--hero-line); }
+    .hero-1 .hero-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: none; }
+    .hero-1 .corner-notch { position: absolute; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: flex-end; }
+    .hero-1 .corner-curve { display: block; width: 40px; height: 40px; fill: var(--hero-surface); }
+    .hero-1 .corner-pad { position: relative; width: 96px; height: 96px; padding: 16px 0 0 16px; border-top-left-radius: 32px; background: var(--hero-surface); }
+    .hero-1 .corner-action { display: grid; place-items: center; width: 100%; height: 100%; border-radius: 1.2em; background: var(--hero-solid); color: var(--hero-surface); }
+    .hero-1 .corner-action svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transform: rotate(-45deg); }
+    .hero-1 .corner-pad > .corner-curve { position: absolute; bottom: 0; left: -40px; }
+    .hero-1 a:focus-visible { outline: 2px solid var(--hero-solid); outline-offset: 3px; }
+    @media (min-width: 640px) {
+      .hero-1 { padding-inline: 24px; }
+      .hero-1 .hero-copy { gap: 32px; }
+      .hero-1 .announcement { gap: 12px; font-size: 16px; }
+      .hero-1 .announcement .chip { font-size: 14px; }
+      .hero-1 h1 { font-size: 30px; }
+      .hero-1 .lead { font-size: 18px; }
+      .hero-1 .actions { flex-direction: row; align-items: center; gap: 16px; }
+      .hero-1 .hero-action { width: auto; font-size: 16px; }
+      .hero-1 .avatar-row { gap: 16px; padding-top: 16px; }
+      .hero-1 .avatars span { width: 48px; height: 48px; font-size: 14px; }
+      .hero-1 .avatar-copy strong { font-size: 18px; }
+      .hero-1 .avatar-copy span { font-size: 14px; }
+      .hero-1 .hero-photo { min-height: 500px; }
+    }
+    @media (min-width: 768px) { .hero-1 h1 { font-size: 36px; } }
+    @media (min-width: 1024px) {
+      .hero-1 { padding-inline: 32px; }
+      .hero-1 .hero-grid { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 48px; }
+      .hero-1 h1 { font-size: 48px; }
+    }
+    @media (min-width: 1280px) { .hero-1 .hero-grid { gap: 64px; } }
+    @media (prefers-reduced-motion: no-preference) {
+      .hero-1 .announcement { transition: border-color .2s; }
+      .hero-1 .hero-action { transition: background-color .2s, border-color .2s, transform .2s; }
+      .hero-1 .play-circle { transition: transform .3s; }
+      .hero-1 .corner-action { transition: opacity .2s; }
+      .hero-1 .hero-action:hover { transform: scale(1.02); }
+      .hero-1 .hero-action:active { transform: scale(.98); }
+      .hero-1 .hero-action.secondary:hover .play-circle { transform: rotate(90deg); }
+      .hero-1 .corner-action:hover { opacity: .9; }
+      .hero-1 .announcement, .hero-1 h1, .hero-1 .lead, .hero-1 .actions, .hero-1 .avatar-row { animation: hero-1-copy-enter .5s both; }
+      .hero-1 .announcement { animation-delay: .1s; }
+      .hero-1 h1 { animation-delay: .2s; }
+      .hero-1 .lead { animation-delay: .3s; }
+      .hero-1 .actions { animation-delay: .4s; }
+      .hero-1 .avatar-row { animation-delay: .5s; }
+      .hero-1 .hero-visual { animation: hero-1-photo-enter .6s .3s both; }
+    }
+    @keyframes hero-1-copy-enter { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+    @keyframes hero-1-photo-enter { from { opacity: 0; transform: scale(.95); } to { opacity: 1; transform: scale(1); } }
+
 @media(max-width:768px){.g3,.chair-grid3,.compare-cards,.compare-stamp,.ed-layout{grid-template-columns:1fr}.flip-grid{grid-template-columns:repeat(2,1fr)}.newspaper .ng{grid-template-columns:1fr}.tl-track{grid-template-columns:1fr 1fr}.gallery{flex-direction:column;height:auto}.numgrid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <svg style="height:0;width:0;position:fixed"><defs><filter id="threshold"><feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 255 -140"/></filter></defs></svg>
-<nav class="site-nav"><span class="nav-brand">Esther Design System · 51组件</span><div class="nav-tabs"><button class="nav-tab active" data-target="sec-text">🔤 文字动效</button><button class="nav-tab" data-target="sec-cards">🃏 卡片</button><button class="nav-tab" data-target="sec-quotes">💬 引用</button><button class="nav-tab" data-target="sec-code">🖥️ 代码</button><button class="nav-tab" data-target="sec-layout">📐 布局</button><button class="nav-tab" data-target="sec-interact">🎛️ 交互</button><button class="nav-tab" data-target="sec-compare">📊 对比</button><button class="nav-tab" data-target="sec-other">🧩 其他</button></div></nav>
+<nav class="site-nav"><span class="nav-brand">Esther Design System · 52组件</span><div class="nav-tabs"><button class="nav-tab active" data-target="sec-hero-1">Hero 1</button><button class="nav-tab" data-target="sec-text">🔤 文字动效</button><button class="nav-tab" data-target="sec-cards">🃏 卡片</button><button class="nav-tab" data-target="sec-quotes">💬 引用</button><button class="nav-tab" data-target="sec-code">🖥️ 代码</button><button class="nav-tab" data-target="sec-layout">📐 布局</button><button class="nav-tab" data-target="sec-interact">🎛️ 交互</button><button class="nav-tab" data-target="sec-compare">📊 对比</button><button class="nav-tab" data-target="sec-other">🧩 其他</button></div></nav>
+
+<div class="sec" id="sec-hero-1"><h1 class="sec-heading">Hero 1 · 完整落地页首屏</h1>
+<div class="cb"><div class="cb-h"><span class="cb-id">#53</span><span class="cb-name">Hero 1 · 公告、双栏与头像证明</span></div><div class="pills"><span class="pill">完整首屏</span><span class="pill">产品落地页</span></div><div class="demo hero-1-specimen">
+<section class="hero-1" id="hero-1"><div class="hero-grid">
+  <div class="hero-copy">
+    <div class="announcement"><span class="chip">New</span><span>AI-powered design systems</span></div>
+    <h1>Transform your product with intelligent design</h1>
+    <p class="lead">Get component libraries, design tokens, and expert tooling. Ship your design systems faster &amp; smarter.</p>
+    <div class="actions"><a class="hero-action primary" href="#sec-cards">Start Building</a><a class="hero-action secondary" href="#sec-layout">Watch Demo <span class="play-circle" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m8 5 11 7-11 7z"/></svg></span></a></div>
+    <div class="avatar-row"><div class="avatars" aria-hidden="true"><span>JD</span><span>SK</span><span>AL</span></div><div class="avatar-copy"><strong>50k+</strong><span>Engineers shipping products daily.</span></div></div>
+  </div>
+  <div class="hero-visual"><div class="hero-photo"><img src="https://images.unsplash.com/photo-1553877522-43269d4ea984?q=80&amp;w=1740&amp;auto=format&amp;fit=crop" alt="Team collaborating around a table"><div class="corner-notch"><svg class="corner-curve" viewBox="0 0 200 200" aria-hidden="true"><path d="M0 200C155.996 199.961 200.029 156.308 200 0V200H0Z"/></svg><div class="corner-pad"><a class="corner-action" href="#sec-cards" aria-label="Explore components"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-7-7 7 7-7 7"/></svg></a><svg class="corner-curve" viewBox="0 0 200 200" aria-hidden="true"><path d="M0 200C155.996 199.961 200.029 156.308 200 0V200H0Z"/></svg></div></div></div></div>
+</div></section>
+</div></div></div>
 
 <div class="sec" id="sec-text"><h1 class="sec-heading">🔤 文字动效</h1>
 <div class="cb"><div class="cb-h"><span class="cb-id">#44</span><span class="cb-name">Sparkles Text 星光文字</span></div><div class="pills"><span class="pill">hero大标题</span><span class="pill">品牌名</span></div><div class="demo" style="text-align:center;padding:60px 40px"><div class="sparkles-wrap" data-sparkle-colors="#E8B86D,#E8B86D,#C45C4A" style="margin:0 auto"><span class="sparkles-text">创造力</span></div></div></div>
