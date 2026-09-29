@@ -23,19 +23,17 @@ The compact menu repeats the same groups plus Pricing, Sign In and Try it FREE.
 
 ## hero-1
 
-The pill combines a small New chip and one line of copy; two action controls sit alongside each other, followed by three overlapping initials avatars and a count.
-The large image and corner arrow are structural, not a real photo or functioning route.
+The announcement contains a New chip and label within a padded pill.
+The two independent pill actions stack below 640px; the secondary action contains a 24px play circle.
+Three initials avatars measure 40px, increasing to 48px from 640px, each with a 4px border and an 8px overlap.
+The photograph is an image rather than a placeholder panel, and the bottom-right notch uses two 40px curves around a 96px pad with a 16px inset and an up-right arrow control.
+The preview links are in-page specimen navigation, not a product signup or video player.
 
 ```html
 <div class="announcement"><span class="chip">New</span><span>AI-powered design systems</span></div>
-<div class="actions"><a class="button" href="#features-2">Start Building</a><a class="button secondary" href="#how-it-works-1">Watch Demo <svg aria-hidden="true"><use href="#play"/></svg></a></div>
-<div class="avatar-row"><div class="avatars"><span>JD</span><span>SK</span><span>AL</span></div><p><strong>50k+</strong><br>Engineers shipping products daily.</p></div>
-```
-
-```css
-.announcement, .actions, .avatar-row, .avatars { display: flex; align-items: center; gap: 12px; }
-.avatars span + span { margin-left: -18px; }
-.hero-visual .corner-action { position: absolute; right: 0; bottom: 0; width: 80px; height: 80px; }
+<div class="actions"><a class="hero-action primary" href="#features-2">Start Building</a><a class="hero-action secondary" href="#how-it-works-1">Watch Demo <span class="play-circle" aria-hidden="true"><!-- play icon --></span></a></div>
+<div class="avatar-row"><div class="avatars" aria-hidden="true"><span>JD</span><span>SK</span><span>AL</span></div><div class="avatar-copy"><strong>50k+</strong><span>Engineers shipping products daily.</span></div></div>
+<div class="hero-photo"><img alt="Visual content placeholder" src="https://images.unsplash.com/photo-1553877522-43269d4ea984?q=80&amp;w=1740&amp;auto=format&amp;fit=crop"><div class="corner-notch"><!-- curve, pad with arrow link, curve --></div></div>
 ```
 
 ## social-proof-1

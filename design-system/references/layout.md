@@ -31,22 +31,21 @@ The source has a brand, two dropdown groups, a pricing link, notification and si
 
 ## hero-1
 
-The announcement pill, headline, lead, two actions and avatar-count row sit left of a large photograph with a corner arrow inset.
+The preview label sits above the block and is not part of the source composition.
+The copy column contains an announcement, headline, lead, two actions, and avatar proof; the other column contains a real photograph with a concave corner control.
+The columns stack below 1024px and split evenly from 1024px, with a 32px gap that grows to 48px and then 64px from 1280px.
+The photograph frame has a minimum height of 250px, increasing to 500px from 640px, and a 32px radius.
 
 ```html
-<section id="hero-1" class="block hero">
-  <div class="wrap hero-grid">
-    <div class="hero-copy"><!-- pill, h1, lead, actions, avatar row --></div>
-    <div class="hero-visual photo-placeholder"><!-- corner arrow --></div>
+<section id="hero-1" class="block">
+  <div class="wrap">
+    <span class="block-label">hero-1 · announcement, split hero and avatar proof</span>
+    <div class="hero-grid">
+      <div class="hero-copy"><!-- announcement, h1, lead, actions, avatar row --></div>
+      <div class="hero-visual"><div class="hero-photo"><!-- image and corner notch --></div></div>
+    </div>
   </div>
 </section>
-```
-
-```css
-.hero-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 48px; align-items: center; }
-.hero-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 24px; }
-.hero-visual { position: relative; min-height: 500px; }
-@media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; } .hero-visual { min-height: 280px; } }
 ```
 
 ## social-proof-1

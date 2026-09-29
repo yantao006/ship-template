@@ -86,18 +86,84 @@ svg.icon { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-w
 .nav-mobile > summary { display: flex; align-items: center; gap: 6px; cursor: pointer; list-style: none; }
 .nav-mobile .nav-list { left: auto; right: 0; min-width: min(300px, 85vw); }
 .nav-mobile .nav-group .nav-list { position: static; border: 0; box-shadow: none; min-width: 0; padding: 0 0 0 12px; }
-/* hero-1 */
-.hero-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: center; gap: 48px; }
-.hero-copy { display: flex; flex-direction: column; align-items: start; gap: 24px; }
-.announcement { display: flex; align-items: center; gap: 10px; border: 1px solid var(--line); border-radius: 100px; padding: 4px 16px 4px 4px; }
-.chip { background: var(--accent); color: var(--bg); border-radius: 100px; padding: 3px 12px; }
-.actions, .avatar-row, .avatars { display: flex; align-items: center; gap: 12px; }
-.avatar-row strong { color: var(--text); }
-.avatar-row p { color: var(--muted); }
-.avatars span { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; border: 3px solid var(--bg); background: var(--accent); color: var(--bg); }
-.avatars span + span { margin-left: -20px; }
-.hero-visual { position: relative; min-height: 500px; }
-.corner-action { position: absolute; right: 0; bottom: 0; width: 82px; height: 82px; border: 12px solid var(--bg); border-radius: var(--radius-panel) 0 0 0; display: grid; place-items: center; background: var(--accent); color: var(--bg); }
+/* hero-1: source-inspired split block; all visual and motion rules are local */
+#hero-1 { padding: 48px 16px; }
+#hero-1 .hero-grid { display: grid; grid-template-columns: minmax(0, 1fr); align-items: center; gap: 32px; }
+#hero-1 .hero-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 24px; min-width: 0; }
+#hero-1 .announcement { display: flex; align-items: center; gap: 8px; width: fit-content; max-width: 100%; padding: 4px; border: 1px solid #d4d4d4; border-radius: 999px; color: #171717; font-size: 14px; line-height: 1.5; cursor: pointer; }
+#hero-1 .announcement:hover { border-color: #525252; }
+#hero-1 .announcement .chip { display: inline-flex; align-items: center; flex: none; padding: 4px 12px; border-radius: 999px; background: #000; color: #fff; font-size: 12px; font-weight: 500; }
+#hero-1 .announcement > span:last-child { margin-right: 8px; }
+#hero-1 h1 { color: #171717; font-size: 24px; font-weight: 500; line-height: 1.15; letter-spacing: -.025em; }
+#hero-1 .lead { max-width: 32rem; color: #525252; font-size: 16px; line-height: 1.625; letter-spacing: -.025em; }
+#hero-1 .actions { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; width: 100%; }
+#hero-1 .hero-action { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 44px; border: 1px solid transparent; border-radius: 999px; font-size: 14px; font-weight: 500; line-height: 1.5; text-align: center; white-space: nowrap; cursor: pointer; }
+#hero-1 .hero-action:hover { text-decoration: none; }
+#hero-1 .hero-action.primary { padding: 10px 24px; background: #000; color: #fff; }
+#hero-1 .hero-action.primary:hover { background: #262626; }
+#hero-1 .hero-action.secondary { padding: 10px 12px 10px 20px; border-color: #d4d4d4; background: transparent; color: #171717; }
+#hero-1 .hero-action.secondary:hover { background: #fafafa; }
+#hero-1 .play-circle { display: grid; place-items: center; flex: none; width: 24px; height: 24px; border-radius: 50%; background: #000; }
+#hero-1 .play-circle svg { width: 12px; height: 12px; fill: #fff; }
+#hero-1 .avatar-row { display: flex; align-items: center; gap: 12px; padding-top: 8px; user-select: none; }
+#hero-1 .avatars { display: flex; flex: none; }
+#hero-1 .avatars span { display: grid; place-items: center; width: 40px; height: 40px; border: 4px solid #fff; border-radius: 50%; background: #000; color: #fff; font-size: 12px; font-weight: 600; }
+#hero-1 .avatars span + span { margin-left: -8px; }
+#hero-1 .avatar-copy { display: flex; flex-direction: column; }
+#hero-1 .avatar-copy strong { color: #171717; font-size: 16px; font-weight: 600; line-height: 1.5; }
+#hero-1 .avatar-copy span { color: #525252; font-size: 12px; line-height: 1.5; }
+#hero-1 .hero-visual { position: relative; width: 100%; }
+#hero-1 .hero-photo { position: relative; width: 100%; min-height: 250px; overflow: hidden; border-radius: 32px; background: #f5f5f5; }
+#hero-1 .hero-photo:hover { background: #e5e5e5; }
+#hero-1 .hero-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+#hero-1 .corner-notch { position: absolute; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: flex-end; }
+#hero-1 .corner-curve { display: block; width: 40px; height: 40px; fill: var(--bg); }
+#hero-1 .corner-pad { position: relative; width: 96px; height: 96px; padding: 16px 0 0 16px; border-top-left-radius: 32px; background: var(--bg); }
+#hero-1 .corner-action { display: grid; place-items: center; width: 100%; height: 100%; border-radius: 1.2em; background: #000; color: #fff; }
+#hero-1 .corner-action:hover { opacity: .9; }
+#hero-1 .corner-action svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transform: rotate(-45deg); }
+#hero-1 .corner-pad > .corner-curve { position: absolute; bottom: 0; left: -40px; }
+@media (min-width: 640px) {
+  #hero-1 { padding-inline: 24px; }
+  #hero-1 .hero-copy { gap: 32px; }
+  #hero-1 .announcement { gap: 12px; font-size: 16px; }
+  #hero-1 .announcement .chip { font-size: 14px; }
+  #hero-1 h1 { font-size: 30px; }
+  #hero-1 .lead { font-size: 18px; }
+  #hero-1 .actions { flex-direction: row; align-items: center; gap: 16px; }
+  #hero-1 .hero-action { width: auto; font-size: 16px; }
+  #hero-1 .avatar-row { gap: 16px; padding-top: 16px; }
+  #hero-1 .avatars span { width: 48px; height: 48px; font-size: 14px; }
+  #hero-1 .avatar-copy strong { font-size: 18px; }
+  #hero-1 .avatar-copy span { font-size: 14px; }
+  #hero-1 .hero-photo { min-height: 500px; }
+}
+@media (min-width: 768px) { #hero-1 h1 { font-size: 36px; } }
+@media (min-width: 1024px) {
+  #hero-1 { padding-inline: 32px; }
+  #hero-1 .hero-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 48px; }
+  #hero-1 h1 { font-size: 48px; }
+}
+@media (min-width: 1280px) { #hero-1 .hero-grid { gap: 64px; } }
+@media (prefers-reduced-motion: no-preference) {
+  #hero-1 .announcement { transition: border-color .2s; }
+  #hero-1 .hero-action { transition: background-color .2s, transform .2s; }
+  #hero-1 .play-circle { transition: transform .3s; }
+  #hero-1 .hero-photo { transition: background-color .2s; }
+  #hero-1 .corner-action { transition: opacity .2s; }
+  #hero-1 .hero-action:hover { transform: scale(1.02); }
+  #hero-1 .hero-action:active { transform: scale(.98); }
+  #hero-1 .play-circle:hover { transform: rotate(90deg); }
+  #hero-1 .announcement, #hero-1 h1, #hero-1 .lead, #hero-1 .actions, #hero-1 .avatar-row { animation: hero-copy-enter .5s both; }
+  #hero-1 .announcement { animation-delay: .1s; }
+  #hero-1 h1 { animation-delay: .2s; }
+  #hero-1 .lead { animation-delay: .3s; }
+  #hero-1 .actions { animation-delay: .4s; }
+  #hero-1 .avatar-row { animation-delay: .5s; }
+  #hero-1 .hero-visual { animation: hero-photo-enter .6s .3s both; }
+}
+@keyframes hero-copy-enter { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+@keyframes hero-photo-enter { from { opacity: 0; transform: scale(.95); } to { opacity: 1; transform: scale(1); } }
 /* social-proof-1 */
 .logos h2 { text-align: center; margin-bottom: 40px; }
 .logo-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); border: 1px solid var(--line); }
@@ -221,8 +287,8 @@ svg.icon { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-w
 @media (min-width: 1024px) { .f1-grid { grid-template-columns: repeat(4, 1fr); column-gap: 32px; row-gap: 48px; } }
 @media (max-width: 900px) {
   .nav-links, .nav-actions { display: none; } .nav-mobile { display: block; }
-  .hero-grid, .split, .stats-panel, .faq-grid { grid-template-columns: 1fr; gap: 36px; }
-  .hero-visual { min-height: 320px; } .feature-visual { min-height: 440px; }
+  .split, .stats-panel, .faq-grid { grid-template-columns: 1fr; gap: 36px; }
+  .feature-visual { min-height: 440px; }
   .logo-grid { grid-template-columns: repeat(3, 1fr); }
   .logo-tile { border-bottom: 1px solid var(--line); }
   .steps-grid, .plan-grid { grid-template-columns: 1fr; }
@@ -236,7 +302,6 @@ svg.icon { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-w
   .block { padding: 56px 20px; } .note { padding: 20px 20px 0; }
   .logo-grid { grid-template-columns: repeat(2, 1fr); }
   .logo-tile:nth-child(even) { border-right: 0; }
-  .actions { align-items: stretch; flex-direction: column; width: 100%; }
   .free-banner { align-items: start; flex-direction: column; }
   .metrics { grid-template-columns: 1fr; }
   .comparison-head, .comparison-row { gap: 8px; }
@@ -248,8 +313,7 @@ svg.icon { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-w
   .footer-wordmark { letter-spacing: -.09em; }
 }
 @media (prefers-reduced-motion: no-preference) {
-  .nav-row, .hero-copy, .hero-visual { animation: entrance var(--motion-duration) var(--motion-ease) both; }
-  .hero-visual { animation-delay: .12s; }
+  .nav-row { animation: entrance var(--motion-duration) var(--motion-ease) both; }
   .reveal.in-view { animation: entrance var(--motion-duration) var(--motion-ease) both; }
 }
 @keyframes entrance { from { opacity: 0; transform: translateY(var(--motion-distance)); } to { opacity: 1; transform: none; } }
@@ -261,7 +325,7 @@ svg.icon { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-w
 <div class="note"><p>These English sentences and names are sample content from the individual blocks, not this site's product claims, verified customer endorsements, prices or working services. Photographs are bordered placeholders. This one page illustrates all thirteen specimens.</p></div>
 <nav id="navigation-1" class="block nav" aria-label="Primary"><div class="wrap"><span class="block-label">navigation-1 · brand, dropdown groups and actions</span><div class="nav-row"><a class="brand" href="#hero-1">Flowbase</a><div class="nav-links"><details class="nav-group"><summary>Products <svg class="icon"><use href="#chevron"/></svg></summary><div class="nav-list"><a href="#features-2">Analytics Dashboard</a><a href="#features-1">Marketing Suite</a><a href="#features-1">CRM Platform</a><a href="#features-2">Email Automation</a><a href="#stats-3">Sales Tracking</a><a href="#how-it-works-1">Team Collaboration</a><a href="#comparison-1">Project Management</a></div></details><details class="nav-group"><summary>Solutions <svg class="icon"><use href="#chevron"/></svg></summary><div class="nav-list"><a href="#hero-1">For Startups</a><a href="#comparison-1">For Enterprise</a><a href="#pricing-1">For Agencies</a><a href="#cta-1">For Freelancers</a><a href="#social-proof-8">For E-commerce</a></div></details><a href="#pricing-1">Pricing</a></div><div class="nav-actions"><button type="button" aria-label="Notifications" class="button secondary small"><svg class="icon" aria-hidden="true"><use href="#bell"/></svg></button><a href="#cta-1" class="button secondary small">Sign In</a><a href="#cta-1" class="button small">Try it FREE</a></div><details class="nav-mobile"><summary>Menu <svg class="icon"><use href="#chevron"/></svg></summary><div class="nav-list"><details class="nav-group"><summary>Products <svg class="icon"><use href="#chevron"/></svg></summary><div class="nav-list"><a href="#features-2">Analytics Dashboard</a><a href="#features-1">Marketing Suite</a><a href="#features-1">CRM Platform</a><a href="#features-2">Email Automation</a><a href="#stats-3">Sales Tracking</a><a href="#how-it-works-1">Team Collaboration</a><a href="#comparison-1">Project Management</a></div></details><details class="nav-group"><summary>Solutions <svg class="icon"><use href="#chevron"/></svg></summary><div class="nav-list"><a href="#hero-1">For Startups</a><a href="#comparison-1">For Enterprise</a><a href="#pricing-1">For Agencies</a><a href="#cta-1">For Freelancers</a><a href="#social-proof-8">For E-commerce</a></div></details><a href="#pricing-1">Pricing</a><a href="#cta-1">Sign In</a><a href="#cta-1">Try it FREE</a></div></details></div></div></nav>
 <main>
-<section id="hero-1" class="block"><div class="wrap"><span class="block-label">hero-1 · announcement, split hero and avatar proof</span><div class="hero-grid"><div class="hero-copy"><div class="announcement"><span class="chip">New</span><span>AI-powered design systems</span></div><h1>Transform your product with intelligent design</h1><p class="lead">Get component libraries, design tokens, and expert tooling. Ship your design systems faster &amp; smarter.</p><div class="actions"><a class="button" href="#features-2">Start Building</a><a class="button secondary" href="#how-it-works-1">Watch Demo <svg class="icon" aria-hidden="true"><use href="#play"/></svg></a></div><div class="avatar-row"><div class="avatars" aria-hidden="true"><span>JD</span><span>SK</span><span>AL</span></div><p><strong>50k+</strong><br>Engineers shipping products daily.</p></div></div><div class="hero-visual photo-placeholder" role="img" aria-label="Hero photograph placeholder"><span>Hero photograph placeholder</span><a class="corner-action" href="#features-2" aria-label="Explore features"><svg class="icon"><use href="#arrow"/></svg></a></div></div></div></section>
+<section id="hero-1" class="block"><div class="wrap"><span class="block-label">hero-1 · announcement, split hero and avatar proof</span><div class="hero-grid"><div class="hero-copy"><div class="announcement"><span class="chip">New</span><span>AI-powered design systems</span></div><h1>Transform your product with intelligent design</h1><p class="lead">Get component libraries, design tokens, and expert tooling. Ship your design systems faster &amp; smarter.</p><div class="actions"><a class="hero-action primary" href="#features-2">Start Building</a><a class="hero-action secondary" href="#how-it-works-1">Watch Demo <span class="play-circle" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m8 5 11 7-11 7z"/></svg></span></a></div><div class="avatar-row"><div class="avatars" aria-hidden="true"><span>JD</span><span>SK</span><span>AL</span></div><div class="avatar-copy"><strong>50k+</strong><span>Engineers shipping products daily.</span></div></div></div><div class="hero-visual"><div class="hero-photo"><img src="https://images.unsplash.com/photo-1553877522-43269d4ea984?q=80&amp;w=1740&amp;auto=format&amp;fit=crop" alt="Visual content placeholder"><div class="corner-notch"><svg class="corner-curve" viewBox="0 0 200 200" aria-hidden="true"><path d="M0 200C155.996 199.961 200.029 156.308 200 0V200H0Z"/></svg><div class="corner-pad"><a class="corner-action" href="#features-2" aria-label="Explore features"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-7-7 7 7-7 7"/></svg></a><svg class="corner-curve" viewBox="0 0 200 200" aria-hidden="true"><path d="M0 200C155.996 199.961 200.029 156.308 200 0V200H0Z"/></svg></div></div></div></div></div></div></section>
 <section id="social-proof-1" class="block logos reveal"><div class="wrap"><span class="block-label">social-proof-1 · six logo tiles</span><h2>Trusted by the most innovative companies in the world</h2><div class="logo-grid" aria-label="Sample company marks"><div class="logo-tile">Acme Corp</div><div class="logo-tile">Galileo</div><div class="logo-tile">Layers</div><div class="logo-tile">Capsule</div><div class="logo-tile">Luminous</div><div class="logo-tile">Quotient</div></div></div></section>
 <section id="features-2" class="block reveal"><div class="wrap"><span class="block-label">features-2 · three selectable tasks and dashboard overlay</span><div class="split"><div><header class="intro"><p class="eyebrow">Security</p><h2>Advanced protection for your business</h2><p class="lead">Let AI handle security tasks and alert you when intervention is needed.</p></header><div class="feature-tabs" aria-label="Example tasks"><button class="feature-tab" type="button" aria-pressed="true" data-dashboard="0"><svg class="icon"><use href="#shield"/></svg>Automate work</button><button class="feature-tab" type="button" aria-pressed="false" data-dashboard="1"><svg class="icon"><use href="#lock"/></svg>Stay in control</button><button class="feature-tab" type="button" aria-pressed="false" data-dashboard="2"><svg class="icon"><use href="#eye"/></svg>Surface new insights</button></div></div><div class="feature-visual photo-placeholder" role="group" aria-label="Portrait photograph placeholder and sample dashboard"><div class="dashboard" aria-live="polite"><h3 id="dashboard-title">Security Dashboard</h3><div id="dashboard-rows"><div class="alert-row"><span>Threat detected in Network A</span><span class="status">Critical</span><small>2 min ago</small></div><div class="alert-row"><span>Firewall update required</span><span class="status">Warning</span><small>15 min ago</small></div><div class="alert-row"><span>Security scan completed</span><span class="status">Success</span><small>1 hour ago</small></div></div></div></div></div></div></section>
 <section id="features-1" class="block reveal"><div class="wrap"><span class="block-label">features-1 · existing eight-item icon-grid specimen</span><header class="intro"><p class="eyebrow">Enterprise Security Platform</p><h2>Protect what matters most</h2><p class="lead">Comprehensive cybersecurity solutions that protect your business from evolving threats while ensuring complete compliance.</p></header><div class="f1-grid"><article class="f1-item"><div class="f1-head"><span class="f1-icon"><svg class="icon" aria-hidden="true"><use href="#shield"/></svg></span><h3>Threat Detection</h3></div><p>Real-time monitoring for suspicious activities.</p></article><article class="f1-item"><div class="f1-head"><span class="f1-icon"><svg class="icon" aria-hidden="true"><use href="#lock"/></svg></span><h3>Data Encryption</h3></div><p>End-to-end encryption for sensitive data.</p></article><article class="f1-item"><div class="f1-head"><span class="f1-icon"><svg class="icon" aria-hidden="true"><use href="#eye"/></svg></span><h3>Security Monitoring</h3></div><p>24/7 surveillance of your infrastructure.</p></article><article class="f1-item"><div class="f1-head"><span class="f1-icon"><svg class="icon" aria-hidden="true"><use href="#database"/></svg></span><h3>Secure Backups</h3></div><p>Automated backups with instant recovery.</p></article><article class="f1-item"><div class="f1-head"><span class="f1-icon"><svg class="icon" aria-hidden="true"><use href="#alert"/></svg></span><h3>Breach Prevention</h3></div><p>Proactive defense against cyber attacks.</p></article><article class="f1-item"><div class="f1-head"><span class="f1-icon"><svg class="icon" aria-hidden="true"><use href="#file"/></svg></span><h3>Compliance Management</h3></div><p>GDPR, SOC 2, and ISO compliance tools.</p></article><article class="f1-item"><div class="f1-head"><span class="f1-icon"><svg class="icon" aria-hidden="true"><use href="#finger"/></svg></span><h3>Identity Protection</h3></div><p>Multi-factor authentication and access control.</p></article><article class="f1-item"><div class="f1-head"><span class="f1-icon"><svg class="icon" aria-hidden="true"><use href="#check"/></svg></span><h3>Vulnerability Scanning</h3></div><p>Continuous scanning to identify security gaps.</p></article></div></div></section>
