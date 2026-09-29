@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hero 1 · Applied Copy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;700&family=Noto+Serif+SC:wght@700&family=Noto+Sans+SC:wght@400;500;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --blue: #2F6F5E;
+      --yellow: #E8B86D;
+      --red: #C45C4A;
+      --cream: #fefcf6;
+      --ink: #1A1A2E;
+      --ink-faint: #8a8a9a;
+      --preview-bg: #FFF8E1;
+      --font-zh-title: 'Huiwen Mincho', 'Noto Serif SC', 'Songti SC', serif;
+      --font-body: 'DM Sans', 'Noto Sans SC', -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
+      --page-surface: var(--cream);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: auto; }
+    body { margin: 0; background: var(--cream); color: var(--ink); font-family: var(--font-body); line-height: 1.6; }
+    button { font: inherit; }
+    .tri-bar { display: flex; height: 4px; }
+    .tri-bar span:nth-child(1) { flex: 3; background: var(--blue); }
+    .tri-bar span:nth-child(2) { flex: 2; background: var(--yellow); }
+    .tri-bar span:nth-child(3) { flex: 1; background: var(--red); }
+    .top-nav { display: flex; align-items: center; gap: 12px; padding: 1rem 2rem; border-bottom: 1px solid rgba(26,26,46,.08); }
+    .top-nav::before { content: ''; width: 36px; height: 4px; border-radius: 2px; background: var(--blue); }
+    .top-nav::after { content: ''; width: 24px; height: 4px; margin-left: -8px; border-radius: 2px; background: var(--yellow); }
+    .top-nav span { margin-left: 4px; font: 700 1.3rem 'Fraunces', serif; }
+    .top-nav small { color: #5d5d6a; font-size: .85rem; }
+    main { max-width: 1480px; margin: 0 auto; padding: clamp(40px, 6vw, 88px) clamp(24px, 5vw, 80px) max(100px, 100vh); }
+    .hero-1 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: clamp(32px, 5vw, 72px); }
+    .hero-1-copy { min-width: 0; text-align: left; }
+    .hero-1-announcement { display: inline-flex; align-items: center; gap: 10px; max-width: 100%; padding: 8px 14px; border: 1px solid rgba(26,26,46,.13); border-radius: 999px; background: rgba(255,255,255,.65); font-size: 13px; line-height: 1.4; white-space: nowrap; }
+    .hero-1-mark { width: 8px; height: 8px; flex: none; border-radius: 2px; background: var(--yellow); }
+    .hero-1-announcement strong { color: var(--blue); }
+    .hero-1-announcement .divider { width: 1px; height: 15px; background: rgba(26,26,46,.18); }
+    .hero-1 h1 { max-width: 640px; margin: 28px 0 20px; font: 700 clamp(43px, 4.35vw, 68px)/1.09 'Fraunces', serif; letter-spacing: -.035em; text-wrap: balance; }
+    .hero-1-copy > p { max-width: 57ch; margin: 0; color: #4c4c5c; font-size: clamp(16px, 1.25vw, 19px); line-height: 1.65; }
+    .hero-1-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 32px; }
+    .hero-1-action { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 50px; width: fit-content; padding: 11px 23px; border: 1px solid var(--ink); border-radius: 999px; font-weight: 700; line-height: 1.3; cursor: pointer; transition: background-color .2s, color .2s, transform .2s; }
+    .hero-1-action:hover { transform: translateY(-2px); }
+    .hero-1-action:focus-visible, .hero-1-notch button:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+    .hero-1-action--solid { background: var(--ink); color: var(--cream); }
+    .hero-1-action--solid:hover { background: var(--blue); border-color: var(--blue); }
+    .hero-1-action--outline { background: transparent; color: var(--ink); }
+    .hero-1-action--outline:hover { background: rgba(47,111,94,.08); }
+    .hero-1-play { display: grid; place-items: center; width: 22px; height: 22px; border: 1px solid currentColor; border-radius: 50%; }
+    .hero-1-play svg { width: 12px; height: 12px; fill: none; margin-left: 1px; }
+    .hero-1-proof { display: flex; align-items: center; gap: 15px; margin-top: 38px; }
+    .hero-1-avatars { display: flex; flex: none; padding-left: 10px; }
+    .hero-1-avatars span { display: grid; place-items: center; width: 39px; height: 39px; margin-left: -10px; border: 2px solid var(--page-surface); border-radius: 50%; background: #b3bab0; color: var(--ink); font-size: 11px; font-weight: 700; }
+    .hero-1-avatars span:nth-child(2) { background: #d5c1a6; }
+    .hero-1-avatars span:nth-child(3) { background: #a9aca6; }
+    .hero-1-proof-copy { display: flex; flex-direction: column; line-height: 1.35; }
+    .hero-1-proof-copy strong { font-size: 17px; }
+    .hero-1-proof-copy span { color: #4c4c5c; font-size: 13px; }
+    .hero-1-visual { position: relative; min-width: 0; }
+    .hero-1-image { min-height: 500px; overflow: hidden; border-radius: 32px; background: #cbd0cb; }
+    .hero-1-image img { display: block; width: 100%; height: 500px; object-fit: cover; }
+    .hero-1-notch { position: absolute; right: 0; bottom: 0; display: grid; place-items: center; width: 96px; height: 96px; border-top-left-radius: 26px; background: var(--page-surface); }
+    .hero-1-notch button { display: grid; place-items: center; width: 58px; height: 58px; border: 0; border-radius: 50%; background: var(--ink); color: var(--cream); cursor: pointer; transition: transform .2s, background-color .2s; }
+    .hero-1-notch button:hover { transform: rotate(45deg); background: var(--blue); }
+    .hero-1-notch svg { width: 22px; height: 22px; }
+    @media (max-width: 1023px) {
+      .hero-1 { grid-template-columns: 1fr; gap: 36px; }
+      .hero-1-image { min-height: 330px; }
+      .hero-1-image img { height: 330px; }
+    }
+    @media (max-width: 639px) {
+      .top-nav { padding: 1rem 1.25rem; }
+      .top-nav span { font-size: 1.05rem; }
+      .top-nav small { font-size: .72rem; }
+      main { padding: 32px 20px max(64px, 100vh); }
+      .hero-1 { gap: 28px; }
+      .hero-1 h1 { margin: 22px 0 16px; font-size: clamp(36px, 9.5vw, 43px); line-height: 1.1; }
+      .hero-1-copy > p { font-size: 15px; }
+      .hero-1-actions { margin-top: 24px; gap: 9px; }
+      .hero-1-action { min-height: 46px; padding: 9px 17px; font-size: 13px; }
+      .hero-1-proof { margin-top: 26px; }
+      .hero-1-image { min-height: 250px; border-radius: 24px; }
+      .hero-1-image img { height: 250px; }
+    }
+    @media (prefers-reduced-motion: reduce) { .hero-1-action, .hero-1-notch button { transition: none; } }
+  </style>
+</head>
+<body>
+  <div class="tri-bar" aria-hidden="true"><span></span><span></span><span></span></div>
+  <nav class="top-nav" aria-label="Specimen"><span>Hero Layout Playground</span><small>· Hero 1 applied copy</small></nav>
+  <main>
+    <section class="hero-1" aria-labelledby="hero-1-title">
+      <div class="hero-1-copy">
+        <div class="hero-1-announcement"><span class="hero-1-mark" aria-hidden="true"></span><strong>New</strong><span class="divider" aria-hidden="true"></span><span>AI-powered design systems</span></div>
+        <h1 id="hero-1-title">Transform your product with intelligent design</h1>
+        <p>Get component libraries, design tokens, and expert tooling. Ship your design systems faster &amp; smarter.</p>
+        <div class="hero-1-actions">
+          <button class="hero-1-action hero-1-action--solid" type="button">Start Building</button>
+          <button class="hero-1-action hero-1-action--outline" type="button"><span class="hero-1-play" aria-hidden="true"><i data-lucide="play"></i></span>Watch Demo</button>
+        </div>
+        <div class="hero-1-proof">
+          <span class="hero-1-avatars" aria-label="JD, SK, AL"><span>JD</span><span>SK</span><span>AL</span></span>
+          <span class="hero-1-proof-copy"><strong>50k+</strong><span>Engineers shipping products daily.</span></span>
+        </div>
+      </div>
+      <div class="hero-1-visual">
+        <div class="hero-1-image"><img src="https://picsum.photos/id/1015/1600/1200.webp" alt="Mountain landscape placeholder" width="1600" height="1200"></div>
+        <div class="hero-1-notch"><button type="button" aria-label="Explore image"><i data-lucide="arrow-up-right" aria-hidden="true"></i></button></div>
+      </div>
+    </section>
+  </main>
+  <script src="https://unpkg.com/lucide@1.48.0/dist/umd/lucide.min.js"></script>
+  <script>lucide.createIcons();</script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hero 7 · Applied Copy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;700&family=Noto+Serif+SC:wght@700&family=Noto+Sans+SC:wght@400;500;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --blue: #2F6F5E;
+      --yellow: #E8B86D;
+      --red: #C45C4A;
+      --cream: #fefcf6;
+      --ink: #1A1A2E;
+      --ink-faint: #8a8a9a;
+      --preview-bg: #FFF8E1;
+      --font-zh-title: 'Huiwen Mincho', 'Noto Serif SC', 'Songti SC', serif;
+      --font-body: 'DM Sans', 'Noto Sans SC', -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: auto; }
+    body { margin: 0; background: var(--cream); color: var(--ink); font-family: var(--font-body); line-height: 1.6; }
+    button { font: inherit; }
+    .tri-bar { display: flex; height: 4px; }
+    .tri-bar span:nth-child(1) { flex: 3; background: var(--blue); }
+    .tri-bar span:nth-child(2) { flex: 2; background: var(--yellow); }
+    .tri-bar span:nth-child(3) { flex: 1; background: var(--red); }
+    .top-nav { display: flex; align-items: center; gap: 12px; padding: 1rem 2rem; border-bottom: 1px solid rgba(26,26,46,.08); }
+    .top-nav::before { content: ''; width: 36px; height: 4px; border-radius: 2px; background: var(--blue); }
+    .top-nav::after { content: ''; width: 24px; height: 4px; margin-left: -8px; border-radius: 2px; background: var(--yellow); }
+    .top-nav span { margin-left: 4px; font: 700 1.3rem 'Fraunces', serif; }
+    .top-nav small { color: #5d5d6a; font-size: .85rem; }
+    main { max-width: 1480px; margin: 0 auto; padding: clamp(40px, 5vw, 72px) clamp(24px, 5vw, 80px) max(100px, 100vh); }
+    .hero-7 { overflow: hidden; }
+    .hero-7-copy { position: relative; z-index: 1; max-width: 850px; margin: 0 auto; text-align: center; }
+    .hero-7 h1 { margin: 0 auto 22px; font: 700 clamp(44px, 4.8vw, 70px)/1.1 'Fraunces', serif; letter-spacing: -.035em; text-wrap: balance; }
+    .hero-7-copy p { margin: 0; color: #4c4c5c; font-size: clamp(16px, 1.25vw, 19px); line-height: 1.55; }
+    .hero-7-action { display: inline-flex; align-items: center; justify-content: center; gap: 12px; min-height: 50px; margin-top: 28px; padding: 11px 23px; border: 1px solid var(--ink); border-radius: 999px; background: var(--ink); color: var(--cream); font-weight: 700; cursor: pointer; transition: background-color .2s, transform .2s; }
+    .hero-7-action:hover { transform: translateY(-2px); background: var(--blue); border-color: var(--blue); }
+    .hero-7-action:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+    .hero-7-action svg { width: 19px; height: 19px; }
+    .hero-7-scene { display: flex; align-items: center; justify-content: center; gap: 18px; height: 420px; margin-top: 48px; overflow: hidden; }
+    .hero-7-frame { flex: 0 0 28%; height: 76%; min-width: 0; overflow: hidden; border-radius: 26px; background: #cbd0cb; }
+    .hero-7-frame:nth-child(2) { position: relative; z-index: 1; height: 96%; transform: translateY(-8px); }
+    .hero-7-frame img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    @media (max-width: 1023px) {
+      .hero-7-scene { height: 300px; margin-top: 36px; }
+      .hero-7-frame { flex-basis: 32%; }
+    }
+    @media (max-width: 639px) {
+      .top-nav { padding: 1rem 1.25rem; }
+      .top-nav span { font-size: 1.05rem; }
+      .top-nav small { font-size: .72rem; }
+      main { padding: 32px 20px max(64px, 100vh); }
+      .hero-7 h1 { max-width: 350px; margin-bottom: 18px; font-size: clamp(36px, 9.5vw, 43px); }
+      .hero-7-copy p { font-size: 15px; }
+      .hero-7-action { min-height: 46px; margin-top: 24px; padding: 9px 19px; font-size: 14px; }
+      .hero-7-scene { height: 260px; gap: 10px; margin-top: 30px; }
+      .hero-7-frame { flex: 0 0 35%; height: 76%; border-radius: 17px; }
+      .hero-7-frame:nth-child(2) { height: 96%; }
+    }
+    @media (prefers-reduced-motion: reduce) { .hero-7-action { transition: none; } }
+  </style>
+</head>
+<body>
+  <div class="tri-bar" aria-hidden="true"><span></span><span></span><span></span></div>
+  <nav class="top-nav" aria-label="Specimen"><span>Hero Layout Playground</span><small>· Hero 7 applied copy</small></nav>
+  <main>
+    <section class="hero-7" aria-labelledby="hero-7-title">
+      <div class="hero-7-copy">
+        <h1 id="hero-7-title">Transform Your Vision Into Reality</h1>
+        <p>Bring your creative ideas to life with powerful tools.</p>
+        <p>No experience required, just imagination.</p>
+        <button type="button" class="hero-7-action">Get Started <i data-lucide="arrow-right" aria-hidden="true"></i></button>
+      </div>
+      <div class="hero-7-scene" aria-label="Three placeholder gallery images">
+        <div class="hero-7-frame"><img src="https://picsum.photos/id/1011/900/1200.webp" alt="Placeholder landscape, first gallery image" width="900" height="1200"></div>
+        <div class="hero-7-frame"><img src="https://picsum.photos/id/1015/900/1400.webp" alt="Placeholder landscape, featured gallery image" width="900" height="1400"></div>
+        <div class="hero-7-frame"><img src="https://picsum.photos/id/1016/900/1200.webp" alt="Placeholder landscape, third gallery image" width="900" height="1200"></div>
+      </div>
+    </section>
+  </main>
+  <script src="https://unpkg.com/lucide@1.48.0/dist/umd/lucide.min.js"></script>
+  <script>lucide.createIcons();</script>
+</body>
+</html>
