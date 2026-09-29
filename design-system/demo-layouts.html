@@ -621,16 +621,16 @@
       text-align: center;
       padding: 12px 0;
     }
-    .mini-hero-badges h3 {
-      font-size: 1.5rem;
-      line-height: 1.2;
+    .mini-hero-badges > .ph-heading {
+      width: 60%;
+      max-width: 440px;
+      margin: 0 auto 12px;
     }
-    .mini-hero-badges p {
-      max-width: 620px;
-      margin: 10px auto 0;
-      font-size: 0.8rem;
-      color: var(--ink-light);
+    .mini-hero-badges > .ph-text {
+      max-width: 520px;
+      margin: 0 auto 6px;
     }
+    .mini-hero-badges > .ph-text.short { max-width: 360px; }
     .mini-hero-badges .badges {
       display: flex;
       justify-content: center;
@@ -638,16 +638,20 @@
       gap: 8px;
       margin-top: 16px;
     }
-    .mini-hero-badges .badges span {
+    .mini-hero-badges .badges > span {
       display: inline-flex;
       align-items: center;
       gap: 6px;
       padding: 5px 9px;
       border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
       border-radius: 999px;
-      font-size: 0.7rem;
     }
     .mini-hero-badges .badges svg { width: 14px; height: 14px; }
+    .mini-hero-badges .badges .ph-text {
+      width: 64px;
+      height: 6px;
+      margin: 0;
+    }
     @media (max-width: 600px) {
       .mini-hero-badges .badges { flex-direction: column; align-items: center; }
     }
@@ -1063,12 +1067,13 @@
     </div>
     <div class="preview-box">
       <div class="mini-hero-badges">
-        <h3>MiniMax H3 AI Video Generator</h3>
-        <p>Turn text, images, audio, and clips into cinematic videos with native sound. MiniMax H3 understands all your references in one pass. Start free — no skills needed.</p>
+        <div class="ph-heading"></div>
+        <div class="ph-text medium"></div>
+        <div class="ph-text short"></div>
         <div class="badges">
-          <span><i data-lucide="sparkles"></i>2K Video · 4–15s</span>
-          <span><i data-lucide="wand-sparkles"></i>Conversational In-Chat Editing</span>
-          <span><i data-lucide="layers-3"></i>Locked Character Continuity</span>
+          <span><i data-lucide="sparkles"></i><span class="ph-text"></span></span>
+          <span><i data-lucide="wand-sparkles"></i><span class="ph-text"></span></span>
+          <span><i data-lucide="layers-3"></i><span class="ph-text"></span></span>
         </div>
       </div>
     </div>

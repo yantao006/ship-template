@@ -745,12 +745,12 @@ document.querySelectorAll('.step-observe').forEach(el => stepObserver.observe(el
 ```html
 <section class="hero-badges">
   <div class="hero-badges-inner">
-    <h1>MiniMax H3 AI Video Generator</h1>
-    <p>Turn text, images, audio, and clips into cinematic videos with native sound. MiniMax H3 understands all your references in one pass. Start free — no skills needed.</p>
+    <h1>标题</h1>
+    <p>一句说明</p>
     <div class="hero-badges-list">
-      <span><i data-lucide="sparkles"></i>2K Video · 4–15s</span>
-      <span><i data-lucide="wand-sparkles"></i>Conversational In-Chat Editing</span>
-      <span><i data-lucide="layers-3"></i>Locked Character Continuity</span>
+      <span><i data-lucide="sparkles"></i>徽章</span>
+      <span><i data-lucide="wand-sparkles"></i>徽章</span>
+      <span><i data-lucide="layers-3"></i>徽章</span>
     </div>
   </div>
 </section>
