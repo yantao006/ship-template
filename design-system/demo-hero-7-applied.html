@@ -31,7 +31,7 @@
     .top-nav span { margin-left: 4px; font: 700 1.3rem 'Fraunces', serif; }
     .top-nav small { color: #5d5d6a; font-size: .85rem; }
     main { max-width: 1480px; margin: 0 auto; padding: clamp(40px, 5vw, 72px) clamp(24px, 5vw, 80px) max(100px, 100vh); }
-    .hero-7 { overflow: hidden; }
+    .hero-7 { overflow: visible; }
     .hero-7-copy { position: relative; z-index: 1; max-width: 850px; margin: 0 auto; text-align: center; }
     .hero-7 h1 { margin: 0 auto 22px; font: 700 clamp(44px, 4.8vw, 70px)/1.1 'Fraunces', serif; letter-spacing: -.035em; text-wrap: balance; }
     .hero-7-copy p { margin: 0; color: #4c4c5c; font-size: clamp(16px, 1.25vw, 19px); line-height: 1.55; }
@@ -39,21 +39,18 @@
     .hero-7-action:hover { transform: translateY(-2px); background: var(--blue); border-color: var(--blue); }
     .hero-7-action:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
     .hero-7-action svg { width: 19px; height: 19px; }
-    .hero-7-scene { position: relative; height: 420px; margin-top: 48px; overflow: hidden; perspective: 1100px; }
-    .hero-7-frame { position: absolute; left: 36%; top: 14%; width: 28%; height: 72%; overflow: hidden; border-radius: 26px; background: #cbd0cb; backface-visibility: hidden; animation: hero-ring 9s linear infinite; }
-    .hero-7-frame:first-child { animation-delay: -6s; }
-    .hero-7-frame:nth-child(3) { animation-delay: -3s; }
-    .hero-7-frame img { display: block; width: 100%; height: 100%; object-fit: cover; }
-    .hero-7-scene::after { content: ''; position: absolute; z-index: 4; top: 18%; left: 49%; width: 2%; height: 64%; border-radius: 50%; background: linear-gradient(90deg, transparent, #f09de0, #fff, #f09de0, transparent); box-shadow: 0 0 24px 12px #e9a0e480; opacity: .65; pointer-events: none; animation: hero-glow 3s ease-in-out infinite alternate; }
-    @keyframes hero-ring {
-      0%, 100% { transform: translate3d(0, 0, 140px) rotateY(0) scale(1.07); z-index: 3; opacity: 1; }
-      33.33% { transform: translate3d(112%, 9%, -160px) rotateY(-42deg) scale(.82); z-index: 1; opacity: .72; }
-      66.66% { transform: translate3d(-112%, 9%, -160px) rotateY(42deg) scale(.82); z-index: 1; opacity: .72; }
-    }
-    @keyframes hero-glow { to { opacity: .25; box-shadow: 0 0 32px 18px #e9a0e477; } }
+    /* Nine positions around the same circle as the registry scene; three photos repeat as source material. */
+    .hero-7-scene { position: relative; left: 50%; width: calc(100vw - 16px); height: 390px; margin-top: -87px; overflow: hidden; transform: translateX(-50%); perspective: var(--hero-focal, 1086px); perspective-origin: 50% 50%; isolation: isolate; }
+    .hero-7-frame { position: absolute; left: 50%; top: 50%; width: var(--hero-card-w, 407px); height: var(--hero-card-h, 271px); margin: calc(var(--hero-card-h, 271px) / -2) 0 0 calc(var(--hero-card-w, 407px) / -2); overflow: hidden; border-radius: 18px; background: #cbd0cb; backface-visibility: visible; transform-style: preserve-3d; }
+    .hero-7-frame img { display: block; width: 100%; height: 100%; object-fit: cover; transform: scale(var(--hero-crop-scale, 1)); transform-origin: var(--hero-crop-origin, 50% 50%); }
+    .hero-7-frame .hero-7-gray { position: absolute; inset: 0; overflow: hidden; filter: grayscale(1) brightness(1.12); clip-path: inset(0 calc(100% - var(--hero-gray, 50%)) 0 0); }
+    .hero-7-frame .hero-7-gray::after { content: ''; position: absolute; inset: 0; opacity: .4; background-image: radial-gradient(#272727 24%, transparent 35%); background-size: 3px 3px; mix-blend-mode: multiply; }
+    .hero-7-glow { position: absolute; z-index: 12; left: 50%; top: 50%; width: 56px; height: 380px; transform: translate(-50%, -50%); pointer-events: none; background: radial-gradient(ellipse 5px 46% at 50% 50%, #ffb7ffdf 0%, #fa8cf6af 44%, transparent 100%), radial-gradient(ellipse 23px 48% at 50% 50%, #ff9ffb55, transparent 100%); mask-image: linear-gradient(to bottom, transparent, #000 15%, #000 73%, transparent); animation: hero-7-pulse 4.19s ease-in-out infinite alternate; }
+    .hero-7-glow::after { content: ''; position: absolute; inset: 0 20px; background: radial-gradient(ellipse 44% 48% at 50% 50%, #fff, #ffd2ff 58%, #ff9ffc 100%); clip-path: polygon(50% 0, 54% 18%, 70% 48%, 70% 52%, 54% 82%, 50% 100%, 46% 82%, 30% 52%, 30% 48%, 46% 18%); filter: blur(1px); }
+    .hero-7-particles { position: absolute; z-index: 13; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+    @keyframes hero-7-pulse { to { opacity: .84; } }
     @media (max-width: 1023px) {
-      .hero-7-scene { height: 300px; margin-top: 36px; }
-      .hero-7-frame { width: 32%; left: 34%; }
+      .hero-7-scene { height: 320px; margin-top: 0; }
     }
     @media (max-width: 639px) {
       .top-nav { padding: 1rem 1.25rem; }
@@ -63,10 +60,10 @@
       .hero-7 h1 { max-width: 350px; margin-bottom: 18px; font-size: clamp(36px, 9.5vw, 43px); }
       .hero-7-copy p { font-size: 15px; }
       .hero-7-action { min-height: 46px; margin-top: 24px; padding: 9px 19px; font-size: 14px; }
-      .hero-7-scene { height: 260px; margin-top: 30px; }
-      .hero-7-frame { left: 32%; width: 36%; border-radius: 17px; }
+      .hero-7-scene { width: 100vw; height: 260px; margin-top: 15px; }
+      .hero-7-frame { border-radius: 13px; }
     }
-    @media (prefers-reduced-motion: reduce) { .hero-7-action { transition: none; } .hero-7-frame, .hero-7-scene::after { animation: none; } .hero-7-frame:first-child { transform: translateX(-108%) scale(.82); } .hero-7-frame:nth-child(3) { transform: translateX(108%) scale(.82); } }
+    @media (prefers-reduced-motion: reduce) { .hero-7-action { transition: none; } .hero-7-glow { animation: none; } }
   </style>
 </head>
 <body>
@@ -80,14 +77,117 @@
         <p>No experience required, just imagination.</p>
         <button type="button" class="hero-7-action">Get Started <i data-lucide="arrow-right" aria-hidden="true"></i></button>
       </div>
-      <div class="hero-7-scene" aria-label="Three placeholder gallery images">
-        <div class="hero-7-frame"><img src="https://picsum.photos/id/1011/900/1200.webp" alt="Placeholder landscape, first gallery image" width="900" height="1200"></div>
-        <div class="hero-7-frame"><img src="https://picsum.photos/id/1015/900/1400.webp" alt="Placeholder landscape, featured gallery image" width="900" height="1400"></div>
-        <div class="hero-7-frame"><img src="https://picsum.photos/id/1016/900/1200.webp" alt="Placeholder landscape, third gallery image" width="900" height="1200"></div>
+      <div class="hero-7-scene" role="img" aria-label="Three landscape photos repeated across a revolving nine-frame gallery">
+        <div class="hero-7-frame"><img src="https://picsum.photos/id/1011/1600/1200.webp" alt="" width="1600" height="1200"></div>
+        <div class="hero-7-frame"><img src="https://picsum.photos/id/1015/1600/1200.webp" alt="" width="1600" height="1200"></div>
+        <div class="hero-7-frame"><img src="https://picsum.photos/id/1016/1600/1200.webp" alt="" width="1600" height="1200"></div>
+        <div class="hero-7-glow" aria-hidden="true"></div>
+        <canvas class="hero-7-particles" aria-hidden="true"></canvas>
       </div>
     </section>
   </main>
   <script src="https://unpkg.com/lucide@1.48.0/dist/umd/lucide.min.js"></script>
-  <script>lucide.createIcons();</script>
+  <script>
+    lucide.createIcons();
+    (() => {
+      const scene = document.querySelector('.hero-7-scene');
+      const photos = [...scene.querySelectorAll('.hero-7-frame')];
+      const glow = scene.querySelector('.hero-7-glow');
+      const canvas = scene.querySelector('.hero-7-particles');
+      const ctx = canvas.getContext('2d');
+      const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+      // A nonperiodic nine-seat order prevents the same trio repeating every 14 seconds.
+      const order = [0, 1, 2, 1, 0, 2, 0, 2, 1];
+      for (let i = 3; i < order.length; i++) {
+        const frame = photos[order[i]].cloneNode(true);
+        frame.setAttribute('aria-hidden', 'true');
+        scene.insertBefore(frame, glow);
+      }
+      const frames = [...scene.querySelectorAll('.hero-7-frame')];
+      frames.forEach((frame, i) => {
+        // Distinct crops keep all nine seats identifiable despite using only the three approved URLs.
+        const pass = Math.floor(i / 3);
+        frame.style.setProperty('--hero-crop-scale', [1, 2.2, 2.2][pass]);
+        frame.style.setProperty('--hero-crop-origin', ['50% 50%', '0% 38%', '100% 65%'][pass]);
+        const gray = document.createElement('div');
+        gray.className = 'hero-7-gray';
+        gray.setAttribute('aria-hidden', 'true');
+        gray.append(frame.querySelector('img').cloneNode(true));
+        frame.append(gray);
+      });
+      const particles = Array.from({ length: 80 }, (_, i) => ({
+        life: (i * .123) % 1,
+        y: (i / 80 - .5) * 1.2,
+        vx: (i % 2 ? -1 : 1) * (((i * .382) % 1) * .012 + .004),
+        vy: (((i * .786) % 1) - .4) * .006,
+        x: 0,
+        size: 1 + (i % 4) * .35
+      }));
+      let focal, unit, width, height, dpr, raf, start;
+      function resize() {
+        width = scene.clientWidth;
+        height = scene.clientHeight;
+        dpr = Math.min(devicePixelRatio || 1, 2);
+        canvas.width = Math.round(width * dpr);
+        canvas.height = Math.round(height * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        // Original perspective camera: z=8, fov=45 degrees, nine planes 3×2 on radius 4.5.
+        focal = Math.min(innerHeight, 900) / (2 * Math.tan(Math.PI / 8));
+        unit = focal / 8 * Math.min(1, width / 900);
+        scene.style.setProperty('--hero-focal', `${focal}px`);
+        scene.style.setProperty('--hero-card-w', `${3 * unit}px`);
+        scene.style.setProperty('--hero-card-h', `${2 * unit}px`);
+      }
+      function render(now) {
+        if (document.hidden) { raf = requestAnimationFrame(render); return; }
+        if (start === undefined) start = now;
+        const time = reduced.matches ? 0 : (now - start) / 1000;
+        const radius = 4.5;
+        frames.forEach((frame, i) => {
+          let angle = i * Math.PI * 2 / 9 + time * .15;
+          angle = ((angle + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
+          frame.hidden = Math.abs(angle) > Math.PI * .7;
+          if (frame.hidden) return;
+          const x = Math.sin(angle) * radius;
+          const z = -Math.cos(angle) * radius + radius * .1;
+          // Account for the full-bleed camera framing: outer seats enter beyond the viewport.
+          frame.style.transform = `translate3d(${x * unit + Math.sin(angle) * Math.min(80, width * .06)}px, 0, ${z * unit}px) rotateY(${-angle}rad)`;
+          frame.style.zIndex = String(Math.round(10 + z * 10));
+          // Shift the grayscale/color cut with the world-space crossing of the light bar.
+          const c = Math.cos(angle), s = Math.sin(angle);
+          const project = side => (x * unit + Math.sin(angle) * Math.min(80, width * .06) + side * 1.5 * c * unit) * focal / (focal - (z + side * 1.5 * s) * unit);
+          const left = project(-1), right = project(1);
+          frame.style.setProperty('--hero-gray', `${Math.max(0, Math.min(100, (0 - left) / (right - left) * 100))}%`);
+        });
+        ctx.clearRect(0, 0, width, height);
+        if (!reduced.matches) for (const p of particles) {
+          p.life += .012;
+          if (p.life > 1) {
+            p.life = 0;
+            p.x = 0;
+            p.y = (((particles.indexOf(p) + time * 10) % 80) / 80 - .5) * 1.2;
+          }
+          p.x += p.vx;
+          p.y += p.vy + Math.sin(time * 2 + particles.indexOf(p) * .5) * .0008;
+          const opacity = Math.max(0, 1 - Math.abs(p.x) / .4) * .78;
+          if (!opacity) continue;
+          ctx.beginPath();
+          ctx.fillStyle = `rgba(255,159,252,${opacity})`;
+          ctx.shadowColor = '#ff9ffc';
+          ctx.shadowBlur = 3;
+          ctx.arc(width / 2 + p.x * unit, height / 2 - p.y * unit + 14, p.size * .72, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        raf = requestAnimationFrame(render);
+      }
+      const observer = new IntersectionObserver(([entry]) => {
+        if (entry.isIntersecting && !raf) { start = undefined; raf = requestAnimationFrame(render); }
+        else if (!entry.isIntersecting && raf) { cancelAnimationFrame(raf); raf = 0; }
+      });
+      new ResizeObserver(resize).observe(scene);
+      resize();
+      observer.observe(scene);
+    })();
+  </script>
 </body>
 </html>

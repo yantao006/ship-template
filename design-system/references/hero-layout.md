@@ -251,35 +251,28 @@
 ```html
 <section class="hero-7">
   <div class="hero-7-copy"><h1>标题</h1><p>一句说明</p><a href="#">主要行动</a></div>
-  <div class="hero-7-scene" role="img" aria-label="循环转动的环形画廊"><div></div><div></div><div></div></div>
+  <div class="hero-7-scene" role="img" aria-label="九席环形画廊">
+    <!-- 三幅素材各复用三次，共九席；每席由 JS 按时间计算 3D 位置。 -->
+    <div class="hero-7-frame"></div><div class="hero-7-frame"></div><div class="hero-7-frame"></div>
+    <div class="hero-7-glow" aria-hidden="true"></div><canvas aria-hidden="true"></canvas>
+  </div>
 </section>
 ```
 
 ```css
-.hero-7 { min-height: 560px; overflow: hidden; }
-.hero-7-copy { position: relative; z-index: 1; max-width: 680px; margin: 0 auto; text-align: center; }
-.hero-7-scene { position: relative; height: 380px; overflow: hidden; perspective: 850px; }
-.hero-7-scene div { position: absolute; top: 20%; left: 37%; width: 26%; height: 60%; border-radius: 18px; background: #d2d2d2; backface-visibility: hidden; animation: hero-ring 9s linear infinite; }
-.hero-7-scene div:first-child { animation-delay: -6s; }
-.hero-7-scene div:nth-child(3) { animation-delay: -3s; }
-.hero-7-scene::after { content: ''; position: absolute; z-index: 4; top: 18%; left: 49%; width: 2%; height: 64%; border-radius: 50%; background: linear-gradient(90deg, transparent, #f09de0, white, #f09de0, transparent); box-shadow: 0 0 18px 8px #e9a0e489; pointer-events: none; animation: hero-glow 3s ease-in-out infinite alternate; }
-@keyframes hero-ring {
-  0%, 100% { transform: translate3d(0, 0, 110px) rotateY(0) scale(1.07); z-index: 3; opacity: 1; }
-  33.33% { transform: translate3d(112%, 9%, -130px) rotateY(-42deg) scale(.82); z-index: 1; opacity: .72; }
-  66.66% { transform: translate3d(-112%, 9%, -130px) rotateY(42deg) scale(.82); z-index: 1; opacity: .72; }
-}
-@keyframes hero-glow { to { opacity: .25; } }
-@media (max-width: 1023px) { .hero-7-scene { height: 280px; } }
-@media (max-width: 639px) { .hero-7-scene div { width: 34%; left: 33%; } }
-@media (prefers-reduced-motion: reduce) {
-  .hero-7-scene div, .hero-7-scene::after { animation: none; }
-  .hero-7-scene div:first-child { transform: translateX(-110%) scale(.82); }
-  .hero-7-scene div:nth-child(3) { transform: translateX(110%) scale(.82); }
-}
+.hero-7-scene { position: relative; overflow: hidden; perspective: var(--hero-focal); isolation: isolate; }
+.hero-7-frame { position: absolute; left: 50%; top: 50%; backface-visibility: visible; }
+.hero-7-glow { position: absolute; left: 50%; top: 50%; pointer-events: none; }
+.hero-7-scene canvas { position: absolute; inset: 0; pointer-events: none; }
 ```
 
-⚠️ 注意：原作是九幅图围成的缓慢旋转 3D 环，中央另有粉色光带和飘散粒子。
-预览只用三幅不同的占位图作循环换位、透视和轻量光带，不载入 three.js 或 WebGL；粒子属于原作效果，未精确模拟。
+原作九幅图绕半径 4.5 的圆环匀速转动，每秒 0.15 弧度，整圈约 42 秒。
+位置遵循 `x = sin(角度) × 4.5`、`z = -cos(角度) × 4.5 + 0.45`，各席朝向 `rotateY(-角度)`；两面可见，转到背后超过约 126° 时才隐藏。
+预览以三种画面各裁出三个不同构图，占据九席；顺序为 `A B C B A C A C B`，避免三席一组每约 14 秒重复。
+它不是三张卡在中央依次放大；演示保持原作的 4.5 半径与 0.15 弧度每秒转速，并在投影时给外侧席位补偿水平距离，使其穿出预览视口。
+1024 以下文字仍位于画面上方。
+横贯画廊的粉色光带固定在画面中央，灰阶与彩色从光带处分开，canvas 粒子从光带两侧飘散。
+原作使用 WebGL 着色器，设计系统里的套文案版和灰条目录版只用原生 HTML、CSS 和 JavaScript，具体比例、响应式和降动效规则以两个演示页为准。
 
 ## 08. Hero字间媒体嵌片型（Hero 8）
 
