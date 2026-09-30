@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hero Layout Playground · 英雄区布局预览</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;700&family=Noto+Serif+SC:wght@700&family=Noto+Sans+SC:wght@400;500;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --blue: #2F6F5E;
+      --yellow: #E8B86D;
+      --red: #C45C4A;
+      --cream: #fefcf6;
+      --ink: #1A1A2E;
+      --ink-faint: #8a8a9a;
+      --preview-bg: #FFF8E1;
+      --font-zh-title: 'Huiwen Mincho', 'Noto Serif SC', 'Songti SC', serif;
+      --font-body: 'DM Sans', 'Noto Sans SC', -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: auto; }
+    body { background: var(--cream); color: var(--ink); font-family: var(--font-body); line-height: 1.6; }
+    .tri-bar { height: 4px; display: flex; }
+    .tri-bar span:nth-child(1) { flex: 3; background: var(--blue); }
+    .tri-bar span:nth-child(2) { flex: 2; background: var(--yellow); }
+    .tri-bar span:nth-child(3) { flex: 1; background: var(--red); }
+    .top-nav {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 1rem 2rem;
+      background: var(--cream);
+      border-bottom: 1px solid rgba(26,26,46,0.08);
+    }
+    .top-nav::before { content: ''; width: 36px; height: 4px; border-radius: 2px; background: var(--blue); }
+    .top-nav::after { content: ''; width: 24px; height: 4px; margin-left: -8px; border-radius: 2px; background: var(--yellow); }
+    .top-nav h1 { margin-left: 4px; font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 700; }
+    .top-nav h1 span { margin-left: 8px; color: var(--ink-faint); font: 400 0.85rem var(--font-body); }
+    .page-container { max-width: 1000px; margin: 0 auto; padding: 3rem 2rem max(6rem, 100vh); }
+    .layout-header { margin-bottom: 1rem; }
+    .layout-header h2 {
+      display: inline;
+      padding: 0 4px;
+      background: linear-gradient(transparent 60%, var(--yellow) 60%);
+      font: 700 1.2rem var(--font-zh-title);
+    }
+    .layout-header .num { margin-right: 6px; color: var(--blue); font-family: 'Fraunces', serif; }
+    .preview-box {
+      overflow: hidden;
+      padding: clamp(1.5rem, 3vw, 2.5rem);
+      border: 1px solid rgba(232,184,109,0.3);
+      border-radius: 16px;
+      background: var(--preview-bg);
+    }
+    .scene-tag { display: flex; align-items: center; gap: 6px; margin-top: 0.75rem; color: var(--ink-faint); font-size: 0.8rem; }
+    .scene-tag::before {
+      content: '适用';
+      padding: 2px 6px;
+      border-radius: 3px;
+      background: var(--blue);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 600;
+      flex: none;
+    }
+    .ph-text { height: 10px; margin-bottom: 6px; border-radius: 4px; background: rgba(26,26,46,0.12); }
+    .ph-text.short { width: 60%; }
+    .ph-heading { width: 50%; height: 16px; margin-bottom: 8px; border-radius: 4px; background: var(--ink); }
+
+    /* 01. Hero 1 - placeholders describe geometry, not site copy. */
+    .mini-hero-1 {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: center;
+      gap: clamp(32px, 5vw, 56px);
+      min-height: 380px;
+    }
+    .mini-hero-1 .copy { min-width: 0; text-align: left; }
+    .mini-hero-1 .announcement {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      padding: 9px 12px;
+      margin-bottom: 28px;
+      border: 1px solid rgba(26,26,46,0.13);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.6);
+    }
+    .mini-hero-1 .announcement .mark { width: 9px; height: 9px; border-radius: 2px; background: var(--yellow); }
+    .mini-hero-1 .announcement .ph-text { width: 82px; height: 7px; margin: 0; }
+    .mini-hero-1 .ph-heading { width: 80%; height: 19px; margin-bottom: 22px; }
+    .mini-hero-1 .description .ph-text { width: 86%; }
+    .mini-hero-1 .description .ph-text.short { width: 60%; }
+    .mini-hero-1 .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+    .mini-hero-1 .action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      height: 43px;
+      padding: 0 18px;
+      border: 1px solid var(--ink);
+      border-radius: 999px;
+    }
+    .mini-hero-1 .action.solid { background: var(--ink); }
+    .mini-hero-1 .action.outline { background: transparent; }
+    .mini-hero-1 .action .bar { width: 56px; height: 7px; border-radius: 4px; background: #fefcf6; }
+    .mini-hero-1 .action.outline .bar { width: 65px; background: var(--ink); }
+    .mini-hero-1 .play-dot { display: grid; place-items: center; width: 20px; height: 20px; border: 1px solid var(--ink); border-radius: 50%; }
+    .mini-hero-1 .play-dot::after { content: ''; width: 4px; height: 4px; border-radius: 50%; background: var(--ink); }
+    .mini-hero-1 .proof { display: flex; align-items: center; gap: 12px; margin-top: 32px; }
+    .mini-hero-1 .avatars { display: flex; padding-left: 10px; flex: none; }
+    .mini-hero-1 .avatars span { width: 31px; height: 31px; margin-left: -10px; border: 2px solid var(--preview-bg); border-radius: 50%; background: #b3bab0; }
+    .mini-hero-1 .avatars span:nth-child(2) { background: #c8bba5; }
+    .mini-hero-1 .avatars span:nth-child(3) { background: #a9aca6; }
+    .mini-hero-1 .proof-copy { width: 125px; }
+    .mini-hero-1 .proof-copy .ph-text { height: 7px; margin-bottom: 5px; }
+    .mini-hero-1 .proof-copy .ph-text:last-child { width: 60%; margin-bottom: 0; }
+    .mini-hero-1 .photo {
+      position: relative;
+      height: 380px;
+      min-width: 0;
+      overflow: hidden;
+      border-radius: 32px;
+      background: #cbd0cb;
+    }
+    .mini-hero-1 .notch {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      display: grid;
+      place-items: center;
+      width: 96px;
+      height: 96px;
+      border-top-left-radius: 26px;
+      background: var(--preview-bg);
+    }
+    /* Two exterior concave joins keep the large photo corner continuous around the cutout. */
+    .mini-hero-1 .notch::before, .mini-hero-1 .notch::after {
+      content: ''; position: absolute; width: 32px; height: 32px; pointer-events: none;
+      background: radial-gradient(circle at left top, transparent 31px, var(--preview-bg) 32px);
+    }
+    .mini-hero-1 .notch::before { right: 0; top: -32px; }
+    .mini-hero-1 .notch::after { left: -32px; bottom: 0; }
+    .mini-hero-1 .notch button {
+      display: grid;
+      place-items: center;
+      width: 58px;
+      height: 58px;
+      border: 0;
+      border-radius: 18px;
+      background: var(--ink);
+      color: var(--cream);
+      cursor: default;
+    }
+    .mini-hero-1 .notch svg { width: 22px; height: 22px; }
+    @media (max-width: 1023px) {
+      .mini-hero-1 { grid-template-columns: 1fr; gap: 32px; }
+      .mini-hero-1 .photo { height: 330px; }
+    }
+    @media (max-width: 639px) {
+      .top-nav { padding: 1rem 1.25rem; }
+      .top-nav h1 { font-size: 1.05rem; }
+      .top-nav h1 span { font-size: 0.72rem; }
+      .page-container { padding: 2rem 1.25rem max(5rem, 100vh); }
+      .mini-hero-1 { gap: 28px; min-height: 0; }
+      .mini-hero-1 .photo { height: 250px; }
+      .mini-hero-1 .proof { margin-top: 26px; }
+    }
+    /* Shared neutral specimen parts; every scene below owns its geometry. */
+    .layout-block + .layout-block { margin-top: 4rem; }
+    .mini-hero-2 .ph-heading, .mini-hero-3 .ph-heading, .mini-hero-4 .ph-heading,
+    .mini-hero-5 .ph-heading, .mini-hero-6 .ph-heading, .mini-hero-7 .ph-heading,
+    .mini-hero-8 .ph-heading, .mini-hero-9 .ph-heading, .mini-hero-10 .ph-heading,
+    .mini-hero-11 .ph-heading, .mini-hero-12 .ph-heading, .mini-hero-13 .ph-heading,
+    .mini-hero-14 .ph-heading, .mini-hero-15 .ph-heading, .mini-hero-16 .ph-heading,
+    .mini-hero-17 .ph-heading, .mini-hero-18 .ph-heading, .mini-hero-19 .ph-heading,
+    .mini-hero-20 .ph-heading, .mini-hero-21 .ph-heading, .mini-hero-22 .ph-heading,
+    .mini-hero-23 .ph-heading, .mini-hero-24 .ph-heading { height: 22px; margin-bottom: 16px; }
+    .spec-pill { display: inline-flex; align-items: center; gap: 7px; height: 27px; padding: 0 12px; border: 1px solid #bbb; border-radius: 999px; }
+    .spec-pill .ph-text { width: 55px; height: 6px; margin: 0; }
+    .spec-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ink); flex: none; }
+    .spec-actions { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 22px; }
+    .spec-button { display: grid; place-items: center; width: 106px; height: 35px; border: 1px solid var(--ink); border-radius: 999px; }
+    .spec-button::after { content: ''; width: 55%; height: 7px; border-radius: 4px; background: var(--ink); }
+    .spec-button:first-child { background: var(--ink); }
+    .spec-button:first-child::after { background: var(--cream); }
+    .spec-media { background: #cbd0cb; }
+    .spec-play { display: grid; place-items: center; width: 38px; height: 38px; border: 2px solid var(--ink); border-radius: 50%; }
+    .spec-play::after { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--ink); }
+    .spec-input { display: flex; align-items: center; gap: 8px; min-height: 43px; padding: 5px 6px 5px 15px; border: 1px solid #bbb; border-radius: 999px; }
+    .spec-input .ph-text { width: 50%; height: 7px; margin: 0 auto 0 0; }
+    .spec-input .spec-button { height: 32px; width: 83px; flex: none; }
+    .spec-logo { display: inline-block; width: 68px; height: 12px; border-radius: 3px; background: #adb3ac; }
+    .mini-hero-2 .copy { display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 30px; }
+    .mini-hero-2 .ph-heading { width: 65%; } .mini-hero-2 .ph-text { width: 55%; }
+    .mini-hero-2 .spec-actions { justify-content: center; }
+    .mini-hero-2 .gallery { display: flex; align-items: end; justify-content: center; gap: 10px; overflow-x: auto; }
+    .mini-hero-2 .gallery > * { flex: 0 0 18%; min-width: 95px; }
+    .mini-hero-2 .stack { display: grid; gap: 10px; }
+    .mini-hero-2 .gallery .spec-media { border-radius: 13px; }
+    .mini-hero-2 .tall { height: 150px; } .mini-hero-2 .slim { height: 28px; }
+    .mini-hero-2 .square { aspect-ratio: 1; }
+    .mini-hero-3 { position: relative; min-height: 370px; overflow: hidden; border-radius: 24px; }
+    .mini-hero-3 .scene { position: absolute; inset: 0; }
+    .mini-hero-3 .frame { position: relative; display: flex; flex-direction: column; justify-content: space-between; min-height: 370px; padding: 24px; }
+    .mini-hero-3 .top, .mini-hero-3 .bottom { display: flex; align-items: end; justify-content: space-between; gap: 20px; }
+    .mini-hero-3 .top { align-items: start; } .mini-hero-3 .bottom .ph-heading { width: 48%; }
+    .mini-hero-3 .links { width: 22%; } .mini-hero-3 .links .ph-text { background: var(--ink); }
+    .mini-hero-4 .copy { max-width: 550px; margin: 0 auto 35px; text-align: center; }
+    .mini-hero-4 .copy .ph-heading { width: 70%; margin: 12px auto; }
+    .mini-hero-4 .copy .ph-text { width: 58%; margin: 0 auto 6px; }
+    .mini-hero-4 .spec-actions { justify-content: center; }
+    .mini-hero-4 .marquee { overflow: hidden; mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent); }
+    .mini-hero-4 .track { display: flex; gap: 14px; width: max-content; animation: hero-marquee 18s linear infinite; }
+    .mini-hero-4 .marquee:hover .track { animation-play-state: paused; }
+    .mini-hero-4 .video { position: relative; flex: 0 0 clamp(170px, 38vw, 360px); height: 185px; display: grid; place-items: center; border-radius: 19px; }
+    .mini-hero-4 .dots { position: absolute; left: 14px; bottom: 12px; display: flex; gap: 5px; }
+    .mini-hero-4 .dots span { width: 5px; height: 5px; border-radius: 50%; background: var(--ink); }
+    .mini-hero-5 { position: relative; overflow: hidden; padding-top: 38px; }
+    .mini-hero-5 .orb { position: absolute; top: 8px; right: 15%; width: 68px; height: 68px; border-radius: 50%; }
+    .mini-hero-5 .copy { position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; }
+    .mini-hero-5 .ph-heading { width: 70%; margin-top: 20px; }
+    .mini-hero-5 .copy .ph-text { width: 55%; } .mini-hero-5 .spec-actions { justify-content: center; }
+    .mini-hero-5 .browser { max-width: 670px; margin: 32px auto 0; overflow: hidden; border: 1px solid #aaa; border-radius: 16px 16px 0 0; }
+    .mini-hero-5 .toolbar { height: 31px; padding: 9px; border-bottom: 1px solid #aaa; }
+    .mini-hero-5 .toolbar span { display: inline-block; width: 7px; height: 7px; margin-right: 5px; border-radius: 50%; background: #888; }
+    .mini-hero-5 .screen { height: 210px; }
+    .mini-hero-6 { display: grid; grid-template-columns: minmax(0, 1fr) 4px minmax(0, 1fr); align-items: center; gap: 30px; min-height: 330px; }
+    .mini-hero-6 .copy .ph-heading { width: 75%; } .mini-hero-6 .copy .ph-text { width: 82%; }
+    .mini-hero-6 .spec-input { margin-top: 24px; }
+    .mini-hero-6 .spec-input .spec-button { background: var(--ink); }
+    .mini-hero-6 .spec-input .spec-button::after { background: var(--cream); }
+    .mini-hero-6 .rail { display: grid; gap: 7px; height: 270px; }
+    .mini-hero-6 .rail span { background: #cbd0cb; border-radius: 4px; }
+    .mini-hero-6 .rail span:first-child { background: var(--ink); }
+    .mini-hero-6 .image { height: 290px; border-radius: 20px; }
+    .mini-hero-6 .mobile-rail { display: none; }
+    .mini-hero-7 { position: relative; min-height: 390px; overflow: hidden; }
+    .mini-hero-7 .copy { position: relative; z-index: 1; text-align: center; }
+    .mini-hero-7 .copy .ph-heading { width: 50%; margin: 0 auto 15px; }
+    .mini-hero-7 .copy .ph-text { width: 44%; margin: 0 auto; }
+    .mini-hero-7 .spec-actions { justify-content: center; }
+    .mini-hero-7 .scene { position: relative; height: 270px; margin-top: 8px; overflow: hidden; perspective: var(--hero-7-focal, 850px); isolation: isolate; }
+    .mini-hero-7 .scene .spec-media { position: absolute; left: 50%; top: 50%; width: var(--hero-7-width, 185px); height: var(--hero-7-height, 123px); margin: calc(var(--hero-7-height, 123px) / -2) 0 0 calc(var(--hero-7-width, 185px) / -2); border-radius: 12px; backface-visibility: visible; }
+    .mini-hero-7 .scene .spec-media[data-hero-tone="2"] { background: #abb4bd; }
+    .mini-hero-7 .scene .spec-media[data-hero-tone="3"] { background: #b6aeba; }
+    .mini-hero-7 .scene .glow { position: absolute; z-index: 12; left: 50%; top: 50%; width: 54px; height: 240px; transform: translate(-50%, -50%); pointer-events: none; background: radial-gradient(ellipse 6px 42% at center, #ffc9ff, #f09de088 65%, transparent), radial-gradient(ellipse 24px 48% at center, #f09de04d, transparent); mask-image: linear-gradient(transparent, #000 20% 80%, transparent); animation: hero-7-mini-pulse 4.19s ease-in-out infinite alternate; }
+    .mini-hero-7 .scene .glow::after { content: ''; position: absolute; inset: 0 24px; background: #fff; filter: blur(2px); }
+    .mini-hero-7 .scene canvas { position: absolute; z-index: 13; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+    @keyframes hero-7-mini-pulse { to { opacity: .8; } }
+    @keyframes hero-glow { to { opacity: .25; box-shadow: 0 0 26px 14px #e9a0e477; } }
+    .mini-hero-8 .lines { margin: 20px 0; }
+    .mini-hero-8 .row { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 12px; }
+    .mini-hero-8 .row .ph-heading { width: 19%; margin: 0; }
+    .mini-hero-8 .tile { width: 100px; height: 60px; border-radius: 9px; flex: none; }
+    .mini-hero-8 .description .ph-text { width: 55%; margin: 0 auto 6px; }
+    .mini-hero-8 .wide { height: 220px; margin-top: 28px; border-radius: 18px; }
+    .mini-hero-9 { position: relative; display: flex; align-items: end; min-height: 360px; overflow: hidden; border-radius: 22px; }
+    .mini-hero-9 .video { position: absolute; inset: 0; display: grid; place-items: center; }
+    .mini-hero-9 .bottom { position: relative; width: 100%; padding: 24px; display: flex; align-items: end; justify-content: space-between; gap: 30px; }
+    .mini-hero-9 .bottom > div { width: 50%; }
+    .mini-hero-9 .ph-heading { width: 80%; } .mini-hero-9 .ph-text { width: 70%; background: #6b706b; }
+    .mini-hero-10 .copy { max-width: 620px; margin: 0 auto 45px; text-align: center; }
+    .mini-hero-10 .copy .ph-heading { width: 68%; margin: 0 auto 18px; }
+    .mini-hero-10 .copy .ph-text { width: 54%; margin: 0 auto 6px; }
+    .mini-hero-10 .spec-actions { justify-content: center; }
+    .mini-hero-10 .cards { display: flex; align-items: end; justify-content: center; padding: 20px 0 5px; }
+    .mini-hero-10 .cards div { width: 28%; max-width: 220px; height: 170px; border-radius: 22px; }
+    .mini-hero-10 .cards div + div { margin-left: -30px; }
+    .mini-hero-10 .cards div:first-child { transform: rotate(-9deg); }
+    .mini-hero-10 .cards div:nth-child(2) { transform: translateY(-18px); z-index: 1; }
+    .mini-hero-10 .cards div:last-child { transform: rotate(9deg); }
+    .mini-hero-11 .copy { text-align: center; margin: 0 auto 40px; }
+    .mini-hero-11 .copy .ph-heading { width: 60%; margin: 18px auto; }
+    .mini-hero-11 .copy .ph-text { width: 52%; margin: 0 auto; }
+    .mini-hero-11 .spec-actions { justify-content: center; }
+    .mini-hero-11 .frame { position: relative; max-width: 670px; margin: auto; padding: 17px; }
+    .mini-hero-11 .frame .image { aspect-ratio: 16 / 9; }
+    .mini-hero-11 .corner { position: absolute; width: 29px; height: 29px; border: 2px solid var(--ink); }
+    .mini-hero-11 .tl { top: 0; left: 0; border-right: 0; border-bottom: 0; }
+    .mini-hero-11 .tr { top: 0; right: 0; border-left: 0; border-bottom: 0; }
+    .mini-hero-11 .bl { bottom: 0; left: 0; border-right: 0; border-top: 0; }
+    .mini-hero-11 .br { bottom: 0; right: 0; border-left: 0; border-top: 0; }
+    .mini-hero-12 { position: relative; height: 415px; overflow: hidden; border-radius: 24px; }
+    .mini-hero-12 .scene { position: absolute; inset: 0; }
+    .mini-hero-12 .head { position: relative; display: flex; flex-direction: column; align-items: start; }
+    .mini-hero-12 .head > div { width: 62%; padding: 13px 16px; border-bottom-right-radius: 30px; background: var(--preview-bg); }
+    .mini-hero-12 .head > div + div { width: 46%; }
+    .mini-hero-12 .head .ph-heading { width: 85%; margin: 0; }
+    .mini-hero-12 .action { position: absolute; right: 18px; top: 18px; }
+    .mini-hero-12 .card { position: absolute; right: 18px; bottom: 18px; width: 230px; padding: 8px; border-radius: 15px; background: var(--preview-bg); }
+    .mini-hero-12 .card .image { height: 90px; border-radius: 8px; }
+    .mini-hero-12 .card .ph-text { margin-top: 10px; }
+    .mini-hero-13 .copy { position: relative; z-index: 1; max-width: 630px; margin: 0 auto; text-align: center; }
+    .mini-hero-13 .copy .ph-heading { width: 65%; margin: 0 auto 16px; }
+    .mini-hero-13 .copy .ph-text { width: 57%; margin: 0 auto 6px; }
+    .mini-hero-13 .spec-actions { justify-content: center; }
+    .mini-hero-13 .proof { display: flex; justify-content: center; gap: 15px; margin-top: 14px; }
+    .mini-hero-13 .stage { position: relative; max-width: 680px; height: 265px; margin: -4px auto 0; overflow: hidden; }
+    .mini-hero-13 .bar { position: absolute; top: 28px; left: 49%; width: 8px; height: 230px; border-radius: 99px; background: #f5c3e9; box-shadow: 0 0 12px 6px #e6a8da; animation: hero-glow 3s ease-in-out infinite alternate; }
+    .mini-hero-13 .floating { position: absolute; top: 74px; left: 29%; width: 48px; height: 48px; border-radius: 50%; }
+    .mini-hero-13 .card { position: absolute; top: 65px; right: 10%; width: 28%; height: 75px; border-radius: 12px; }
+    .mini-hero-13 .card:last-child { top: 150px; right: 15%; }
+    .mini-hero-14 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: center; gap: 40px; min-height: 330px; }
+    .mini-hero-14 .copy .ph-heading { width: 76%; margin-top: 20px; }
+    .mini-hero-14 .copy .ph-text { width: 82%; }
+    .mini-hero-14 .copy .spec-pill .ph-text { width: 32px; }
+    .mini-hero-14 .spec-pill svg { width: 12px; height: 12px; }
+    .mini-hero-14 .spec-input { margin: 25px 0 18px; }
+    .mini-hero-14 .spec-input .spec-button { background: var(--ink); }
+    .mini-hero-14 .spec-input .spec-button::after { background: var(--cream); }
+    .mini-hero-14 .image { aspect-ratio: 4 / 3; border-radius: 20px; }
+    .mini-hero-15 { text-align: center; padding: 22px 0; }
+    .mini-hero-15 .ph-heading { width: 72%; height: 27px; margin: 35px auto 24px; transform: skew(-8deg); }
+    .mini-hero-15 .ph-text { width: 52%; margin: 0 auto 7px; }
+    .mini-hero-15 .spec-pill .ph-text { width: 55px; margin: 0; }
+    .mini-hero-15 .spec-actions { justify-content: center; }
+    .mini-hero-15 .spec-input { width: min(100%, 560px); margin: 50px auto 14px; }
+    .mini-hero-15 .spec-input .send { width: 32px; height: 32px; flex: none; display: grid; place-items: center; border-radius: 50%; background: #cbd0cb; }
+    .mini-hero-16 { display: flex; flex-direction: column; min-height: 360px; padding: 18px; }
+    .mini-hero-16 .ph-heading { width: 74%; margin-top: 52px; }
+    .mini-hero-16 .bottom { display: flex; align-items: end; justify-content: space-between; gap: 26px; margin-top: auto; }
+    .mini-hero-16 .bottom .ph-text { width: 175px; }
+    .mini-hero-16 .spec-actions { flex-wrap: nowrap; flex: none; }
+    .mini-hero-16 .spec-actions .spec-button:last-child { width: 35px; }
+    .mini-hero-16 .spec-actions .spec-button:last-child::after { display: none; }
+    .mini-hero-17 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px; align-items: center; }
+    .mini-hero-17 .copy .ph-heading { width: 75%; margin-top: 25px; }
+    .mini-hero-17 .copy .ph-text { width: 80%; }
+    .mini-hero-17 .copy .spec-pill { width: fit-content; }
+    .mini-hero-17 .copy .spec-pill .ph-text { width: 55px; }
+    .mini-hero-17 .gallery .main { aspect-ratio: 16 / 10; border-radius: 16px; }
+    .mini-hero-17 .thumbs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin-top: 9px; }
+    .mini-hero-17 .thumbs div { aspect-ratio: 1; border-radius: 9px; }
+    .mini-hero-18 { display: flex; flex-direction: column; align-items: center; }
+    .mini-hero-18 .copy { text-align: center; width: 100%; }
+    .mini-hero-18 .copy .ph-heading { width: 65%; margin: 20px auto; }
+    .mini-hero-18 .copy .ph-text { width: 55%; margin: 0 auto 6px; }
+    .mini-hero-18 .panel { width: min(100%, 580px); margin: 30px 0 0; border: 1px solid #cbd0cb; border-radius: 18px; overflow: hidden; }
+    .mini-hero-18 .query, .mini-hero-18 .scopes, .mini-hero-18 .keys { display: flex; align-items: center; gap: 9px; padding: 10px 14px; }
+    .mini-hero-18 .query, .mini-hero-18 .keys { border-bottom: 1px solid #cbd0cb; }
+    .mini-hero-18 .query .ph-text { width: 55%; margin: 0; }
+    .mini-hero-18 kbd { border: 1px solid #aaa; border-radius: 5px; padding: 0 4px; font: inherit; }
+    .mini-hero-18 .query kbd { margin-left: auto; }
+    .mini-hero-18 .scopes span { border: 1px solid #bbb; border-radius: 7px; padding: 2px 6px; }
+    .mini-hero-18 .row { display: flex; align-items: center; gap: 9px; padding: 7px 14px; }
+    .mini-hero-18 .row:first-child { background: #e3e3df; }
+    .mini-hero-18 .row .ph-text { width: 60%; margin: 0; }
+    .mini-hero-18 .row svg { width: 15px; height: 15px; flex: none; }
+    .mini-hero-18 .row kbd { margin-left: auto; }
+    .mini-hero-18 .action { margin-top: 20px; display: flex; align-items: center; gap: 16px; }
+    .mini-hero-19 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: center; gap: 55px; }
+    .mini-hero-19 .copy .ph-heading { width: 78%; margin: 22px 0; }
+    .mini-hero-19 .copy .ph-text { width: 80%; }
+    .mini-hero-19 .copy > .ph-text:last-child { margin-top: 20px; }
+    .mini-hero-19 .stage { position: relative; padding: 20px; }
+    .mini-hero-19 .panel { border: 1px solid #bbb; border-radius: 20px; padding: 16px; }
+    .mini-hero-19 .row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid #bbb; }
+    .mini-hero-19 .row .ph-text { width: 50%; margin: 0; }
+    .mini-hero-19 .row .spec-pill { margin-left: auto; }
+    .mini-hero-19 .metric { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 7px; margin-top: 12px; }
+    .mini-hero-19 .metric .bar { width: 78%; height: 6px; border-radius: 4px; background: var(--ink); }
+    .mini-hero-19 .float { position: absolute; padding: 7px; border: 1px solid #bbb; border-radius: 9px; background: var(--preview-bg); }
+    .mini-hero-19 .float.top { top: 0; right: 0; } .mini-hero-19 .float.bottom { bottom: 0; left: 0; }
+    .mini-hero-20 { text-align: center; }
+    .mini-hero-20 .ph-heading { width: 62%; margin: 0 auto 20px; }
+    .mini-hero-20 > .ph-text { width: 50%; margin: 0 auto 6px; }
+    .mini-hero-20 .spec-actions, .mini-hero-20 .logos { justify-content: center; }
+    .mini-hero-20 .logos { display: flex; gap: 18px; flex-wrap: wrap; margin: 40px 0 30px; }
+    .mini-hero-20 .metrics { display: grid; grid-template-columns: repeat(4, 1fr); border-block: 1px solid #bbb; padding: 18px 0; }
+    .mini-hero-20 .metrics > div { display: grid; gap: 5px; }
+    .mini-hero-20 .metrics > div + div { border-left: 1px solid #bbb; }
+    .mini-hero-20 .metrics .ph-text { width: 52%; margin: auto; }
+    .mini-hero-21, .mini-hero-22, .mini-hero-24 { position: relative; display: grid; place-items: center; min-height: 355px; overflow: hidden; border-radius: 20px; }
+    .mini-hero-21 .field, .mini-hero-22 .field, .mini-hero-24 .field { position: absolute; inset: 0; }
+    .mini-hero-21 .copy, .mini-hero-22 .copy { position: relative; text-align: center; width: min(100%, 620px); padding: 24px; }
+    .mini-hero-21 .orb { width: 68px; height: 68px; display: grid; place-items: center; margin: 0 auto 12px; border: 12px solid #aab1ab; border-radius: 50%; }
+    .mini-hero-21 .orb .spec-dot { width: 9px; height: 9px; }
+    .mini-hero-21 .ph-heading, .mini-hero-22 .ph-heading { width: 70%; margin: 18px auto; }
+    .mini-hero-21 .ph-text, .mini-hero-22 .ph-text { width: 60%; margin: 0 auto 6px; background: #666e68; }
+    .mini-hero-21 .spec-actions, .mini-hero-22 .spec-actions { justify-content: center; }
+    .mini-hero-23 .copy { text-align: center; }
+    .mini-hero-23 .ph-heading { width: 66%; margin: 16px auto; }
+    .mini-hero-23 .copy .ph-text { width: 53%; margin: 0 auto 6px; }
+    .mini-hero-23 .spec-actions { justify-content: center; }
+    .mini-hero-23 .frame { position: relative; height: 290px; margin-top: 34px; overflow: hidden; border-radius: 20px; }
+    .mini-hero-23 .frame .spec-media { position: absolute; inset: 0; }
+    .mini-hero-23 .live { position: absolute; top: 14px; left: 14px; }
+    .mini-hero-23 .caption { position: absolute; left: 16px; right: 16px; bottom: 16px; display: flex; justify-content: space-between; align-items: end; }
+    .mini-hero-23 .caption strong { font-size: 1.2rem; }
+    .mini-hero-24 { place-items: center start; }
+    .mini-hero-24 .copy { position: relative; width: min(100%, 540px); padding: 30px; text-align: left; }
+    .mini-hero-24 .ph-heading { width: 78%; margin: 20px 0; }
+    .mini-hero-24 .copy > .ph-text { width: 68%; background: #666e68; }
+    .mini-hero-24 .logos { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 32px; }
+    @media (max-width: 1023px) {
+      .mini-hero-6, .mini-hero-14, .mini-hero-17, .mini-hero-19 { grid-template-columns: 1fr; gap: 24px; }
+      .mini-hero-6 .rail { display: none; } .mini-hero-6 .image { height: 230px; }
+      .mini-hero-6 .mobile-rail { display: flex; justify-content: center; gap: 8px; }
+      .mini-hero-6 .mobile-rail span { width: 34px; height: 3px; background: #bbb; }
+      .mini-hero-6 .mobile-rail span:first-child { background: var(--ink); }
+      .mini-hero-9 .bottom, .mini-hero-16 .bottom { flex-direction: column; align-items: start; }
+      .mini-hero-9 .bottom > div { width: 100%; }
+      .mini-hero-19 .float { display: none; }
+      .mini-hero-20 .metrics { grid-template-columns: repeat(2, 1fr); row-gap: 14px; }
+      .mini-hero-20 .metrics > div:nth-child(3) { border-left: 0; }
+    }
+    @media (max-width: 639px) {
+      .mini-hero-2 .gallery { justify-content: flex-start; }
+      .mini-hero-3 .bottom { align-items: start; flex-direction: column; }
+      .mini-hero-3 .bottom .ph-heading { width: 75%; }
+      .mini-hero-3 .links { width: 50%; }
+      .mini-hero-4 .video { flex-basis: 220px; }
+      .mini-hero-5 .screen { height: 135px; }
+      .mini-hero-8 .row { flex-wrap: wrap; justify-content: start; }
+      .mini-hero-8 .row .ph-heading { width: 27%; }
+      .mini-hero-8 .tile { width: 72px; height: 45px; }
+      .mini-hero-8 .wide { height: 170px; }
+      .mini-hero-9 .bottom { padding: 18px; }
+      .mini-hero-10 .cards div { min-width: 90px; height: 110px; }
+      .mini-hero-10 .cards div + div { margin-left: -17px; }
+      .mini-hero-12 { height: 460px; }
+      .mini-hero-12 .head > div { width: 88%; } .mini-hero-12 .head > div + div { width: 68%; }
+      .mini-hero-12 .action { top: 130px; left: 16px; right: auto; }
+      .mini-hero-12 .card { left: 16px; right: 16px; bottom: 16px; width: auto; }
+      .mini-hero-14 .spec-input { flex-direction: column; align-items: stretch; border: 0; padding: 0; }
+      .mini-hero-14 .spec-input .ph-text { width: 100%; height: 35px; margin: 0; border: 1px solid #bbb; border-radius: 10px; background: #e5e5df; }
+      .mini-hero-14 .spec-input .spec-button { width: 100%; }
+      .mini-hero-16 .ph-heading { margin-top: 35px; }
+      .mini-hero-18 .scopes { overflow-x: auto; } .mini-hero-18 .scopes span { flex: none; }
+      .mini-hero-23 .frame { height: 220px; }
+      .mini-hero-24 .copy { padding: 20px; }
+    }
+    /* Source-specific motion; dormant specimens do not spend animation frames off screen. */
+    .layout-block:not(.motion-active) *, .layout-block:not(.motion-active) *::before, .layout-block:not(.motion-active) *::after { animation-play-state: paused !important; }
+    .mini-hero-2 { position: relative; isolation: isolate; }
+    .mini-hero-2::before { content: ''; position: absolute; inset: 5% -10% 0; z-index: -1; opacity: .4; background: repeating-radial-gradient(ellipse at 50% 120%, transparent 0 18px, #adb3ac 19px 20px, transparent 21px 42px); animation: hero-waves 10s linear infinite; }
+    .mini-hero-2 .gallery .spec-media { transition: transform .35s ease; }
+    .mini-hero-2 .gallery .spec-media:hover { transform: rotateY(-9deg) translateY(-8px); }
+    .mini-hero-3 .scene { background: linear-gradient(115deg, #777b81, #b1adaf 38%, #9caabd 65%, #777b81); background-size: 240% 100%; animation: hero-flow 11s ease-in-out infinite alternate; }
+    .mini-hero-3 .frame { background: linear-gradient(90deg, #1a1a2e22, transparent); }
+    .mini-hero-3 .links { padding: 16px; border-top-left-radius: 28px; background: var(--preview-bg); }
+    .mini-hero-5 .orb { box-shadow: 0 0 0 20px #cbd0cb44; animation: hero-float 6s ease-in-out infinite alternate; }
+    .mini-hero-5 .browser { box-shadow: 0 0 0 2px #cbd0cb66; }
+    .mini-hero-5 .screen { background: linear-gradient(110deg, #cbd0cb, #bbb2c7, #cbd0cb); background-size: 220% 100%; animation: hero-flow 12s ease-in-out infinite alternate; }
+    .mini-hero-6 .rail span, .mini-hero-6 .mobile-rail span { animation: hero-progress 9s steps(1) infinite; }
+    .mini-hero-6 .rail span:nth-child(2), .mini-hero-6 .mobile-rail span:nth-child(2) { animation-delay: -3s; }
+    .mini-hero-6 .rail span:nth-child(3), .mini-hero-6 .mobile-rail span:nth-child(3) { animation-delay: -6s; }
+    .mini-hero-6 .image { animation: hero-slide 9s steps(1) infinite; }
+    .mini-hero-8 .tile { animation: hero-tile 10s steps(1) infinite; }
+    .mini-hero-8 .row:nth-child(2) .tile { animation-delay: -5s; }
+    .mini-hero-9 .video { background: linear-gradient(120deg, #abaeb3, #79878c, #cbd0cb, #abaeb3); background-size: 300% 100%; animation: hero-flow 8s linear infinite alternate; }
+    .mini-hero-9 .video::after { content: ''; position: absolute; inset: 0; background: linear-gradient(transparent 45%, #1a1a2e44); pointer-events: none; }
+    .mini-hero-12 .head > div { position: relative; }
+    .mini-hero-12 .head > div::after { content: ''; position: absolute; top: 0; right: -30px; width: 30px; height: 30px; background: radial-gradient(circle at right bottom, transparent 30px, var(--preview-bg) 31px); }
+    .mini-hero-13 .floating { display: grid; place-items: center; animation: hero-float 4s ease-in-out infinite alternate; }
+    .mini-hero-13 .floating svg, .mini-hero-13 .card svg { width: 20px; height: 20px; }
+    .mini-hero-13 .card { display: flex; align-items: center; gap: 12px; padding: 12px; }
+    .mini-hero-13 .card .ph-text { width: 60%; height: 7px; margin: 0; }
+    .mini-hero-13 .card { animation: hero-float 5s ease-in-out infinite alternate-reverse; }
+    .mini-hero-18 .row:first-child { position: relative; overflow: hidden; }
+    .mini-hero-18 .row:first-child::after { content: ''; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 25%, #fff8 50%, transparent 75%); transform: translateX(-100%); animation: hero-shimmer 4s ease-in-out infinite; pointer-events: none; }
+    .mini-hero-19 .panel, .mini-hero-19 .float { transition: transform .5s cubic-bezier(.16,1,.3,1); }
+    .mini-hero-19 .stage:hover .panel { transform: translate(5px, -5px); }
+    .mini-hero-19 .stage:hover .float.top { transform: translate(-8px, 6px); }
+    .mini-hero-19 .stage:hover .float.bottom { transform: translate(8px, -6px); }
+    .mini-hero-21 .field { background: radial-gradient(ellipse at 48% 35%, #c7d2fe, #d5d0e6 42%, #cbd0cb 72%); background-size: 160% 160%; animation: hero-flow 14s ease-in-out infinite alternate; }
+    .mini-hero-21 .orb { position: relative; border: 0; background: conic-gradient(#c7d2fe, #f5d0fe, #a5f3fc, #c7d2fe); animation: hero-orbit 26s linear infinite; }
+    .mini-hero-21 .orb::before { content: ''; position: absolute; inset: 12px; border-radius: 50%; background: var(--preview-bg); }
+    .mini-hero-21 .orb .spec-dot { position: relative; }
+    .mini-hero-22 .field { background: radial-gradient(ellipse at 20% 30%, #aeb9d4, transparent 55%), radial-gradient(ellipse at 75% 65%, #c6a8c6, transparent 60%), #cbd0cb; background-size: 160% 160%; animation: hero-mesh 10s ease-in-out infinite alternate; }
+    .mini-hero-23 .frame .spec-media { background: repeating-radial-gradient(ellipse at 50% 30%, #8298a7 0 12px, #b0c0c6 22px 36px, #809cb1 45px 60px); background-size: 150% 150%; animation: hero-water 8s ease-in-out infinite alternate; }
+    .mini-hero-24 .field { background: repeating-radial-gradient(ellipse at 80% 55%, transparent 0 10px, #778d9c88 11px 12px, transparent 13px 30px), linear-gradient(90deg, #cbd0cb, #aebac2); background-size: 140% 150%; animation: hero-neuro 8s ease-in-out infinite alternate; }
+    .mini-hero-24 .copy { background: linear-gradient(90deg, var(--preview-bg) 0%, #fff8e1dd 60%, transparent); }
+    .mini-hero-24 .spec-pill .spec-dot, .mini-hero-23 .live .spec-dot { animation: hero-ping 2s ease-in-out infinite; }
+    @keyframes hero-waves { to { background-position: 0 42px; } }
+    @keyframes hero-marquee { to { transform: translateX(calc(-50% - 7px)); } }
+    @keyframes hero-flow { to { background-position: 100% 0; } }
+    @keyframes hero-mesh { to { background-position: 100% 100%; } }
+    @keyframes hero-water { to { background-position: 70% 80%; } }
+    @keyframes hero-neuro { to { background-position: 100% 60%; } }
+    @keyframes hero-float { to { transform: translate3d(8px, -12px, 0); } }
+    @keyframes hero-orbit { to { transform: rotate(360deg); } }
+    @keyframes hero-shimmer { 50%, 100% { transform: translateX(100%); } }
+    @keyframes hero-ping { 50% { box-shadow: 0 0 0 7px #8895a144; } }
+    @keyframes hero-progress { 0%, 33% { background: var(--ink); } 33.34%, 100% { background: #cbd0cb; } }
+    @keyframes hero-slide { 0%, 33% { background: #cbd0cb; } 33.34%, 66% { background: #b7c1c9; } 66.34%, 100% { background: #a9adb9; } }
+    @keyframes hero-tile { 0%, 49% { background: #cbd0cb; } 50%, 100% { background: #aaaebc; } }
+    @media (prefers-reduced-motion: reduce) {
+      .layout-block *, .layout-block *::before, .layout-block *::after { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="tri-bar"><span></span><span></span><span></span></div>
+  <nav class="top-nav"><h1>Hero Layout Playground<span>· 英雄区布局 · 目前 24 条，可按同样形状继续追加</span></h1></nav>
+  <main class="page-container">
+    <section class="layout-block" id="hero-1" aria-labelledby="hero-1-title">
+      <div class="layout-header"><h2 id="hero-1-title"><span class="num">01</span>Hero分栏缺口型</h2></div>
+      <div class="preview-box">
+        <div class="mini-hero-1">
+          <div class="copy">
+            <div class="announcement" aria-label="公告占位"><span class="mark"></span><span class="ph-text"></span></div>
+            <div class="ph-heading" aria-label="标题占位"></div>
+            <div class="description" aria-label="说明占位"><div class="ph-text"></div><div class="ph-text short"></div></div>
+            <div class="actions" aria-label="操作占位">
+              <div class="action solid"><span class="bar"></span></div>
+              <div class="action outline"><span class="play-dot"></span><span class="bar"></span></div>
+            </div>
+            <div class="proof" aria-label="头像与证明占位">
+              <div class="avatars"><span></span><span></span><span></span></div>
+              <div class="proof-copy"><div class="ph-text"></div><div class="ph-text"></div></div>
+            </div>
+          </div>
+          <div class="photo" role="img" aria-label="灰色图像占位，右下角带缺口">
+            <div class="notch"><button type="button" aria-label="图像操作占位"><i data-lucide="arrow-up-right"></i></button></div>
+          </div>
+        </div>
+      </div>
+      <div class="scene-tag">产品落地页的分栏首屏，左边是说明和行动，右边是一张带缺口的图。</div>
+    </section>
+    <section class="layout-block" id="hero-2" aria-labelledby="hero-2-title">
+      <div class="layout-header"><h2 id="hero-2-title"><span class="num">02</span>Hero弧形拼贴型</h2></div>
+      <div class="preview-box"><div class="mini-hero-2">
+        <div class="copy"><div class="ph-heading"></div><div class="ph-text"></div><div class="spec-actions"><span class="spec-button"></span><span class="spec-button"></span></div></div>
+        <div class="gallery" aria-label="不等高画面占位"><div class="stack"><div class="spec-media tall"></div><div class="spec-media slim"></div></div><div class="spec-media tall"></div><div class="spec-media square"></div><div class="spec-media tall"></div><div class="stack"><div class="spec-media tall"></div><div class="spec-media slim"></div></div></div>
+      </div></div><div class="scene-tag">居中标题下方是五列高低错落的画廊。</div>
+    </section>
+    <section class="layout-block" id="hero-3" aria-labelledby="hero-3-title">
+      <div class="layout-header"><h2 id="hero-3-title"><span class="num">03</span>Hero框景着色器型</h2></div>
+      <div class="preview-box"><div class="mini-hero-3"><div class="scene spec-media" role="img" aria-label="画面占位"></div><div class="frame"><div class="top"><span class="spec-logo"></span><span class="spec-pill"><span class="ph-text"></span></span></div><div class="bottom"><div class="ph-heading"></div><div class="links"><div class="ph-text"></div><div class="ph-text"></div><div class="ph-text"></div></div></div></div></div></div>
+      <div class="scene-tag">大面积画面做背景，文字与入口沿边框排列。</div>
+    </section>
+    <section class="layout-block" id="hero-4" aria-labelledby="hero-4-title">
+      <div class="layout-header"><h2 id="hero-4-title"><span class="num">04</span>Hero视频跑马廊型</h2></div>
+      <div class="preview-box"><div class="mini-hero-4"><div class="copy"><span class="spec-pill"><span class="spec-dot"></span><span class="ph-text"></span></span><div class="ph-heading"></div><div class="ph-text"></div><div class="spec-actions"><span class="spec-button"></span></div></div><div class="marquee"><div class="track" aria-label="循环视频画框"><div class="video spec-media"><span class="spec-play"></span><span class="dots"><span></span><span></span></span></div><div class="video spec-media"><span class="spec-play"></span></div><div class="video spec-media"><span class="spec-play"></span></div><div class="video spec-media" aria-hidden="true"><span class="spec-play"></span><span class="dots"><span></span><span></span></span></div><div class="video spec-media" aria-hidden="true"><span class="spec-play"></span></div><div class="video spec-media" aria-hidden="true"><span class="spec-play"></span></div></div></div></div></div>
+      <div class="scene-tag">居中大字下方是横向连续的视频画框。</div>
+    </section>
+    <section class="layout-block" id="hero-5" aria-labelledby="hero-5-title">
+      <div class="layout-header"><h2 id="hero-5-title"><span class="num">05</span>Hero浮球视窗型</h2></div>
+      <div class="preview-box"><div class="mini-hero-5"><div class="orb spec-media"></div><div class="copy"><span class="spec-pill"><span class="spec-dot"></span><span class="ph-text"></span></span><div class="ph-heading"></div><div class="ph-text"></div><div class="spec-actions"><span class="spec-button"></span><span class="spec-button"></span></div></div><div class="browser"><div class="toolbar"><span></span><span></span><span></span></div><div class="screen spec-media" role="img" aria-label="视窗画面占位"></div></div></div></div>
+      <div class="scene-tag">居中内容下方是浏览器视窗和静态浮球。</div>
+    </section>
+    <section class="layout-block" id="hero-6" aria-labelledby="hero-6-title">
+      <div class="layout-header"><h2 id="hero-6-title"><span class="num">06</span>Hero进度轮播分栏型</h2></div>
+      <div class="preview-box"><div class="mini-hero-6"><div class="copy"><div class="ph-heading"></div><div class="ph-text"></div><div class="ph-text short"></div><div class="spec-input"><span class="ph-text"></span><span class="spec-button"></span></div></div><div class="rail" aria-label="轮播竖进度"><span></span><span></span><span></span></div><div class="image spec-media" role="img" aria-label="当前轮播画面占位"></div><div class="mobile-rail" aria-label="轮播横进度"><span></span><span></span><span></span></div></div></div>
+      <div class="scene-tag">左文右图，中间进度线在窄屏移到图片下。</div>
+    </section>
+    <section class="layout-block" id="hero-7" aria-labelledby="hero-7-title">
+      <div class="layout-header"><h2 id="hero-7-title"><span class="num">07</span>Hero三维环形画廊型</h2></div>
+      <div class="preview-box"><div class="mini-hero-7"><div class="copy"><div class="ph-heading"></div><div class="ph-text"></div><div class="spec-actions"><span class="spec-button"></span></div></div><div class="scene" role="img" aria-label="三种灰色占位画面重复排入九席三维环形画廊"><div class="spec-media" data-hero-tone="1"></div><div class="spec-media" data-hero-tone="2"></div><div class="spec-media" data-hero-tone="3"></div><span class="glow" aria-hidden="true"></span><canvas aria-hidden="true"></canvas></div></div></div>
+      <div class="scene-tag">九席环形画廊缓慢旋转，三种占位画面重复使用；中央有固定粉色光带和向两侧散开的粒子。</div>
+    </section>
+    <section class="layout-block" id="hero-8" aria-labelledby="hero-8-title">
+      <div class="layout-header"><h2 id="hero-8-title"><span class="num">08</span>Hero字间媒体嵌片型</h2></div>
+      <div class="preview-box"><div class="mini-hero-8"><div class="lines"><div class="row"><div class="ph-heading"></div><div class="tile spec-media"></div><div class="ph-heading"></div></div><div class="row"><div class="ph-heading"></div><div class="tile spec-media"></div><div class="ph-heading"></div></div></div><div class="description"><div class="ph-text"></div><div class="ph-text short"></div></div><div class="wide spec-media" role="img" aria-label="宽幅画面占位"></div></div></div>
+      <div class="scene-tag">两行文字之间各嵌媒体块，说明下方有宽幅画面。</div>
+    </section>
+    <section class="layout-block" id="hero-9" aria-labelledby="hero-9-title">
+      <div class="layout-header"><h2 id="hero-9-title"><span class="num">09</span>Hero沉底视频背景型</h2></div>
+      <div class="preview-box"><div class="mini-hero-9"><div class="video spec-media" role="img" aria-label="视频画面占位"><span class="spec-play"></span></div><div class="bottom"><div><div class="ph-heading"></div><span class="spec-pill"><span class="spec-dot"></span><span class="ph-text"></span></span></div><div><div class="ph-text"></div><div class="spec-actions"><span class="spec-button"></span><span class="spec-button"></span></div></div></div></div></div>
+      <div class="scene-tag">全幅视频灰面，标题和说明贴近画面底边。</div>
+    </section>
+    <section class="layout-block" id="hero-10" aria-labelledby="hero-10-title">
+      <div class="layout-header"><h2 id="hero-10-title"><span class="num">10</span>Hero三叠卡型</h2></div>
+      <div class="preview-box"><div class="mini-hero-10"><div class="copy"><div class="ph-heading"></div><div class="ph-text"></div><div class="spec-actions"><span class="spec-button"></span></div></div><div class="cards" role="img" aria-label="三张叠压画面占位"><div class="spec-media"></div><div class="spec-media"></div><div class="spec-media"></div></div></div></div>
+      <div class="scene-tag">居中引导文案下方是抬高中卡的三张叠卡。</div>
+    </section>
+    <section class="layout-block" id="hero-11" aria-labelledby="hero-11-title">
+      <div class="layout-header"><h2 id="hero-11-title"><span class="num">11</span>Hero线框角标型</h2></div>
+      <div class="preview-box"><div class="mini-hero-11"><div class="copy"><span class="spec-pill"><span class="ph-text"></span></span><div class="ph-heading"></div><div class="ph-text"></div><div class="spec-actions"><span class="spec-button"></span><span class="spec-button"></span></div></div><div class="frame"><div class="image spec-media" role="img" aria-label="画面占位"></div><i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i></div></div></div>
+      <div class="scene-tag">居中标题下方一张画面，四角有外置线框。</div>
+    </section>
+    <section class="layout-block" id="hero-12" aria-labelledby="hero-12-title">
+      <div class="layout-header"><h2 id="hero-12-title"><span class="num">12</span>Hero曲线贴片画面型</h2></div>
+      <div class="preview-box"><div class="mini-hero-12"><div class="scene spec-media" role="img" aria-label="大画面占位"></div><div class="head"><div><div class="ph-heading"></div></div><div><div class="ph-heading"></div></div></div><span class="action spec-button"></span><div class="card"><div class="image spec-media" role="img" aria-label="信息卡画面占位"></div><div class="ph-text"></div><div class="ph-text short"></div></div></div></div>
+      <div class="scene-tag">大画面上方是两层曲角标题贴片，底部另有信息卡。</div>
+    </section>
+    <section class="layout-block" id="hero-13" aria-labelledby="hero-13-title">
+      <div class="layout-header"><h2 id="hero-13-title"><span class="num">13</span>Hero浮标信息层型</h2></div>
+      <div class="preview-box"><div class="mini-hero-13"><div class="copy"><div class="ph-heading"></div><div class="ph-text"></div><div class="spec-actions"><span class="spec-button"></span><span class="spec-button"></span></div><div class="proof"><span>● ● ● ●</span><span>★★★★★</span></div></div><div class="stage" role="img" aria-label="浮标和信息卡占位"><div class="bar"></div><div class="floating spec-media"><i data-lucide="terminal" aria-hidden="true"></i></div><div class="card spec-media"><i data-lucide="database" aria-hidden="true"></i><span class="ph-text"></span></div><div class="card spec-media"><i data-lucide="cloud" aria-hidden="true"></i><span class="ph-text"></span></div></div></div></div>
+      <div class="scene-tag">社交证明下方有光条、浮标和叠放的信息卡。</div>
+    </section>
+    <section class="layout-block" id="hero-14" aria-labelledby="hero-14-title">
+      <div class="layout-header"><h2 id="hero-14-title"><span class="num">14</span>Hero邮箱表单分栏型</h2></div>
+      <div class="preview-box"><div class="mini-hero-14"><div class="copy"><div class="spec-pill"><i data-lucide="star" aria-hidden="true"></i><strong>5 stars</strong><span class="ph-text"></span><strong>3,000+</strong></div><div class="ph-heading"></div><div class="ph-text"></div><div class="ph-text short"></div><div class="spec-input"><span class="ph-text"></span><span class="spec-button"></span></div><div class="ph-text short"></div></div><div class="image spec-media" role="img" aria-label="画面占位"></div></div></div>
+      <div class="scene-tag">左评分和邮箱表单，右侧单张 4:3 画面。</div>
+    </section>
+    <section class="layout-block" id="hero-15" aria-labelledby="hero-15-title">
+      <div class="layout-header"><h2 id="hero-15-title"><span class="num">15</span>Hero斜体标题问答型</h2></div>
+      <div class="preview-box"><div class="mini-hero-15"><span class="spec-pill"><span class="ph-text"></span></span><div class="ph-heading"></div><div class="ph-text"></div><div class="ph-text short"></div><div class="spec-actions"><span class="spec-button"></span></div><div class="spec-input"><span class="ph-text"></span><span class="send"><i data-lucide="arrow-up" aria-hidden="true"></i></span></div><div class="ph-text short"></div></div></div>
+      <div class="scene-tag">居中斜体标题和两层说明，下方是问答输入条。</div>
+    </section>
+    <section class="layout-block" id="hero-16" aria-labelledby="hero-16-title">
+      <div class="layout-header"><h2 id="hero-16-title"><span class="num">16</span>Hero标志顶置叙事型</h2></div>
+      <div class="preview-box"><div class="mini-hero-16"><span class="spec-logo"></span><div class="ph-heading"></div><div class="bottom"><div><div class="ph-text"></div><div class="ph-text short"></div></div><div class="spec-actions"><span class="spec-button"></span><span class="spec-button"><i data-lucide="arrow-right" aria-hidden="true"></i></span></div></div></div></div>
+      <div class="scene-tag">顶部标志和大标题，底部左右分列说明与分体按钮。</div>
+    </section>
+    <section class="layout-block" id="hero-17" aria-labelledby="hero-17-title">
+      <div class="layout-header"><h2 id="hero-17-title"><span class="num">17</span>Hero商品主图三缩略型</h2></div>
+      <div class="preview-box"><div class="mini-hero-17"><div class="copy"><span class="spec-pill"><span class="ph-text"></span></span><div class="ph-heading"></div><div class="ph-text"></div><div class="ph-text short"></div><div class="spec-actions"><span class="spec-button"></span></div></div><div class="gallery"><div class="main spec-media" role="img" aria-label="主图占位"></div><div class="thumbs" aria-label="三张缩略图占位"><div class="spec-media"></div><div class="spec-media"></div><div class="spec-media"></div></div></div></div></div>
+      <div class="scene-tag">左边促销说明，右边一张主图和三张缩略图。</div>
+    </section>
+    <section class="layout-block" id="hero-18" aria-labelledby="hero-18-title">
+      <div class="layout-header"><h2 id="hero-18-title"><span class="num">18</span>Hero指令面板型</h2></div>
+      <div class="preview-box"><div class="mini-hero-18"><div class="copy"><span class="spec-pill"><kbd>⌘K</kbd><span class="ph-text"></span></span><div class="ph-heading"></div><div class="ph-text"></div></div><div class="panel"><div class="query"><i data-lucide="search" aria-hidden="true"></i><span class="ph-text"></span><kbd>esc</kbd></div><div class="scopes"><span>范围 24</span><span>范围 9</span><span>范围 6</span><span>范围 3</span></div><div class="rows"><div class="row"><i data-lucide="file-text" aria-hidden="true"></i><span class="ph-text"></span><kbd>↵</kbd></div><div class="row"><i data-lucide="git-pull-request" aria-hidden="true"></i><span class="ph-text"></span></div><div class="row"><i data-lucide="users" aria-hidden="true"></i><span class="ph-text"></span></div><div class="row"><i data-lucide="sparkles" aria-hidden="true"></i><span class="ph-text"></span></div></div><div class="keys"><kbd>↑</kbd><kbd>↓</kbd><kbd>↵</kbd></div></div><div class="action"><span class="spec-button"></span><kbd>⌘ K</kbd></div></div></div>
+      <div class="scene-tag">指令面板保留搜索行、范围计数、结果和键帽。</div>
+    </section>
+    <section class="layout-block" id="hero-19" aria-labelledby="hero-19-title">
+      <div class="layout-header"><h2 id="hero-19-title"><span class="num">19</span>Hero账单悬浮卡分栏型</h2></div>
+      <div class="preview-box"><div class="mini-hero-19"><div class="copy"><div class="ph-text short"></div><div class="ph-heading"></div><div class="ph-text"></div><div class="spec-actions"><span class="spec-button"></span><span class="spec-button"></span></div><div class="ph-text short"></div></div><div class="stage"><div class="float top">✓ <span class="ph-text short"></span></div><div class="panel"><div class="row"><span class="spec-dot"></span><span class="ph-text"></span><span class="spec-pill"><span class="spec-dot"></span></span></div><div class="row"><span class="spec-dot"></span><span class="ph-text"></span><span class="spec-pill"></span></div><div class="row"><span class="spec-dot"></span><span class="ph-text"></span><span class="spec-pill"></span></div><div class="metric"><span class="ph-text short"></span><strong>78%</strong><span class="bar"></span></div></div><div class="float bottom">○ <span class="ph-text short"></span></div></div></div></div>
+      <div class="scene-tag">左文右账单，面板外叠两张提示卡。</div>
+    </section>
+    <section class="layout-block" id="hero-20" aria-labelledby="hero-20-title">
+      <div class="layout-header"><h2 id="hero-20-title"><span class="num">20</span>Hero口号标志指标型</h2></div>
+      <div class="preview-box"><div class="mini-hero-20"><div class="ph-heading"></div><div class="ph-text"></div><div class="spec-actions"><span class="spec-button"></span><span class="spec-button"></span></div><div class="logos" aria-label="六个标志占位"><span class="spec-logo"></span><span class="spec-logo"></span><span class="spec-logo"></span><span class="spec-logo"></span><span class="spec-logo"></span><span class="spec-logo"></span></div><div class="metrics"><div><strong>4.2B</strong><span class="ph-text"></span></div><div><strong>38ms</strong><span class="ph-text"></span></div><div><strong>99.99%</strong><span class="ph-text"></span></div><div><strong>3,100+</strong><span class="ph-text"></span></div></div></div></div>
+      <div class="scene-tag">居中主张之后是一行标志与四格数字指标。</div>
+    </section>
+    <section class="layout-block" id="hero-21" aria-labelledby="hero-21-title">
+      <div class="layout-header"><h2 id="hero-21-title"><span class="num">21</span>Hero极光光环型</h2></div>
+      <div class="preview-box"><div class="mini-hero-21"><div class="field spec-media" role="img" aria-label="极光画面占位"></div><div class="copy"><div class="orb"><span class="spec-dot"></span></div><span class="spec-logo"></span><div class="ph-heading"></div><div class="ph-text"></div><div class="spec-actions"><span class="spec-button"></span><span class="spec-button"></span></div></div></div></div>
+      <div class="scene-tag">居中光环标记和文字置于静态背景画面之前。</div>
+    </section>
+    <section class="layout-block" id="hero-22" aria-labelledby="hero-22-title">
+      <div class="layout-header"><h2 id="hero-22-title"><span class="num">22</span>Hero网格流光居中型</h2></div>
+      <div class="preview-box"><div class="mini-hero-22"><div class="field spec-media" role="img" aria-label="流光画面占位"></div><div class="copy"><span class="spec-pill"><span class="spec-dot"></span><span class="ph-text"></span></span><div class="ph-heading"></div><div class="ph-text"></div><div class="spec-actions"><span class="spec-button"></span><span class="spec-button"></span></div></div></div></div>
+      <div class="scene-tag">公告、标题和双行动居中叠在一块画面上。</div>
+    </section>
+    <section class="layout-block" id="hero-23" aria-labelledby="hero-23-title">
+      <div class="layout-header"><h2 id="hero-23-title"><span class="num">23</span>Hero水纹画框型</h2></div>
+      <div class="preview-box"><div class="mini-hero-23"><div class="copy"><span class="spec-pill"><span class="spec-dot"></span><span class="ph-text"></span></span><div class="ph-heading"></div><div class="ph-text"></div><div class="spec-actions"><span class="spec-button"></span><span class="spec-button"></span></div></div><div class="frame"><div class="spec-media" role="img" aria-label="水纹画面占位"></div><span class="live spec-pill"><span class="spec-dot"></span><span class="ph-text"></span></span><div class="caption"><strong>60 fps</strong><span class="spec-pill"><span class="ph-text"></span></span></div></div></div></div>
+      <div class="scene-tag">居中文字下方是带实时状态与帧率的宽画框。</div>
+    </section>
+    <section class="layout-block" id="hero-24" aria-labelledby="hero-24-title">
+      <div class="layout-header"><h2 id="hero-24-title"><span class="num">24</span>Hero神经线场左文型</h2></div>
+      <div class="preview-box"><div class="mini-hero-24"><div class="field spec-media" role="img" aria-label="线场画面占位"></div><div class="copy"><span class="spec-pill"><span class="spec-dot"></span><span class="ph-text"></span></span><div class="ph-heading"></div><div class="ph-text"></div><div class="spec-actions"><span class="spec-button"></span><span class="spec-button"></span></div><div class="logos" aria-label="标志占位"><span class="spec-logo"></span><span class="spec-logo"></span><span class="spec-logo"></span></div></div></div></div>
+      <div class="scene-tag">状态芯片、左侧说明和标志行覆盖整块画面。</div>
+    </section>
+  </main>
+  <script src="https://unpkg.com/lucide@1.48.0/dist/umd/lucide.min.js"></script>
+  <script>
+    lucide.createIcons();
+    const observer = new IntersectionObserver(entries => {
+      for (const entry of entries) entry.target.classList.toggle('motion-active', entry.isIntersecting);
+    });
+    document.querySelectorAll('.layout-block').forEach(block => observer.observe(block));
+    // Hero 7 alone uses nine positions on a perspective ring; the other 23 previews are untouched.
+    (() => {
+      const block = document.querySelector('#hero-7');
+      const scene = block.querySelector('.mini-hero-7 .scene');
+      const samples = [...scene.querySelectorAll('.spec-media')];
+      const glow = scene.querySelector('.glow');
+      const order = [0, 1, 2, 1, 0, 2, 0, 2, 1];
+      for (let i = 3; i < order.length; i++) scene.insertBefore(samples[order[i]].cloneNode(), glow);
+      const frames = [...scene.querySelectorAll('.spec-media')];
+      const canvas = scene.querySelector('canvas');
+      const ctx = canvas.getContext('2d');
+      const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+      const points = Array.from({ length: 80 }, (_, i) => ({
+        x: 0, y: (i / 80 - .5) * 1.2, life: (i * .123) % 1,
+        vx: (i % 2 ? -1 : 1) * (((i * .382) % 1) * .012 + .004),
+        vy: (((i * .786) % 1) - .4) * .006
+      }));
+      let focal, unit, width, height, raf, start;
+      function resize() {
+        width = scene.clientWidth;
+        height = scene.clientHeight;
+        const dpr = Math.min(devicePixelRatio || 1, 2);
+        canvas.width = Math.round(width * dpr);
+        canvas.height = Math.round(height * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        focal = 850;
+        unit = focal / 8 * .58 * Math.min(1, width / 800);
+        scene.style.setProperty('--hero-7-focal', `${focal}px`);
+        scene.style.setProperty('--hero-7-width', `${3 * unit}px`);
+        scene.style.setProperty('--hero-7-height', `${2 * unit}px`);
+      }
+      function draw(now) {
+        if (!block.classList.contains('motion-active') || document.hidden) { raf = 0; return; }
+        if (start === undefined) start = now;
+        const time = reduced.matches ? 0 : (now - start) / 1000;
+        frames.forEach((frame, i) => {
+          let angle = ((i * Math.PI * 2 / 9 + time * .15 + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
+          frame.hidden = Math.abs(angle) > Math.PI * .7;
+          if (frame.hidden) return;
+          const x = Math.sin(angle) * 4.5;
+          const z = -Math.cos(angle) * 4.5 + .45;
+          frame.style.transform = `translate3d(${x * unit + Math.sin(angle) * 46}px, 0, ${z * unit}px) rotateY(${-angle}rad)`;
+          frame.style.zIndex = Math.round(10 + z * 10);
+          frame.style.opacity = Math.min(1, .5 + Math.max(0, -z) / 5);
+        });
+        ctx.clearRect(0, 0, width, height);
+        if (!reduced.matches) points.forEach((p, i) => {
+          p.life += .012;
+          if (p.life > 1) { p.life = 0; p.x = 0; p.y = (((i + time * 10) % 80) / 80 - .5) * 1.2; }
+          p.x += p.vx;
+          p.y += p.vy + Math.sin(time * 2 + i * .5) * .0008;
+          const opacity = Math.max(0, 1 - Math.abs(p.x) / .4) * .7;
+          if (!opacity) return;
+          ctx.beginPath();
+          ctx.fillStyle = `rgba(255,159,252,${opacity})`;
+          ctx.arc(width / 2 + p.x * unit, height / 2 - p.y * unit, 1.5, 0, Math.PI * 2);
+          ctx.fill();
+        });
+        raf = requestAnimationFrame(draw);
+      }
+      new ResizeObserver(resize).observe(scene);
+      resize();
+      new IntersectionObserver(([entry]) => {
+        if (entry.isIntersecting && !raf) { start = undefined; raf = requestAnimationFrame(draw); }
+        else if (!entry.isIntersecting && raf) { cancelAnimationFrame(raf); raf = 0; }
+      }).observe(block);
+    })();
+  </script>
+</body>
+</html>
